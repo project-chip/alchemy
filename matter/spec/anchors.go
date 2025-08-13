@@ -6,21 +6,21 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
 )
 
 type Anchor struct {
 	Document      *Doc
 	Source        matter.Source
-	ID            string
+	ID            asciidoc.Elements
 	LabelElements asciidoc.Elements
 	Element       asciidoc.Element
-	Parent        parse.HasElements
+	Parent        asciidoc.Parent
 }
 
-func NewAnchor(doc *Doc, id string, element asciidoc.Element, parent parse.HasElements, label ...asciidoc.Element) *Anchor {
+func NewAnchor(doc *Doc, id asciidoc.Elements, element asciidoc.Element, parent asciidoc.Parent, label ...asciidoc.Element) *Anchor {
 	return &Anchor{
 		Document:      doc,
 		Source:        NewSource(doc, element),
@@ -31,19 +31,23 @@ func NewAnchor(doc *Doc, id string, element asciidoc.Element, parent parse.HasEl
 	}
 }
 
+func (a *Anchor) Identifier() string {
+	return a.Document.anchorId(a.Document.Reader(), a.Parent, a.Element, a.ID)
+}
+
 func (a *Anchor) Name() string {
-	name := ReferenceName(a.Element)
+	name := ReferenceName(a.Document, a.Element)
 	if len(name) > 0 {
 		return name
 	}
 	return ""
 }
 
-func (a *Anchor) SyncToDoc(id string) {
-	if id != a.ID {
-		a.Document.changeAnchor(a, id)
+func (a *Anchor) SyncToDoc(id asciidoc.Elements) {
+	if !id.Equals(a.ID) {
+		a.Document.changeAnchor(a, a.Parent, id)
 		if a.Document.group != nil {
-			a.Document.group.changeAnchor(a, id)
+			a.Document.group.changeAnchor(a, a.Parent, id)
 		}
 		a.ID = id
 	}
@@ -62,7 +66,7 @@ func (a *Anchor) SyncToDoc(id string) {
 					idAttribute = attr
 				}
 			case *asciidoc.AnchorAttribute:
-				attr.ID = asciidoc.NewString(a.ID)
+				attr.ID = a.ID
 				if len(a.LabelElements) > 0 {
 					attr.Label = make(asciidoc.Elements, len(a.LabelElements))
 					copy(attr.Label, a.LabelElements)
@@ -82,10 +86,10 @@ func (a *Anchor) SyncToDoc(id string) {
 		if idAttribute != nil {
 			switch idAttribute := idAttribute.(type) {
 			case *asciidoc.ShorthandAttribute:
-				idAttribute.ID.Elements = asciidoc.Elements{asciidoc.NewString(a.ID)}
+				idAttribute.ID.Elements = a.ID
 				return
 			case *asciidoc.NamedAttribute:
-				idAttribute.Val = asciidoc.Elements{asciidoc.NewString(a.ID)}
+				idAttribute.Val = a.ID
 				if len(a.LabelElements) > 0 {
 					if refTextAttribute != nil {
 						refTextAttribute.Val = make(asciidoc.Elements, len(a.LabelElements))
@@ -97,7 +101,7 @@ func (a *Anchor) SyncToDoc(id string) {
 				return
 			}
 		}
-		e.AppendAttribute(asciidoc.NewAnchorAttribute(asciidoc.NewString(a.ID), a.LabelElements))
+		e.AppendAttribute(asciidoc.NewAnchorAttribute(a.ID, a.LabelElements))
 	}
 
 }
@@ -117,16 +121,16 @@ func (doc *Doc) findAnchors() {
 	} else {
 		crossReferences = doc.CrossReferences()
 	}
-	parse.Traverse(doc, doc.Children(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Search(doc.Reader(), doc, doc.Children(), func(el any, parent asciidoc.Parent, index int) parse.SearchShould {
 		var anchor *Anchor
 		var label string
 		switch el := el.(type) {
 		case *asciidoc.Anchor:
 			anchor = NewAnchor(doc, el.ID, el, parent, el.Elements...)
-		case *Section:
-			anchor = doc.makeAnchor(parent, el.Base, crossReferences)
+		case *asciidoc.Section:
+			anchor = doc.makeAnchor(parent, el, crossReferences)
 			if anchor != nil {
-				label = el.Name
+				label = doc.SectionName(el)
 				doc.anchorsByLabel[label] = append(doc.anchorsByLabel[label], anchor)
 			}
 		case asciidoc.Element:
@@ -136,7 +140,8 @@ func (doc *Doc) findAnchors() {
 			return parse.SearchShouldSkip
 		}
 		if anchor != nil {
-			doc.anchors[anchor.ID] = append(doc.anchors[anchor.ID], anchor)
+			anchorID := doc.anchorId(doc.Reader(), anchor.Parent, anchor.Element, anchor.ID)
+			doc.anchors[anchorID] = append(doc.anchors[anchorID], anchor)
 			if len(anchor.LabelElements) > 0 {
 				anchorLabel := strings.TrimSpace(asciidoc.AttributeAsciiDocString(anchor.LabelElements))
 				if len(anchorLabel) > 0 && anchorLabel != label {
@@ -150,18 +155,18 @@ func (doc *Doc) findAnchors() {
 	doc.anchorsParsed = true
 }
 
-func (doc *Doc) makeAnchor(parent parse.HasElements, element asciidoc.Element, crossReferences map[string][]*CrossReference) *Anchor {
+func (doc *Doc) makeAnchor(parent asciidoc.Parent, element asciidoc.Element, crossReferences map[string][]*CrossReference) *Anchor {
 	// If there's a cross-reference for it, then we'll need to make an anchor
-	id, labelSet := getAnchorElements(element, crossReferences)
-	if id == "" {
+	id, labelSet := getAnchorElements(doc, element, crossReferences)
+	if len(id) == 0 {
 		return nil
 	}
-	slog.Debug("Creating anchor for section with cross reference", slog.String("id", id), slog.String("path", doc.Path.Relative))
+	slog.Debug("Creating anchor for section with cross reference", slog.Any("id", id), slog.String("path", doc.Path.Relative))
 	a := NewAnchor(doc, id, element, parent, labelSet...)
 	return a
 }
 
-func getAnchorElements(element asciidoc.Element, crossReferences map[string][]*CrossReference) (id string, labelSet asciidoc.Elements) {
+func getAnchorElements(doc *Doc, element asciidoc.Element, crossReferences map[string][]*CrossReference) (id asciidoc.Elements, labelSet asciidoc.Elements) {
 	var idAttr asciidoc.Attribute
 	var refTextAttr *asciidoc.NamedAttribute
 	if wa, ok := element.(asciidoc.Attributable); ok {
@@ -186,21 +191,22 @@ func getAnchorElements(element asciidoc.Element, crossReferences map[string][]*C
 
 	if idAttr == nil {
 		if s, ok := element.(*asciidoc.Section); ok && crossReferences != nil {
-			id = s.Name()
-			if _, ok := crossReferences[id]; ok {
+			sectionName := doc.SectionName(s)
+			id = asciidoc.NewStringElements(sectionName)
+			if _, ok := crossReferences[sectionName]; ok {
 				return
 			}
 		}
-		return "", nil
+		return
 	}
 	switch idAttr := idAttr.(type) {
 	case *asciidoc.ShorthandAttribute:
-		id = asciidoc.AttributeAsciiDocString(idAttr.ID.Elements)
+		id = idAttr.ID.Elements
 	case *asciidoc.AnchorAttribute:
-		id = idAttr.ID.Value
+		id = idAttr.ID
 		labelSet = idAttr.Label
 	case *asciidoc.NamedAttribute:
-		id = idAttr.AsciiDocString()
+		id = idAttr.Val
 	}
 	if refTextAttr != nil {
 		labelSet = refTextAttr.Val
@@ -229,6 +235,11 @@ func (d *Doc) FindAnchor(id string, source log.Source) *Anchor {
 	}
 
 	return nil
+}
+
+func (d *Doc) FindAnchorByID(id asciidoc.Elements, element asciidoc.ParentElement, source log.Source) *Anchor {
+	anchorID := d.anchorId(d.Reader(), element, element, id)
+	return d.FindAnchor(anchorID, source)
 }
 
 func (d *Doc) FindAnchors(id string) []*Anchor {

@@ -14,7 +14,7 @@ func (b *Baller) organizeFeaturesSection(cxt *discoContext) (err error) {
 	for _, features := range cxt.parsed.features {
 		featuresTable := features.table
 		if featuresTable == nil || featuresTable.Element == nil {
-			slog.Warn("Could not organize Features section, as no table of features was found", log.Path("source", features.section.Base))
+			slog.Warn("Could not organize Features section, as no table of features was found", log.Path("source", features.section))
 			return
 		}
 

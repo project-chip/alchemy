@@ -4,7 +4,8 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -30,7 +31,7 @@ func (h *Host) indexEventModels(cxt context.Context, parent *sectionInfo, cluste
 	return nil
 }
 
-func (h *Host) indexEvents(cxt context.Context, doc *spec.Doc, ci *sectionInfo, es *spec.Section) error {
+func (h *Host) indexEvents(cxt context.Context, doc *spec.Doc, ci *sectionInfo, es *asciidoc.Section) error {
 	if ci.children == nil {
 		ci.children = make(map[string][]*sectionInfo)
 	}
@@ -51,10 +52,12 @@ func (h *Host) indexEvents(cxt context.Context, doc *spec.Doc, ci *sectionInfo, 
 			}
 		}
 	}
-	for s := range parse.Skim[*spec.Section](es.Children()) {
-		switch s.SecType {
+	for s := range parse.Skim[*asciidoc.Section](doc.Reader(), es, es.Children()) {
+		sectionType := doc.SectionType(s)
+		sectionName := doc.SectionName(s)
+		switch sectionType {
 		case matter.SectionEvent:
-			name := text.TrimCaseInsensitiveSuffix(s.Name, " Event")
+			name := text.TrimCaseInsensitiveSuffix(sectionName, " Event")
 			p, ok := em[name]
 			if !ok {
 				slog.Error("no matching event", "name", s.Name)

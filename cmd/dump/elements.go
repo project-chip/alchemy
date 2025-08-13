@@ -8,21 +8,21 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func dumpElements(doc *spec.Doc, els asciidoc.Elements, indent int) {
+func dumpElements(doc *spec.Doc, parent asciidoc.Parent, els asciidoc.Elements, indent int) {
 
-	for _, e := range els {
+	for e := range doc.Reader().Iterate(parent, els) {
 		fmt.Print(strings.Repeat("\t", indent))
-		as, ok := e.(*spec.Section)
+		as, ok := e.(*asciidoc.Section)
 		if ok {
-			fmt.Printf("{SEC %d (%s)}:\n", as.Base.Level, as.SecType)
+			fmt.Printf("{SEC %d (%s)}:\n", as.Level, doc.SectionType(as))
 
-			dumpAttributes(as.Base.Attributes(), indent+1)
+			dumpAttributes(doc, as.Attributes(), indent+1)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{title:}\n")
-			dumpElements(doc, as.Base.Title, indent+2)
+			dumpElements(doc, as, as.Title, indent+2)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{body:}\n")
-			dumpElements(doc, as.Children(), indent+2)
+			dumpElements(doc, as, as.Children(), indent+2)
 			continue
 		}
 		switch el := e.(type) {
@@ -32,28 +32,24 @@ func dumpElements(doc *spec.Doc, els asciidoc.Elements, indent int) {
 			fmt.Printf("{newline%s}\n", dumpPosition(el))
 		case *asciidoc.LineBreak:
 			fmt.Printf("{linebreak%s}\n", dumpPosition(el))
-		/*case *asciidoc.DelimitedBlock:
-		fmt.Printf("{delim kind=%s}:\n", el.Kind)
-		dumpAttributes(el.Attributes, indent+1)
-		dumpElements(doc, el.Elements, indent+1)*/
 		case *asciidoc.AttributeEntry:
 			fmt.Printf("{attrib%s}: %s", dumpPosition(el), el.Name)
-			dumpElements(doc, el.Children(), indent+1)
+			dumpElements(doc, el, el.Children(), indent+1)
 			fmt.Print("\n")
 		case *asciidoc.Paragraph:
 			fmt.Printf("{para%s}: ", dumpPosition(el))
 			fmt.Print("\n")
-			dumpAttributes(el.Attributes(), indent+1)
-			dumpElements(doc, el.Children(), indent+1)
+			dumpAttributes(doc, el.Attributes(), indent+1)
+			dumpElements(doc, el, el.Children(), indent+1)
 		case *asciidoc.Section:
 			fmt.Printf("{sec %d%s}:\n", el.Level, dumpPosition(el))
-			dumpAttributes(el.Attributes(), indent+1)
+			dumpAttributes(doc, el.Attributes(), indent+1)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{title:}\n")
-			dumpElements(doc, el.Title, indent+2)
+			dumpElements(doc, el, el.Title, indent+2)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{body:}\n")
-			dumpElements(doc, el.Children(), indent+2)
+			dumpElements(doc, el, el.Children(), indent+2)
 		case *asciidoc.String:
 			fmt.Print("{str}: ", snippet(el.Value))
 			fmt.Print("\n")
@@ -61,14 +57,14 @@ func dumpElements(doc *spec.Doc, els asciidoc.Elements, indent int) {
 		case asciidoc.FormattedTextElement:
 			fmt.Printf("{formatted text %d%s}:\n", el.TextFormat(), dumpPosition(el))
 			if a, ok := el.(asciidoc.Attributable); ok {
-				dumpAttributes(a.Attributes(), indent+1)
+				dumpAttributes(doc, a.Attributes(), indent+1)
 			}
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{body:}\n")
-			dumpElements(doc, el.Children(), indent+2)
+			dumpElements(doc, el, el.Children(), indent+2)
 		case *asciidoc.Table:
 			fmt.Printf("{tab%s}:\n", dumpPosition(el))
-			dumpAttributes(el.Attributes(), indent+1)
+			dumpAttributes(doc, el.Attributes(), indent+1)
 			dumpTable(doc, el, indent+1)
 		case *asciidoc.IfDef:
 			fmt.Print("{ifdef ")
@@ -81,34 +77,34 @@ func dumpElements(doc *spec.Doc, els asciidoc.Elements, indent int) {
 			dumpConditional(el.Attributes, el.Union, indent)
 		case *asciidoc.OrderedListItem:
 			fmt.Print("{ole}:\n")
-			dumpAttributes(el.Attributes(), indent+1)
-			dumpElements(doc, el.Children(), indent+1)
+			dumpAttributes(doc, el.Attributes(), indent+1)
+			dumpElements(doc, el, el.Children(), indent+1)
 		case *asciidoc.UnorderedListItem:
 			fmt.Printf("{uole bs=%s cl=%v}:\n", el.Marker, el.Checklist)
-			dumpAttributes(el.Attributes(), indent+1)
-			dumpElements(doc, el.Children(), indent+1)
+			dumpAttributes(doc, el.Attributes(), indent+1)
+			dumpElements(doc, el, el.Children(), indent+1)
 		case *asciidoc.CrossReference:
 			fmt.Printf("{xref id:%v label %v}\n", el.ID, el.Elements)
 		case *asciidoc.DocumentCrossReference:
 			fmt.Printf("{doc xref}\n")
-			dumpAttributes(el.Attributes(), indent+1)
-			dumpElements(doc, el.ReferencePath, indent+1)
+			dumpAttributes(doc, el.Attributes(), indent+1)
+			dumpElements(doc, &el.ReferencePath, el.ReferencePath, indent+1)
 		case asciidoc.SpecialCharacter:
 			fmt.Printf("{sc: %s}\n", el.Character)
 		case *asciidoc.Link:
 			fmt.Printf("{link: ")
 			dumpLocation(doc, el.URL, indent+1)
 			fmt.Print("}\n")
-			dumpAttributes(el.Attributes(), indent+1)
+			dumpAttributes(doc, el.Attributes(), indent+1)
 		case *asciidoc.LinkMacro:
 			fmt.Printf("{link macro: ")
 			dumpLocation(doc, el.URL, indent+1)
 			fmt.Print("}\n")
-			dumpAttributes(el.Attributes(), indent+1)
+			dumpAttributes(doc, el.Attributes(), indent+1)
 		case *asciidoc.FileInclude:
 			fmt.Printf("{include:\n")
-			dumpAttributes(el.Attributes(), indent+1)
-			dumpElements(doc, el.Children(), indent+1)
+			dumpAttributes(doc, el.Attributes(), indent+1)
+			dumpElements(doc, el, el.Children(), indent+1)
 			fmt.Print(strings.Repeat("\t", indent))
 			fmt.Print("}\n")
 		/*case *asciidoc.DocumentHeader:
@@ -157,19 +153,19 @@ func dumpElements(doc *spec.Doc, els asciidoc.Elements, indent int) {
 		*/
 		case *asciidoc.InlineImage:
 			fmt.Printf("{image: ")
-			dumpElements(doc, el.ImagePath, indent+1)
+			dumpElements(doc, &el.ImagePath, el.ImagePath, indent+1)
 			fmt.Print("}\n")
-			dumpAttributes(el.Attributes(), indent+1)
+			dumpAttributes(doc, el.Attributes(), indent+1)
 		case *asciidoc.BlockImage:
 			fmt.Printf("{imageblock: ")
-			dumpElements(doc, el.ImagePath, indent+1)
+			dumpElements(doc, &el.ImagePath, el.ImagePath, indent+1)
 			fmt.Print("}\n")
-			dumpAttributes(el.Attributes(), indent+1)
+			dumpAttributes(doc, el.Attributes(), indent+1)
 		case *asciidoc.AttributeReset:
 			fmt.Printf("{attr_reset: %s}\n", el.Name)
 		case *asciidoc.Listing:
 			fmt.Printf("{listing\n")
-			dumpAttributes(el.Attributes(), indent+1)
+			dumpAttributes(doc, el.Attributes(), indent+1)
 			for i, l := range el.Lines() {
 				fmt.Print(strings.Repeat("\t", indent+1))
 				fmt.Printf("%d: \"%s\"\n", i, l)
@@ -183,7 +179,7 @@ func dumpElements(doc *spec.Doc, els asciidoc.Elements, indent int) {
 			fmt.Printf("{anchor \"%s\"", el.ID)
 			if len(el.Elements) > 0 {
 				fmt.Print("\n")
-				dumpElements(doc, el.Elements, indent+1)
+				dumpElements(doc, el, el.Children(), indent+1)
 			}
 			fmt.Print("}\n")
 		/*case *asciidoc.ListElements:
@@ -191,9 +187,14 @@ func dumpElements(doc *spec.Doc, els asciidoc.Elements, indent int) {
 		dumpElements(doc, el.Elements, indent+1)*/
 		case *asciidoc.ListContinuation:
 			fmt.Printf("{list con}\n")
-			dumpElements(doc, asciidoc.Elements{el.Child()}, indent+1)
+			children := asciidoc.Elements{el.Child()}
+			dumpElements(doc, &children, children, indent+1)
 		case *asciidoc.CharacterReplacementReference:
 			fmt.Printf("{predef %s}\n", el.Name())
+		case *asciidoc.QuoteBlock:
+			fmt.Printf("{quote delimiter:\"%d\"}:\n", el.Delimiter.Type)
+			dumpAttributes(doc, el.Attributes(), indent+1)
+			dumpElements(doc, el, el.Children(), indent+1)
 		default:
 			fmt.Printf("unknown render element type: %T\n", el)
 		}

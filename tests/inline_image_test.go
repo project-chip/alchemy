@@ -17,8 +17,10 @@ var inlineImage = &asciidoc.Document{
 					},
 				},
 				&asciidoc.AnchorAttribute{
-					ID: &asciidoc.String{
-						Value: "ref_PumpOperationAndControlFigure",
+					ID: asciidoc.Elements{
+						&asciidoc.String{
+							Value: "ref_PumpOperationAndControlFigure",
+						},
 					},
 					Label: nil,
 				},

@@ -157,7 +157,6 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	}
 
 	for _, dt := range deviceTypesToUpdateByID {
-		slog.Info("Adding new device type", slog.String("name", dt.Name))
 		doc, ok := deviceTypeDocs[dt]
 		if !ok {
 			err = fmt.Errorf("missing device type doc for %s", dt.Name)
@@ -193,7 +192,6 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	}
 
 	for _, dt := range deviceTypesToUpdateByName {
-		slog.Info("Adding new device type", slog.String("name", dt.Name))
 		doc, ok := deviceTypeDocs[dt]
 		if !ok {
 			err = fmt.Errorf("missing device type doc for %s", dt.Name)

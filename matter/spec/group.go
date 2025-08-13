@@ -4,33 +4,43 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
 type DocGroup struct {
-	Root string
+	Root *Doc
 	referenceIndex
 
 	Docs []*Doc
+
+	Reader asciidoc.Reader
+
+	index map[string]*Doc
+
+	crossReferenceDocs map[*asciidoc.CrossReference]*Doc
 }
 
-func NewDocGroup(root string) *DocGroup {
+func NewDocGroup(root *Doc) *DocGroup {
 	return &DocGroup{
-		Root:           root,
-		referenceIndex: newReferenceIndex(),
+		Root:               root,
+		referenceIndex:     newReferenceIndex(),
+		crossReferenceDocs: make(map[*asciidoc.CrossReference]*Doc),
+		index:              map[string]*Doc{},
 	}
 }
 
 func setDocGroup(d *Doc, docGroup *DocGroup) {
 	if d.group != nil {
-		if d.group.Root != docGroup.Root && d.Path.Base() != "matter-defines.adoc" {
+		if d.group.Root.Path.Relative != docGroup.Root.Path.Relative && d.Path.Base() != "matter-defines.adoc" {
 			slog.Warn("multiple doc group roots", "path", d.Path.String(), "root", d.group.Root, "newRoot", docGroup.Root)
 		}
 		return
 	}
 	docGroup.Docs = append(docGroup.Docs, d)
+	docGroup.index[d.Path.Relative] = d
 	d.group = docGroup
 	for _, c := range d.children {
 		setDocGroup(c, docGroup)

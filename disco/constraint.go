@@ -3,6 +3,7 @@ package disco
 import (
 	"log/slog"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/constraint"
@@ -10,11 +11,11 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (b *Baller) fixConstraintCells(cxt *discoContext, section *spec.Section, ti *spec.TableInfo) (err error) {
+func (b *Baller) fixConstraintCells(cxt *discoContext, section *asciidoc.Section, ti *spec.TableInfo) (err error) {
 	if len(ti.Rows) < 2 {
 		return
 	}
-	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableConstraint) {
+	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section), errata.DiscoPurposeTableConstraint) {
 		return
 	}
 	constraintIndex, ok := ti.ColumnIndex(matter.TableColumnConstraint)

@@ -12,215 +12,227 @@ func TestReader(t *testing.T) {
 
 var readerTests = parseTests{
 
-	{"should prepare lines from Array data", "asciidoctor/reader_test_should_prepare_lines_from_array_data.adoc", readerTestShouldPrepareLinesFromArrayData, nil},
+	{"should prepare lines from Array data", "asciidoctor/reader_test_should_prepare_lines_from_array_data.adoc", readerTestShouldPrepareLinesFromArrayData},
 
-	{"Read lines until until blank line", "asciidoctor/reader_test_read_lines_until_until_blank_line.adoc", readerTestReadLinesUntilUntilBlankLine, nil},
+	{"Read lines until until blank line", "asciidoctor/reader_test_read_lines_until_until_blank_line.adoc", readerTestReadLinesUntilUntilBlankLine},
 
-	{"Read lines until until blank line preserving last line", "asciidoctor/reader_test_read_lines_until_until_blank_line_preserving_last_line.adoc", readerTestReadLinesUntilUntilBlankLinePreservingLastLine, nil},
+	{"Read lines until until blank line preserving last line", "asciidoctor/reader_test_read_lines_until_until_blank_line_preserving_last_line.adoc", readerTestReadLinesUntilUntilBlankLinePreservingLastLine},
 
-	{"Read lines until until condition is true", "asciidoctor/reader_test_read_lines_until_until_condition_is_true.adoc", readerTestReadLinesUntilUntilConditionIsTrue, nil},
+	{"Read lines until until condition is true", "asciidoctor/reader_test_read_lines_until_until_condition_is_true.adoc", readerTestReadLinesUntilUntilConditionIsTrue},
 
-	{"Read lines until until condition is true, taking last line", "asciidoctor/reader_test_read_lines_until_until_condition_is_true_taking_last_line.adoc", readerTestReadLinesUntilUntilConditionIsTrueTakingLastLine, nil},
+	{"Read lines until until condition is true, taking last line", "asciidoctor/reader_test_read_lines_until_until_condition_is_true_taking_last_line.adoc", readerTestReadLinesUntilUntilConditionIsTrueTakingLastLine},
 
-	{"Read lines until until condition is true, taking and preserving last line", "asciidoctor/reader_test_read_lines_until_until_condition_is_true_taking_and_preserving_last_line.adoc", readerTestReadLinesUntilUntilConditionIsTrueTakingAndPreservingLastLine, nil},
+	{"Read lines until until condition is true, taking and preserving last line", "asciidoctor/reader_test_read_lines_until_until_condition_is_true_taking_and_preserving_last_line.adoc", readerTestReadLinesUntilUntilConditionIsTrueTakingAndPreservingLastLine},
 
-	{"read lines until terminator", "asciidoctor/reader_test_read_lines_until_terminator.adoc", readerTestReadLinesUntilTerminator, nil},
+	{"read lines until terminator", "asciidoctor/reader_test_read_lines_until_terminator.adoc", readerTestReadLinesUntilTerminator},
 
-	{"should flag reader as unterminated if reader reaches end of source without finding terminator", "asciidoctor/reader_test_should_flag_reader_as_unterminated_if_reader_reaches_end_of_source_without_finding_terminator.adoc", readerTestShouldFlagReaderAsUnterminatedIfReaderReachesEndOfSourceWithoutFindingTerminator, nil},
+	{"should flag reader as unterminated if reader reaches end of source without finding terminator", "asciidoctor/reader_test_should_flag_reader_as_unterminated_if_reader_reaches_end_of_source_without_finding_terminator.adoc", readerTestShouldFlagReaderAsUnterminatedIfReaderReachesEndOfSourceWithoutFindingTerminator},
 
-	{"should not skip front matter by default", "asciidoctor/reader_test_should_not_skip_front_matter_by_default.adoc", readerTestShouldNotSkipFrontMatterByDefault, nil},
+	{"should not skip front matter by default", "asciidoctor/reader_test_should_not_skip_front_matter_by_default.adoc", readerTestShouldNotSkipFrontMatterByDefault},
 
-	{"should not skip front matter if ending delimiter is not found", "asciidoctor/reader_test_should_not_skip_front_matter_if_ending_delimiter_is_not_found.adoc", readerTestShouldNotSkipFrontMatterIfEndingDelimiterIsNotFound, nil},
+	{"should not skip front matter if ending delimiter is not found", "asciidoctor/reader_test_should_not_skip_front_matter_if_ending_delimiter_is_not_found.adoc", readerTestShouldNotSkipFrontMatterIfEndingDelimiterIsNotFound},
 
-	{"should skip front matter if specified by skip-front-matter attribute", "asciidoctor/reader_test_should_skip_front_matter_if_specified_by_skip_front_matter_attribute.adoc", readerTestShouldSkipFrontMatterIfSpecifiedBySkipFrontMatterAttribute, nil},
+	{"should skip front matter if specified by skip-front-matter attribute", "asciidoctor/reader_test_should_skip_front_matter_if_specified_by_skip_front_matter_attribute.adoc", readerTestShouldSkipFrontMatterIfSpecifiedBySkipFrontMatterAttribute},
 
-	{"should skip TOML front matter if specified by skip-front-matter attribute", "asciidoctor/reader_test_should_skip_toml_front_matter_if_specified_by_skip_front_matter_attribute.adoc", readerTestShouldSkipTomlFrontMatterIfSpecifiedBySkipFrontMatterAttribute, nil},
+	{"should skip TOML front matter if specified by skip-front-matter attribute", "asciidoctor/reader_test_should_skip_toml_front_matter_if_specified_by_skip_front_matter_attribute.adoc", readerTestShouldSkipTomlFrontMatterIfSpecifiedBySkipFrontMatterAttribute},
 
-	{"should not track include in catalog for non-AsciiDoc include files", "asciidoctor/reader_test_should_not_track_include_in_catalog_for_non_ascii_doc_include_files.adoc", readerTestShouldNotTrackIncludeInCatalogForNonAsciiDocIncludeFiles, nil},
+	{"should not track include in catalog for non-AsciiDoc include files", "asciidoctor/reader_test_should_not_track_include_in_catalog_for_non_ascii_doc_include_files.adoc", readerTestShouldNotTrackIncludeInCatalogForNonAsciiDocIncludeFiles},
 
-	{"include directive should resolve file with spaces in name", "asciidoctor/reader_test_include_directive_should_resolve_file_with_spaces_in_name.adoc", readerTestIncludeDirectiveShouldResolveFileWithSpacesInName, nil},
+	{"include directive should resolve file with spaces in name", "asciidoctor/reader_test_include_directive_should_resolve_file_with_spaces_in_name.adoc", readerTestIncludeDirectiveShouldResolveFileWithSpacesInName},
 
-	{"include directive should resolve file relative to current include", "asciidoctor/reader_test_include_directive_should_resolve_file_relative_to_current_include.adoc", readerTestIncludeDirectiveShouldResolveFileRelativeToCurrentInclude, nil},
+	{"include directive should resolve file relative to current include", "asciidoctor/reader_test_include_directive_should_resolve_file_relative_to_current_include.adoc", readerTestIncludeDirectiveShouldResolveFileRelativeToCurrentInclude},
 
-	{"should fail to read include file if not UTF-8 encoded and encoding is not specified", "asciidoctor/reader_test_should_fail_to_read_include_file_if_not_utf_8_encoded_and_encoding_is_not_specified.adoc", readerTestShouldFailToReadIncludeFileIfNotUtf8EncodedAndEncodingIsNotSpecified, nil},
+	{"should fail to read include file if not UTF-8 encoded and encoding is not specified", "asciidoctor/reader_test_should_fail_to_read_include_file_if_not_utf_8_encoded_and_encoding_is_not_specified.adoc", readerTestShouldFailToReadIncludeFileIfNotUtf8EncodedAndEncodingIsNotSpecified},
 
-	{"should ignore encoding attribute if value is not a valid encoding", "asciidoctor/reader_test_should_ignore_encoding_attribute_if_value_is_not_a_valid_encoding.adoc", readerTestShouldIgnoreEncodingAttributeIfValueIsNotAValidEncoding, nil},
+	{"should ignore encoding attribute if value is not a valid encoding", "asciidoctor/reader_test_should_ignore_encoding_attribute_if_value_is_not_a_valid_encoding.adoc", readerTestShouldIgnoreEncodingAttributeIfValueIsNotAValidEncoding},
 
-	{"should use encoding specified by encoding attribute when reading include file", "asciidoctor/reader_test_should_use_encoding_specified_by_encoding_attribute_when_reading_include_file.adoc", readerTestShouldUseEncodingSpecifiedByEncodingAttributeWhenReadingIncludeFile, nil},
+	{"should use encoding specified by encoding attribute when reading include file", "asciidoctor/reader_test_should_use_encoding_specified_by_encoding_attribute_when_reading_include_file.adoc", readerTestShouldUseEncodingSpecifiedByEncodingAttributeWhenReadingIncludeFile},
 
-	{"unresolved target referenced by include directive is skipped when optional option is set", "asciidoctor/reader_test_unresolved_target_referenced_by_include_directive_is_skipped_when_optional_option_is_set.adoc", readerTestUnresolvedTargetReferencedByIncludeDirectiveIsSkippedWhenOptionalOptionIsSet, nil},
+	{"unresolved target referenced by include directive is skipped when optional option is set", "asciidoctor/reader_test_unresolved_target_referenced_by_include_directive_is_skipped_when_optional_option_is_set.adoc", readerTestUnresolvedTargetReferencedByIncludeDirectiveIsSkippedWhenOptionalOptionIsSet},
 
-	{"should skip include directive that references missing file if optional option is set", "asciidoctor/reader_test_should_skip_include_directive_that_references_missing_file_if_optional_option_is_set.adoc", readerTestShouldSkipIncludeDirectiveThatReferencesMissingFileIfOptionalOptionIsSet, nil},
+	{"should skip include directive that references missing file if optional option is set", "asciidoctor/reader_test_should_skip_include_directive_that_references_missing_file_if_optional_option_is_set.adoc", readerTestShouldSkipIncludeDirectiveThatReferencesMissingFileIfOptionalOptionIsSet},
 
-	{"should replace include directive that references missing file with message", "asciidoctor/reader_test_should_replace_include_directive_that_references_missing_file_with_message.adoc", readerTestShouldReplaceIncludeDirectiveThatReferencesMissingFileWithMessage, nil},
+	{"should replace include directive that references missing file with message", "asciidoctor/reader_test_should_replace_include_directive_that_references_missing_file_with_message.adoc", readerTestShouldReplaceIncludeDirectiveThatReferencesMissingFileWithMessage},
 
-	{"nested include directives are resolved relative to current file", "asciidoctor/reader_test_nested_include_directives_are_resolved_relative_to_current_file.adoc", readerTestNestedIncludeDirectivesAreResolvedRelativeToCurrentFile, nil},
+	{"nested include directives are resolved relative to current file", "asciidoctor/reader_test_nested_include_directives_are_resolved_relative_to_current_file.adoc", readerTestNestedIncludeDirectivesAreResolvedRelativeToCurrentFile},
 
-	{"include directive supports selecting lines by line number", "asciidoctor/reader_test_include_directive_supports_selecting_lines_by_line_number.adoc", readerTestIncludeDirectiveSupportsSelectingLinesByLineNumber, nil},
+	{"include directive supports selecting lines by line number", "asciidoctor/reader_test_include_directive_supports_selecting_lines_by_line_number.adoc", readerTestIncludeDirectiveSupportsSelectingLinesByLineNumber},
 
-	{"include directive ignores lines attribute with invalid range", "asciidoctor/reader_test_include_directive_ignores_lines_attribute_with_invalid_range.adoc", readerTestIncludeDirectiveIgnoresLinesAttributeWithInvalidRange, nil},
+	{"include directive ignores lines attribute with invalid range", "asciidoctor/reader_test_include_directive_ignores_lines_attribute_with_invalid_range.adoc", readerTestIncludeDirectiveIgnoresLinesAttributeWithInvalidRange},
 
-	{"include directive supports selecting lines by tag in file that has CRLF line endings", "asciidoctor/reader_test_include_directive_supports_selecting_lines_by_tag_in_file_that_has_crlf_line_endings.adoc", readerTestIncludeDirectiveSupportsSelectingLinesByTagInFileThatHasCrlfLineEndings, nil},
+	{"include directive supports selecting lines by tag in file that has CRLF line endings", "asciidoctor/reader_test_include_directive_supports_selecting_lines_by_tag_in_file_that_has_crlf_line_endings.adoc", readerTestIncludeDirectiveSupportsSelectingLinesByTagInFileThatHasCrlfLineEndings},
 
-	{"include directive skips lines inside tag which is negated", "asciidoctor/reader_test_include_directive_skips_lines_inside_tag_which_is_negated.adoc", readerTestIncludeDirectiveSkipsLinesInsideTagWhichIsNegated, nil},
+	{"include directive skips lines inside tag which is negated", "asciidoctor/reader_test_include_directive_skips_lines_inside_tag_which_is_negated.adoc", readerTestIncludeDirectiveSkipsLinesInsideTagWhichIsNegated},
 
-	{"include directive selects all lines without a tag directive when value is double asterisk", "asciidoctor/reader_test_include_directive_selects_all_lines_without_a_tag_directive_when_value_is_double_asterisk.adoc", readerTestIncludeDirectiveSelectsAllLinesWithoutATagDirectiveWhenValueIsDoubleAsterisk, nil},
+	{"include directive selects all lines without a tag directive when value is double asterisk", "asciidoctor/reader_test_include_directive_selects_all_lines_without_a_tag_directive_when_value_is_double_asterisk.adoc", readerTestIncludeDirectiveSelectsAllLinesWithoutATagDirectiveWhenValueIsDoubleAsterisk},
 
-	{"include directive selects all lines except lines inside tag which is negated when value starts with double asterisk", "asciidoctor/reader_test_include_directive_selects_all_lines_except_lines_inside_tag_which_is_negated_when_value_starts_with_double_asterisk.adoc", readerTestIncludeDirectiveSelectsAllLinesExceptLinesInsideTagWhichIsNegatedWhenValueStartsWithDoubleAsterisk, nil},
+	{"include directive selects all lines except lines inside tag which is negated when value starts with double asterisk", "asciidoctor/reader_test_include_directive_selects_all_lines_except_lines_inside_tag_which_is_negated_when_value_starts_with_double_asterisk.adoc", readerTestIncludeDirectiveSelectsAllLinesExceptLinesInsideTagWhichIsNegatedWhenValueStartsWithDoubleAsterisk},
 
-	{"include directive selects all lines, including lines inside nested tags, except lines inside tag which is negated when value starts with double asterisk", "asciidoctor/reader_test_include_directive_selects_all_lines_including_lines_inside_nested_tags_except_lines_inside_tag_which_is_negated_when_value_starts_with_double_asterisk.adoc", readerTestIncludeDirectiveSelectsAllLinesIncludingLinesInsideNestedTagsExceptLinesInsideTagWhichIsNegatedWhenValueStartsWithDoubleAsterisk, nil},
+	{"include directive selects all lines, including lines inside nested tags, except lines inside tag which is negated when value starts with double asterisk", "asciidoctor/reader_test_include_directive_selects_all_lines_including_lines_inside_nested_tags_except_lines_inside_tag_which_is_negated_when_value_starts_with_double_asterisk.adoc", readerTestIncludeDirectiveSelectsAllLinesIncludingLinesInsideNestedTagsExceptLinesInsideTagWhichIsNegatedWhenValueStartsWithDoubleAsterisk},
 
-	{"include directive selects all lines outside of tags when value is double asterisk followed by negated wildcard", "asciidoctor/reader_test_include_directive_selects_all_lines_outside_of_tags_when_value_is_double_asterisk_followed_by_negated_wildcard.adoc", readerTestIncludeDirectiveSelectsAllLinesOutsideOfTagsWhenValueIsDoubleAsteriskFollowedByNegatedWildcard, nil},
+	{"include directive selects all lines outside of tags when value is double asterisk followed by negated wildcard", "asciidoctor/reader_test_include_directive_selects_all_lines_outside_of_tags_when_value_is_double_asterisk_followed_by_negated_wildcard.adoc", readerTestIncludeDirectiveSelectsAllLinesOutsideOfTagsWhenValueIsDoubleAsteriskFollowedByNegatedWildcard},
 
-	{"include directive skips all tagged regions when value of tags attribute is negated wildcard", "asciidoctor/reader_test_include_directive_skips_all_tagged_regions_when_value_of_tags_attribute_is_negated_wildcard.adoc", readerTestIncludeDirectiveSkipsAllTaggedRegionsWhenValueOfTagsAttributeIsNegatedWildcard, nil},
+	{"include directive skips all tagged regions when value of tags attribute is negated wildcard", "asciidoctor/reader_test_include_directive_skips_all_tagged_regions_when_value_of_tags_attribute_is_negated_wildcard.adoc", readerTestIncludeDirectiveSkipsAllTaggedRegionsWhenValueOfTagsAttributeIsNegatedWildcard},
 
-	{"include directive selects all lines except for lines containing tag directive if value is double asterisk followed by nested tag names", "asciidoctor/reader_test_include_directive_selects_all_lines_except_for_lines_containing_tag_directive_if_value_is_double_asterisk_followed_by_nested_tag_names.adoc", readerTestIncludeDirectiveSelectsAllLinesExceptForLinesContainingTagDirectiveIfValueIsDoubleAsteriskFollowedByNestedTagNames, nil},
+	{"include directive selects all lines except for lines containing tag directive if value is double asterisk followed by nested tag names", "asciidoctor/reader_test_include_directive_selects_all_lines_except_for_lines_containing_tag_directive_if_value_is_double_asterisk_followed_by_nested_tag_names.adoc", readerTestIncludeDirectiveSelectsAllLinesExceptForLinesContainingTagDirectiveIfValueIsDoubleAsteriskFollowedByNestedTagNames},
 
-	{"include directive selects all lines except for lines containing tag directive when value is double asterisk followed by outer tag name", "asciidoctor/reader_test_include_directive_selects_all_lines_except_for_lines_containing_tag_directive_when_value_is_double_asterisk_followed_by_outer_tag_name.adoc", readerTestIncludeDirectiveSelectsAllLinesExceptForLinesContainingTagDirectiveWhenValueIsDoubleAsteriskFollowedByOuterTagName, nil},
+	{"include directive selects all lines except for lines containing tag directive when value is double asterisk followed by outer tag name", "asciidoctor/reader_test_include_directive_selects_all_lines_except_for_lines_containing_tag_directive_when_value_is_double_asterisk_followed_by_outer_tag_name.adoc", readerTestIncludeDirectiveSelectsAllLinesExceptForLinesContainingTagDirectiveWhenValueIsDoubleAsteriskFollowedByOuterTagName},
 
-	{"include directive selects all lines inside unspecified tags when value is negated double asterisk followed by negated tags", "asciidoctor/reader_test_include_directive_selects_all_lines_inside_unspecified_tags_when_value_is_negated_double_asterisk_followed_by_negated_tags.adoc", readerTestIncludeDirectiveSelectsAllLinesInsideUnspecifiedTagsWhenValueIsNegatedDoubleAsteriskFollowedByNegatedTags, nil},
+	{"include directive selects all lines inside unspecified tags when value is negated double asterisk followed by negated tags", "asciidoctor/reader_test_include_directive_selects_all_lines_inside_unspecified_tags_when_value_is_negated_double_asterisk_followed_by_negated_tags.adoc", readerTestIncludeDirectiveSelectsAllLinesInsideUnspecifiedTagsWhenValueIsNegatedDoubleAsteriskFollowedByNegatedTags},
 
-	{"include directive selects all lines except tag which is negated when value only contains negated tag", "asciidoctor/reader_test_include_directive_selects_all_lines_except_tag_which_is_negated_when_value_only_contains_negated_tag.adoc", readerTestIncludeDirectiveSelectsAllLinesExceptTagWhichIsNegatedWhenValueOnlyContainsNegatedTag, nil},
+	{"include directive selects all lines except tag which is negated when value only contains negated tag", "asciidoctor/reader_test_include_directive_selects_all_lines_except_tag_which_is_negated_when_value_only_contains_negated_tag.adoc", readerTestIncludeDirectiveSelectsAllLinesExceptTagWhichIsNegatedWhenValueOnlyContainsNegatedTag},
 
-	{"include directive selects all lines except tags which are negated when value only contains negated tags", "asciidoctor/reader_test_include_directive_selects_all_lines_except_tags_which_are_negated_when_value_only_contains_negated_tags.adoc", readerTestIncludeDirectiveSelectsAllLinesExceptTagsWhichAreNegatedWhenValueOnlyContainsNegatedTags, nil},
+	{"include directive selects all lines except tags which are negated when value only contains negated tags", "asciidoctor/reader_test_include_directive_selects_all_lines_except_tags_which_are_negated_when_value_only_contains_negated_tags.adoc", readerTestIncludeDirectiveSelectsAllLinesExceptTagsWhichAreNegatedWhenValueOnlyContainsNegatedTags},
 
-	{"should recognize tag wildcard if not at start of tags list", "asciidoctor/reader_test_should_recognize_tag_wildcard_if_not_at_start_of_tags_list.adoc", readerTestShouldRecognizeTagWildcardIfNotAtStartOfTagsList, nil},
+	{"should recognize tag wildcard if not at start of tags list", "asciidoctor/reader_test_should_recognize_tag_wildcard_if_not_at_start_of_tags_list.adoc", readerTestShouldRecognizeTagWildcardIfNotAtStartOfTagsList},
 
-	{"include directive selects lines between tags when value of tags attribute is wildcard", "asciidoctor/reader_test_include_directive_selects_lines_between_tags_when_value_of_tags_attribute_is_wildcard.adoc", readerTestIncludeDirectiveSelectsLinesBetweenTagsWhenValueOfTagsAttributeIsWildcard, nil},
+	{"include directive selects lines between tags when value of tags attribute is wildcard", "asciidoctor/reader_test_include_directive_selects_lines_between_tags_when_value_of_tags_attribute_is_wildcard.adoc", readerTestIncludeDirectiveSelectsLinesBetweenTagsWhenValueOfTagsAttributeIsWildcard},
 
-	{"include directive selects lines inside tags when value of tags attribute is wildcard and tag surrounds content", "asciidoctor/reader_test_include_directive_selects_lines_inside_tags_when_value_of_tags_attribute_is_wildcard_and_tag_surrounds_content.adoc", readerTestIncludeDirectiveSelectsLinesInsideTagsWhenValueOfTagsAttributeIsWildcardAndTagSurroundsContent, nil},
+	{"include directive selects lines inside tags when value of tags attribute is wildcard and tag surrounds content", "asciidoctor/reader_test_include_directive_selects_lines_inside_tags_when_value_of_tags_attribute_is_wildcard_and_tag_surrounds_content.adoc", readerTestIncludeDirectiveSelectsLinesInsideTagsWhenValueOfTagsAttributeIsWildcardAndTagSurroundsContent},
 
-	{"include directive selects lines inside all tags except tag which is negated when value of tags attribute is wildcard followed by negated tag", "asciidoctor/reader_test_include_directive_selects_lines_inside_all_tags_except_tag_which_is_negated_when_value_of_tags_attribute_is_wildcard_followed_by_negated_tag.adoc", readerTestIncludeDirectiveSelectsLinesInsideAllTagsExceptTagWhichIsNegatedWhenValueOfTagsAttributeIsWildcardFollowedByNegatedTag, nil},
+	{"include directive selects lines inside all tags except tag which is negated when value of tags attribute is wildcard followed by negated tag", "asciidoctor/reader_test_include_directive_selects_lines_inside_all_tags_except_tag_which_is_negated_when_value_of_tags_attribute_is_wildcard_followed_by_negated_tag.adoc", readerTestIncludeDirectiveSelectsLinesInsideAllTagsExceptTagWhichIsNegatedWhenValueOfTagsAttributeIsWildcardFollowedByNegatedTag},
 
-	{"include directive includes regions outside tags and inside specified tags when value begins with negated wildcard", "asciidoctor/reader_test_include_directive_includes_regions_outside_tags_and_inside_specified_tags_when_value_begins_with_negated_wildcard.adoc", readerTestIncludeDirectiveIncludesRegionsOutsideTagsAndInsideSpecifiedTagsWhenValueBeginsWithNegatedWildcard, nil},
+	{"include directive includes regions outside tags and inside specified tags when value begins with negated wildcard", "asciidoctor/reader_test_include_directive_includes_regions_outside_tags_and_inside_specified_tags_when_value_begins_with_negated_wildcard.adoc", readerTestIncludeDirectiveIncludesRegionsOutsideTagsAndInsideSpecifiedTagsWhenValueBeginsWithNegatedWildcard},
 
-	{"include directive selects lines inside tag except for lines inside nested tags when tag is preceded by negated double asterisk and negated wildcard", "asciidoctor/reader_test_include_directive_selects_lines_inside_tag_except_for_lines_inside_nested_tags_when_tag_is_preceded_by_negated_double_asterisk_and_negated_wildcard.adoc", readerTestIncludeDirectiveSelectsLinesInsideTagExceptForLinesInsideNestedTagsWhenTagIsPrecededByNegatedDoubleAsteriskAndNegatedWildcard, nil},
+	{"include directive selects lines inside tag except for lines inside nested tags when tag is preceded by negated double asterisk and negated wildcard", "asciidoctor/reader_test_include_directive_selects_lines_inside_tag_except_for_lines_inside_nested_tags_when_tag_is_preceded_by_negated_double_asterisk_and_negated_wildcard.adoc", readerTestIncludeDirectiveSelectsLinesInsideTagExceptForLinesInsideNestedTagsWhenTagIsPrecededByNegatedDoubleAsteriskAndNegatedWildcard},
 
-	{"include directive does not select lines inside tag that has been included then excluded", "asciidoctor/reader_test_include_directive_does_not_select_lines_inside_tag_that_has_been_included_then_excluded.adoc", readerTestIncludeDirectiveDoesNotSelectLinesInsideTagThatHasBeenIncludedThenExcluded, nil},
+	{"include directive does not select lines inside tag that has been included then excluded", "asciidoctor/reader_test_include_directive_does_not_select_lines_inside_tag_that_has_been_included_then_excluded.adoc", readerTestIncludeDirectiveDoesNotSelectLinesInsideTagThatHasBeenIncludedThenExcluded},
 
-	{"include directive selects lines inside specified tag and ignores lines inside a negated tag", "asciidoctor/reader_test_include_directive_selects_lines_inside_specified_tag_and_ignores_lines_inside_a_negated_tag.adoc", readerTestIncludeDirectiveSelectsLinesInsideSpecifiedTagAndIgnoresLinesInsideANegatedTag, nil},
+	{"include directive selects lines inside specified tag and ignores lines inside a negated tag", "asciidoctor/reader_test_include_directive_selects_lines_inside_specified_tag_and_ignores_lines_inside_a_negated_tag.adoc", readerTestIncludeDirectiveSelectsLinesInsideSpecifiedTagAndIgnoresLinesInsideANegatedTag},
 
-	{"should not warn if specified negated tag is not found in include file", "asciidoctor/reader_test_should_not_warn_if_specified_negated_tag_is_not_found_in_include_file.adoc", readerTestShouldNotWarnIfSpecifiedNegatedTagIsNotFoundInIncludeFile, nil},
+	{"should not warn if specified negated tag is not found in include file", "asciidoctor/reader_test_should_not_warn_if_specified_negated_tag_is_not_found_in_include_file.adoc", readerTestShouldNotWarnIfSpecifiedNegatedTagIsNotFoundInIncludeFile},
 
-	{"should warn if specified tags are not found in include file", "asciidoctor/reader_test_should_warn_if_specified_tags_are_not_found_in_include_file.adoc", readerTestShouldWarnIfSpecifiedTagsAreNotFoundInIncludeFile, nil},
+	{"should warn if specified tags are not found in include file", "asciidoctor/reader_test_should_warn_if_specified_tags_are_not_found_in_include_file.adoc", readerTestShouldWarnIfSpecifiedTagsAreNotFoundInIncludeFile},
 
-	{"should not warn if specified negated tags are not found in include file", "asciidoctor/reader_test_should_not_warn_if_specified_negated_tags_are_not_found_in_include_file.adoc", readerTestShouldNotWarnIfSpecifiedNegatedTagsAreNotFoundInIncludeFile, nil},
+	{"should not warn if specified negated tags are not found in include file", "asciidoctor/reader_test_should_not_warn_if_specified_negated_tags_are_not_found_in_include_file.adoc", readerTestShouldNotWarnIfSpecifiedNegatedTagsAreNotFoundInIncludeFile},
 
-	{"should warn if specified tag in include file is not closed", "asciidoctor/reader_test_should_warn_if_specified_tag_in_include_file_is_not_closed.adoc", readerTestShouldWarnIfSpecifiedTagInIncludeFileIsNotClosed, nil},
+	{"should warn if specified tag in include file is not closed", "asciidoctor/reader_test_should_warn_if_specified_tag_in_include_file_is_not_closed.adoc", readerTestShouldWarnIfSpecifiedTagInIncludeFileIsNotClosed},
 
-	{"should warn if end tag in included file is mismatched", "asciidoctor/reader_test_should_warn_if_end_tag_in_included_file_is_mismatched.adoc", readerTestShouldWarnIfEndTagInIncludedFileIsMismatched, nil},
+	{"should warn if end tag in included file is mismatched", "asciidoctor/reader_test_should_warn_if_end_tag_in_included_file_is_mismatched.adoc", readerTestShouldWarnIfEndTagInIncludedFileIsMismatched},
 
-	{"should warn if unexpected end tag is found in included file", "asciidoctor/reader_test_should_warn_if_unexpected_end_tag_is_found_in_included_file.adoc", readerTestShouldWarnIfUnexpectedEndTagIsFoundInIncludedFile, nil},
+	{"should warn if unexpected end tag is found in included file", "asciidoctor/reader_test_should_warn_if_unexpected_end_tag_is_found_in_included_file.adoc", readerTestShouldWarnIfUnexpectedEndTagIsFoundInIncludedFile},
 
-	{"lines attribute takes precedence over tags attribute in include directive", "asciidoctor/reader_test_lines_attribute_takes_precedence_over_tags_attribute_in_include_directive.adoc", readerTestLinesAttributeTakesPrecedenceOverTagsAttributeInIncludeDirective, nil},
+	{"lines attribute takes precedence over tags attribute in include directive", "asciidoctor/reader_test_lines_attribute_takes_precedence_over_tags_attribute_in_include_directive.adoc", readerTestLinesAttributeTakesPrecedenceOverTagsAttributeInIncludeDirective},
 
-	{"should substitute attribute references in attrlist", "asciidoctor/reader_test_should_substitute_attribute_references_in_attrlist.adoc", readerTestShouldSubstituteAttributeReferencesInAttrlist, nil},
+	{"should substitute attribute references in attrlist", "asciidoctor/reader_test_should_substitute_attribute_references_in_attrlist.adoc", readerTestShouldSubstituteAttributeReferencesInAttrlist},
 
-	{"should fall back to built-in include directive behavior when not handled by include processor", "asciidoctor/reader_test_should_fall_back_to_built_in_include_directive_behavior_when_not_handled_by_include_processor.adoc", readerTestShouldFallBackToBuiltInIncludeDirectiveBehaviorWhenNotHandledByIncludeProcessor, nil},
+	{"should fall back to built-in include directive behavior when not handled by include processor", "asciidoctor/reader_test_should_fall_back_to_built_in_include_directive_behavior_when_not_handled_by_include_processor.adoc", readerTestShouldFallBackToBuiltInIncludeDirectiveBehaviorWhenNotHandledByIncludeProcessor},
 
-	{"attributes are substituted in target of include directive", "asciidoctor/reader_test_attributes_are_substituted_in_target_of_include_directive.adoc", readerTestAttributesAreSubstitutedInTargetOfIncludeDirective, nil},
+	{"attributes are substituted in target of include directive", "asciidoctor/reader_test_attributes_are_substituted_in_target_of_include_directive.adoc", readerTestAttributesAreSubstitutedInTargetOfIncludeDirective},
 
-	{"line following dropped include is not dropped", "asciidoctor/reader_test_line_following_dropped_include_is_not_dropped.adoc", readerTestLineFollowingDroppedIncludeIsNotDropped, nil},
+	{"line following dropped include is not dropped", "asciidoctor/reader_test_line_following_dropped_include_is_not_dropped.adoc", readerTestLineFollowingDroppedIncludeIsNotDropped},
 
-	{"escaped include directive is left unprocessed", "asciidoctor/reader_test_escaped_include_directive_is_left_unprocessed.adoc", readerTestEscapedIncludeDirectiveIsLeftUnprocessed, nil},
+	{"escaped include directive is left unprocessed", "asciidoctor/reader_test_escaped_include_directive_is_left_unprocessed.adoc", readerTestEscapedIncludeDirectiveIsLeftUnprocessed},
 
-	{"include directive not at start of line is ignored", "asciidoctor/reader_test_include_directive_not_at_start_of_line_is_ignored.adoc", readerTestIncludeDirectiveNotAtStartOfLineIsIgnored, nil},
+	{"include directive not at start of line is ignored", "asciidoctor/reader_test_include_directive_not_at_start_of_line_is_ignored.adoc", readerTestIncludeDirectiveNotAtStartOfLineIsIgnored},
 
-	{"include directive should be disabled if max include depth has been exceeded", "asciidoctor/reader_test_include_directive_should_be_disabled_if_max_include_depth_has_been_exceeded.adoc", readerTestIncludeDirectiveShouldBeDisabledIfMaxIncludeDepthHasBeenExceeded, nil},
+	{"include directive should be disabled if max include depth has been exceeded", "asciidoctor/reader_test_include_directive_should_be_disabled_if_max_include_depth_has_been_exceeded.adoc", readerTestIncludeDirectiveShouldBeDisabledIfMaxIncludeDepthHasBeenExceeded},
 
-	{"skip_comment_lines should not process lines read", "asciidoctor/reader_test_skip_comment_lines_should_not_process_lines_read.adoc", readerTestSkipCommentLinesShouldNotProcessLinesRead, nil},
+	{"skip_comment_lines should not process lines read", "asciidoctor/reader_test_skip_comment_lines_should_not_process_lines_read.adoc", readerTestSkipCommentLinesShouldNotProcessLinesRead},
 
-	{"process_line returns nil if cursor advanced", "asciidoctor/reader_test_process_line_returns_nil_if_cursor_advanced.adoc", readerTestProcessLineReturnsNilIfCursorAdvanced, nil},
+	{"process_line returns nil if cursor advanced", "asciidoctor/reader_test_process_line_returns_nil_if_cursor_advanced.adoc", readerTestProcessLineReturnsNilIfCursorAdvanced},
 
-	{"peek_line advances cursor to next conditional line of content", "asciidoctor/reader_test_peek_line_advances_cursor_to_next_conditional_line_of_content.adoc", readerTestPeekLineAdvancesCursorToNextConditionalLineOfContent, nil},
+	{"peek_line advances cursor to next conditional line of content", "asciidoctor/reader_test_peek_line_advances_cursor_to_next_conditional_line_of_content.adoc", readerTestPeekLineAdvancesCursorToNextConditionalLineOfContent},
 
-	{"peek_lines should preprocess lines if direct is false", "asciidoctor/reader_test_peek_lines_should_preprocess_lines_if_direct_is_false.adoc", readerTestPeekLinesShouldPreprocessLinesIfDirectIsFalse, nil},
+	{"peek_lines should preprocess lines if direct is false", "asciidoctor/reader_test_peek_lines_should_preprocess_lines_if_direct_is_false.adoc", readerTestPeekLinesShouldPreprocessLinesIfDirectIsFalse},
 
-	{"peek_lines should not preprocess lines if direct is true", "asciidoctor/reader_test_peek_lines_should_not_preprocess_lines_if_direct_is_true.adoc", readerTestPeekLinesShouldNotPreprocessLinesIfDirectIsTrue, nil},
+	{"peek_lines should not preprocess lines if direct is true", "asciidoctor/reader_test_peek_lines_should_not_preprocess_lines_if_direct_is_true.adoc", readerTestPeekLinesShouldNotPreprocessLinesIfDirectIsTrue},
 
-	{"peek_lines should not prevent subsequent preprocessing of peeked lines", "asciidoctor/reader_test_peek_lines_should_not_prevent_subsequent_preprocessing_of_peeked_lines.adoc", readerTestPeekLinesShouldNotPreventSubsequentPreprocessingOfPeekedLines, nil},
+	{"peek_lines should not prevent subsequent preprocessing of peeked lines", "asciidoctor/reader_test_peek_lines_should_not_prevent_subsequent_preprocessing_of_peeked_lines.adoc", readerTestPeekLinesShouldNotPreventSubsequentPreprocessingOfPeekedLines},
 
-	{"process_line returns line if cursor not advanced", "asciidoctor/reader_test_process_line_returns_line_if_cursor_not_advanced.adoc", readerTestProcessLineReturnsLineIfCursorNotAdvanced, nil},
+	{"process_line returns line if cursor not advanced", "asciidoctor/reader_test_process_line_returns_line_if_cursor_not_advanced.adoc", readerTestProcessLineReturnsLineIfCursorNotAdvanced},
 
-	{"peek_line does not advance cursor when on a regular content line", "asciidoctor/reader_test_peek_line_does_not_advance_cursor_when_on_a_regular_content_line.adoc", readerTestPeekLineDoesNotAdvanceCursorWhenOnARegularContentLine, nil},
+	{"peek_line does not advance cursor when on a regular content line", "asciidoctor/reader_test_peek_line_does_not_advance_cursor_when_on_a_regular_content_line.adoc", readerTestPeekLineDoesNotAdvanceCursorWhenOnARegularContentLine},
 
-	{"peek_line returns nil if cursor advances past end of source", "asciidoctor/reader_test_peek_line_returns_nil_if_cursor_advances_past_end_of_source.adoc", readerTestPeekLineReturnsNilIfCursorAdvancesPastEndOfSource, nil},
+	{"peek_line returns nil if cursor advances past end of source", "asciidoctor/reader_test_peek_line_returns_nil_if_cursor_advances_past_end_of_source.adoc", readerTestPeekLineReturnsNilIfCursorAdvancesPastEndOfSource},
 
-	{"peek_line returns nil if contents of skipped conditional is empty line", "asciidoctor/reader_test_peek_line_returns_nil_if_contents_of_skipped_conditional_is_empty_line.adoc", readerTestPeekLineReturnsNilIfContentsOfSkippedConditionalIsEmptyLine, nil},
+	{"peek_line returns nil if contents of skipped conditional is empty line", "asciidoctor/reader_test_peek_line_returns_nil_if_contents_of_skipped_conditional_is_empty_line.adoc", readerTestPeekLineReturnsNilIfContentsOfSkippedConditionalIsEmptyLine},
 
-	{"ifdef with defined attribute includes content", "asciidoctor/reader_test_ifdef_with_defined_attribute_includes_content.adoc", readerTestIfdefWithDefinedAttributeIncludesContent, nil},
+	{"ifdef with defined attribute includes content", "asciidoctor/reader_test_ifdef_with_defined_attribute_includes_content.adoc", readerTestIfdefWithDefinedAttributeIncludesContent},
 
-	{"ifdef with defined attribute includes text in brackets", "asciidoctor/reader_test_ifdef_with_defined_attribute_includes_text_in_brackets.adoc", readerTestIfdefWithDefinedAttributeIncludesTextInBrackets, nil},
+	{"ifdef with defined attribute includes text in brackets", "asciidoctor/reader_test_ifdef_with_defined_attribute_includes_text_in_brackets.adoc", readerTestIfdefWithDefinedAttributeIncludesTextInBrackets},
 
-	{"ifdef attribute name is not case sensitive", "asciidoctor/reader_test_ifdef_attribute_name_is_not_case_sensitive.adoc", readerTestIfdefAttributeNameIsNotCaseSensitive, nil},
+	{"ifdef attribute name is not case sensitive", "asciidoctor/reader_test_ifdef_attribute_name_is_not_case_sensitive.adoc", readerTestIfdefAttributeNameIsNotCaseSensitive},
 
-	{"ifndef with defined attribute does not include text in brackets", "asciidoctor/reader_test_ifndef_with_defined_attribute_does_not_include_text_in_brackets.adoc", readerTestIfndefWithDefinedAttributeDoesNotIncludeTextInBrackets, nil},
+	{"ifndef with defined attribute does not include text in brackets", "asciidoctor/reader_test_ifndef_with_defined_attribute_does_not_include_text_in_brackets.adoc", readerTestIfndefWithDefinedAttributeDoesNotIncludeTextInBrackets},
 
-	{"include with non-matching nested exclude", "asciidoctor/reader_test_include_with_non_matching_nested_exclude.adoc", readerTestIncludeWithNonMatchingNestedExclude, nil},
+	{"include with non-matching nested exclude", "asciidoctor/reader_test_include_with_non_matching_nested_exclude.adoc", readerTestIncludeWithNonMatchingNestedExclude},
 
-	{"nested excludes with same condition", "asciidoctor/reader_test_nested_excludes_with_same_condition.adoc", readerTestNestedExcludesWithSameCondition, nil},
+	{"nested excludes with same condition", "asciidoctor/reader_test_nested_excludes_with_same_condition.adoc", readerTestNestedExcludesWithSameCondition},
 
-	{"include with nested exclude of inverted condition", "asciidoctor/reader_test_include_with_nested_exclude_of_inverted_condition.adoc", readerTestIncludeWithNestedExcludeOfInvertedCondition, nil},
+	{"include with nested exclude of inverted condition", "asciidoctor/reader_test_include_with_nested_exclude_of_inverted_condition.adoc", readerTestIncludeWithNestedExcludeOfInvertedCondition},
 
-	{"exclude with matching nested exclude", "asciidoctor/reader_test_exclude_with_matching_nested_exclude.adoc", readerTestExcludeWithMatchingNestedExclude, nil},
+	{"exclude with matching nested exclude", "asciidoctor/reader_test_exclude_with_matching_nested_exclude.adoc", readerTestExcludeWithMatchingNestedExclude},
 
-	{"exclude with nested include using shorthand end", "asciidoctor/reader_test_exclude_with_nested_include_using_shorthand_end.adoc", readerTestExcludeWithNestedIncludeUsingShorthandEnd, nil},
+	{"exclude with nested include using shorthand end", "asciidoctor/reader_test_exclude_with_nested_include_using_shorthand_end.adoc", readerTestExcludeWithNestedIncludeUsingShorthandEnd},
 
-	{"ifdef with one alternative attribute set includes content", "asciidoctor/reader_test_ifdef_with_one_alternative_attribute_set_includes_content.adoc", readerTestIfdefWithOneAlternativeAttributeSetIncludesContent, nil},
+	{"ifdef with one alternative attribute set includes content", "asciidoctor/reader_test_ifdef_with_one_alternative_attribute_set_includes_content.adoc", readerTestIfdefWithOneAlternativeAttributeSetIncludesContent},
 
-	{"ifdef with no alternative attributes set does not include content", "asciidoctor/reader_test_ifdef_with_no_alternative_attributes_set_does_not_include_content.adoc", readerTestIfdefWithNoAlternativeAttributesSetDoesNotIncludeContent, nil},
+	{"ifdef with no alternative attributes set does not include content", "asciidoctor/reader_test_ifdef_with_no_alternative_attributes_set_does_not_include_content.adoc", readerTestIfdefWithNoAlternativeAttributesSetDoesNotIncludeContent},
 
-	{"ifdef with all required attributes set includes content", "asciidoctor/reader_test_ifdef_with_all_required_attributes_set_includes_content.adoc", readerTestIfdefWithAllRequiredAttributesSetIncludesContent, nil},
+	{"ifdef with all required attributes set includes content", "asciidoctor/reader_test_ifdef_with_all_required_attributes_set_includes_content.adoc", readerTestIfdefWithAllRequiredAttributesSetIncludesContent},
 
-	{"ifdef with missing required attributes does not include content", "asciidoctor/reader_test_ifdef_with_missing_required_attributes_does_not_include_content.adoc", readerTestIfdefWithMissingRequiredAttributesDoesNotIncludeContent, nil},
+	{"ifdef with missing required attributes does not include content", "asciidoctor/reader_test_ifdef_with_missing_required_attributes_does_not_include_content.adoc", readerTestIfdefWithMissingRequiredAttributesDoesNotIncludeContent},
 
-	{"ifndef with undefined attribute includes block", "asciidoctor/reader_test_ifndef_with_undefined_attribute_includes_block.adoc", readerTestIfndefWithUndefinedAttributeIncludesBlock, nil},
+	{"ifndef with undefined attribute includes block", "asciidoctor/reader_test_ifndef_with_undefined_attribute_includes_block.adoc", readerTestIfndefWithUndefinedAttributeIncludesBlock},
 
-	{"ifndef with one alternative attribute set does not include content", "asciidoctor/reader_test_ifndef_with_one_alternative_attribute_set_does_not_include_content.adoc", readerTestIfndefWithOneAlternativeAttributeSetDoesNotIncludeContent, nil},
+	{"ifndef with one alternative attribute set does not include content", "asciidoctor/reader_test_ifndef_with_one_alternative_attribute_set_does_not_include_content.adoc", readerTestIfndefWithOneAlternativeAttributeSetDoesNotIncludeContent},
 
-	{"ifndef with both alternative attributes set does not include content", "asciidoctor/reader_test_ifndef_with_both_alternative_attributes_set_does_not_include_content.adoc", readerTestIfndefWithBothAlternativeAttributesSetDoesNotIncludeContent, nil},
+	{"ifndef with both alternative attributes set does not include content", "asciidoctor/reader_test_ifndef_with_both_alternative_attributes_set_does_not_include_content.adoc", readerTestIfndefWithBothAlternativeAttributesSetDoesNotIncludeContent},
 
-	{"ifndef with no alternative attributes set includes content", "asciidoctor/reader_test_ifndef_with_no_alternative_attributes_set_includes_content.adoc", readerTestIfndefWithNoAlternativeAttributesSetIncludesContent, nil},
+	{"ifndef with no alternative attributes set includes content", "asciidoctor/reader_test_ifndef_with_no_alternative_attributes_set_includes_content.adoc", readerTestIfndefWithNoAlternativeAttributesSetIncludesContent},
 
-	{"ifndef with no required attributes set includes content", "asciidoctor/reader_test_ifndef_with_no_required_attributes_set_includes_content.adoc", readerTestIfndefWithNoRequiredAttributesSetIncludesContent, nil},
+	{"ifndef with no required attributes set includes content", "asciidoctor/reader_test_ifndef_with_no_required_attributes_set_includes_content.adoc", readerTestIfndefWithNoRequiredAttributesSetIncludesContent},
 
-	{"ifndef with all required attributes set does not include content", "asciidoctor/reader_test_ifndef_with_all_required_attributes_set_does_not_include_content.adoc", readerTestIfndefWithAllRequiredAttributesSetDoesNotIncludeContent, nil},
+	{"ifndef with all required attributes set does not include content", "asciidoctor/reader_test_ifndef_with_all_required_attributes_set_does_not_include_content.adoc", readerTestIfndefWithAllRequiredAttributesSetDoesNotIncludeContent},
 
-	{"ifndef with at least one required attributes set does not include content", "asciidoctor/reader_test_ifndef_with_at_least_one_required_attributes_set_does_not_include_content.adoc", readerTestIfndefWithAtLeastOneRequiredAttributesSetDoesNotIncludeContent, nil},
+	{"ifndef with at least one required attributes set does not include content", "asciidoctor/reader_test_ifndef_with_at_least_one_required_attributes_set_does_not_include_content.adoc", readerTestIfndefWithAtLeastOneRequiredAttributesSetDoesNotIncludeContent},
 
-	{"ifdef around empty line does not introduce extra line", "asciidoctor/reader_test_ifdef_around_empty_line_does_not_introduce_extra_line.adoc", readerTestIfdefAroundEmptyLineDoesNotIntroduceExtraLine, nil},
+	{"ifdef around empty line does not introduce extra line", "asciidoctor/reader_test_ifdef_around_empty_line_does_not_introduce_extra_line.adoc", readerTestIfdefAroundEmptyLineDoesNotIntroduceExtraLine},
 
-	{"should log warning if endif is mismatched", "asciidoctor/reader_test_should_log_warning_if_endif_is_mismatched.adoc", readerTestShouldLogWarningIfEndifIsMismatched, nil},
+	{"should log warning if endif is unmatched", "asciidoctor/reader_test_should_log_warning_if_endif_is_unmatched.adoc", readerTestShouldLogWarningIfEndifIsUnmatched},
 
-	{"should log warning if endif contains text", "asciidoctor/reader_test_should_log_warning_if_endif_contains_text.adoc", readerTestShouldLogWarningIfEndifContainsText, nil},
+	{"should log warning if endif is mismatched", "asciidoctor/reader_test_should_log_warning_if_endif_is_mismatched.adoc", readerTestShouldLogWarningIfEndifIsMismatched},
 
-	{"escaped ifdef is unescaped and ignored", "asciidoctor/reader_test_escaped_ifdef_is_unescaped_and_ignored.adoc", readerTestEscapedIfdefIsUnescapedAndIgnored, nil},
+	{"should log warning if endif contains text", "asciidoctor/reader_test_should_log_warning_if_endif_contains_text.adoc", readerTestShouldLogWarningIfEndifContainsText},
 
-	{"ifeval comparing missing attribute to nil includes content", "asciidoctor/reader_test_ifeval_comparing_missing_attribute_to_nil_includes_content.adoc", readerTestIfevalComparingMissingAttributeToNilIncludesContent, nil},
+	{"escaped ifdef is unescaped and ignored", "asciidoctor/reader_test_escaped_ifdef_is_unescaped_and_ignored.adoc", readerTestEscapedIfdefIsUnescapedAndIgnored},
 
-	{"ifeval comparing missing attribute to 0 drops content", "asciidoctor/reader_test_ifeval_comparing_missing_attribute_to_0_drops_content.adoc", readerTestIfevalComparingMissingAttributeTo0DropsContent, nil},
+	{"ifeval comparing missing attribute to nil includes content", "asciidoctor/reader_test_ifeval_comparing_missing_attribute_to_nil_includes_content.adoc", readerTestIfevalComparingMissingAttributeToNilIncludesContent},
 
-	{"ifeval comparing double-quoted attribute to matching string includes content", "asciidoctor/reader_test_ifeval_comparing_double_quoted_attribute_to_matching_string_includes_content.adoc", readerTestIfevalComparingDoubleQuotedAttributeToMatchingStringIncludesContent, nil},
+	{"ifeval comparing missing attribute to 0 drops content", "asciidoctor/reader_test_ifeval_comparing_missing_attribute_to_0_drops_content.adoc", readerTestIfevalComparingMissingAttributeTo0DropsContent},
 
-	{"ifeval comparing single-quoted attribute to matching string includes content", "asciidoctor/reader_test_ifeval_comparing_single_quoted_attribute_to_matching_string_includes_content.adoc", readerTestIfevalComparingSingleQuotedAttributeToMatchingStringIncludesContent, nil},
+	{"ifeval running unsupported operation on missing attribute drops content", "asciidoctor/reader_test_ifeval_running_unsupported_operation_on_missing_attribute_drops_content.adoc", readerTestIfevalRunningUnsupportedOperationOnMissingAttributeDropsContent},
 
-	{"ifeval comparing quoted attribute to non-matching string drops content", "asciidoctor/reader_test_ifeval_comparing_quoted_attribute_to_non_matching_string_drops_content.adoc", readerTestIfevalComparingQuotedAttributeToNonMatchingStringDropsContent, nil},
+	{"ifeval running invalid operation drops content", "asciidoctor/reader_test_ifeval_running_invalid_operation_drops_content.adoc", readerTestIfevalRunningInvalidOperationDropsContent},
 
-	{"ifeval comparing attribute to self includes content", "asciidoctor/reader_test_ifeval_comparing_attribute_to_self_includes_content.adoc", readerTestIfevalComparingAttributeToSelfIncludesContent, nil},
+	{"ifeval comparing double-quoted attribute to matching string includes content", "asciidoctor/reader_test_ifeval_comparing_double_quoted_attribute_to_matching_string_includes_content.adoc", readerTestIfevalComparingDoubleQuotedAttributeToMatchingStringIncludesContent},
 
-	{"ifeval matching numeric equality includes content", "asciidoctor/reader_test_ifeval_matching_numeric_equality_includes_content.adoc", readerTestIfevalMatchingNumericEqualityIncludesContent, nil},
+	{"ifeval comparing single-quoted attribute to matching string includes content", "asciidoctor/reader_test_ifeval_comparing_single_quoted_attribute_to_matching_string_includes_content.adoc", readerTestIfevalComparingSingleQuotedAttributeToMatchingStringIncludesContent},
 
-	{"should warn if ifeval has target", "asciidoctor/reader_test_should_warn_if_ifeval_has_target.adoc", readerTestShouldWarnIfIfevalHasTarget, nil},
+	{"ifeval comparing quoted attribute to non-matching string drops content", "asciidoctor/reader_test_ifeval_comparing_quoted_attribute_to_non_matching_string_drops_content.adoc", readerTestIfevalComparingQuotedAttributeToNonMatchingStringDropsContent},
 
-	{"should warn if ifeval has invalid expression", "asciidoctor/reader_test_should_warn_if_ifeval_has_invalid_expression.adoc", readerTestShouldWarnIfIfevalHasInvalidExpression, nil},
+	{"ifeval comparing attribute to lower version number includes content", "asciidoctor/reader_test_ifeval_comparing_attribute_to_lower_version_number_includes_content.adoc", readerTestIfevalComparingAttributeToLowerVersionNumberIncludesContent},
 
-	{"should warn if ifeval is missing expression", "asciidoctor/reader_test_should_warn_if_ifeval_is_missing_expression.adoc", readerTestShouldWarnIfIfevalIsMissingExpression, nil},
+	{"ifeval comparing attribute to self includes content", "asciidoctor/reader_test_ifeval_comparing_attribute_to_self_includes_content.adoc", readerTestIfevalComparingAttributeToSelfIncludesContent},
 
-	{"ifdef with no target is ignored", "asciidoctor/reader_test_ifdef_with_no_target_is_ignored.adoc", readerTestIfdefWithNoTargetIsIgnored, nil},
+	{"ifeval arguments can be transposed", "asciidoctor/reader_test_ifeval_arguments_can_be_transposed.adoc", readerTestIfevalArgumentsCanBeTransposed},
 
-	{"should not warn about invalid ifdef preprocessor directive if already skipping", "asciidoctor/reader_test_should_not_warn_about_invalid_ifdef_preprocessor_directive_if_already_skipping.adoc", readerTestShouldNotWarnAboutInvalidIfdefPreprocessorDirectiveIfAlreadySkipping, nil},
+	{"ifeval matching numeric equality includes content", "asciidoctor/reader_test_ifeval_matching_numeric_equality_includes_content.adoc", readerTestIfevalMatchingNumericEqualityIncludesContent},
 
-	{"should not warn about invalid ifeval preprocessor directive if already skipping", "asciidoctor/reader_test_should_not_warn_about_invalid_ifeval_preprocessor_directive_if_already_skipping.adoc", readerTestShouldNotWarnAboutInvalidIfevalPreprocessorDirectiveIfAlreadySkipping, nil},
+	{"ifeval matching numeric inequality includes content", "asciidoctor/reader_test_ifeval_matching_numeric_inequality_includes_content.adoc", readerTestIfevalMatchingNumericInequalityIncludesContent},
+
+	{"should warn if ifeval has target", "asciidoctor/reader_test_should_warn_if_ifeval_has_target.adoc", readerTestShouldWarnIfIfevalHasTarget},
+
+	{"should warn if ifeval has invalid expression", "asciidoctor/reader_test_should_warn_if_ifeval_has_invalid_expression.adoc", readerTestShouldWarnIfIfevalHasInvalidExpression},
+
+	{"should warn if ifeval is missing expression", "asciidoctor/reader_test_should_warn_if_ifeval_is_missing_expression.adoc", readerTestShouldWarnIfIfevalIsMissingExpression},
+
+	{"ifdef with no target is ignored", "asciidoctor/reader_test_ifdef_with_no_target_is_ignored.adoc", readerTestIfdefWithNoTargetIsIgnored},
+
+	{"should not warn about invalid ifdef preprocessor directive if already skipping", "asciidoctor/reader_test_should_not_warn_about_invalid_ifdef_preprocessor_directive_if_already_skipping.adoc", readerTestShouldNotWarnAboutInvalidIfdefPreprocessorDirectiveIfAlreadySkipping},
+
+	{"should not warn about invalid ifeval preprocessor directive if already skipping", "asciidoctor/reader_test_should_not_warn_about_invalid_ifeval_preprocessor_directive_if_already_skipping.adoc", readerTestShouldNotWarnAboutInvalidIfevalPreprocessorDirectiveIfAlreadySkipping},
 }
 
 var readerTestShouldPrepareLinesFromArrayData = &asciidoc.Document{
@@ -1722,6 +1734,7 @@ var readerTestProcessLineReturnsNilIfCursorAdvanced = &asciidoc.Document{
 				"asciidoctor",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -1747,6 +1760,7 @@ var readerTestPeekLineAdvancesCursorToNextConditionalLineOfContent = &asciidoc.D
 				"asciidoctor",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -1824,6 +1838,7 @@ var readerTestProcessLineReturnsLineIfCursorNotAdvanced = &asciidoc.Document{
 				"asciidoctor",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -1853,6 +1868,7 @@ var readerTestPeekLineDoesNotAdvanceCursorWhenOnARegularContentLine = &asciidoc.
 				"asciidoctor",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -1878,6 +1894,7 @@ var readerTestPeekLineReturnsNilIfCursorAdvancesPastEndOfSource = &asciidoc.Docu
 				"foobar",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -1902,6 +1919,7 @@ var readerTestPeekLineReturnsNilIfContentsOfSkippedConditionalIsEmptyLine = &asc
 				"foobar",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -1927,6 +1945,7 @@ var readerTestIfdefWithDefinedAttributeIncludesContent = &asciidoc.Document{
 				"holygrail",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -1972,6 +1991,7 @@ var readerTestIfdefAttributeNameIsNotCaseSensitive = &asciidoc.Document{
 				"showScript",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -2028,6 +2048,7 @@ var readerTestIncludeWithNonMatchingNestedExclude = &asciidoc.Document{
 				"swallow",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 		&asciidoc.String{
 			Value: "grail",
@@ -2038,6 +2059,7 @@ var readerTestIncludeWithNonMatchingNestedExclude = &asciidoc.Document{
 				"grail",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -2070,12 +2092,14 @@ var readerTestNestedExcludesWithSameCondition = &asciidoc.Document{
 				"grail",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 		&asciidoc.EndIf{
 			Attributes: asciidoc.AttributeNames{
 				"grail",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -2112,6 +2136,7 @@ var readerTestIncludeWithNestedExcludeOfInvertedCondition = &asciidoc.Document{
 				"grail",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 		&asciidoc.String{
 			Value: "grail",
@@ -2122,6 +2147,7 @@ var readerTestIncludeWithNestedExcludeOfInvertedCondition = &asciidoc.Document{
 				"grail",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -2162,6 +2188,7 @@ var readerTestExcludeWithMatchingNestedExclude = &asciidoc.Document{
 				"swallow",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 		&asciidoc.String{
 			Value: "here",
@@ -2172,6 +2199,7 @@ var readerTestExcludeWithMatchingNestedExclude = &asciidoc.Document{
 				"swallow",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 		&asciidoc.String{
 			Value: "gone",
@@ -2214,6 +2242,7 @@ var readerTestExcludeWithNestedIncludeUsingShorthandEnd = &asciidoc.Document{
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
+			Open:       nil,
 		},
 		&asciidoc.String{
 			Value: "in here",
@@ -2222,6 +2251,7 @@ var readerTestExcludeWithNestedIncludeUsingShorthandEnd = &asciidoc.Document{
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
+			Open:       nil,
 		},
 		&asciidoc.String{
 			Value: "gone",
@@ -2253,6 +2283,7 @@ var readerTestIfdefWithOneAlternativeAttributeSetIncludesContent = &asciidoc.Doc
 				"swallow",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -2280,6 +2311,7 @@ var readerTestIfdefWithNoAlternativeAttributesSetDoesNotIncludeContent = &asciid
 				"swallow",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -2345,6 +2377,7 @@ var readerTestIfndefWithUndefinedAttributeIncludesBlock = &asciidoc.Document{
 				"holygrail",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -2372,6 +2405,7 @@ var readerTestIfndefWithOneAlternativeAttributeSetDoesNotIncludeContent = &ascii
 				"swallow",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -2399,6 +2433,7 @@ var readerTestIfndefWithBothAlternativeAttributesSetDoesNotIncludeContent = &asc
 				"swallow",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -2426,6 +2461,7 @@ var readerTestIfndefWithNoAlternativeAttributesSetIncludesContent = &asciidoc.Do
 				"swallow",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -2512,11 +2548,31 @@ var readerTestIfdefAroundEmptyLineDoesNotIntroduceExtraLine = &asciidoc.Document
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
+			Open:       nil,
 		},
 		&asciidoc.String{
 			Value: "after",
 		},
 		&asciidoc.NewLine{},
+	},
+}
+
+var readerTestShouldLogWarningIfEndifIsUnmatched = &asciidoc.Document{
+	Elements: asciidoc.Elements{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.String{
+			Value: "Our quest is complete!",
+		},
+		&asciidoc.NewLine{},
+		&asciidoc.EndIf{
+			Attributes: asciidoc.AttributeNames{
+				"on-quest",
+			},
+			Union: 0,
+			Open:  nil,
+		},
 	},
 }
 
@@ -2541,6 +2597,7 @@ var readerTestShouldLogWarningIfEndifIsMismatched = &asciidoc.Document{
 				"on-journey",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }
@@ -2616,6 +2673,7 @@ var readerTestIfevalComparingMissingAttributeToNilIncludesContent = &asciidoc.Do
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
+			Open:       nil,
 		},
 	},
 }
@@ -2655,6 +2713,61 @@ var readerTestIfevalComparingMissingAttributeTo0DropsContent = &asciidoc.Documen
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
+			Open:       nil,
+		},
+	},
+}
+
+var readerTestIfevalRunningUnsupportedOperationOnMissingAttributeDropsContent = &asciidoc.Document{
+	Elements: asciidoc.Elements{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.String{
+			Value: "ifeval::[",
+		},
+		&asciidoc.UserAttributeReference{
+			Value: "leveloffset",
+		},
+		&asciidoc.String{
+			Value: " >= 3]",
+		},
+		&asciidoc.NewLine{},
+		&asciidoc.String{
+			Value: "I didn't make the cut!",
+		},
+		&asciidoc.NewLine{},
+		&asciidoc.EndIf{
+			Attributes: nil,
+			Union:      0,
+			Open:       nil,
+		},
+	},
+}
+
+var readerTestIfevalRunningInvalidOperationDropsContent = &asciidoc.Document{
+	Elements: asciidoc.Elements{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.String{
+			Value: "ifeval::[",
+		},
+		&asciidoc.UserAttributeReference{
+			Value: "asciidoctor-version",
+		},
+		&asciidoc.String{
+			Value: " > true]",
+		},
+		&asciidoc.NewLine{},
+		&asciidoc.String{
+			Value: "I didn't make the cut!",
+		},
+		&asciidoc.NewLine{},
+		&asciidoc.EndIf{
+			Attributes: nil,
+			Union:      0,
+			Open:       nil,
 		},
 	},
 }
@@ -2691,6 +2804,7 @@ var readerTestIfevalComparingDoubleQuotedAttributeToMatchingStringIncludesConten
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
+			Open:       nil,
 		},
 	},
 }
@@ -2727,6 +2841,7 @@ var readerTestIfevalComparingSingleQuotedAttributeToMatchingStringIncludesConten
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
+			Open:       nil,
 		},
 	},
 }
@@ -2763,6 +2878,34 @@ var readerTestIfevalComparingQuotedAttributeToNonMatchingStringDropsContent = &a
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
+			Open:       nil,
+		},
+	},
+}
+
+var readerTestIfevalComparingAttributeToLowerVersionNumberIncludesContent = &asciidoc.Document{
+	Elements: asciidoc.Elements{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.String{
+			Value: "ifeval::['",
+		},
+		&asciidoc.UserAttributeReference{
+			Value: "asciidoctor-version",
+		},
+		&asciidoc.String{
+			Value: "' >= '0.1.0']",
+		},
+		&asciidoc.NewLine{},
+		&asciidoc.String{
+			Value: "That version will do!",
+		},
+		&asciidoc.NewLine{},
+		&asciidoc.EndIf{
+			Attributes: nil,
+			Union:      0,
+			Open:       nil,
 		},
 	},
 }
@@ -2799,6 +2942,34 @@ var readerTestIfevalComparingAttributeToSelfIncludesContent = &asciidoc.Document
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
+			Open:       nil,
+		},
+	},
+}
+
+var readerTestIfevalArgumentsCanBeTransposed = &asciidoc.Document{
+	Elements: asciidoc.Elements{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.String{
+			Value: "ifeval::['0.1.0' <= '",
+		},
+		&asciidoc.UserAttributeReference{
+			Value: "asciidoctor-version",
+		},
+		&asciidoc.String{
+			Value: "']",
+		},
+		&asciidoc.NewLine{},
+		&asciidoc.String{
+			Value: "That version will do!",
+		},
+		&asciidoc.NewLine{},
+		&asciidoc.EndIf{
+			Attributes: nil,
+			Union:      0,
+			Open:       nil,
 		},
 	},
 }
@@ -2838,6 +3009,34 @@ var readerTestIfevalMatchingNumericEqualityIncludesContent = &asciidoc.Document{
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
+			Open:       nil,
+		},
+	},
+}
+
+var readerTestIfevalMatchingNumericInequalityIncludesContent = &asciidoc.Document{
+	Elements: asciidoc.Elements{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.String{
+			Value: "ifeval::[",
+		},
+		&asciidoc.UserAttributeReference{
+			Value: "rings",
+		},
+		&asciidoc.String{
+			Value: " != 0]",
+		},
+		&asciidoc.NewLine{},
+		&asciidoc.String{
+			Value: "One ring to rule them all!",
+		},
+		&asciidoc.NewLine{},
+		&asciidoc.EndIf{
+			Attributes: nil,
+			Union:      0,
+			Open:       nil,
 		},
 	},
 }
@@ -2933,6 +3132,7 @@ var readerTestShouldNotWarnAboutInvalidIfdefPreprocessorDirectiveIfAlreadySkippi
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
+			Open:       nil,
 		},
 		&asciidoc.String{
 			Value: "baz",
@@ -2968,6 +3168,7 @@ var readerTestShouldNotWarnAboutInvalidIfevalPreprocessorDirectiveIfAlreadySkipp
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
+			Open:       nil,
 		},
 		&asciidoc.String{
 			Value: "baz",

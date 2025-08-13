@@ -20,9 +20,11 @@ type DataModel struct {
 
 func (c *DataModel) Run(cc *Context) (err error) {
 
+	builderOptions := []spec.BuilderOption{spec.IgnoreHierarchy(c.IgnoreHierarchy)}
+
 	var specification *spec.Specification
 	var specDocs spec.DocSet
-	specification, specDocs, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, c.ASCIIDocAttributes.ToList())
+	specification, specDocs, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, builderOptions, c.ASCIIDocAttributes.ToList())
 
 	if err != nil {
 		return err

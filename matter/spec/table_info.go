@@ -158,7 +158,7 @@ func (ti *TableInfo) ReadNameAtOffset(row *asciidoc.TableRow, offset int) (name 
 		}
 	}
 	var value strings.Builder
-	err = readRowCellValueElements(ti.Doc, row, cellElements, &value)
+	err = readRowCellValueElements(ti.Doc, row, cell, cellElements, &value)
 	if err != nil {
 		return "", nil, err
 	}
@@ -183,7 +183,7 @@ func (ti *TableInfo) ReadValueByIndex(row *asciidoc.TableRow, offset int) (strin
 		return "", nil
 	}
 	var value strings.Builder
-	err := readRowCellValueElements(ti.Doc, row, cellElements, &value)
+	err := readRowCellValueElements(ti.Doc, row, cell, cellElements, &value)
 	if err != nil {
 		return "", err
 	}
@@ -246,7 +246,7 @@ func (ti *TableInfo) buildRowConformance(cellElements asciidoc.Elements, sb *str
 			sb.WriteString(v.Value)
 		case *asciidoc.CrossReference:
 			sb.WriteString("<<")
-			sb.WriteString(v.ID)
+			ti.buildRowConformance(v.ID, sb)
 			if !v.Elements.IsWhitespace() {
 				sb.WriteString(",")
 				ti.buildRowConformance(v.Elements, sb)
@@ -318,7 +318,7 @@ func (ti *TableInfo) buildConstraintValue(els asciidoc.Elements, sb *strings.Bui
 			sb.WriteString(v.Value)
 		case *asciidoc.CrossReference:
 			sb.WriteString("<<")
-			sb.WriteString(v.ID)
+			ti.buildConstraintValue(v.ID, sb)
 			if !v.Elements.IsWhitespace() {
 				sb.WriteString(",")
 				ti.buildConstraintValue(v.Elements, sb)
@@ -392,42 +392,41 @@ func (ti *TableInfo) ReadLocation(row *asciidoc.TableRow, columns ...matter.Tabl
 	return
 }
 
-func readRowCellValueElements(doc *Doc, row *asciidoc.TableRow, els asciidoc.Elements, value *strings.Builder) (err error) {
-	for _, el := range els {
+func readRowCellValueElements(doc *Doc, row *asciidoc.TableRow, parent asciidoc.Parent, els asciidoc.Elements, value *strings.Builder) (err error) {
+	for el := range doc.Reader().Iterate(parent, els) {
 		switch el := el.(type) {
 		case *asciidoc.String:
 			value.WriteString(el.Value)
 		case asciidoc.FormattedTextElement:
-			err = readRowCellValueElements(doc, row, el.Children(), value)
+			err = readRowCellValueElements(doc, row, el, el.Children(), value)
 		case *asciidoc.Paragraph:
-			err = readRowCellValueElements(doc, row, el.Children(), value)
+			err = readRowCellValueElements(doc, row, el, el.Children(), value)
 		case *asciidoc.CrossReference:
 			if len(el.Elements) > 0 {
-				err = readRowCellValueElements(doc, row, el.Elements, value)
+				err = readRowCellValueElements(doc, row, el, el.Elements, value)
 				if err != nil {
 					return
 				}
 			} else {
 				var val string
-				anchor := doc.FindAnchor(el.ID, el)
+				anchor := doc.FindAnchorByID(el.ID, el, el)
 				if anchor != nil {
-					val = matter.StripTypeSuffixes(ReferenceName(anchor.Element))
+					val = matter.StripTypeSuffixes(ReferenceName(doc, anchor.Element))
 				} else {
-					val = strings.TrimPrefix(el.ID, "_")
 					val = strings.TrimPrefix(val, "ref_") // Trim, and hope someone else has it defined
 				}
 				value.WriteString(val)
 			}
 		case *asciidoc.Link:
 			value.WriteString(el.URL.Scheme)
-			err = readRowCellValueElements(doc, row, el.URL.Path, value)
+			err = readRowCellValueElements(doc, row, &el.URL.Path, el.URL.Path, value)
 		case *asciidoc.LinkMacro:
 			value.WriteString(el.URL.Scheme)
-			err = readRowCellValueElements(doc, row, el.URL.Path, value)
+			err = readRowCellValueElements(doc, row, &el.URL.Path, el.URL.Path, value)
 		case *asciidoc.Superscript:
 			// In the special case of superscript elements, we do checks to make sure it's not an asterisk or a footnote, which should be ignored
 			var quotedText strings.Builder
-			err = readRowCellValueElements(doc, row, el.Children(), &quotedText)
+			err = readRowCellValueElements(doc, row, el, el.Children(), &quotedText)
 			if err != nil {
 				return
 			}
@@ -446,16 +445,16 @@ func readRowCellValueElements(doc *Doc, row *asciidoc.TableRow, els asciidoc.Ele
 			value.WriteString(el.Character)
 		case *asciidoc.InlinePassthrough:
 			value.WriteString("+")
-			err = readRowCellValueElements(doc, row, el.Children(), value)
+			err = readRowCellValueElements(doc, row, el, el.Children(), value)
 		case *asciidoc.InlineDoublePassthrough:
 			value.WriteString("++")
-			err = readRowCellValueElements(doc, row, el.Children(), value)
+			err = readRowCellValueElements(doc, row, el, el.Children(), value)
 		case *asciidoc.ThematicBreak:
 		case *asciidoc.EmptyLine:
 		case *asciidoc.NewLine:
 			value.WriteString(" ")
 		case asciidoc.ParentElement:
-			err = readRowCellValueElements(doc, row, el.Children(), value)
+			err = readRowCellValueElements(doc, row, el, el.Children(), value)
 		case *asciidoc.LineBreak:
 			value.WriteString(" ")
 		default:
@@ -472,11 +471,20 @@ var listDataTypeDefinitionPattern = regexp.MustCompile(`(?:list|List|DataTypeLis
 var listDataTypeEntryPattern = regexp.MustCompile(`\[([^]]+)]`)
 var asteriskPattern = regexp.MustCompile(`\^[0-9]+\^\s*$`)
 
-func crossReferenceToDataType(cr *asciidoc.CrossReference, isArray bool) *types.DataType {
+func crossReferenceToDataType(doc *Doc, cr *asciidoc.CrossReference, isArray bool) *types.DataType {
 	var dt *types.DataType
-	id := cr.ID
+	id := doc.anchorId(doc.Reader(), cr, cr, cr.ID)
 	if len(cr.Elements) > 0 {
-		id = strings.TrimSpace(asciidoc.AttributeAsciiDocString(cr.Elements))
+		var label strings.Builder
+		for el := range doc.Reader().Iterate(cr, cr.Children()) {
+			switch el := el.(type) {
+			case *asciidoc.String:
+				label.WriteString(el.Value)
+			default:
+				slog.Warn("unexpected type in cross reference label", log.Type("type", el), log.Path("source", cr))
+			}
+		}
+		id = strings.TrimSpace(label.String())
 	}
 	id = strings.TrimPrefix(id, "ref_")
 	id = strings.TrimPrefix(id, "DataType")
@@ -510,9 +518,9 @@ func crossReferenceToDataType(cr *asciidoc.CrossReference, isArray bool) *types.
 	return dt
 }
 
-type dataTypePattern func(row *asciidoc.TableRow, elements []asciidoc.Element) (*types.DataType, bool)
+type dataTypePattern func(doc *Doc, row *asciidoc.TableRow, elements []asciidoc.Element) (*types.DataType, bool)
 
-func simpleDataTypePattern(row *asciidoc.TableRow, elements []asciidoc.Element) (dt *types.DataType, empty bool) {
+func simpleDataTypePattern(doc *Doc, row *asciidoc.TableRow, elements []asciidoc.Element) (dt *types.DataType, empty bool) {
 	if len(elements) != 1 {
 		return
 	}
@@ -538,14 +546,14 @@ func simpleDataTypePattern(row *asciidoc.TableRow, elements []asciidoc.Element) 
 			slog.Warn("unable to parse data type", slog.String("dataType", el.Value), log.Path("source", row))
 		}
 	case *asciidoc.CrossReference:
-		dt = crossReferenceToDataType(el, false)
+		dt = crossReferenceToDataType(doc, el, false)
 	default:
 		slog.Warn("unexpected type in data type cell", log.Type("type", el), log.Path("source", row))
 	}
 	return
 }
 
-func listDataTypePattern(row *asciidoc.TableRow, elements []asciidoc.Element) (dt *types.DataType, empty bool) {
+func listDataTypePattern(doc *Doc, row *asciidoc.TableRow, elements []asciidoc.Element) (dt *types.DataType, empty bool) {
 	switch len(elements) {
 	case 2:
 		listTypeElement, ok := elements[0].(*asciidoc.CrossReference)
@@ -553,9 +561,9 @@ func listDataTypePattern(row *asciidoc.TableRow, elements []asciidoc.Element) (d
 			slog.Warn("unexpected type in list data type cell", log.Type("type", elements[1]), log.Path("source", row))
 			return
 		}
-		listType := crossReferenceToDataType(listTypeElement, false)
+		listType := crossReferenceToDataType(doc, listTypeElement, false)
 		if !listType.IsArray() {
-			slog.Warn("unexpected non-list type in list data type cell", slog.String("listType", listType.Name), slog.String("id", listTypeElement.ID), log.Type("type", elements[0]), log.Path("source", row))
+			slog.Warn("unexpected non-list type in list data type cell", slog.String("listType", listType.Name), slog.Any("id", listTypeElement.ID), log.Type("type", elements[0]), log.Path("source", row))
 			return
 		}
 		switch el := elements[1].(type) {
@@ -588,7 +596,7 @@ func listDataTypePattern(row *asciidoc.TableRow, elements []asciidoc.Element) (d
 		case *asciidoc.String:
 			dt = types.ParseDataType(el.Value, true)
 		case *asciidoc.CrossReference:
-			return crossReferenceToDataType(el, true), false
+			return crossReferenceToDataType(doc, el, true), false
 		default:
 			slog.Warn("unexpected type in list data type cell", log.Type("type", el), log.Path("source", row))
 		}
@@ -604,9 +612,9 @@ func listDataTypePattern(row *asciidoc.TableRow, elements []asciidoc.Element) (d
 			slog.Warn("unexpected type in list data type cell", log.Type("type", elements[1]), log.Path("source", row))
 			return
 		}
-		listType := crossReferenceToDataType(listTypeElement, false)
+		listType := crossReferenceToDataType(doc, listTypeElement, false)
 		if !listType.IsArray() {
-			slog.Warn("unexpected non-list type in list data type cell", slog.String("listType", listType.Name), slog.String("id", listTypeElement.ID), log.Type("type", elements[0]), log.Path("source", row))
+			slog.Warn("unexpected non-list type in list data type cell", slog.String("listType", listType.Name), slog.Any("id", listTypeElement.ID), log.Type("type", elements[0]), log.Path("source", row))
 			return
 		}
 
@@ -614,7 +622,7 @@ func listDataTypePattern(row *asciidoc.TableRow, elements []asciidoc.Element) (d
 		case *asciidoc.String:
 			dt = types.ParseDataType(el.Value, true)
 		case *asciidoc.CrossReference:
-			listType.EntryType = crossReferenceToDataType(el, false)
+			listType.EntryType = crossReferenceToDataType(doc, el, false)
 			dt = listType
 		default:
 			slog.Warn("unexpected type in list data type cell", log.Type("type", elements[2]), log.Path("source", row))
@@ -635,7 +643,7 @@ func (ti *TableInfo) ReadDataType(row *asciidoc.TableRow, column matter.TableCol
 		return nil, newGenericParseError(row, "missing %s column for data type", column)
 	}
 	cell := row.Cell(i)
-	cellElements := cell.Children()
+	cellElements := ti.Doc.Reader().Iterate(cell, cell.Children()).List()
 
 	if len(cellElements) == 0 {
 		return nil, newGenericParseError(row, "empty %s cell for data type", column)
@@ -645,7 +653,7 @@ func (ti *TableInfo) ReadDataType(row *asciidoc.TableRow, column matter.TableCol
 	var dataTypePatterns = []dataTypePattern{simpleDataTypePattern, listDataTypePattern}
 	for _, pattern := range dataTypePatterns {
 		var empty bool
-		dt, empty = pattern(row, cellElements)
+		dt, empty = pattern(ti.Doc, row, cellElements)
 		if dt != nil || empty {
 			return dt, nil
 		}
@@ -665,17 +673,17 @@ func buildDataTypeString(d *Doc, cellElements asciidoc.Elements, sb *strings.Bui
 				buildDataTypeString(d, v.Elements, sb)
 			} else {
 				var name string
-				anchor := d.FindAnchor(v.ID, v)
+				anchor := d.FindAnchorByID(v.ID, v, v)
 				if anchor != nil {
-					name = ReferenceName(anchor.Element)
+					name = ReferenceName(d, anchor.Element)
 					if len(name) == 0 {
 						name = asciidoc.AttributeAsciiDocString(anchor.LabelElements)
 					}
 				} else {
-					slog.Warn("data type references unknown or ambiguous anchor", slog.String("name", v.ID), log.Path("source", NewSource(d, v)))
+					slog.Warn("data type references unknown or ambiguous anchor", slog.Any("name", v.ID), log.Path("source", NewSource(d, v)))
 				}
 				if len(name) == 0 {
-					name = strings.TrimPrefix(v.ID, "_")
+					name = d.anchorId(d.Reader(), v, v, v.ID)
 				}
 				sb.WriteString(name)
 			}

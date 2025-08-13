@@ -54,11 +54,11 @@ func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []
 
 func loadSpecs(cxt context.Context, pipelineOptions pipeline.ProcessingOptions, specRoot string) (baseSpec *spec.Specification, inProgressSpec *spec.Specification, err error) {
 	parserOptions := spec.ParserOptions{Inline: true, Root: specRoot}
-	baseSpec, _, err = spec.Parse(cxt, parserOptions, pipelineOptions, []asciidoc.AttributeName{})
+	baseSpec, _, err = spec.Parse(cxt, parserOptions, pipelineOptions, nil, []asciidoc.AttributeName{})
 
 	if err != nil {
 		return
 	}
-	inProgressSpec, _, err = spec.Parse(cxt, parserOptions, pipelineOptions, []asciidoc.AttributeName{"in-progress"})
+	inProgressSpec, _, err = spec.Parse(cxt, parserOptions, pipelineOptions, nil, []asciidoc.AttributeName{"in-progress"})
 	return
 }

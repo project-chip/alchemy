@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/beevik/etree"
-	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/vcs"
@@ -21,7 +20,6 @@ import (
 type TemplateGenerator struct {
 	spec        *spec.Specification
 	pipeline    pipeline.ProcessingOptions
-	attributes  []asciidoc.AttributeName
 	sdkRoot     string
 	specVersion string
 

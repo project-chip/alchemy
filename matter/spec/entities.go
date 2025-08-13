@@ -2,7 +2,7 @@ package spec
 
 import (
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -27,13 +27,13 @@ func (doc *Doc) parseEntities(spec *Specification) error {
 	pc := &parseContext{
 		entitiesByElement: make(map[asciidoc.Attributable][]types.Entity),
 	}
-	for top := range parse.Skim[*Section](doc.Children()) {
+	for top := range parse.Skim[*asciidoc.Section](doc.Reader(), doc, doc.Children()) {
 		err := AssignSectionTypes(doc, top)
 		if err != nil {
 			return err
 		}
 
-		err = top.toEntities(spec, doc, pc)
+		err = toEntities(spec, doc, top, pc)
 		if err != nil {
 			return err
 		}

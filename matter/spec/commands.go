@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -20,8 +20,8 @@ var parentheticalExpressionPattern = regexp.MustCompile(`\s*\([^\)]+\)$`)
 
 type commandFactory struct{}
 
-func (cf *commandFactory) New(spec *Specification, d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (*matter.Command, error) {
-	cmd := matter.NewCommand(s.Base, parent)
+func (cf *commandFactory) New(spec *Specification, d *Doc, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (*matter.Command, error) {
+	cmd := matter.NewCommand(s, parent)
 	var err error
 	cmd.ID, err = ti.ReadID(row, matter.TableColumnID)
 	if err != nil {
@@ -53,16 +53,16 @@ func (cf *commandFactory) New(spec *Specification, d *Doc, s *Section, ti *Table
 	return cmd, nil
 }
 
-func (cf *commandFactory) Details(spec *Specification, d *Doc, s *Section, pc *parseContext, c *matter.Command) (err error) {
+func (cf *commandFactory) Details(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, c *matter.Command) (err error) {
 	return readCommand(pc, spec, d, s, c)
 }
 
-func readCommand(pc *parseContext, spec *Specification, d *Doc, s *Section, c *matter.Command) (err error) {
-	c.Description = getDescription(d, c, s.Children())
+func readCommand(pc *parseContext, spec *Specification, d *Doc, s *asciidoc.Section, c *matter.Command) (err error) {
+	c.Description = getDescription(d, c, s, s.Children())
 
 	c.Name = CanonicalName(c.Name)
 
-	if d.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeCommandArguments) {
+	if d.errata.Spec.IgnoreSection(d.SectionName(s), errata.SpecPurposeCommandArguments) {
 		return
 	}
 	var ti *TableInfo
@@ -71,7 +71,7 @@ func readCommand(pc *parseContext, spec *Specification, d *Doc, s *Section, c *m
 		if err == ErrNoTableFound {
 			err = nil
 		} else {
-			slog.Warn("No valid command parameter table found", log.Element("source", d.Path, s.Base), "command", c.Name)
+			slog.Warn("No valid command parameter table found", log.Element("source", d.Path, s), "command", c.Name)
 			err = nil
 		}
 		return
@@ -81,22 +81,22 @@ func readCommand(pc *parseContext, spec *Specification, d *Doc, s *Section, c *m
 	if err != nil {
 		return
 	}
-	err = s.mapFields(fieldMap, pc)
+	err = mapFields(d, s, fieldMap, pc)
 	if err != nil {
 		return
 	}
 	return
 }
 
-func (cf *commandFactory) EntityName(s *Section) string {
-	name := strings.ToLower(text.TrimCaseInsensitiveSuffix(s.Name, " Command"))
+func (cf *commandFactory) EntityName(doc *Doc, s *asciidoc.Section) string {
+	name := strings.ToLower(text.TrimCaseInsensitiveSuffix(doc.SectionName(s), " Command"))
 	return parentheticalExpressionPattern.ReplaceAllString(name, "")
 }
 
-func (cf *commandFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
-	return func(yield func(*Section) bool) {
-		parse.SkimFunc(s.Children(), func(s *Section) bool {
-			if s.SecType != matter.SectionCommand {
+func (cf *commandFactory) Children(d *Doc, s *asciidoc.Section) iter.Seq[*asciidoc.Section] {
+	return func(yield func(*asciidoc.Section) bool) {
+		parse.SkimFunc(d.Reader(), s, s.Children(), func(s *asciidoc.Section) bool {
+			if d.SectionType(s) != matter.SectionCommand {
 				return false
 			}
 			return !yield(s)
@@ -104,9 +104,9 @@ func (cf *commandFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
 	}
 }
 
-func (s *Section) toCommands(spec *Specification, d *Doc, pc *parseContext, parent types.Entity) (commands matter.CommandSet, err error) {
+func toCommands(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) (commands matter.CommandSet, err error) {
 
-	t := FindFirstTable(s)
+	t := FindFirstTable(d, s)
 	if t == nil {
 		return nil, nil
 	}

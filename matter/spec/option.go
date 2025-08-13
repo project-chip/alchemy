@@ -19,6 +19,11 @@ type BuilderOptions struct {
 	IgnoreHierarchy bool `default:"false" help:"ignore hierarchy" group:"Spec:"`
 }
 
+func (bo BuilderOptions) List() (options []BuilderOption) {
+	options = append(options, IgnoreHierarchy(bo.IgnoreHierarchy))
+	return
+}
+
 type ParserOptions struct {
 	Root   string `name:"spec-root" default:"connectedhomeip-spec" aliases:"specRoot" help:"the src root of your clone of CHIP-Specifications/connectedhomeip-spec"  group:"Spec:"`
 	Inline bool   `default:"true" help:"use inline parser"  group:"Spec:" hidden:""`

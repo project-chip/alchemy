@@ -296,7 +296,11 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 								},
 								&asciidoc.CrossReference{
 									Elements: nil,
-									ID:       "ref_Ref",
+									ID: asciidoc.Elements{
+										&asciidoc.String{
+											Value: "ref_Ref",
+										},
+									},
 								},
 							},
 							Blank: false,

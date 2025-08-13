@@ -21,7 +21,7 @@ LineBreak = "+" AnySpaces &(EndOfLine) &{
     debugPosition(c, "checking line continuation: %v\n", c.previousRuneIsWhitespace())
     return c.previousRuneIsWhitespace(), nil
 } {
-    debug("line continuation\n")
+    debug("line break\n")
     return &asciidoc.LineBreak{}, nil
 }
 

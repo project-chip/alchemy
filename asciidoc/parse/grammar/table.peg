@@ -5,7 +5,7 @@ Table = attributes:(BlockElementAttributes)? TableStart cells:(TableElements) Ta
     if err != nil {
         return nil, err
     }
-    debugPosition(c, "TABLE: matched table row count %d\n",len(table.Set))
+    debugPosition(c, "TABLE: matched table row count %d\n",len(table.Elements))
     return compose(c, table)
 }
 
@@ -246,6 +246,15 @@ InlineTableElements = ValidTableCellPrefix content:(InlineTableElement)+
 }
 
 InlineTableElement = ValidTableCellPrefix  element:(
+   FormattedText /
+    Icon / 
+    InlineImage / 
+    Link /
+    Anchor /  
+    CrossReference /
+    AttributeReference /
+    LineBreak /
+    InlineTableCellSpaces / 
     NakedInlineTableCellText /
     CharacterClassTableCell 
     )  {
@@ -264,10 +273,16 @@ NakedInlineTableCellText = (!URLScheme !LinkMacro !InlineImageDelimiter !CrossRe
     return asciidoc.NewString(string(c.text)), nil
 }
 
-CharacterClassTableCell = ("\\|" / [^|\r\n])  {
+InlineTableCellSpaces = (_ !TableCellDelimiter)+ {
+    debugPosition(c, "TABLE: matched inline table cell spaces: %s\n", string(c.text))
+    return asciidoc.NewString(string(c.text)), nil
+}
+
+CharacterClassTableCell = !TableCellDelimiter ("\\|" / [^|\r\n])  {
     debugPosition(c, "TABLE: matched table cell character: \"%s\"\n", string(c.text))
     return string(c.text), nil
 }
+
 
 // First table cell format in a row just needs to follow a new line
 InitialTableCellDelimiter = !TableEnd (BeginningOfFile / NewLine) AnySpaces format:(TableCellFormat)? !"\\" "|"  {

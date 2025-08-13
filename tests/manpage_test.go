@@ -12,19 +12,19 @@ func TestManpage(t *testing.T) {
 
 var manpageTests = parseTests{
 
-	{"should set proper manpage-related attributes", "asciidoctor/manpage_test_should_set_proper_manpage_related_attributes.adoc", manpageTestShouldSetProperManpageRelatedAttributes, nil},
+	{"should set proper manpage-related attributes", "asciidoctor/manpage_test_should_set_proper_manpage_related_attributes.adoc", manpageTestShouldSetProperManpageRelatedAttributes},
 
-	{"should substitute attributes in manname and manpurpose in NAME section", "asciidoctor/manpage_test_should_substitute_attributes_in_manname_and_manpurpose_in_name_section.adoc", manpageTestShouldSubstituteAttributesInMannameAndManpurposeInNameSection, nil},
+	{"should substitute attributes in manname and manpurpose in NAME section", "asciidoctor/manpage_test_should_substitute_attributes_in_manname_and_manpurpose_in_name_section.adoc", manpageTestShouldSubstituteAttributesInMannameAndManpurposeInNameSection},
 
-	{"should not parse NAME section if manname and manpurpose attributes are set", "asciidoctor/manpage_test_should_not_parse_name_section_if_manname_and_manpurpose_attributes_are_set.adoc", manpageTestShouldNotParseNameSectionIfMannameAndManpurposeAttributesAreSet, nil},
+	{"should not parse NAME section if manname and manpurpose attributes are set", "asciidoctor/manpage_test_should_not_parse_name_section_if_manname_and_manpurpose_attributes_are_set.adoc", manpageTestShouldNotParseNameSectionIfMannameAndManpurposeAttributesAreSet},
 
-	{"should normalize whitespace and skip line comments before and inside NAME section", "asciidoctor/manpage_test_should_normalize_whitespace_and_skip_line_comments_before_and_inside_name_section.adoc", manpageTestShouldNormalizeWhitespaceAndSkipLineCommentsBeforeAndInsideNameSection, nil},
+	{"should normalize whitespace and skip line comments before and inside NAME section", "asciidoctor/manpage_test_should_normalize_whitespace_and_skip_line_comments_before_and_inside_name_section.adoc", manpageTestShouldNormalizeWhitespaceAndSkipLineCommentsBeforeAndInsideNameSection},
 
-	{"should parse malformed document with warnings", "asciidoctor/manpage_test_should_parse_malformed_document_with_warnings.adoc", manpageTestShouldParseMalformedDocumentWithWarnings, nil},
+	{"should parse malformed document with warnings", "asciidoctor/manpage_test_should_parse_malformed_document_with_warnings.adoc", manpageTestShouldParseMalformedDocumentWithWarnings},
 
-	{"should warn if first section is not name section", "asciidoctor/manpage_test_should_warn_if_first_section_is_not_name_section.adoc", manpageTestShouldWarnIfFirstSectionIsNotNameSection, nil},
+	{"should warn if first section is not name section", "asciidoctor/manpage_test_should_warn_if_first_section_is_not_name_section.adoc", manpageTestShouldWarnIfFirstSectionIsNotNameSection},
 
-	{"should preserve hard line breaks in verse block", "asciidoctor/manpage_test_should_preserve_hard_line_breaks_in_verse_block.adoc", manpageTestShouldPreserveHardLineBreaksInVerseBlock, nil},
+	{"should preserve hard line breaks in verse block", "asciidoctor/manpage_test_should_preserve_hard_line_breaks_in_verse_block.adoc", manpageTestShouldPreserveHardLineBreaksInVerseBlock},
 }
 
 var manpageTestShouldSetProperManpageRelatedAttributes = &asciidoc.Document{

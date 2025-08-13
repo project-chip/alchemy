@@ -11,26 +11,26 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 )
 
-func File(path string) (*asciidoc.Document, error) {
+func File(path string, opts ...Option) (*asciidoc.Document, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		slog.Error("error reading file for parse", slog.String("path", path), slog.Any("error", err))
 		return nil, err
 	}
-	return Reader(path, file)
+	return Reader(path, file, opts...)
 }
 
-func Reader(path string, reader io.Reader) (*asciidoc.Document, error) {
+func Reader(path string, reader io.Reader, opts ...Option) (*asciidoc.Document, error) {
 	b, err := io.ReadAll(reader)
 	if err != nil {
 		return nil, err
 	}
-	return Bytes(path, b)
+	return Bytes(path, b, opts...)
 }
 
-func Bytes(path string, b []byte) (*asciidoc.Document, error) {
+func Bytes(path string, b []byte, opts ...Option) (*asciidoc.Document, error) {
 	start := time.Now()
-	vals, err := Parse(path, b)
+	vals, err := Parse(path, b, opts...)
 	if err != nil {
 		slog.Error("error parsing file", slog.String("path", path), slog.Any("error", err))
 		return nil, err

@@ -6,16 +6,16 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/asciidoc/render"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
 )
 
 var ErrNoTableFound = fmt.Errorf("no table found")
 var ErrNotEnoughRowsInTable = fmt.Errorf("not enough value rows in table")
 
-func parseFirstTable(doc *Doc, section *Section) (ti *TableInfo, err error) {
-	t := FindFirstTable(section)
+func parseFirstTable(doc *Doc, section *asciidoc.Section) (ti *TableInfo, err error) {
+	t := FindFirstTable(doc, section)
 	if t == nil {
 		err = ErrNoTableFound
 		return
@@ -23,7 +23,7 @@ func parseFirstTable(doc *Doc, section *Section) (ti *TableInfo, err error) {
 	return parseTable(doc, section, t)
 }
 
-func parseTable(doc *Doc, section *Section, t *asciidoc.Table) (ti *TableInfo, err error) {
+func parseTable(doc *Doc, section *asciidoc.Section, t *asciidoc.Table) (ti *TableInfo, err error) {
 
 	ti, err = ReadTable(doc, t)
 	if err != nil {
@@ -40,9 +40,9 @@ func parseTable(doc *Doc, section *Section, t *asciidoc.Table) (ti *TableInfo, e
 	return
 }
 
-func FindFirstTable(section *Section) *asciidoc.Table {
+func FindFirstTable(doc *Doc, section *asciidoc.Section) *asciidoc.Table {
 	var table *asciidoc.Table
-	parse.SkimFunc(section.Children(), func(t *asciidoc.Table) bool {
+	parse.SkimFunc(doc.Reader(), section, section.Children(), func(t *asciidoc.Table) bool {
 		table = t
 		return true
 	})
@@ -63,12 +63,13 @@ func RenderTableCell(cell *asciidoc.TableCell) (string, error) {
 }
 
 func (d *Doc) GetHeaderCellString(cell *asciidoc.TableCell) (string, error) {
+
 	cellElements := cell.Children()
-	if len(cellElements) == 0 {
+	if d.Reader().Iterate(cell, cell.Children()).Count() == 0 {
 		return "", nil
 	}
 	var v strings.Builder
-	err := readRowCellValueElements(d, cell.Parent, cellElements, &v)
+	err := readRowCellValueElements(d, cell.Parent, cell, cellElements, &v)
 	if err != nil {
 		return "", newGenericParseError(cell, "error reading table header cell: %w", err)
 	}
@@ -76,7 +77,7 @@ func (d *Doc) GetHeaderCellString(cell *asciidoc.TableCell) (string, error) {
 }
 
 func ReadTable(doc *Doc, table *asciidoc.Table) (ti *TableInfo, err error) {
-	ti = &TableInfo{Doc: doc, Element: table, Rows: table.TableRows()}
+	ti = &TableInfo{Doc: doc, Element: table, Rows: table.TableRows(doc.Reader())}
 	ti.HeaderRowIndex, ti.ColumnMap, ti.ExtraColumns, err = mapTableColumns(doc, ti.Rows)
 	return
 }

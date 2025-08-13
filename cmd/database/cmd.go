@@ -9,7 +9,6 @@ import (
 	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/db"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 )
@@ -26,26 +25,12 @@ type Command struct {
 }
 
 func (cmd *Command) Run(cc *cli.Context) (err error) {
-	specParser, err := spec.NewParser(cmd.ASCIIDocAttributes.ToList(), cmd.ParserOptions)
-	if err != nil {
-		return err
-	}
 
-	errata.LoadErrataConfig(cmd.ParserOptions.Root)
-
-	specPaths, err := pipeline.Start(cc, specParser.Targets)
+	var specDocs spec.DocSet
+	var specification *spec.Specification
+	specification, specDocs, err = spec.Parse(cc, cmd.ParserOptions, cmd.ProcessingOptions, cmd.BuilderOptions.List(), cmd.ASCIIDocAttributes.ToList())
 	if err != nil {
-		return err
-	}
-
-	specDocs, err := pipeline.Parallel(cc, cmd.ProcessingOptions, specParser, specPaths)
-	if err != nil {
-		return err
-	}
-	specBuilder := spec.NewBuilder(cmd.ParserOptions.Root, spec.IgnoreHierarchy(cmd.IgnoreHierarchy))
-	specDocs, err = pipeline.Collective(cc, cmd.ProcessingOptions, &specBuilder, specDocs)
-	if err != nil {
-		return err
+		return
 	}
 
 	docs := make([]*spec.Doc, 0, specDocs.Size())
@@ -58,7 +43,7 @@ func (cmd *Command) Run(cc *cli.Context) (err error) {
 	sc.SetCurrentDatabase("matter")
 
 	h := db.New()
-	err = h.Build(sc, specBuilder.Spec, docs, cmd.Raw)
+	err = h.Build(sc, specification, docs, cmd.Raw)
 	if err != nil {
 		return fmt.Errorf("error building DB: %w", err)
 	}

@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -13,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toFeatures(d *Doc, pc *parseContext) (features *matter.Features, err error) {
+func toFeatures(d *Doc, s *asciidoc.Section, pc *parseContext) (features *matter.Features, err error) {
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
@@ -24,7 +25,7 @@ func (s *Section) toFeatures(d *Doc, pc *parseContext) (features *matter.Feature
 		return nil, fmt.Errorf("failed reading features: %w", err)
 
 	}
-	features = matter.NewFeatures(s.Base, nil)
+	features = matter.NewFeatures(s, nil)
 	featureMap := make(map[string]*matter.Feature)
 	for row := range ti.ContentRows() {
 		var bit, code, name, summary string
@@ -63,18 +64,18 @@ func (s *Section) toFeatures(d *Doc, pc *parseContext) (features *matter.Feature
 		featureMap[name] = f
 	}
 
-	for s := range parse.Skim[*Section](s.Children()) {
-		switch s.SecType {
+	for s := range parse.Skim[*asciidoc.Section](d.Reader(), s, s.Children()) {
+		switch d.SectionType(s) {
 		case matter.SectionFeature:
 
-			name := text.TrimCaseInsensitiveSuffix(s.Name, " Feature")
+			name := text.TrimCaseInsensitiveSuffix(d.SectionName(s), " Feature")
 			a, ok := featureMap[name]
 			if !ok {
 				slog.Debug("unknown feature", "feature", name)
 				continue
 			}
 
-			pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], a)
+			pc.entitiesByElement[s] = append(pc.entitiesByElement[s], a)
 		}
 	}
 	return

@@ -17,13 +17,13 @@ type listIndex[T types.Entity] struct {
 }
 
 type entityFactory[T types.Entity] interface {
-	New(spec *Specification, d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (T, error)
-	Details(spec *Specification, d *Doc, s *Section, pc *parseContext, e T) error
-	EntityName(s *Section) string
-	Children(d *Doc, s *Section) iter.Seq[*Section]
+	New(spec *Specification, d *Doc, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (T, error)
+	Details(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, e T) error
+	EntityName(d *Doc, s *asciidoc.Section) string
+	Children(d *Doc, s *asciidoc.Section) iter.Seq[*asciidoc.Section]
 }
 
-func buildList[T types.Entity, L ~[]T](spec *Specification, d *Doc, s *Section, t *asciidoc.Table, pc *parseContext, list L, factory entityFactory[T], parent types.Entity) (L, error) {
+func buildList[T types.Entity, L ~[]T](spec *Specification, d *Doc, s *asciidoc.Section, t *asciidoc.Table, pc *parseContext, list L, factory entityFactory[T], parent types.Entity) (L, error) {
 
 	index := listIndex[T]{
 		byName:      make(map[string]T),
@@ -53,7 +53,7 @@ func buildList[T types.Entity, L ~[]T](spec *Specification, d *Doc, s *Section, 
 		list = append(list, entity)
 		index.byName[strings.ToLower(name)] = entity
 		if xref != nil {
-			anchor := d.FindAnchor(xref.ID, xref)
+			anchor := d.FindAnchorByID(xref.ID, xref, xref)
 			if anchor != nil && anchor.Element != nil {
 				index.byReference[anchor.Element] = entity
 			}
@@ -61,12 +61,12 @@ func buildList[T types.Entity, L ~[]T](spec *Specification, d *Doc, s *Section, 
 	}
 
 	for s := range factory.Children(d, s) {
-		e, ok := index.byReference[s.Base]
+		e, ok := index.byReference[s]
 		if !ok {
-			name := factory.EntityName(s)
+			name := factory.EntityName(d, s)
 			e, ok = index.byName[strings.ToLower(name)]
 			if !ok {
-				slog.Warn("unknown entity", log.Element("source", d.Path, s.Base), "entityName", s.Name)
+				slog.Warn("unknown entity", log.Element("source", d.Path, s), "entityName", s.Name())
 				continue
 			}
 		}
@@ -75,7 +75,7 @@ func buildList[T types.Entity, L ~[]T](spec *Specification, d *Doc, s *Section, 
 			return nil, err
 		}
 		pc.orderedEntities = append(pc.orderedEntities, e)
-		pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], e)
+		pc.entitiesByElement[s] = append(pc.entitiesByElement[s], e)
 	}
 	return list, nil
 }

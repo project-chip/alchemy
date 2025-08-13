@@ -3,7 +3,8 @@ package db
 import (
 	"context"
 
-	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -69,11 +70,11 @@ func (h *Host) indexClusterRevisionsModel(cluster *matter.Cluster, parent *secti
 	}
 }
 
-func (h *Host) indexCluster(cxt context.Context, doc *spec.Doc, ds *sectionInfo, top *spec.Section) error {
+func (h *Host) indexCluster(cxt context.Context, doc *spec.Doc, ds *sectionInfo, top *asciidoc.Section) error {
 	ci := &sectionInfo{id: h.nextID(clusterTable), parent: ds, values: &dbRow{}}
-	for s := range parse.Skim[*spec.Section](top.Children()) {
+	for s := range parse.Skim[*asciidoc.Section](doc.Reader(), top, top.Children()) {
 		var err error
-		switch s.SecType {
+		switch doc.SectionType(s) {
 		case matter.SectionClusterID:
 			err = appendSectionToRow(cxt, doc, s, ci.values)
 		case matter.SectionRevisionHistory:
@@ -93,9 +94,9 @@ func (h *Host) indexCluster(cxt context.Context, doc *spec.Doc, ds *sectionInfo,
 			return err
 		}
 	}
-	for s := range parse.Skim[*spec.Section](top.Children()) {
+	for s := range parse.Skim[*asciidoc.Section](doc.Reader(), top, top.Children()) {
 		var err error
-		switch s.SecType {
+		switch doc.SectionType(s) {
 		case matter.SectionAttributes:
 			err = h.readTableSection(cxt, doc, ci, s, attributeTable)
 		}

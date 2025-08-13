@@ -1,23 +1,16 @@
 package parse
 
 import (
+	"context"
 	"fmt"
+	"strings"
+	"unicode"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/render"
 )
 
 func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
-	/*fmt.Fprintf(os.Stderr, "parseTable: %T\n", els)
-	for _, el := range els.([]any) {
-		fmt.Fprintf(os.Stderr, "\t%T\n", el)
-		switch el := el.(type) {
-		case []any:
-			for _, e := range el {
-				fmt.Fprintf(os.Stderr, "\t\t%T\n", e)
-			}
-		}
-
-	}*/
 	table = &asciidoc.Table{}
 
 	if attributes != nil {
@@ -208,7 +201,7 @@ func reparseTables(els asciidoc.Elements) (err error) {
 	for _, el := range els {
 		switch el := el.(type) {
 		case *asciidoc.Table:
-			err = reparseTable(el)
+			err = ReparseTable(el, el.Children())
 			if err != nil {
 				return
 			}
@@ -217,7 +210,7 @@ func reparseTables(els asciidoc.Elements) (err error) {
 	return
 }
 
-func reparseTable(table *asciidoc.Table) (err error) {
+func ReparseTable(table *asciidoc.Table, elements asciidoc.Elements) (err error) {
 	columnStyles := make([]asciidoc.TableCellStyle, table.ColumnCount)
 	for _, a := range table.Attributes() {
 		switch a := a.(type) {
@@ -230,7 +223,7 @@ func reparseTable(table *asciidoc.Table) (err error) {
 
 		}
 	}
-	for _, e := range table.Children() {
+	for _, e := range elements {
 		switch e := e.(type) {
 		case *asciidoc.TableRow:
 			for i, c := range e.TableCells() {
@@ -248,7 +241,12 @@ func reparseTable(table *asciidoc.Table) (err error) {
 					err = parseBlockCell(c)
 				case asciidoc.TableCellStyleLiteral: // Leave the strings alone for a literal cell
 				default:
-					err = parseInlineCell(c)
+					var tcels asciidoc.Elements
+					tcels, err = trimCell(c)
+					if err != nil {
+						return
+					}
+					c.SetChildren(tcels)
 				}
 				if err != nil {
 					return
@@ -259,6 +257,7 @@ func reparseTable(table *asciidoc.Table) (err error) {
 	return
 }
 
+/*
 func parseInlineCell(tc *asciidoc.TableCell) error {
 	val, err := renderPreParsedDoc(tc.Children())
 	if err != nil {
@@ -291,16 +290,19 @@ func parseInlineCell(tc *asciidoc.TableCell) error {
 
 	tc.SetChildren(els)
 	return nil
-}
+}*/
 
 func parseBlockCell(tc *asciidoc.TableCell) error {
-	val, err := renderPreParsedDoc(tc.Children())
+	out := render.NewUnwrappedTarget(context.Background())
+	err := render.Elements(out, "", tc.Children()...)
 	if err != nil {
 		return err
 	}
+	val := out.String()
 	if val == "" {
 		return nil
 	}
+
 	line, col, offset := tc.Position()
 	col++
 	vals, err := Parse(tc.Path(), []byte(val), initialPosition(line, col, offset))
@@ -323,4 +325,40 @@ func parseBlockCell(tc *asciidoc.TableCell) error {
 	}
 	tc.SetChildren(els)
 	return nil
+}
+
+func trimCell(tc *asciidoc.TableCell) (els asciidoc.Elements, err error) {
+	els = tc.Children()
+	leftIndex := 0
+	rightIndex := len(els) - 1
+	switch len(els) {
+	case 0:
+	case 1:
+		switch e := els[0].(type) {
+		case *asciidoc.String:
+			e.Value = strings.TrimSpace(e.Value)
+		}
+	default:
+		switch e := els[leftIndex].(type) {
+		case *asciidoc.String:
+			e.Value = strings.TrimLeftFunc(e.Value, unicode.IsSpace)
+			if len(e.Value) == 0 {
+				leftIndex = 1
+			}
+		}
+		switch e := els[rightIndex].(type) {
+		case *asciidoc.String:
+			e.Value = strings.TrimRightFunc(e.Value, unicode.IsSpace)
+			if len(e.Value) == 0 {
+				rightIndex -= 1
+			}
+		}
+	}
+	if leftIndex == 0 && rightIndex == len(els)-1 {
+		return
+	}
+
+	els = els[leftIndex : rightIndex+1]
+
+	return
 }

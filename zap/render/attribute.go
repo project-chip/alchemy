@@ -94,7 +94,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	cr.elementMap[ae] = attribute
 	patchNumberAttribute(ae, attribute.ID, "code")
 	ae.CreateAttr("side", "server")
-	xml.PrependAttribute(ae, "name", attribute.Name, "side", "code")
+	xml.PrependAttribute(ae, "name", cr.configurator.Errata.OverrideName(attribute, attribute.Name), "side", "code")
 	xml.RemoveElements(ae, "description")
 	define := getDefine(attribute.Name, clusterPrefix, cr.configurator.Errata)
 
@@ -202,7 +202,7 @@ func (cr *configuratorRenderer) writeAttributeDataType(x *etree.Element, fs matt
 		return
 	}
 	dts := zap.FieldToZapDataType(fs, f, cr.configurator.Errata.OverrideConstraint(f))
-	dts = cr.configurator.Errata.OverrideName(f, dts)
+	dts = cr.configurator.Errata.OverrideType(f, dts)
 	if f.Type.IsArray() {
 		x.CreateAttr("type", "array")
 		x.CreateAttr("entryType", dts)

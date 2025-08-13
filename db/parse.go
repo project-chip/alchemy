@@ -20,14 +20,14 @@ type sectionInfo struct {
 
 var errMissingTable = fmt.Errorf("no table found")
 
-func appendSectionToRow(cxt context.Context, doc *spec.Doc, section *spec.Section, row *dbRow) error {
-	t := spec.FindFirstTable(section)
+func appendSectionToRow(cxt context.Context, doc *spec.Doc, section *asciidoc.Section, row *dbRow) error {
+	t := spec.FindFirstTable(doc, section)
 	if t == nil {
 		return fmt.Errorf("no table found")
 	}
 	ti, err := spec.ReadTable(doc, t)
 	if err != nil {
-		return fmt.Errorf("failed mapping table columns for section %s: %w", section.Name, err)
+		return fmt.Errorf("failed mapping table columns for section %s: %w", doc.SectionName(section), err)
 	}
 	if len(ti.Rows) < 2 {
 		return fmt.Errorf("not enough rows in table")
@@ -46,7 +46,7 @@ func appendSectionToRow(cxt context.Context, doc *spec.Doc, section *spec.Sectio
 	return nil
 }
 
-func (h *Host) readTableSection(cxt context.Context, doc *spec.Doc, parent *sectionInfo, section *spec.Section, name string) error {
+func (h *Host) readTableSection(cxt context.Context, doc *spec.Doc, parent *sectionInfo, section *asciidoc.Section, name string) error {
 	rows, err := readTable(cxt, doc, section)
 	if err == errMissingTable {
 		return nil
@@ -64,8 +64,8 @@ func (h *Host) readTableSection(cxt context.Context, doc *spec.Doc, parent *sect
 	return nil
 }
 
-func readTable(cxt context.Context, doc *spec.Doc, section *spec.Section) (rs []*dbRow, err error) {
-	t := spec.FindFirstTable(section)
+func readTable(cxt context.Context, doc *spec.Doc, section *asciidoc.Section) (rs []*dbRow, err error) {
+	t := spec.FindFirstTable(doc, section)
 	if t == nil {
 		return nil, errMissingTable
 	}

@@ -2,7 +2,6 @@ package cli
 
 import (
 	"github.com/project-chip/alchemy/cmd/common"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 )
@@ -15,37 +14,11 @@ type Validate struct {
 
 func (c *Validate) Run(cc *Context) (err error) {
 
-	specParser, err := spec.NewParser(c.ASCIIDocAttributes.ToList(), c.ParserOptions)
-	if err != nil {
-		return err
-	}
-
-	err = errata.LoadErrataConfig(c.ParserOptions.Root)
+	var specification *spec.Specification
+	specification, _, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, nil, c.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
 	}
-
-	specPaths, err := pipeline.Start(cc, specParser.Targets)
-	if err != nil {
-		return err
-	}
-
-	specDocs, err := pipeline.Parallel(cc, c.ProcessingOptions, specParser, specPaths)
-	if err != nil {
-		return err
-	}
-
-	docGroups, err := pipeline.Collective(cc, c.ProcessingOptions, spec.NewDocumentGrouper(c.ParserOptions.Root), specDocs)
-	if err != nil {
-		return err
-	}
-
-	specBuilder := spec.NewBuilder(c.ParserOptions.Root)
-	_, err = pipeline.Collective(cc, c.ProcessingOptions, &specBuilder, docGroups)
-	if err != nil {
-		return err
-	}
-
-	spec.Validate(specBuilder.Spec)
+	spec.Validate(specification)
 	return
 }

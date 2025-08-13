@@ -28,7 +28,7 @@ func (b *Baller) organizeBitmapSection(cxt *discoContext, bms *subSection) (err 
 	b.canonicalizeDataTypeSectionName(cxt, bms.section, "Bitmap")
 	bitsTable := bms.table
 	if bitsTable == nil || bitsTable.Element == nil {
-		slog.Warn("Could not organize bitmap section, as no table of bitmap values was found", log.Path("source", bms.section.Base))
+		slog.Warn("Could not organize bitmap section, as no table of bitmap values was found", log.Path("source", bms.section))
 		return
 	}
 	if bitsTable.ColumnMap == nil {
@@ -43,12 +43,12 @@ func (b *Baller) organizeBitmapSection(cxt *discoContext, bms *subSection) (err 
 
 	err = b.renameTableHeaderCells(cxt, bms.section, bitsTable, nil)
 	if err != nil {
-		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", bms.section.Name, cxt.doc.Path, err)
+		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.doc.SectionName(bms.section), cxt.doc.Path, err)
 	}
 
 	err = b.addMissingColumns(cxt, bms.section, bitsTable, matter.Tables[matter.TableTypeBitmap], types.EntityTypeBitmapValue)
 	if err != nil {
-		return fmt.Errorf("error adding missing table columns in bitmap section %s in %s: %w", bms.section.Name, cxt.doc.Path, err)
+		return fmt.Errorf("error adding missing table columns in bitmap section %s in %s: %w", cxt.doc.SectionName(bms.section), cxt.doc.Path, err)
 	}
 
 	err = b.reorderColumns(cxt, bms.section, bitsTable, matter.TableTypeBitmap)
@@ -66,7 +66,7 @@ func (b *Baller) organizeBitmapSection(cxt *discoContext, bms *subSection) (err 
 var bitRangePattern = regexp.MustCompile(`^(?P<From>[0-9]+)(?<Separator>\.{2,}|\s*\-\s*)(?P<To>[0-9]+)$`)
 
 func (b *Baller) fixBitmapRange(cxt *discoContext, bms *subSection) {
-	if cxt.errata.IgnoreSection(bms.section.Name, errata.DiscoPurposeDataTypeBitmapFixRange) {
+	if cxt.errata.IgnoreSection(cxt.doc.SectionName(bms.section), errata.DiscoPurposeDataTypeBitmapFixRange) {
 		return
 	}
 	bitIndex, ok := bms.table.ColumnIndex(matter.TableColumnBit, matter.TableColumnValue)

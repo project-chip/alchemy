@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/errata"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -16,11 +16,12 @@ import (
 )
 
 type DataTypeEntry struct {
+	doc              *spec.Doc
 	name             string
 	ref              string
 	dataType         string
 	dataTypeCategory matter.DataTypeCategory
-	section          *spec.Section
+	section          *asciidoc.Section
 	typeCell         *asciidoc.TableCell
 	definitionTable  *asciidoc.Table
 	indexColumn      matter.TableColumn
@@ -32,15 +33,16 @@ func getExistingDataTypes(cxt *discoContext) {
 		return
 	}
 
-	for ss := range parse.FindAll[*spec.Section](cxt.parsed.dataTypes.section) {
-		name := matter.StripDataTypeSuffixes(ss.Name)
+	for ss := range parse.FindAll[*asciidoc.Section](cxt.doc.Reader(), cxt.parsed.dataTypes.section) {
+		name := matter.StripDataTypeSuffixes(cxt.doc.SectionName(ss))
 		nameKey := strings.ToLower(name)
-		dataType := ss.GetDataType()
+		dataType := spec.GetDataType(cxt.doc, ss)
 		if dataType == nil {
 			continue
 		}
 		dataTypeCategory := getDataTypeCategory(dataType.Name)
 		cxt.potentialDataTypes[nameKey] = append(cxt.potentialDataTypes[nameKey], &DataTypeEntry{
+			doc:              cxt.doc,
 			name:             name,
 			ref:              name,
 			section:          ss,
@@ -73,7 +75,7 @@ func (b *Baller) getPotentialDataTypesForSection(cxt *discoContext, ss *subSecti
 		slog.Debug("section has no table; skipping attempt to find data type", "sectionName", ss.section.Name)
 		return nil
 	}
-	if cxt.errata.IgnoreSection(ss.section.Name, errata.DiscoPurposeDataTypePromoteInline) {
+	if cxt.errata.IgnoreSection(cxt.doc.SectionName(ss.section), errata.DiscoPurposeDataTypePromoteInline) {
 		return nil
 	}
 	sectionDataMap, err := b.getDataTypes(cxt, ss.table.ColumnMap, ss.table.Rows, ss.section)
@@ -94,7 +96,7 @@ func (b *Baller) getPotentialDataTypesForSection(cxt *discoContext, ss *subSecti
 	return nil
 }
 
-func (b *Baller) getDataTypes(cxt *discoContext, columnMap spec.ColumnIndex, rows []*asciidoc.TableRow, section *spec.Section) (map[string]*DataTypeEntry, error) {
+func (b *Baller) getDataTypes(cxt *discoContext, columnMap spec.ColumnIndex, rows []*asciidoc.TableRow, section *asciidoc.Section) (map[string]*DataTypeEntry, error) {
 	sectionDataMap := make(map[string]*DataTypeEntry)
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
@@ -125,6 +127,7 @@ func (b *Baller) getDataTypes(cxt *discoContext, columnMap spec.ColumnIndex, row
 
 		if _, ok := sectionDataMap[nameKey]; !ok {
 			sectionDataMap[nameKey] = &DataTypeEntry{
+				doc:              cxt.doc,
 				name:             name,
 				ref:              name,
 				dataType:         dataType,
@@ -134,20 +137,20 @@ func (b *Baller) getDataTypes(cxt *discoContext, columnMap spec.ColumnIndex, row
 		}
 	}
 	for _, el := range section.Children() {
-		if s, ok := el.(*spec.Section); ok {
-			name := strings.TrimSpace(matter.StripReferenceSuffixes(s.Name))
+		if s, ok := el.(*asciidoc.Section); ok {
+			name := strings.TrimSpace(matter.StripReferenceSuffixes(cxt.doc.SectionName(s)))
 
 			dataType, ok := sectionDataMap[strings.ToLower(name)]
 			if !ok {
 				continue
 			}
-			table := spec.FindFirstTable(s)
+			table := spec.FindFirstTable(cxt.doc, s)
 			if table == nil {
 				continue
 			}
 			ti, err := spec.ReadTable(cxt.doc, table)
 			if err != nil {
-				return nil, fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", s.Name, err)
+				return nil, fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", cxt.doc.SectionName(s), err)
 			}
 			dataType.indexColumn = getIndexColumnType(dataType.dataTypeCategory)
 
@@ -162,7 +165,7 @@ func (b *Baller) getDataTypes(cxt *discoContext, columnMap spec.ColumnIndex, row
 	return sectionDataMap, nil
 }
 
-func (b *Baller) promoteDataTypes(cxt *discoContext, top *spec.Section) (promoted bool, err error) {
+func (b *Baller) promoteDataTypes(cxt *discoContext, top *asciidoc.Section) (promoted bool, err error) {
 	if !b.options.PromoteDataTypes {
 		return
 	}
@@ -224,11 +227,11 @@ func getDataTypeCategory(dataType string) matter.DataTypeCategory {
 	return matter.DataTypeCategoryUnknown
 }
 
-func (b *Baller) promoteDataType(cxt *discoContext, top *spec.Section, suffix string, dataTypeFields map[string]*DataTypeEntry, firstColumnType matter.TableColumn, dtc matter.DataTypeCategory) (promoted bool, err error) {
+func (b *Baller) promoteDataType(cxt *discoContext, top *asciidoc.Section, suffix string, dataTypeFields map[string]*DataTypeEntry, firstColumnType matter.TableColumn, dtc matter.DataTypeCategory) (promoted bool, err error) {
 	if dataTypeFields == nil {
 		return
 	}
-	var dataTypesSection *spec.Section
+	var dataTypesSection *asciidoc.Section
 	var entityType types.EntityType
 	switch dtc {
 	case matter.DataTypeCategoryBitmap:
@@ -246,14 +249,14 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *spec.Section, suffix st
 		if dt.section == nil {
 			continue
 		}
-		table := spec.FindFirstTable(dt.section)
+		table := spec.FindFirstTable(cxt.doc, dt.section)
 		if table == nil {
 			continue
 		}
 		var ti *spec.TableInfo
 		ti, err = spec.ReadTable(cxt.doc, table)
 		if err != nil {
-			err = fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", dt.section.Name, err)
+			err = fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", cxt.doc.SectionName(dt.section), err)
 			return
 		}
 		if valueIndex, ok := ti.ColumnMap[firstColumnType]; !ok || valueIndex > 0 {
@@ -306,14 +309,14 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *spec.Section, suffix st
 		title := asciidoc.NewString(dataTypeName + " Type")
 
 		if dataTypesSection == nil {
-			dataTypesSection, err = ensureDataTypesSection(top)
+			dataTypesSection, err = ensureDataTypesSection(cxt.doc, top)
 			if err != nil {
 				return
 			}
 		}
 
 		var removedTable bool
-		parse.Filter(dt.section, func(parent parse.HasElements, el asciidoc.Element) (remove bool, replace asciidoc.Elements, shortCircuit bool) {
+		parse.Filter(dt.section, func(parent asciidoc.Parent, el asciidoc.Element) (remove bool, replace asciidoc.Elements, shortCircuit bool) {
 			if t, ok := el.(*asciidoc.Table); ok && table == t {
 				removedTable = true
 				remove = true
@@ -328,7 +331,7 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *spec.Section, suffix st
 			return
 		}
 
-		dataTypeSection := asciidoc.NewSection(asciidoc.Elements{title}, dataTypesSection.Base.Level+1)
+		dataTypeSection := asciidoc.NewSection(asciidoc.Elements{title}, dataTypesSection.Level+1)
 
 		se := asciidoc.NewString(fmt.Sprintf("This data type is derived from %s", dt.dataType))
 		p := asciidoc.NewParagraph()
@@ -351,46 +354,35 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *spec.Section, suffix st
 
 		dataTypeSection.AppendAttribute(asciidoc.NewNamedAttribute(string(asciidoc.AttributeNameID), asciidoc.Elements{asciidoc.NewString(newID)}, asciidoc.AttributeQuoteTypeDouble))
 
-		var s *spec.Section
-		s, err = spec.NewSection(top.Doc, dataTypesSection, dataTypeSection)
-
-		if err != nil {
-			return
-		}
+		dataTypesSection.Append(dataTypeSection)
 		switch dt.dataTypeCategory {
 		case matter.DataTypeCategoryBitmap:
-			s.SecType = matter.SectionDataTypeBitmap
+			cxt.doc.SetSectionType(dataTypeSection, matter.SectionDataTypeBitmap)
 		case matter.DataTypeCategoryEnum:
-			s.SecType = matter.SectionDataTypeEnum
+			cxt.doc.SetSectionType(dataTypeSection, matter.SectionDataTypeEnum)
 		}
-
-		dataTypesSection.AppendSection(s)
 
 		table.DeleteAttribute(asciidoc.AttributeNameID)
 		table.DeleteAttribute(asciidoc.AttributeNameTitle)
 
-		icr := asciidoc.NewCrossReference(newID, asciidoc.CrossReferenceFormatNatural)
+		icr := asciidoc.NewCrossReference(asciidoc.NewStringElements(newID), asciidoc.CrossReferenceFormatNatural)
 		dt.typeCell.SetChildren(asciidoc.Elements{icr})
 		promoted = true
 	}
 	return
 }
 
-func ensureDataTypesSection(top *spec.Section) (*spec.Section, error) {
-	dataTypesSection := spec.FindSectionByType(top, matter.SectionDataTypes)
+func ensureDataTypesSection(doc *spec.Doc, top *asciidoc.Section) (*asciidoc.Section, error) {
+	dataTypesSection := spec.FindSectionByType(doc, top, matter.SectionDataTypes)
 	if dataTypesSection != nil {
 		return dataTypesSection, nil
 	}
 	title := asciidoc.NewString(matter.SectionTypeName(matter.SectionDataTypes))
 
-	ts := asciidoc.NewSection(asciidoc.Elements{title}, top.Base.Level+1)
-	ts.Append(asciidoc.NewEmptyLine(""))
-	dataTypesSection, err := spec.NewSection(top.Doc, top, ts)
-	if err != nil {
-		return nil, err
-	}
-	dataTypesSection.SecType = matter.SectionDataTypes
-	top.AppendSection(dataTypesSection)
+	dataTypesSection = asciidoc.NewSection(asciidoc.Elements{title}, top.Level+1)
+	dataTypesSection.Append(asciidoc.NewEmptyLine(""))
+	top.Append(dataTypesSection)
+	doc.SetSectionType(dataTypesSection, matter.SectionDataTypes)
 	return dataTypesSection, nil
 }
 
@@ -403,7 +395,7 @@ func disambiguateDataTypes(infos []*DataTypeEntry) error {
 		dataTypeNames[i] = info.name
 		dataTypeRefs[i] = info.ref
 	}
-	parentSections := make([]*spec.Section, len(infos))
+	parentSections := make([]*asciidoc.Section, len(infos))
 	for {
 		for i := range infos {
 			parentSection := findRefSection(parents[i])
@@ -411,7 +403,7 @@ func disambiguateDataTypes(infos []*DataTypeEntry) error {
 				return fmt.Errorf("duplicate reference: %s in %T with invalid parent", dataTypeNames[i], parents[i])
 			}
 			parentSections[i] = parentSection
-			refParentID := strings.TrimSpace(matter.StripReferenceSuffixes(spec.ReferenceName(parentSection.Base)))
+			refParentID := strings.TrimSpace(matter.StripReferenceSuffixes(spec.ReferenceName(infos[i].doc, parentSection)))
 			dataTypeNames[i] = refParentID + dataTypeNames[i]
 			dataTypeRefs[i] = refParentID + dataTypeNames[i]
 		}
@@ -440,11 +432,12 @@ func disambiguateDataTypes(infos []*DataTypeEntry) error {
 	return nil
 }
 
-func (b *Baller) canonicalizeDataTypeSectionName(cxt *discoContext, s *spec.Section, dataTypeName string) {
-	if cxt.errata.IgnoreSection(s.Name, errata.DiscoPurposeDataTypeRename) {
+func (b *Baller) canonicalizeDataTypeSectionName(cxt *discoContext, s *asciidoc.Section, dataTypeName string) {
+	name := cxt.doc.SectionName(s)
+
+	if cxt.errata.IgnoreSection(name, errata.DiscoPurposeDataTypeRename) {
 		return
 	}
-	name := s.Name
 	if text.HasCaseInsensitiveSuffix(name, dataTypeName+" type") {
 		return
 	}
@@ -460,7 +453,7 @@ func (b *Baller) canonicalizeDataTypeSectionName(cxt *discoContext, s *spec.Sect
 	if name == newName {
 		return
 	}
-	setSectionTitle(s, newName)
+	setSectionTitle(cxt.doc, s, newName)
 	oldName := text.TrimCaseInsensitiveSuffix(name, " type")
 	newName = text.TrimCaseInsensitiveSuffix(newName, " type")
 	if oldName == newName {

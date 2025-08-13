@@ -38,7 +38,7 @@ func (c *Command) Run(cc *cli.Context) (err error) {
 
 	var specDocs spec.DocSet
 	var specification *spec.Specification
-	specification, _, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, c.ASCIIDocAttributes.ToList())
+	specification, _, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, nil, c.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
 	}

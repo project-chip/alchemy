@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -98,15 +99,17 @@ func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string,
 	parent.children[tableName] = append(parent.children[tableName], sv)
 }
 
-func (h *Host) indexDataTypes(cxt context.Context, doc *spec.Doc, ds *sectionInfo, dts *spec.Section) (err error) {
+func (h *Host) indexDataTypes(cxt context.Context, doc *spec.Doc, ds *sectionInfo, dts *asciidoc.Section) (err error) {
 	if ds.children == nil {
 		ds.children = make(map[string][]*sectionInfo)
 	}
-	for s := range parse.Skim[*spec.Section](dts.Children()) {
-		switch s.SecType {
+	for s := range parse.Skim[*asciidoc.Section](doc.Reader(), dts, dts.Children()) {
+		sectionType := doc.SectionType(s)
+		sectionName := doc.SectionName(s)
+		switch sectionType {
 		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct, matter.SectionDataTypeDef:
 			var t string
-			switch s.SecType {
+			switch sectionType {
 			case matter.SectionDataTypeBitmap:
 				t = "bitmap"
 			case matter.SectionDataTypeEnum:
@@ -116,7 +119,7 @@ func (h *Host) indexDataTypes(cxt context.Context, doc *spec.Doc, ds *sectionInf
 			case matter.SectionDataTypeDef:
 				t = "typedef"
 			}
-			name := text.TrimCaseInsensitiveSuffix(s.Name, " Type")
+			name := text.TrimCaseInsensitiveSuffix(sectionName, " Type")
 			name = matter.StripDataTypeSuffixes(name)
 			ci := &sectionInfo{
 				parent: ds,
@@ -128,7 +131,7 @@ func (h *Host) indexDataTypes(cxt context.Context, doc *spec.Doc, ds *sectionInf
 				},
 				children: make(map[string][]*sectionInfo),
 			}
-			switch s.SecType {
+			switch sectionType {
 			case matter.SectionDataTypeBitmap:
 				ci.id = h.nextID(bitmapTable)
 				err = h.readTableSection(cxt, doc, ci, s, bitmapValue)

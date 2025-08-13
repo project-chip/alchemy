@@ -5,7 +5,8 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/asciidoc/parse"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 var missingSpaceAfterPunctuationPattern = regexp.MustCompile(`([a-z])([.?!,])([A-Z])`)
@@ -14,14 +15,14 @@ var lowercaseHexPattern = regexp.MustCompile(`(\b0x[0-9a-f]*[a-f][0-9a-f]*\b)`)
 var lowercasePattern = regexp.MustCompile(`[a-f]+`)
 
 func precleanStrings(doc asciidoc.ParentElement) {
-	parse.Traverse(doc, doc.Children(), func(t *asciidoc.String, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Search(asciidoc.NewRawReader(), doc, doc.Children(), func(t *asciidoc.String, parent asciidoc.Parent, index int) parse.SearchShould {
 		t.Value = strings.ReplaceAll(t.Value, "\t", "  ")
 		return parse.SearchShouldContinue
 	})
 }
 
-func (b *Baller) postCleanUpStrings(root asciidoc.ParentElement) {
-	parse.Traverse(root, root.Children(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
+func (b *Baller) postCleanUpStrings(doc *spec.Doc, root asciidoc.ParentElement) {
+	parse.Search(doc.Reader(), root, root.Children(), func(el any, parent asciidoc.Parent, index int) parse.SearchShould {
 		switch el := el.(type) {
 		case *asciidoc.Monospace, *asciidoc.DoubleMonospace:
 			return parse.SearchShouldSkip
@@ -34,7 +35,7 @@ func (b *Baller) postCleanUpStrings(root asciidoc.ParentElement) {
 		}
 		return parse.SearchShouldContinue
 	})
-	parse.Traverse(root, root.Children(), func(t *asciidoc.String, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Search(doc.Reader(), root, root.Children(), func(t *asciidoc.String, parent asciidoc.Parent, index int) parse.SearchShould {
 		if b.options.RemoveExtraSpaces {
 			t.Value = multipleSpacesPattern.ReplaceAllString(t.Value, "$1 $2")
 		}

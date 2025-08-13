@@ -5,22 +5,23 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err error) {
+func toClusters(spec *Specification, d *Doc, section *asciidoc.Section, pc *parseContext) (err error) {
 	var clusters []*matter.Cluster
 
-	elements := parse.SkimList[*Section](s.Children())
+	sections := parse.SkimList[*asciidoc.Section](d.Reader(), section, section.Children())
 
 	// Find the cluster ID section and read the IDs from the table
-	for _, s := range elements {
-		switch s.SecType {
+	for _, s := range sections {
+		switch d.SectionType(s) {
 		case matter.SectionClusterID:
 			clusters, err = readClusterIDs(d, s)
 		}
@@ -28,6 +29,8 @@ func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err
 			return
 		}
 	}
+
+	sectionName := d.SectionName(section)
 
 	var parentEntity types.Entity
 	var clusterGroup *matter.ClusterGroup
@@ -38,33 +41,33 @@ func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err
 		// There's just the one cluster ID
 		cluster := clusters[0]
 		parentEntity = cluster
-		sectionClusterName := toClusterName(s.Name)
+		sectionClusterName := toClusterName(sectionName)
 		if cluster.Name != sectionClusterName {
-			if clusterNamesEquivalent(cluster.Name, s.Name) {
+			if clusterNamesEquivalent(cluster.Name, sectionName) {
 				cluster.Name = sectionClusterName
 			} else {
-				clusterGroup = matter.NewClusterGroup(s.Name, s.Base, clusters)
+				clusterGroup = matter.NewClusterGroup(sectionName, section, clusters)
 				parentEntity = clusterGroup
 			}
 		}
 	default:
 		// There's more than one cluster ID, so this is a group of similar clusters
-		clusterGroup = matter.NewClusterGroup(s.Name, s.Base, clusters)
+		clusterGroup = matter.NewClusterGroup(sectionName, section, clusters)
 		parentEntity = clusterGroup
 	}
 
 	var features *matter.Features
 	var dataTypes []types.Entity
-	for _, s := range elements {
-		switch s.SecType {
+	for _, s := range sections {
+		switch d.SectionType(s) {
 		case matter.SectionDataTypes, matter.SectionStatusCodes:
 			var dts []types.Entity
-			dts, err = s.toDataTypes(spec, d, pc, parentEntity)
+			dts, err = toDataTypes(spec, d, s, pc, parentEntity)
 			if err == nil {
 				dataTypes = append(dataTypes, dts...)
 			}
 		case matter.SectionFeatures:
-			features, err = s.toFeatures(d, pc)
+			features, err = toFeatures(d, s, pc)
 			if err != nil {
 				return
 			}
@@ -75,12 +78,12 @@ func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err
 	}
 
 	if clusterGroup != nil {
-		pc.addRootEntity(clusterGroup, s.Base)
+		pc.addRootEntity(clusterGroup, section)
 
 		clusterGroup.AddDataTypes(dataTypes...)
 
-		for _, s := range elements {
-			switch s.SecType {
+		for _, s := range sections {
+			switch d.SectionType(s) {
 			case matter.SectionClassification:
 				err = readClusterClassification(d, clusterGroup.Name, &clusterGroup.ClusterClassification, s)
 			}
@@ -89,10 +92,10 @@ func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err
 			}
 		}
 	} else {
-		pc.addRootEntity(clusters[0], s.Base)
+		pc.addRootEntity(clusters[0], section)
 	}
 
-	var description = getDescription(d, clusters[0], s.Children())
+	var description = getDescription(d, clusters[0], section, section.Children())
 
 	for _, c := range clusters {
 		c.Description = description
@@ -101,8 +104,8 @@ func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err
 			c.Features = features.CloneTo(c)
 		}
 
-		for _, s := range elements {
-			switch s.SecType {
+		for _, s := range sections {
+			switch d.SectionType(s) {
 			case matter.SectionClassification:
 				err = readClusterClassification(d, c.Name, &c.ClusterClassification, s)
 			}
@@ -110,18 +113,18 @@ func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err
 				return
 			}
 		}
-		for _, s := range elements {
-			switch s.SecType {
+		for _, s := range sections {
+			switch d.SectionType(s) {
 			case matter.SectionAttributes:
 				var attr []*matter.Field
-				attr, err = s.toAttributes(spec, d, c, pc)
+				attr, err = toAttributes(spec, d, s, c, pc)
 				if err == nil {
 					c.Attributes = append(c.Attributes, attr...)
 				}
 			case matter.SectionEvents:
-				c.Events, err = s.toEvents(spec, d, pc, parentEntity)
+				c.Events, err = toEvents(spec, d, s, pc, parentEntity)
 			case matter.SectionCommands:
-				c.Commands, err = s.toCommands(spec, d, pc, parentEntity)
+				c.Commands, err = toCommands(spec, d, s, pc, parentEntity)
 			case matter.SectionRevisionHistory:
 				c.Revisions, err = readRevisionHistory(d, s)
 			case matter.SectionDerivedClusterNamespace:
@@ -146,7 +149,7 @@ func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err
 						case *matter.TypeDef:
 							c.TypeDefs = append(c.TypeDefs, le)
 						default:
-							slog.Warn("unexpected loose entity", log.Element("source", d.Path, s.Base), "entity", le)
+							slog.Warn("unexpected loose entity", log.Element("source", d.Path, s), "entity", le)
 						}
 					}
 				}
@@ -160,11 +163,11 @@ func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err
 	return
 }
 
-func readRevisionHistory(doc *Doc, s *Section) (revisions []*matter.Revision, err error) {
+func readRevisionHistory(doc *Doc, section *asciidoc.Section) (revisions []*matter.Revision, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(doc, s)
+	ti, err = parseFirstTable(doc, section)
 	if err != nil {
-		err = newGenericParseError(s.Base, "failed reading revision history: %w", err)
+		err = newGenericParseError(section, "failed reading revision history: %w", err)
 		return
 	}
 	for row := range ti.ContentRows() {
@@ -185,14 +188,14 @@ func readRevisionHistory(doc *Doc, s *Section) (revisions []*matter.Revision, er
 	return
 }
 
-func readClusterIDs(doc *Doc, s *Section) ([]*matter.Cluster, error) {
-	ti, err := parseFirstTable(doc, s)
+func readClusterIDs(doc *Doc, section *asciidoc.Section) ([]*matter.Cluster, error) {
+	ti, err := parseFirstTable(doc, section)
 	if err != nil {
-		return nil, newGenericParseError(s.Base, "failed reading cluster ID: %w", err)
+		return nil, newGenericParseError(section, "failed reading cluster ID: %w", err)
 	}
 	var clusters []*matter.Cluster
 	for row := range ti.ContentRows() {
-		c := matter.NewCluster(s.Base)
+		c := matter.NewCluster(section)
 		c.ID, err = ti.ReadID(row, matter.TableColumnID)
 		if err != nil {
 			return nil, err
@@ -229,10 +232,10 @@ func clusterNamesEquivalent(name1 string, name2 string) bool {
 	return strings.EqualFold(name1, name2)
 }
 
-func readClusterClassification(doc *Doc, name string, classification *matter.ClusterClassification, s *Section) error {
+func readClusterClassification(doc *Doc, name string, classification *matter.ClusterClassification, s *asciidoc.Section) error {
 	ti, err := parseFirstTable(doc, s)
 	if err != nil {
-		return newGenericParseError(s.Base, "failed reading classification: %w", err)
+		return newGenericParseError(s, "failed reading classification: %w", err)
 	}
 	for row := range ti.ContentRows() {
 		classification.Hierarchy, err = ti.ReadString(row, matter.TableColumnHierarchy)
@@ -284,18 +287,18 @@ func readClusterClassification(doc *Doc, name string, classification *matter.Clu
 	return nil
 }
 
-func parseDerivedCluster(d *Doc, pc *parseContext, s *Section, c *matter.Cluster) error {
-	elements := parse.Skim[*Section](s.Children())
+func parseDerivedCluster(d *Doc, pc *parseContext, s *asciidoc.Section, c *matter.Cluster) error {
+	elements := parse.Skim[*asciidoc.Section](d.Reader(), s, s.Children())
 	for s := range elements {
-		switch s.SecType {
+		switch d.SectionType(s) {
 		case matter.SectionModeTags:
-			en, err := s.toModeTags(d, c)
+			en, err := toModeTags(d, s, c)
 			if err != nil {
 				return err
 			}
 			c.Enums = append(c.Enums, en)
 		case matter.SectionStatusCodes:
-			en, err := s.toStatusCodes(d, pc, c)
+			en, err := toStatusCodes(d, s, pc, c)
 			if err != nil {
 				return err
 			}

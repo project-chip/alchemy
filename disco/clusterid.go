@@ -12,13 +12,13 @@ func (b *Baller) organizeClusterIDSection(cxt *discoContext) (err error) {
 	for _, clusterIDs := range cxt.parsed.clusterIDs {
 		clusterIDsTable := clusterIDs.table
 		if clusterIDsTable == nil || clusterIDsTable.Element == nil {
-			slog.Warn("Could not organize cluster ID section, as no table was found", log.Path("source", clusterIDs.section.Base))
+			slog.Warn("Could not organize cluster ID section, as no table was found", log.Path("source", clusterIDs.section))
 			return
 		}
-		if len(clusterIDsTable.Element.TableRows()) > 2 {
-			setSectionTitle(clusterIDs.section, matter.ClusterIDsSectionName)
+		if len(clusterIDsTable.Element.TableRows(cxt.doc.Reader())) > 2 {
+			setSectionTitle(cxt.doc, clusterIDs.section, matter.ClusterIDsSectionName)
 		} else {
-			setSectionTitle(clusterIDs.section, matter.ClusterIDSectionName)
+			setSectionTitle(cxt.doc, clusterIDs.section, matter.ClusterIDSectionName)
 		}
 
 		if clusterIDsTable.ColumnMap == nil {

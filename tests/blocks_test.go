@@ -12,445 +12,445 @@ func TestBlocks(t *testing.T) {
 
 var blocksTests = parseTests{
 
-	{"horizontal rule between blocks", "asciidoctor/blocks_test_horizontal_rule_between_blocks.adoc", blocksTestHorizontalRuleBetweenBlocks, nil},
+	{"horizontal rule between blocks", "asciidoctor/blocks_test_horizontal_rule_between_blocks.adoc", blocksTestHorizontalRuleBetweenBlocks},
 
-	{"line comment between paragraphs offset by blank lines", "asciidoctor/blocks_test_line_comment_between_paragraphs_offset_by_blank_lines.adoc", blocksTestLineCommentBetweenParagraphsOffsetByBlankLines, nil},
+	{"line comment between paragraphs offset by blank lines", "asciidoctor/blocks_test_line_comment_between_paragraphs_offset_by_blank_lines.adoc", blocksTestLineCommentBetweenParagraphsOffsetByBlankLines},
 
-	{"adjacent line comment between paragraphs", "asciidoctor/blocks_test_adjacent_line_comment_between_paragraphs.adoc", blocksTestAdjacentLineCommentBetweenParagraphs, nil},
+	{"adjacent line comment between paragraphs", "asciidoctor/blocks_test_adjacent_line_comment_between_paragraphs.adoc", blocksTestAdjacentLineCommentBetweenParagraphs},
 
-	{"comment block between paragraphs offset by blank lines", "asciidoctor/blocks_test_comment_block_between_paragraphs_offset_by_blank_lines.adoc", blocksTestCommentBlockBetweenParagraphsOffsetByBlankLines, nil},
+	{"comment block between paragraphs offset by blank lines", "asciidoctor/blocks_test_comment_block_between_paragraphs_offset_by_blank_lines.adoc", blocksTestCommentBlockBetweenParagraphsOffsetByBlankLines},
 
-	{"comment block between paragraphs offset by blank lines inside delimited block", "asciidoctor/blocks_test_comment_block_between_paragraphs_offset_by_blank_lines_inside_delimited_block.adoc", blocksTestCommentBlockBetweenParagraphsOffsetByBlankLinesInsideDelimitedBlock, nil},
+	{"comment block between paragraphs offset by blank lines inside delimited block", "asciidoctor/blocks_test_comment_block_between_paragraphs_offset_by_blank_lines_inside_delimited_block.adoc", blocksTestCommentBlockBetweenParagraphsOffsetByBlankLinesInsideDelimitedBlock},
 
-	{"adjacent comment block between paragraphs", "asciidoctor/blocks_test_adjacent_comment_block_between_paragraphs.adoc", blocksTestAdjacentCommentBlockBetweenParagraphs, nil},
+	{"adjacent comment block between paragraphs", "asciidoctor/blocks_test_adjacent_comment_block_between_paragraphs.adoc", blocksTestAdjacentCommentBlockBetweenParagraphs},
 
-	{"can convert with block comment at end of document with trailing newlines", "asciidoctor/blocks_test_can_convert_with_block_comment_at_end_of_document_with_trailing_newlines.adoc", blocksTestCanConvertWithBlockCommentAtEndOfDocumentWithTrailingNewlines, nil},
+	{"can convert with block comment at end of document with trailing newlines", "asciidoctor/blocks_test_can_convert_with_block_comment_at_end_of_document_with_trailing_newlines.adoc", blocksTestCanConvertWithBlockCommentAtEndOfDocumentWithTrailingNewlines},
 
-	{"trailing newlines after block comment at end of document does not create paragraph", "asciidoctor/blocks_test_trailing_newlines_after_block_comment_at_end_of_document_does_not_create_paragraph.adoc", blocksTestTrailingNewlinesAfterBlockCommentAtEndOfDocumentDoesNotCreateParagraph, nil},
+	{"trailing newlines after block comment at end of document does not create paragraph", "asciidoctor/blocks_test_trailing_newlines_after_block_comment_at_end_of_document_does_not_create_paragraph.adoc", blocksTestTrailingNewlinesAfterBlockCommentAtEndOfDocumentDoesNotCreateParagraph},
 
-	{"line starting with three slashes should not be line comment", "asciidoctor/blocks_test_line_starting_with_three_slashes_should_not_be_line_comment.adoc", blocksTestLineStartingWithThreeSlashesShouldNotBeLineComment, nil},
+	{"line starting with three slashes should not be line comment", "asciidoctor/blocks_test_line_starting_with_three_slashes_should_not_be_line_comment.adoc", blocksTestLineStartingWithThreeSlashesShouldNotBeLineComment},
 
-	{"preprocessor directives should not be processed within comment block", "asciidoctor/blocks_test_preprocessor_directives_should_not_be_processed_within_comment_block.adoc", blocksTestPreprocessorDirectivesShouldNotBeProcessedWithinCommentBlock, nil},
+	{"preprocessor directives should not be processed within comment block", "asciidoctor/blocks_test_preprocessor_directives_should_not_be_processed_within_comment_block.adoc", blocksTestPreprocessorDirectivesShouldNotBeProcessedWithinCommentBlock},
 
-	{"should warn if unterminated comment block is detected in body", "asciidoctor/blocks_test_should_warn_if_unterminated_comment_block_is_detected_in_body.adoc", blocksTestShouldWarnIfUnterminatedCommentBlockIsDetectedInBody, nil},
+	{"should warn if unterminated comment block is detected in body", "asciidoctor/blocks_test_should_warn_if_unterminated_comment_block_is_detected_in_body.adoc", blocksTestShouldWarnIfUnterminatedCommentBlockIsDetectedInBody},
 
-	{"should warn if unterminated comment block is detected inside another block", "asciidoctor/blocks_test_should_warn_if_unterminated_comment_block_is_detected_inside_another_block.adoc", blocksTestShouldWarnIfUnterminatedCommentBlockIsDetectedInsideAnotherBlock, nil},
+	{"should warn if unterminated comment block is detected inside another block", "asciidoctor/blocks_test_should_warn_if_unterminated_comment_block_is_detected_inside_another_block.adoc", blocksTestShouldWarnIfUnterminatedCommentBlockIsDetectedInsideAnotherBlock},
 
-	{"preprocessor directives should not be processed within comment open block", "asciidoctor/blocks_test_preprocessor_directives_should_not_be_processed_within_comment_open_block.adoc", blocksTestPreprocessorDirectivesShouldNotBeProcessedWithinCommentOpenBlock, nil},
+	{"preprocessor directives should not be processed within comment open block", "asciidoctor/blocks_test_preprocessor_directives_should_not_be_processed_within_comment_open_block.adoc", blocksTestPreprocessorDirectivesShouldNotBeProcessedWithinCommentOpenBlock},
 
-	{"preprocessor directives should not be processed on subsequent lines of a comment paragraph", "asciidoctor/blocks_test_preprocessor_directives_should_not_be_processed_on_subsequent_lines_of_a_comment_paragraph.adoc", blocksTestPreprocessorDirectivesShouldNotBeProcessedOnSubsequentLinesOfACommentParagraph, nil},
+	{"preprocessor directives should not be processed on subsequent lines of a comment paragraph", "asciidoctor/blocks_test_preprocessor_directives_should_not_be_processed_on_subsequent_lines_of_a_comment_paragraph.adoc", blocksTestPreprocessorDirectivesShouldNotBeProcessedOnSubsequentLinesOfACommentParagraph},
 
-	{"comment style on open block should only skip block", "asciidoctor/blocks_test_comment_style_on_open_block_should_only_skip_block.adoc", blocksTestCommentStyleOnOpenBlockShouldOnlySkipBlock, nil},
+	{"comment style on open block should only skip block", "asciidoctor/blocks_test_comment_style_on_open_block_should_only_skip_block.adoc", blocksTestCommentStyleOnOpenBlockShouldOnlySkipBlock},
 
-	{"comment style on paragraph should only skip paragraph", "asciidoctor/blocks_test_comment_style_on_paragraph_should_only_skip_paragraph.adoc", blocksTestCommentStyleOnParagraphShouldOnlySkipParagraph, nil},
+	{"comment style on paragraph should only skip paragraph", "asciidoctor/blocks_test_comment_style_on_paragraph_should_only_skip_paragraph.adoc", blocksTestCommentStyleOnParagraphShouldOnlySkipParagraph},
 
-	{"comment style on paragraph should not cause adjacent block to be skipped", "asciidoctor/blocks_test_comment_style_on_paragraph_should_not_cause_adjacent_block_to_be_skipped.adoc", blocksTestCommentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped, nil},
+	{"comment style on paragraph should not cause adjacent block to be skipped", "asciidoctor/blocks_test_comment_style_on_paragraph_should_not_cause_adjacent_block_to_be_skipped.adoc", blocksTestCommentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped},
 
-	{"should not drop content that follows skipped content inside a delimited block", "asciidoctor/blocks_test_should_not_drop_content_that_follows_skipped_content_inside_a_delimited_block.adoc", blocksTestShouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock, nil},
+	{"should not drop content that follows skipped content inside a delimited block", "asciidoctor/blocks_test_should_not_drop_content_that_follows_skipped_content_inside_a_delimited_block.adoc", blocksTestShouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock},
 
-	{"should parse sidebar block", "asciidoctor/blocks_test_should_parse_sidebar_block.adoc", blocksTestShouldParseSidebarBlock, nil},
+	{"should parse sidebar block", "asciidoctor/blocks_test_should_parse_sidebar_block.adoc", blocksTestShouldParseSidebarBlock},
 
-	{"quote block with no attribution", "asciidoctor/blocks_test_quote_block_with_no_attribution.adoc", blocksTestQuoteBlockWithNoAttribution, nil},
+	{"quote block with no attribution", "asciidoctor/blocks_test_quote_block_with_no_attribution.adoc", blocksTestQuoteBlockWithNoAttribution},
 
-	{"quote block with attribution", "asciidoctor/blocks_test_quote_block_with_attribution.adoc", blocksTestQuoteBlockWithAttribution, nil},
+	{"quote block with attribution", "asciidoctor/blocks_test_quote_block_with_attribution.adoc", blocksTestQuoteBlockWithAttribution},
 
-	{"quote block with attribute and id and role shorthand", "asciidoctor/blocks_test_quote_block_with_attribute_and_id_and_role_shorthand.adoc", blocksTestQuoteBlockWithAttributeAndIdAndRoleShorthand, nil},
+	{"quote block with attribute and id and role shorthand", "asciidoctor/blocks_test_quote_block_with_attribute_and_id_and_role_shorthand.adoc", blocksTestQuoteBlockWithAttributeAndIdAndRoleShorthand},
 
-	{"setting ID using style shorthand should not reset block style", "asciidoctor/blocks_test_setting_id_using_style_shorthand_should_not_reset_block_style.adoc", blocksTestSettingIdUsingStyleShorthandShouldNotResetBlockStyle, nil},
+	{"setting ID using style shorthand should not reset block style", "asciidoctor/blocks_test_setting_id_using_style_shorthand_should_not_reset_block_style.adoc", blocksTestSettingIdUsingStyleShorthandShouldNotResetBlockStyle},
 
-	{"quote block with complex content", "asciidoctor/blocks_test_quote_block_with_complex_content.adoc", blocksTestQuoteBlockWithComplexContent, nil},
+	{"quote block with complex content", "asciidoctor/blocks_test_quote_block_with_complex_content.adoc", blocksTestQuoteBlockWithComplexContent},
 
-	{"quote block with attribution converted to DocBook", "asciidoctor/blocks_test_quote_block_with_attribution_converted_to_doc_book.adoc", blocksTestQuoteBlockWithAttributionConvertedToDocBook, nil},
+	{"quote block with attribution converted to DocBook", "asciidoctor/blocks_test_quote_block_with_attribution_converted_to_doc_book.adoc", blocksTestQuoteBlockWithAttributionConvertedToDocBook},
 
-	{"epigraph quote block with attribution converted to DocBook", "asciidoctor/blocks_test_epigraph_quote_block_with_attribution_converted_to_doc_book.adoc", blocksTestEpigraphQuoteBlockWithAttributionConvertedToDocBook, nil},
+	{"epigraph quote block with attribution converted to DocBook", "asciidoctor/blocks_test_epigraph_quote_block_with_attribution_converted_to_doc_book.adoc", blocksTestEpigraphQuoteBlockWithAttributionConvertedToDocBook},
 
-	{"markdown-style quote block with single paragraph and no attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_single_paragraph_and_no_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution, nil},
+	{"markdown-style quote block with single paragraph and no attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_single_paragraph_and_no_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution},
 
-	{"lazy markdown-style quote block with single paragraph and no attribution", "asciidoctor/blocks_test_lazy_markdown_style_quote_block_with_single_paragraph_and_no_attribution.adoc", blocksTestLazyMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution, nil},
+	{"lazy markdown-style quote block with single paragraph and no attribution", "asciidoctor/blocks_test_lazy_markdown_style_quote_block_with_single_paragraph_and_no_attribution.adoc", blocksTestLazyMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution},
 
-	{"markdown-style quote block with multiple paragraphs and no attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_multiple_paragraphs_and_no_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithMultipleParagraphsAndNoAttribution, nil},
+	{"markdown-style quote block with multiple paragraphs and no attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_multiple_paragraphs_and_no_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithMultipleParagraphsAndNoAttribution},
 
-	{"markdown-style quote block with multiple blocks and no attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_multiple_blocks_and_no_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithMultipleBlocksAndNoAttribution, nil},
+	{"markdown-style quote block with multiple blocks and no attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_multiple_blocks_and_no_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithMultipleBlocksAndNoAttribution},
 
-	{"markdown-style quote block with single paragraph and attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_single_paragraph_and_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithSingleParagraphAndAttribution, nil},
+	{"markdown-style quote block with single paragraph and attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_single_paragraph_and_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithSingleParagraphAndAttribution},
 
-	{"markdown-style quote block with only attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_only_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithOnlyAttribution, nil},
+	{"markdown-style quote block with only attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_only_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithOnlyAttribution},
 
-	{"quoted paragraph-style quote block with attribution", "asciidoctor/blocks_test_quoted_paragraph_style_quote_block_with_attribution.adoc", blocksTestQuotedParagraphStyleQuoteBlockWithAttribution, nil},
+	{"quoted paragraph-style quote block with attribution", "asciidoctor/blocks_test_quoted_paragraph_style_quote_block_with_attribution.adoc", blocksTestQuotedParagraphStyleQuoteBlockWithAttribution},
 
-	{"should parse credit line in quoted paragraph-style quote block like positional block attributes", "asciidoctor/blocks_test_should_parse_credit_line_in_quoted_paragraph_style_quote_block_like_positional_block_attributes.adoc", blocksTestShouldParseCreditLineInQuotedParagraphStyleQuoteBlockLikePositionalBlockAttributes, nil},
+	{"should parse credit line in quoted paragraph-style quote block like positional block attributes", "asciidoctor/blocks_test_should_parse_credit_line_in_quoted_paragraph_style_quote_block_like_positional_block_attributes.adoc", blocksTestShouldParseCreditLineInQuotedParagraphStyleQuoteBlockLikePositionalBlockAttributes},
 
-	{"single-line verse block without attribution", "asciidoctor/blocks_test_single_line_verse_block_without_attribution.adoc", blocksTestSingleLineVerseBlockWithoutAttribution, nil},
+	{"single-line verse block without attribution", "asciidoctor/blocks_test_single_line_verse_block_without_attribution.adoc", blocksTestSingleLineVerseBlockWithoutAttribution},
 
-	{"single-line verse block with attribution", "asciidoctor/blocks_test_single_line_verse_block_with_attribution.adoc", blocksTestSingleLineVerseBlockWithAttribution, nil},
+	{"single-line verse block with attribution", "asciidoctor/blocks_test_single_line_verse_block_with_attribution.adoc", blocksTestSingleLineVerseBlockWithAttribution},
 
-	{"single-line verse block with attribution converted to DocBook", "asciidoctor/blocks_test_single_line_verse_block_with_attribution_converted_to_doc_book.adoc", blocksTestSingleLineVerseBlockWithAttributionConvertedToDocBook, nil},
+	{"single-line verse block with attribution converted to DocBook", "asciidoctor/blocks_test_single_line_verse_block_with_attribution_converted_to_doc_book.adoc", blocksTestSingleLineVerseBlockWithAttributionConvertedToDocBook},
 
-	{"single-line epigraph verse block with attribution converted to DocBook", "asciidoctor/blocks_test_single_line_epigraph_verse_block_with_attribution_converted_to_doc_book.adoc", blocksTestSingleLineEpigraphVerseBlockWithAttributionConvertedToDocBook, nil},
+	{"single-line epigraph verse block with attribution converted to DocBook", "asciidoctor/blocks_test_single_line_epigraph_verse_block_with_attribution_converted_to_doc_book.adoc", blocksTestSingleLineEpigraphVerseBlockWithAttributionConvertedToDocBook},
 
-	{"multi-stanza verse block", "asciidoctor/blocks_test_multi_stanza_verse_block.adoc", blocksTestMultiStanzaVerseBlock, nil},
+	{"multi-stanza verse block", "asciidoctor/blocks_test_multi_stanza_verse_block.adoc", blocksTestMultiStanzaVerseBlock},
 
-	{"verse block does not contain block elements", "asciidoctor/blocks_test_verse_block_does_not_contain_block_elements.adoc", blocksTestVerseBlockDoesNotContainBlockElements, nil},
+	{"verse block does not contain block elements", "asciidoctor/blocks_test_verse_block_does_not_contain_block_elements.adoc", blocksTestVerseBlockDoesNotContainBlockElements},
 
-	{"verse should have normal subs", "asciidoctor/blocks_test_verse_should_have_normal_subs.adoc", blocksTestVerseShouldHaveNormalSubs, nil},
+	{"verse should have normal subs", "asciidoctor/blocks_test_verse_should_have_normal_subs.adoc", blocksTestVerseShouldHaveNormalSubs},
 
-	{"should not recognize callouts in a verse", "asciidoctor/blocks_test_should_not_recognize_callouts_in_a_verse.adoc", blocksTestShouldNotRecognizeCalloutsInAVerse, nil},
+	{"should not recognize callouts in a verse", "asciidoctor/blocks_test_should_not_recognize_callouts_in_a_verse.adoc", blocksTestShouldNotRecognizeCalloutsInAVerse},
 
-	{"should perform normal subs on a verse block", "asciidoctor/blocks_test_should_perform_normal_subs_on_a_verse_block.adoc", blocksTestShouldPerformNormalSubsOnAVerseBlock, nil},
+	{"should perform normal subs on a verse block", "asciidoctor/blocks_test_should_perform_normal_subs_on_a_verse_block.adoc", blocksTestShouldPerformNormalSubsOnAVerseBlock},
 
-	{"can convert example block", "asciidoctor/blocks_test_can_convert_example_block.adoc", blocksTestCanConvertExampleBlock, nil},
+	{"can convert example block", "asciidoctor/blocks_test_can_convert_example_block.adoc", blocksTestCanConvertExampleBlock},
 
-	{"assigns sequential numbered caption to example block with title", "asciidoctor/blocks_test_assigns_sequential_numbered_caption_to_example_block_with_title.adoc", blocksTestAssignsSequentialNumberedCaptionToExampleBlockWithTitle, nil},
+	{"assigns sequential numbered caption to example block with title", "asciidoctor/blocks_test_assigns_sequential_numbered_caption_to_example_block_with_title.adoc", blocksTestAssignsSequentialNumberedCaptionToExampleBlockWithTitle},
 
-	{"assigns sequential character caption to example block with title", "asciidoctor/blocks_test_assigns_sequential_character_caption_to_example_block_with_title.adoc", blocksTestAssignsSequentialCharacterCaptionToExampleBlockWithTitle, nil},
+	{"assigns sequential character caption to example block with title", "asciidoctor/blocks_test_assigns_sequential_character_caption_to_example_block_with_title.adoc", blocksTestAssignsSequentialCharacterCaptionToExampleBlockWithTitle},
 
-	{"should increment counter for example even when example-number is locked by the API", "asciidoctor/blocks_test_should_increment_counter_for_example_even_when_example_number_is_locked_by_the_api.adoc", blocksTestShouldIncrementCounterForExampleEvenWhenExampleNumberIsLockedByTheApi, nil},
+	{"should increment counter for example even when example-number is locked by the API", "asciidoctor/blocks_test_should_increment_counter_for_example_even_when_example_number_is_locked_by_the_api.adoc", blocksTestShouldIncrementCounterForExampleEvenWhenExampleNumberIsLockedByTheApi},
 
-	{"should use explicit caption if specified", "asciidoctor/blocks_test_should_use_explicit_caption_if_specified.adoc", blocksTestShouldUseExplicitCaptionIfSpecified, nil},
+	{"should use explicit caption if specified", "asciidoctor/blocks_test_should_use_explicit_caption_if_specified.adoc", blocksTestShouldUseExplicitCaptionIfSpecified},
 
-	{"automatic caption can be turned off and on and modified", "asciidoctor/blocks_test_automatic_caption_can_be_turned_off_and_on_and_modified.adoc", blocksTestAutomaticCaptionCanBeTurnedOffAndOnAndModified, nil},
+	{"automatic caption can be turned off and on and modified", "asciidoctor/blocks_test_automatic_caption_can_be_turned_off_and_on_and_modified.adoc", blocksTestAutomaticCaptionCanBeTurnedOffAndOnAndModified},
 
-	{"should use explicit caption if specified even if block-specific global caption is disabled", "asciidoctor/blocks_test_should_use_explicit_caption_if_specified_even_if_block_specific_global_caption_is_disabled.adoc", blocksTestShouldUseExplicitCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled, nil},
+	{"should use explicit caption if specified even if block-specific global caption is disabled", "asciidoctor/blocks_test_should_use_explicit_caption_if_specified_even_if_block_specific_global_caption_is_disabled.adoc", blocksTestShouldUseExplicitCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled},
 
-	{"should use global caption if specified even if block-specific global caption is disabled", "asciidoctor/blocks_test_should_use_global_caption_if_specified_even_if_block_specific_global_caption_is_disabled.adoc", blocksTestShouldUseGlobalCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled, nil},
+	{"should use global caption if specified even if block-specific global caption is disabled", "asciidoctor/blocks_test_should_use_global_caption_if_specified_even_if_block_specific_global_caption_is_disabled.adoc", blocksTestShouldUseGlobalCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled},
 
-	{"should not process caption attribute on block that does not support a caption", "asciidoctor/blocks_test_should_not_process_caption_attribute_on_block_that_does_not_support_a_caption.adoc", blocksTestShouldNotProcessCaptionAttributeOnBlockThatDoesNotSupportACaption, nil},
+	{"should not process caption attribute on block that does not support a caption", "asciidoctor/blocks_test_should_not_process_caption_attribute_on_block_that_does_not_support_a_caption.adoc", blocksTestShouldNotProcessCaptionAttributeOnBlockThatDoesNotSupportACaption},
 
-	{"should create details/summary set if collapsible option is set", "asciidoctor/blocks_test_should_create_details_summary_set_if_collapsible_option_is_set.adoc", blocksTestShouldCreateDetailsSummarySetIfCollapsibleOptionIsSet, nil},
+	{"should create details/summary set if collapsible option is set", "asciidoctor/blocks_test_should_create_details_summary_set_if_collapsible_option_is_set.adoc", blocksTestShouldCreateDetailsSummarySetIfCollapsibleOptionIsSet},
 
-	{"should open details/summary set if collapsible and open options are set", "asciidoctor/blocks_test_should_open_details_summary_set_if_collapsible_and_open_options_are_set.adoc", blocksTestShouldOpenDetailsSummarySetIfCollapsibleAndOpenOptionsAreSet, nil},
+	{"should open details/summary set if collapsible and open options are set", "asciidoctor/blocks_test_should_open_details_summary_set_if_collapsible_and_open_options_are_set.adoc", blocksTestShouldOpenDetailsSummarySetIfCollapsibleAndOpenOptionsAreSet},
 
-	{"should add default summary element if collapsible option is set and title is not specifed", "asciidoctor/blocks_test_should_add_default_summary_element_if_collapsible_option_is_set_and_title_is_not_specifed.adoc", blocksTestShouldAddDefaultSummaryElementIfCollapsibleOptionIsSetAndTitleIsNotSpecifed, nil},
+	{"should add default summary element if collapsible option is set and title is not specifed", "asciidoctor/blocks_test_should_add_default_summary_element_if_collapsible_option_is_set_and_title_is_not_specifed.adoc", blocksTestShouldAddDefaultSummaryElementIfCollapsibleOptionIsSetAndTitleIsNotSpecifed},
 
-	{"should not allow collapsible block to increment example number", "asciidoctor/blocks_test_should_not_allow_collapsible_block_to_increment_example_number.adoc", blocksTestShouldNotAllowCollapsibleBlockToIncrementExampleNumber, nil},
+	{"should not allow collapsible block to increment example number", "asciidoctor/blocks_test_should_not_allow_collapsible_block_to_increment_example_number.adoc", blocksTestShouldNotAllowCollapsibleBlockToIncrementExampleNumber},
 
-	{"should warn if example block is not terminated", "asciidoctor/blocks_test_should_warn_if_example_block_is_not_terminated.adoc", blocksTestShouldWarnIfExampleBlockIsNotTerminated, nil},
+	{"should warn if example block is not terminated", "asciidoctor/blocks_test_should_warn_if_example_block_is_not_terminated.adoc", blocksTestShouldWarnIfExampleBlockIsNotTerminated},
 
-	{"caption block-level attribute should be used as caption", "asciidoctor/blocks_test_caption_block_level_attribute_should_be_used_as_caption.adoc", blocksTestCaptionBlockLevelAttributeShouldBeUsedAsCaption, nil},
+	{"caption block-level attribute should be used as caption", "asciidoctor/blocks_test_caption_block_level_attribute_should_be_used_as_caption.adoc", blocksTestCaptionBlockLevelAttributeShouldBeUsedAsCaption},
 
-	{"can override caption of admonition block using document attribute", "asciidoctor/blocks_test_can_override_caption_of_admonition_block_using_document_attribute.adoc", blocksTestCanOverrideCaptionOfAdmonitionBlockUsingDocumentAttribute, nil},
+	{"can override caption of admonition block using document attribute", "asciidoctor/blocks_test_can_override_caption_of_admonition_block_using_document_attribute.adoc", blocksTestCanOverrideCaptionOfAdmonitionBlockUsingDocumentAttribute},
 
-	{"blank caption document attribute should not blank admonition block caption", "asciidoctor/blocks_test_blank_caption_document_attribute_should_not_blank_admonition_block_caption.adoc", blocksTestBlankCaptionDocumentAttributeShouldNotBlankAdmonitionBlockCaption, nil},
+	{"blank caption document attribute should not blank admonition block caption", "asciidoctor/blocks_test_blank_caption_document_attribute_should_not_blank_admonition_block_caption.adoc", blocksTestBlankCaptionDocumentAttributeShouldNotBlankAdmonitionBlockCaption},
 
-	{"should separate adjacent paragraphs and listing into blocks", "asciidoctor/blocks_test_should_separate_adjacent_paragraphs_and_listing_into_blocks.adoc", blocksTestShouldSeparateAdjacentParagraphsAndListingIntoBlocks, nil},
+	{"should separate adjacent paragraphs and listing into blocks", "asciidoctor/blocks_test_should_separate_adjacent_paragraphs_and_listing_into_blocks.adoc", blocksTestShouldSeparateAdjacentParagraphsAndListingIntoBlocks},
 
-	{"should warn if listing block is not terminated", "asciidoctor/blocks_test_should_warn_if_listing_block_is_not_terminated.adoc", blocksTestShouldWarnIfListingBlockIsNotTerminated, nil},
+	{"should warn if listing block is not terminated", "asciidoctor/blocks_test_should_warn_if_listing_block_is_not_terminated.adoc", blocksTestShouldWarnIfListingBlockIsNotTerminated},
 
-	{"should not crash when converting verbatim block that has no lines", "asciidoctor/blocks_test_should_not_crash_when_converting_verbatim_block_that_has_no_lines.adoc", blocksTestShouldNotCrashWhenConvertingVerbatimBlockThatHasNoLines, nil},
+	{"should not crash when converting verbatim block that has no lines", "asciidoctor/blocks_test_should_not_crash_when_converting_verbatim_block_that_has_no_lines.adoc", blocksTestShouldNotCrashWhenConvertingVerbatimBlockThatHasNoLines},
 
-	{"should preserve newlines in listing block", "asciidoctor/blocks_test_should_preserve_newlines_in_listing_block.adoc", blocksTestShouldPreserveNewlinesInListingBlock, nil},
+	{"should preserve newlines in listing block", "asciidoctor/blocks_test_should_preserve_newlines_in_listing_block.adoc", blocksTestShouldPreserveNewlinesInListingBlock},
 
-	{"should preserve newlines in verse block", "asciidoctor/blocks_test_should_preserve_newlines_in_verse_block.adoc", blocksTestShouldPreserveNewlinesInVerseBlock, nil},
+	{"should preserve newlines in verse block", "asciidoctor/blocks_test_should_preserve_newlines_in_verse_block.adoc", blocksTestShouldPreserveNewlinesInVerseBlock},
 
-	{"should strip leading and trailing blank lines when converting verbatim block", "asciidoctor/blocks_test_should_strip_leading_and_trailing_blank_lines_when_converting_verbatim_block.adoc", blocksTestShouldStripLeadingAndTrailingBlankLinesWhenConvertingVerbatimBlock, nil},
+	{"should strip leading and trailing blank lines when converting verbatim block", "asciidoctor/blocks_test_should_strip_leading_and_trailing_blank_lines_when_converting_verbatim_block.adoc", blocksTestShouldStripLeadingAndTrailingBlankLinesWhenConvertingVerbatimBlock},
 
-	{"should remove block indent if indent attribute is 0", "asciidoctor/blocks_test_should_remove_block_indent_if_indent_attribute_is_0.adoc", blocksTestShouldRemoveBlockIndentIfIndentAttributeIs0, nil},
+	{"should remove block indent if indent attribute is 0", "asciidoctor/blocks_test_should_remove_block_indent_if_indent_attribute_is_0.adoc", blocksTestShouldRemoveBlockIndentIfIndentAttributeIs0},
 
-	{"should not remove block indent if indent attribute is -1", "asciidoctor/blocks_test_should_not_remove_block_indent_if_indent_attribute_is__1.adoc", blocksTestShouldNotRemoveBlockIndentIfIndentAttributeIs1, nil},
+	{"should not remove block indent if indent attribute is -1", "asciidoctor/blocks_test_should_not_remove_block_indent_if_indent_attribute_is__1.adoc", blocksTestShouldNotRemoveBlockIndentIfIndentAttributeIs1},
 
-	{"should set block indent to value specified by indent attribute", "asciidoctor/blocks_test_should_set_block_indent_to_value_specified_by_indent_attribute.adoc", blocksTestShouldSetBlockIndentToValueSpecifiedByIndentAttribute, nil},
+	{"should set block indent to value specified by indent attribute", "asciidoctor/blocks_test_should_set_block_indent_to_value_specified_by_indent_attribute.adoc", blocksTestShouldSetBlockIndentToValueSpecifiedByIndentAttribute},
 
-	{"should set block indent to value specified by indent document attribute", "asciidoctor/blocks_test_should_set_block_indent_to_value_specified_by_indent_document_attribute.adoc", blocksTestShouldSetBlockIndentToValueSpecifiedByIndentDocumentAttribute, nil},
+	{"should set block indent to value specified by indent document attribute", "asciidoctor/blocks_test_should_set_block_indent_to_value_specified_by_indent_document_attribute.adoc", blocksTestShouldSetBlockIndentToValueSpecifiedByIndentDocumentAttribute},
 
-	{"literal block should honor nowrap option", "asciidoctor/blocks_test_literal_block_should_honor_nowrap_option.adoc", blocksTestLiteralBlockShouldHonorNowrapOption, nil},
+	{"literal block should honor nowrap option", "asciidoctor/blocks_test_literal_block_should_honor_nowrap_option.adoc", blocksTestLiteralBlockShouldHonorNowrapOption},
 
-	{"literal block should set nowrap class if prewrap document attribute is disabled", "asciidoctor/blocks_test_literal_block_should_set_nowrap_class_if_prewrap_document_attribute_is_disabled.adoc", blocksTestLiteralBlockShouldSetNowrapClassIfPrewrapDocumentAttributeIsDisabled, nil},
+	{"literal block should set nowrap class if prewrap document attribute is disabled", "asciidoctor/blocks_test_literal_block_should_set_nowrap_class_if_prewrap_document_attribute_is_disabled.adoc", blocksTestLiteralBlockShouldSetNowrapClassIfPrewrapDocumentAttributeIsDisabled},
 
-	{"should preserve guard in front of callout if icons are not enabled", "asciidoctor/blocks_test_should_preserve_guard_in_front_of_callout_if_icons_are_not_enabled.adoc", blocksTestShouldPreserveGuardInFrontOfCalloutIfIconsAreNotEnabled, nil},
+	{"should preserve guard in front of callout if icons are not enabled", "asciidoctor/blocks_test_should_preserve_guard_in_front_of_callout_if_icons_are_not_enabled.adoc", blocksTestShouldPreserveGuardInFrontOfCalloutIfIconsAreNotEnabled},
 
-	{"should preserve guard around callout if icons are not enabled", "asciidoctor/blocks_test_should_preserve_guard_around_callout_if_icons_are_not_enabled.adoc", blocksTestShouldPreserveGuardAroundCalloutIfIconsAreNotEnabled, nil},
+	{"should preserve guard around callout if icons are not enabled", "asciidoctor/blocks_test_should_preserve_guard_around_callout_if_icons_are_not_enabled.adoc", blocksTestShouldPreserveGuardAroundCalloutIfIconsAreNotEnabled},
 
-	{"literal block should honor explicit subs list", "asciidoctor/blocks_test_literal_block_should_honor_explicit_subs_list.adoc", blocksTestLiteralBlockShouldHonorExplicitSubsList, nil},
+	{"literal block should honor explicit subs list", "asciidoctor/blocks_test_literal_block_should_honor_explicit_subs_list.adoc", blocksTestLiteralBlockShouldHonorExplicitSubsList},
 
-	{"should be able to disable callouts for literal block", "asciidoctor/blocks_test_should_be_able_to_disable_callouts_for_literal_block.adoc", blocksTestShouldBeAbleToDisableCalloutsForLiteralBlock, nil},
+	{"should be able to disable callouts for literal block", "asciidoctor/blocks_test_should_be_able_to_disable_callouts_for_literal_block.adoc", blocksTestShouldBeAbleToDisableCalloutsForLiteralBlock},
 
-	{"listing block should honor explicit subs list", "asciidoctor/blocks_test_listing_block_should_honor_explicit_subs_list.adoc", blocksTestListingBlockShouldHonorExplicitSubsList, nil},
+	{"listing block should honor explicit subs list", "asciidoctor/blocks_test_listing_block_should_honor_explicit_subs_list.adoc", blocksTestListingBlockShouldHonorExplicitSubsList},
 
-	{"should not mangle array that contains formatted text with role in listing block with quotes sub enabled", "asciidoctor/blocks_test_should_not_mangle_array_that_contains_formatted_text_with_role_in_listing_block_with_quotes_sub_enabled.adoc", blocksTestShouldNotMangleArrayThatContainsFormattedTextWithRoleInListingBlockWithQuotesSubEnabled, nil},
+	{"should not mangle array that contains formatted text with role in listing block with quotes sub enabled", "asciidoctor/blocks_test_should_not_mangle_array_that_contains_formatted_text_with_role_in_listing_block_with_quotes_sub_enabled.adoc", blocksTestShouldNotMangleArrayThatContainsFormattedTextWithRoleInListingBlockWithQuotesSubEnabled},
 
-	{"first character of block title may be a period if not followed by space", "asciidoctor/blocks_test_first_character_of_block_title_may_be_a_period_if_not_followed_by_space.adoc", blocksTestFirstCharacterOfBlockTitleMayBeAPeriodIfNotFollowedBySpace, nil},
+	{"first character of block title may be a period if not followed by space", "asciidoctor/blocks_test_first_character_of_block_title_may_be_a_period_if_not_followed_by_space.adoc", blocksTestFirstCharacterOfBlockTitleMayBeAPeriodIfNotFollowedBySpace},
 
-	{"listing block without title should generate screen element in docbook", "asciidoctor/blocks_test_listing_block_without_title_should_generate_screen_element_in_docbook.adoc", blocksTestListingBlockWithoutTitleShouldGenerateScreenElementInDocbook, nil},
+	{"listing block without title should generate screen element in docbook", "asciidoctor/blocks_test_listing_block_without_title_should_generate_screen_element_in_docbook.adoc", blocksTestListingBlockWithoutTitleShouldGenerateScreenElementInDocbook},
 
-	{"listing block with title should generate screen element inside formalpara element in docbook", "asciidoctor/blocks_test_listing_block_with_title_should_generate_screen_element_inside_formalpara_element_in_docbook.adoc", blocksTestListingBlockWithTitleShouldGenerateScreenElementInsideFormalparaElementInDocbook, nil},
+	{"listing block with title should generate screen element inside formalpara element in docbook", "asciidoctor/blocks_test_listing_block_with_title_should_generate_screen_element_inside_formalpara_element_in_docbook.adoc", blocksTestListingBlockWithTitleShouldGenerateScreenElementInsideFormalparaElementInDocbook},
 
-	{"should not prepend caption to title of listing block with title if listing-caption attribute is not set", "asciidoctor/blocks_test_should_not_prepend_caption_to_title_of_listing_block_with_title_if_listing_caption_attribute_is_not_set.adoc", blocksTestShouldNotPrependCaptionToTitleOfListingBlockWithTitleIfListingCaptionAttributeIsNotSet, nil},
+	{"should not prepend caption to title of listing block with title if listing-caption attribute is not set", "asciidoctor/blocks_test_should_not_prepend_caption_to_title_of_listing_block_with_title_if_listing_caption_attribute_is_not_set.adoc", blocksTestShouldNotPrependCaptionToTitleOfListingBlockWithTitleIfListingCaptionAttributeIsNotSet},
 
-	{"should prepend caption specified by listing-caption attribute and number to title of listing block with title", "asciidoctor/blocks_test_should_prepend_caption_specified_by_listing_caption_attribute_and_number_to_title_of_listing_block_with_title.adoc", blocksTestShouldPrependCaptionSpecifiedByListingCaptionAttributeAndNumberToTitleOfListingBlockWithTitle, nil},
+	{"should prepend caption specified by listing-caption attribute and number to title of listing block with title", "asciidoctor/blocks_test_should_prepend_caption_specified_by_listing_caption_attribute_and_number_to_title_of_listing_block_with_title.adoc", blocksTestShouldPrependCaptionSpecifiedByListingCaptionAttributeAndNumberToTitleOfListingBlockWithTitle},
 
-	{"should prepend caption specified by caption attribute on listing block even if listing-caption attribute is not set", "asciidoctor/blocks_test_should_prepend_caption_specified_by_caption_attribute_on_listing_block_even_if_listing_caption_attribute_is_not_set.adoc", blocksTestShouldPrependCaptionSpecifiedByCaptionAttributeOnListingBlockEvenIfListingCaptionAttributeIsNotSet, nil},
+	{"should prepend caption specified by caption attribute on listing block even if listing-caption attribute is not set", "asciidoctor/blocks_test_should_prepend_caption_specified_by_caption_attribute_on_listing_block_even_if_listing_caption_attribute_is_not_set.adoc", blocksTestShouldPrependCaptionSpecifiedByCaptionAttributeOnListingBlockEvenIfListingCaptionAttributeIsNotSet},
 
-	{"listing block without an explicit style and with a second positional argument should be promoted to a source block", "asciidoctor/blocks_test_listing_block_without_an_explicit_style_and_with_a_second_positional_argument_should_be_promoted_to_a_source_block.adoc", blocksTestListingBlockWithoutAnExplicitStyleAndWithASecondPositionalArgumentShouldBePromotedToASourceBlock, nil},
+	{"listing block without an explicit style and with a second positional argument should be promoted to a source block", "asciidoctor/blocks_test_listing_block_without_an_explicit_style_and_with_a_second_positional_argument_should_be_promoted_to_a_source_block.adoc", blocksTestListingBlockWithoutAnExplicitStyleAndWithASecondPositionalArgumentShouldBePromotedToASourceBlock},
 
-	{"listing block without an explicit style should be promoted to a source block if source-language is set", "asciidoctor/blocks_test_listing_block_without_an_explicit_style_should_be_promoted_to_a_source_block_if_source_language_is_set.adoc", blocksTestListingBlockWithoutAnExplicitStyleShouldBePromotedToASourceBlockIfSourceLanguageIsSet, nil},
+	{"listing block without an explicit style should be promoted to a source block if source-language is set", "asciidoctor/blocks_test_listing_block_without_an_explicit_style_should_be_promoted_to_a_source_block_if_source_language_is_set.adoc", blocksTestListingBlockWithoutAnExplicitStyleShouldBePromotedToASourceBlockIfSourceLanguageIsSet},
 
-	{"listing block with an explicit style and a second positional argument should not be promoted to a source block", "asciidoctor/blocks_test_listing_block_with_an_explicit_style_and_a_second_positional_argument_should_not_be_promoted_to_a_source_block.adoc", blocksTestListingBlockWithAnExplicitStyleAndASecondPositionalArgumentShouldNotBePromotedToASourceBlock, nil},
+	{"listing block with an explicit style and a second positional argument should not be promoted to a source block", "asciidoctor/blocks_test_listing_block_with_an_explicit_style_and_a_second_positional_argument_should_not_be_promoted_to_a_source_block.adoc", blocksTestListingBlockWithAnExplicitStyleAndASecondPositionalArgumentShouldNotBePromotedToASourceBlock},
 
-	{"listing block with an explicit style should not be promoted to a source block if source-language is set", "asciidoctor/blocks_test_listing_block_with_an_explicit_style_should_not_be_promoted_to_a_source_block_if_source_language_is_set.adoc", blocksTestListingBlockWithAnExplicitStyleShouldNotBePromotedToASourceBlockIfSourceLanguageIsSet, nil},
+	{"listing block with an explicit style should not be promoted to a source block if source-language is set", "asciidoctor/blocks_test_listing_block_with_an_explicit_style_should_not_be_promoted_to_a_source_block_if_source_language_is_set.adoc", blocksTestListingBlockWithAnExplicitStyleShouldNotBePromotedToASourceBlockIfSourceLanguageIsSet},
 
-	{"source block with no title or language should generate screen element in docbook", "asciidoctor/blocks_test_source_block_with_no_title_or_language_should_generate_screen_element_in_docbook.adoc", blocksTestSourceBlockWithNoTitleOrLanguageShouldGenerateScreenElementInDocbook, nil},
+	{"source block with no title or language should generate screen element in docbook", "asciidoctor/blocks_test_source_block_with_no_title_or_language_should_generate_screen_element_in_docbook.adoc", blocksTestSourceBlockWithNoTitleOrLanguageShouldGenerateScreenElementInDocbook},
 
-	{"source block with title and no language should generate screen element inside formalpara element for docbook", "asciidoctor/blocks_test_source_block_with_title_and_no_language_should_generate_screen_element_inside_formalpara_element_for_docbook.adoc", blocksTestSourceBlockWithTitleAndNoLanguageShouldGenerateScreenElementInsideFormalparaElementForDocbook, nil},
+	{"source block with title and no language should generate screen element inside formalpara element for docbook", "asciidoctor/blocks_test_source_block_with_title_and_no_language_should_generate_screen_element_inside_formalpara_element_for_docbook.adoc", blocksTestSourceBlockWithTitleAndNoLanguageShouldGenerateScreenElementInsideFormalparaElementForDocbook},
 
-	{"can convert open block", "asciidoctor/blocks_test_can_convert_open_block.adoc", blocksTestCanConvertOpenBlock, nil},
+	{"can convert open block", "asciidoctor/blocks_test_can_convert_open_block.adoc", blocksTestCanConvertOpenBlock},
 
-	{"open block can contain another block", "asciidoctor/blocks_test_open_block_can_contain_another_block.adoc", blocksTestOpenBlockCanContainAnotherBlock, nil},
+	{"open block can contain another block", "asciidoctor/blocks_test_open_block_can_contain_another_block.adoc", blocksTestOpenBlockCanContainAnotherBlock},
 
-	{"should transfer id and reftext on open block to DocBook output", "asciidoctor/blocks_test_should_transfer_id_and_reftext_on_open_block_to_doc_book_output.adoc", blocksTestShouldTransferIdAndReftextOnOpenBlockToDocBookOutput, nil},
+	{"should transfer id and reftext on open block to DocBook output", "asciidoctor/blocks_test_should_transfer_id_and_reftext_on_open_block_to_doc_book_output.adoc", blocksTestShouldTransferIdAndReftextOnOpenBlockToDocBookOutput},
 
-	{"should transfer id and reftext on open paragraph to DocBook output", "asciidoctor/blocks_test_should_transfer_id_and_reftext_on_open_paragraph_to_doc_book_output.adoc", blocksTestShouldTransferIdAndReftextOnOpenParagraphToDocBookOutput, nil},
+	{"should transfer id and reftext on open paragraph to DocBook output", "asciidoctor/blocks_test_should_transfer_id_and_reftext_on_open_paragraph_to_doc_book_output.adoc", blocksTestShouldTransferIdAndReftextOnOpenParagraphToDocBookOutput},
 
-	{"should transfer title on open block to DocBook output", "asciidoctor/blocks_test_should_transfer_title_on_open_block_to_doc_book_output.adoc", blocksTestShouldTransferTitleOnOpenBlockToDocBookOutput, nil},
+	{"should transfer title on open block to DocBook output", "asciidoctor/blocks_test_should_transfer_title_on_open_block_to_doc_book_output.adoc", blocksTestShouldTransferTitleOnOpenBlockToDocBookOutput},
 
-	{"should transfer title on open paragraph to DocBook output", "asciidoctor/blocks_test_should_transfer_title_on_open_paragraph_to_doc_book_output.adoc", blocksTestShouldTransferTitleOnOpenParagraphToDocBookOutput, nil},
+	{"should transfer title on open paragraph to DocBook output", "asciidoctor/blocks_test_should_transfer_title_on_open_paragraph_to_doc_book_output.adoc", blocksTestShouldTransferTitleOnOpenParagraphToDocBookOutput},
 
-	{"should transfer role on open block to DocBook output", "asciidoctor/blocks_test_should_transfer_role_on_open_block_to_doc_book_output.adoc", blocksTestShouldTransferRoleOnOpenBlockToDocBookOutput, nil},
+	{"should transfer role on open block to DocBook output", "asciidoctor/blocks_test_should_transfer_role_on_open_block_to_doc_book_output.adoc", blocksTestShouldTransferRoleOnOpenBlockToDocBookOutput},
 
-	{"should transfer role on open paragraph to DocBook output", "asciidoctor/blocks_test_should_transfer_role_on_open_paragraph_to_doc_book_output.adoc", blocksTestShouldTransferRoleOnOpenParagraphToDocBookOutput, nil},
+	{"should transfer role on open paragraph to DocBook output", "asciidoctor/blocks_test_should_transfer_role_on_open_paragraph_to_doc_book_output.adoc", blocksTestShouldTransferRoleOnOpenParagraphToDocBookOutput},
 
-	{"can parse a passthrough block", "asciidoctor/blocks_test_can_parse_a_passthrough_block.adoc", blocksTestCanParseAPassthroughBlock, nil},
+	{"can parse a passthrough block", "asciidoctor/blocks_test_can_parse_a_passthrough_block.adoc", blocksTestCanParseAPassthroughBlock},
 
-	{"does not perform subs on a passthrough block by default", "asciidoctor/blocks_test_does_not_perform_subs_on_a_passthrough_block_by_default.adoc", blocksTestDoesNotPerformSubsOnAPassthroughBlockByDefault, nil},
+	{"does not perform subs on a passthrough block by default", "asciidoctor/blocks_test_does_not_perform_subs_on_a_passthrough_block_by_default.adoc", blocksTestDoesNotPerformSubsOnAPassthroughBlockByDefault},
 
-	{"does not perform subs on a passthrough block with pass style by default", "asciidoctor/blocks_test_does_not_perform_subs_on_a_passthrough_block_with_pass_style_by_default.adoc", blocksTestDoesNotPerformSubsOnAPassthroughBlockWithPassStyleByDefault, nil},
+	{"does not perform subs on a passthrough block with pass style by default", "asciidoctor/blocks_test_does_not_perform_subs_on_a_passthrough_block_with_pass_style_by_default.adoc", blocksTestDoesNotPerformSubsOnAPassthroughBlockWithPassStyleByDefault},
 
-	{"passthrough block honors explicit subs list", "asciidoctor/blocks_test_passthrough_block_honors_explicit_subs_list.adoc", blocksTestPassthroughBlockHonorsExplicitSubsList, nil},
+	{"passthrough block honors explicit subs list", "asciidoctor/blocks_test_passthrough_block_honors_explicit_subs_list.adoc", blocksTestPassthroughBlockHonorsExplicitSubsList},
 
-	{"should strip leading and trailing blank lines when converting raw block", "asciidoctor/blocks_test_should_strip_leading_and_trailing_blank_lines_when_converting_raw_block.adoc", blocksTestShouldStripLeadingAndTrailingBlankLinesWhenConvertingRawBlock, nil},
+	{"should strip leading and trailing blank lines when converting raw block", "asciidoctor/blocks_test_should_strip_leading_and_trailing_blank_lines_when_converting_raw_block.adoc", blocksTestShouldStripLeadingAndTrailingBlankLinesWhenConvertingRawBlock},
 
-	{"should not crash when converting stem block that has no lines", "asciidoctor/blocks_test_should_not_crash_when_converting_stem_block_that_has_no_lines.adoc", blocksTestShouldNotCrashWhenConvertingStemBlockThatHasNoLines, nil},
+	{"should not crash when converting stem block that has no lines", "asciidoctor/blocks_test_should_not_crash_when_converting_stem_block_that_has_no_lines.adoc", blocksTestShouldNotCrashWhenConvertingStemBlockThatHasNoLines},
 
-	{"should return content as empty string for stem or pass block that has no lines", "asciidoctor/blocks_test_should_return_content_as_empty_string_for_stem_or_pass_block_that_has_no_lines.adoc", blocksTestShouldReturnContentAsEmptyStringForStemOrPassBlockThatHasNoLines, nil},
+	{"should return content as empty string for stem or pass block that has no lines", "asciidoctor/blocks_test_should_return_content_as_empty_string_for_stem_or_pass_block_that_has_no_lines.adoc", blocksTestShouldReturnContentAsEmptyStringForStemOrPassBlockThatHasNoLines},
 
-	{"should not add LaTeX math delimiters around latexmath block content if already present", "asciidoctor/blocks_test_should_not_add_la_te_x_math_delimiters_around_latexmath_block_content_if_already_present.adoc", blocksTestShouldNotAddLaTeXMathDelimitersAroundLatexmathBlockContentIfAlreadyPresent, nil},
+	{"should not add LaTeX math delimiters around latexmath block content if already present", "asciidoctor/blocks_test_should_not_add_la_te_x_math_delimiters_around_latexmath_block_content_if_already_present.adoc", blocksTestShouldNotAddLaTeXMathDelimitersAroundLatexmathBlockContentIfAlreadyPresent},
 
-	{"should display latexmath block in alt of equation in DocBook backend", "asciidoctor/blocks_test_should_display_latexmath_block_in_alt_of_equation_in_doc_book_backend.adoc", blocksTestShouldDisplayLatexmathBlockInAltOfEquationInDocBookBackend, nil},
+	{"should display latexmath block in alt of equation in DocBook backend", "asciidoctor/blocks_test_should_display_latexmath_block_in_alt_of_equation_in_doc_book_backend.adoc", blocksTestShouldDisplayLatexmathBlockInAltOfEquationInDocBookBackend},
 
-	{"should set autoNumber option for latexmath to none by default", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_none_by_default.adoc", blocksTestShouldSetAutoNumberOptionForLatexmathToNoneByDefault, nil},
+	{"should set autoNumber option for latexmath to none by default", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_none_by_default.adoc", blocksTestShouldSetAutoNumberOptionForLatexmathToNoneByDefault},
 
-	{"should set autoNumber option for latexmath to none if eqnums is set to none", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_none_if_eqnums_is_set_to_none.adoc", blocksTestShouldSetAutoNumberOptionForLatexmathToNoneIfEqnumsIsSetToNone, nil},
+	{"should set autoNumber option for latexmath to none if eqnums is set to none", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_none_if_eqnums_is_set_to_none.adoc", blocksTestShouldSetAutoNumberOptionForLatexmathToNoneIfEqnumsIsSetToNone},
 
-	{"should set autoNumber option for latexmath to AMS if eqnums is set", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_ams_if_eqnums_is_set.adoc", blocksTestShouldSetAutoNumberOptionForLatexmathToAmsIfEqnumsIsSet, nil},
+	{"should set autoNumber option for latexmath to AMS if eqnums is set", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_ams_if_eqnums_is_set.adoc", blocksTestShouldSetAutoNumberOptionForLatexmathToAmsIfEqnumsIsSet},
 
-	{"should set autoNumber option for latexmath to all if eqnums is set to all", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_all_if_eqnums_is_set_to_all.adoc", blocksTestShouldSetAutoNumberOptionForLatexmathToAllIfEqnumsIsSetToAll, nil},
+	{"should set autoNumber option for latexmath to all if eqnums is set to all", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_all_if_eqnums_is_set_to_all.adoc", blocksTestShouldSetAutoNumberOptionForLatexmathToAllIfEqnumsIsSetToAll},
 
-	{"should not split equation in AsciiMath block at single newline", "asciidoctor/blocks_test_should_not_split_equation_in_ascii_math_block_at_single_newline.adoc", blocksTestShouldNotSplitEquationInAsciiMathBlockAtSingleNewline, nil},
+	{"should not split equation in AsciiMath block at single newline", "asciidoctor/blocks_test_should_not_split_equation_in_ascii_math_block_at_single_newline.adoc", blocksTestShouldNotSplitEquationInAsciiMathBlockAtSingleNewline},
 
-	{"should split equation in AsciiMath block at escaped newline", "asciidoctor/blocks_test_should_split_equation_in_ascii_math_block_at_escaped_newline.adoc", blocksTestShouldSplitEquationInAsciiMathBlockAtEscapedNewline, nil},
+	{"should split equation in AsciiMath block at escaped newline", "asciidoctor/blocks_test_should_split_equation_in_ascii_math_block_at_escaped_newline.adoc", blocksTestShouldSplitEquationInAsciiMathBlockAtEscapedNewline},
 
-	{"should split equation in AsciiMath block at sequence of escaped newlines", "asciidoctor/blocks_test_should_split_equation_in_ascii_math_block_at_sequence_of_escaped_newlines.adoc", blocksTestShouldSplitEquationInAsciiMathBlockAtSequenceOfEscapedNewlines, nil},
+	{"should split equation in AsciiMath block at sequence of escaped newlines", "asciidoctor/blocks_test_should_split_equation_in_ascii_math_block_at_sequence_of_escaped_newlines.adoc", blocksTestShouldSplitEquationInAsciiMathBlockAtSequenceOfEscapedNewlines},
 
-	{"should split equation in AsciiMath block at newline sequence and preserve breaks", "asciidoctor/blocks_test_should_split_equation_in_ascii_math_block_at_newline_sequence_and_preserve_breaks.adoc", blocksTestShouldSplitEquationInAsciiMathBlockAtNewlineSequenceAndPreserveBreaks, nil},
+	{"should split equation in AsciiMath block at newline sequence and preserve breaks", "asciidoctor/blocks_test_should_split_equation_in_ascii_math_block_at_newline_sequence_and_preserve_breaks.adoc", blocksTestShouldSplitEquationInAsciiMathBlockAtNewlineSequenceAndPreserveBreaks},
 
-	{"should add AsciiMath delimiters around asciimath block content", "asciidoctor/blocks_test_should_add_ascii_math_delimiters_around_asciimath_block_content.adoc", blocksTestShouldAddAsciiMathDelimitersAroundAsciimathBlockContent, nil},
+	{"should add AsciiMath delimiters around asciimath block content", "asciidoctor/blocks_test_should_add_ascii_math_delimiters_around_asciimath_block_content.adoc", blocksTestShouldAddAsciiMathDelimitersAroundAsciimathBlockContent},
 
-	{"should not add AsciiMath delimiters around asciimath block content if already present", "asciidoctor/blocks_test_should_not_add_ascii_math_delimiters_around_asciimath_block_content_if_already_present.adoc", blocksTestShouldNotAddAsciiMathDelimitersAroundAsciimathBlockContentIfAlreadyPresent, nil},
+	{"should not add AsciiMath delimiters around asciimath block content if already present", "asciidoctor/blocks_test_should_not_add_ascii_math_delimiters_around_asciimath_block_content_if_already_present.adoc", blocksTestShouldNotAddAsciiMathDelimitersAroundAsciimathBlockContentIfAlreadyPresent},
 
-	{"should convert contents of asciimath block to MathML in DocBook output if asciimath gem is available", "asciidoctor/blocks_test_should_convert_contents_of_asciimath_block_to_math_ml_in_doc_book_output_if_asciimath_gem_is_available.adoc", blocksTestShouldConvertContentsOfAsciimathBlockToMathMlInDocBookOutputIfAsciimathGemIsAvailable, nil},
+	{"should convert contents of asciimath block to MathML in DocBook output if asciimath gem is available", "asciidoctor/blocks_test_should_convert_contents_of_asciimath_block_to_math_ml_in_doc_book_output_if_asciimath_gem_is_available.adoc", blocksTestShouldConvertContentsOfAsciimathBlockToMathMlInDocBookOutputIfAsciimathGemIsAvailable},
 
-	{"should output title for latexmath block if defined", "asciidoctor/blocks_test_should_output_title_for_latexmath_block_if_defined.adoc", blocksTestShouldOutputTitleForLatexmathBlockIfDefined, nil},
+	{"should output title for latexmath block if defined", "asciidoctor/blocks_test_should_output_title_for_latexmath_block_if_defined.adoc", blocksTestShouldOutputTitleForLatexmathBlockIfDefined},
 
-	{"should output title for asciimath block if defined", "asciidoctor/blocks_test_should_output_title_for_asciimath_block_if_defined.adoc", blocksTestShouldOutputTitleForAsciimathBlockIfDefined, nil},
+	{"should output title for asciimath block if defined", "asciidoctor/blocks_test_should_output_title_for_asciimath_block_if_defined.adoc", blocksTestShouldOutputTitleForAsciimathBlockIfDefined},
 
-	{"should add AsciiMath delimiters around stem block content if stem attribute is asciimath, empty, or not set", "asciidoctor/blocks_test_should_add_ascii_math_delimiters_around_stem_block_content_if_stem_attribute_is_asciimath_empty_or_not_set.adoc", blocksTestShouldAddAsciiMathDelimitersAroundStemBlockContentIfStemAttributeIsAsciimathEmptyOrNotSet, nil},
+	{"should add AsciiMath delimiters around stem block content if stem attribute is asciimath, empty, or not set", "asciidoctor/blocks_test_should_add_ascii_math_delimiters_around_stem_block_content_if_stem_attribute_is_asciimath_empty_or_not_set.adoc", blocksTestShouldAddAsciiMathDelimitersAroundStemBlockContentIfStemAttributeIsAsciimathEmptyOrNotSet},
 
-	{"should add LaTeX math delimiters around stem block content if stem attribute is latexmath, latex, or tex", "asciidoctor/blocks_test_should_add_la_te_x_math_delimiters_around_stem_block_content_if_stem_attribute_is_latexmath_latex_or_tex.adoc", blocksTestShouldAddLaTeXMathDelimitersAroundStemBlockContentIfStemAttributeIsLatexmathLatexOrTex, nil},
+	{"should add LaTeX math delimiters around stem block content if stem attribute is latexmath, latex, or tex", "asciidoctor/blocks_test_should_add_la_te_x_math_delimiters_around_stem_block_content_if_stem_attribute_is_latexmath_latex_or_tex.adoc", blocksTestShouldAddLaTeXMathDelimitersAroundStemBlockContentIfStemAttributeIsLatexmathLatexOrTex},
 
-	{"should allow stem style to be set using second positional argument of block attributes", "asciidoctor/blocks_test_should_allow_stem_style_to_be_set_using_second_positional_argument_of_block_attributes.adoc", blocksTestShouldAllowStemStyleToBeSetUsingSecondPositionalArgumentOfBlockAttributes, nil},
+	{"should allow stem style to be set using second positional argument of block attributes", "asciidoctor/blocks_test_should_allow_stem_style_to_be_set_using_second_positional_argument_of_block_attributes.adoc", blocksTestShouldAllowStemStyleToBeSetUsingSecondPositionalArgumentOfBlockAttributes},
 
-	{"should not warn if block style is unknown", "asciidoctor/blocks_test_should_not_warn_if_block_style_is_unknown.adoc", blocksTestShouldNotWarnIfBlockStyleIsUnknown, nil},
+	{"should not warn if block style is unknown", "asciidoctor/blocks_test_should_not_warn_if_block_style_is_unknown.adoc", blocksTestShouldNotWarnIfBlockStyleIsUnknown},
 
-	{"should log debug message if block style is unknown and debug level is enabled", "asciidoctor/blocks_test_should_log_debug_message_if_block_style_is_unknown_and_debug_level_is_enabled.adoc", blocksTestShouldLogDebugMessageIfBlockStyleIsUnknownAndDebugLevelIsEnabled, nil},
+	{"should log debug message if block style is unknown and debug level is enabled", "asciidoctor/blocks_test_should_log_debug_message_if_block_style_is_unknown_and_debug_level_is_enabled.adoc", blocksTestShouldLogDebugMessageIfBlockStyleIsUnknownAndDebugLevelIsEnabled},
 
-	{"block title above section gets carried over to first block in section", "asciidoctor/blocks_test_block_title_above_section_gets_carried_over_to_first_block_in_section.adoc", blocksTestBlockTitleAboveSectionGetsCarriedOverToFirstBlockInSection, nil},
+	{"block title above section gets carried over to first block in section", "asciidoctor/blocks_test_block_title_above_section_gets_carried_over_to_first_block_in_section.adoc", blocksTestBlockTitleAboveSectionGetsCarriedOverToFirstBlockInSection},
 
-	{"block title above document title demotes document title to a section title", "asciidoctor/blocks_test_block_title_above_document_title_demotes_document_title_to_a_section_title.adoc", blocksTestBlockTitleAboveDocumentTitleDemotesDocumentTitleToASectionTitle, nil},
+	{"block title above document title demotes document title to a section title", "asciidoctor/blocks_test_block_title_above_document_title_demotes_document_title_to_a_section_title.adoc", blocksTestBlockTitleAboveDocumentTitleDemotesDocumentTitleToASectionTitle},
 
-	{"block title above document title gets carried over to first block in first section if no preamble", "asciidoctor/blocks_test_block_title_above_document_title_gets_carried_over_to_first_block_in_first_section_if_no_preamble.adoc", blocksTestBlockTitleAboveDocumentTitleGetsCarriedOverToFirstBlockInFirstSectionIfNoPreamble, nil},
+	{"block title above document title gets carried over to first block in first section if no preamble", "asciidoctor/blocks_test_block_title_above_document_title_gets_carried_over_to_first_block_in_first_section_if_no_preamble.adoc", blocksTestBlockTitleAboveDocumentTitleGetsCarriedOverToFirstBlockInFirstSectionIfNoPreamble},
 
-	{"should apply substitutions to a block title in normal order", "asciidoctor/blocks_test_should_apply_substitutions_to_a_block_title_in_normal_order.adoc", blocksTestShouldApplySubstitutionsToABlockTitleInNormalOrder, nil},
+	{"should apply substitutions to a block title in normal order", "asciidoctor/blocks_test_should_apply_substitutions_to_a_block_title_in_normal_order.adoc", blocksTestShouldApplySubstitutionsToABlockTitleInNormalOrder},
 
-	{"empty attribute list should not appear in output", "asciidoctor/blocks_test_empty_attribute_list_should_not_appear_in_output.adoc", blocksTestEmptyAttributeListShouldNotAppearInOutput, nil},
+	{"empty attribute list should not appear in output", "asciidoctor/blocks_test_empty_attribute_list_should_not_appear_in_output.adoc", blocksTestEmptyAttributeListShouldNotAppearInOutput},
 
-	{"empty block anchor should not appear in output", "asciidoctor/blocks_test_empty_block_anchor_should_not_appear_in_output.adoc", blocksTestEmptyBlockAnchorShouldNotAppearInOutput, nil},
+	{"empty block anchor should not appear in output", "asciidoctor/blocks_test_empty_block_anchor_should_not_appear_in_output.adoc", blocksTestEmptyBlockAnchorShouldNotAppearInOutput},
 
-	{"can convert block image with alt text defined in macro", "asciidoctor/blocks_test_can_convert_block_image_with_alt_text_defined_in_macro.adoc", blocksTestCanConvertBlockImageWithAltTextDefinedInMacro, nil},
+	{"can convert block image with alt text defined in macro", "asciidoctor/blocks_test_can_convert_block_image_with_alt_text_defined_in_macro.adoc", blocksTestCanConvertBlockImageWithAltTextDefinedInMacro},
 
-	{"converts SVG image with alt text using img element when safe mode is secure", "asciidoctor/blocks_test_converts_svg_image_with_alt_text_using_img_element_when_safe_mode_is_secure.adoc", blocksTestConvertsSvgImageWithAltTextUsingImgElementWhenSafeModeIsSecure, nil},
+	{"converts SVG image with alt text using img element when safe mode is secure", "asciidoctor/blocks_test_converts_svg_image_with_alt_text_using_img_element_when_safe_mode_is_secure.adoc", blocksTestConvertsSvgImageWithAltTextUsingImgElementWhenSafeModeIsSecure},
 
-	{"inserts fallback image for SVG inside object element using same dimensions", "asciidoctor/blocks_test_inserts_fallback_image_for_svg_inside_object_element_using_same_dimensions.adoc", blocksTestInsertsFallbackImageForSvgInsideObjectElementUsingSameDimensions, nil},
+	{"inserts fallback image for SVG inside object element using same dimensions", "asciidoctor/blocks_test_inserts_fallback_image_for_svg_inside_object_element_using_same_dimensions.adoc", blocksTestInsertsFallbackImageForSvgInsideObjectElementUsingSameDimensions},
 
-	{"detects SVG image URI that contains a query string", "asciidoctor/blocks_test_detects_svg_image_uri_that_contains_a_query_string.adoc", blocksTestDetectsSvgImageUriThatContainsAQueryString, nil},
+	{"detects SVG image URI that contains a query string", "asciidoctor/blocks_test_detects_svg_image_uri_that_contains_a_query_string.adoc", blocksTestDetectsSvgImageUriThatContainsAQueryString},
 
-	{"detects SVG image when format attribute is svg", "asciidoctor/blocks_test_detects_svg_image_when_format_attribute_is_svg.adoc", blocksTestDetectsSvgImageWhenFormatAttributeIsSvg, nil},
+	{"detects SVG image when format attribute is svg", "asciidoctor/blocks_test_detects_svg_image_when_format_attribute_is_svg.adoc", blocksTestDetectsSvgImageWhenFormatAttributeIsSvg},
 
-	{"converts to inline SVG image when inline option is set on block", "asciidoctor/blocks_test_converts_to_inline_svg_image_when_inline_option_is_set_on_block.adoc", blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlock, nil},
+	{"converts to inline SVG image when inline option is set on block", "asciidoctor/blocks_test_converts_to_inline_svg_image_when_inline_option_is_set_on_block.adoc", blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlock},
 
-	{"should ignore link attribute if value is self and image target is inline SVG", "asciidoctor/blocks_test_should_ignore_link_attribute_if_value_is_self_and_image_target_is_inline_svg.adoc", blocksTestShouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg, nil},
+	{"should ignore link attribute if value is self and image target is inline SVG", "asciidoctor/blocks_test_should_ignore_link_attribute_if_value_is_self_and_image_target_is_inline_svg.adoc", blocksTestShouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg},
 
-	{"should honor percentage width for SVG image with inline option", "asciidoctor/blocks_test_should_honor_percentage_width_for_svg_image_with_inline_option.adoc", blocksTestShouldHonorPercentageWidthForSvgImageWithInlineOption, nil},
+	{"should honor percentage width for SVG image with inline option", "asciidoctor/blocks_test_should_honor_percentage_width_for_svg_image_with_inline_option.adoc", blocksTestShouldHonorPercentageWidthForSvgImageWithInlineOption},
 
-	{"should not crash if explicit width on SVG image block is an integer", "asciidoctor/blocks_test_should_not_crash_if_explicit_width_on_svg_image_block_is_an_integer.adoc", blocksTestShouldNotCrashIfExplicitWidthOnSvgImageBlockIsAnInteger, nil},
+	{"should not crash if explicit width on SVG image block is an integer", "asciidoctor/blocks_test_should_not_crash_if_explicit_width_on_svg_image_block_is_an_integer.adoc", blocksTestShouldNotCrashIfExplicitWidthOnSvgImageBlockIsAnInteger},
 
-	{"converts to inline SVG image when inline option is set on block and data-uri is set on document", "asciidoctor/blocks_test_converts_to_inline_svg_image_when_inline_option_is_set_on_block_and_data_uri_is_set_on_document.adoc", blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlockAndDataUriIsSetOnDocument, nil},
+	{"converts to inline SVG image when inline option is set on block and data-uri is set on document", "asciidoctor/blocks_test_converts_to_inline_svg_image_when_inline_option_is_set_on_block_and_data_uri_is_set_on_document.adoc", blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlockAndDataUriIsSetOnDocument},
 
-	{"should not throw exception if SVG to inline is empty", "asciidoctor/blocks_test_should_not_throw_exception_if_svg_to_inline_is_empty.adoc", blocksTestShouldNotThrowExceptionIfSvgToInlineIsEmpty, nil},
+	{"should not throw exception if SVG to inline is empty", "asciidoctor/blocks_test_should_not_throw_exception_if_svg_to_inline_is_empty.adoc", blocksTestShouldNotThrowExceptionIfSvgToInlineIsEmpty},
 
-	{"can convert block image with alt text defined in macro containing square bracket", "asciidoctor/blocks_test_can_convert_block_image_with_alt_text_defined_in_macro_containing_square_bracket.adoc", blocksTestCanConvertBlockImageWithAltTextDefinedInMacroContainingSquareBracket, nil},
+	{"can convert block image with alt text defined in macro containing square bracket", "asciidoctor/blocks_test_can_convert_block_image_with_alt_text_defined_in_macro_containing_square_bracket.adoc", blocksTestCanConvertBlockImageWithAltTextDefinedInMacroContainingSquareBracket},
 
-	{"alt text in macro overrides alt text above macro", "asciidoctor/blocks_test_alt_text_in_macro_overrides_alt_text_above_macro.adoc", blocksTestAltTextInMacroOverridesAltTextAboveMacro, nil},
+	{"alt text in macro overrides alt text above macro", "asciidoctor/blocks_test_alt_text_in_macro_overrides_alt_text_above_macro.adoc", blocksTestAltTextInMacroOverridesAltTextAboveMacro},
 
-	{"should substitute attribute references in alt text defined in image block macro", "asciidoctor/blocks_test_should_substitute_attribute_references_in_alt_text_defined_in_image_block_macro.adoc", blocksTestShouldSubstituteAttributeReferencesInAltTextDefinedInImageBlockMacro, nil},
+	{"should substitute attribute references in alt text defined in image block macro", "asciidoctor/blocks_test_should_substitute_attribute_references_in_alt_text_defined_in_image_block_macro.adoc", blocksTestShouldSubstituteAttributeReferencesInAltTextDefinedInImageBlockMacro},
 
-	{"should set direction CSS class on image if float attribute is set", "asciidoctor/blocks_test_should_set_direction_css_class_on_image_if_float_attribute_is_set.adoc", blocksTestShouldSetDirectionCssClassOnImageIfFloatAttributeIsSet, nil},
+	{"should set direction CSS class on image if float attribute is set", "asciidoctor/blocks_test_should_set_direction_css_class_on_image_if_float_attribute_is_set.adoc", blocksTestShouldSetDirectionCssClassOnImageIfFloatAttributeIsSet},
 
-	{"should set text alignment CSS class on image if align attribute is set", "asciidoctor/blocks_test_should_set_text_alignment_css_class_on_image_if_align_attribute_is_set.adoc", blocksTestShouldSetTextAlignmentCssClassOnImageIfAlignAttributeIsSet, nil},
+	{"should set text alignment CSS class on image if align attribute is set", "asciidoctor/blocks_test_should_set_text_alignment_css_class_on_image_if_align_attribute_is_set.adoc", blocksTestShouldSetTextAlignmentCssClassOnImageIfAlignAttributeIsSet},
 
-	{"style attribute is dropped from image macro", "asciidoctor/blocks_test_style_attribute_is_dropped_from_image_macro.adoc", blocksTestStyleAttributeIsDroppedFromImageMacro, nil},
+	{"style attribute is dropped from image macro", "asciidoctor/blocks_test_style_attribute_is_dropped_from_image_macro.adoc", blocksTestStyleAttributeIsDroppedFromImageMacro},
 
-	{"should auto-generate alt text for block image if alt text is not specified", "asciidoctor/blocks_test_should_auto_generate_alt_text_for_block_image_if_alt_text_is_not_specified.adoc", blocksTestShouldAutoGenerateAltTextForBlockImageIfAltTextIsNotSpecified, nil},
+	{"should auto-generate alt text for block image if alt text is not specified", "asciidoctor/blocks_test_should_auto_generate_alt_text_for_block_image_if_alt_text_is_not_specified.adoc", blocksTestShouldAutoGenerateAltTextForBlockImageIfAltTextIsNotSpecified},
 
-	{"can convert block image with link to self", "asciidoctor/blocks_test_can_convert_block_image_with_link_to_self.adoc", blocksTestCanConvertBlockImageWithLinkToSelf, nil},
+	{"can convert block image with link to self", "asciidoctor/blocks_test_can_convert_block_image_with_link_to_self.adoc", blocksTestCanConvertBlockImageWithLinkToSelf},
 
-	{"adds rel=noopener attribute to block image with link that targets _blank window", "asciidoctor/blocks_test_adds_rel=noopener_attribute_to_block_image_with_link_that_targets__blank_window.adoc", blocksTestAddsRelnoopenerAttributeToBlockImageWithLinkThatTargetsBlankWindow, nil},
+	{"adds rel=noopener attribute to block image with link that targets _blank window", "asciidoctor/blocks_test_adds_rel=noopener_attribute_to_block_image_with_link_that_targets__blank_window.adoc", blocksTestAddsRelnoopenerAttributeToBlockImageWithLinkThatTargetsBlankWindow},
 
-	{"can convert block image with explicit caption", "asciidoctor/blocks_test_can_convert_block_image_with_explicit_caption.adoc", blocksTestCanConvertBlockImageWithExplicitCaption, nil},
+	{"can convert block image with explicit caption", "asciidoctor/blocks_test_can_convert_block_image_with_explicit_caption.adoc", blocksTestCanConvertBlockImageWithExplicitCaption},
 
-	{"can align image in DocBook backend", "asciidoctor/blocks_test_can_align_image_in_doc_book_backend.adoc", blocksTestCanAlignImageInDocBookBackend, nil},
+	{"can align image in DocBook backend", "asciidoctor/blocks_test_can_align_image_in_doc_book_backend.adoc", blocksTestCanAlignImageInDocBookBackend},
 
-	{"should not drop line if image target is missing attribute reference and attribute-missing is drop", "asciidoctor/blocks_test_should_not_drop_line_if_image_target_is_missing_attribute_reference_and_attribute_missing_is_drop.adoc", blocksTestShouldNotDropLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDrop, nil},
+	{"should not drop line if image target is missing attribute reference and attribute-missing is drop", "asciidoctor/blocks_test_should_not_drop_line_if_image_target_is_missing_attribute_reference_and_attribute_missing_is_drop.adoc", blocksTestShouldNotDropLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDrop},
 
-	{"drops line if image target is missing attribute reference and attribute-missing is drop-line", "asciidoctor/blocks_test_drops_line_if_image_target_is_missing_attribute_reference_and_attribute_missing_is_drop_line.adoc", blocksTestDropsLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDropLine, nil},
+	{"drops line if image target is missing attribute reference and attribute-missing is drop-line", "asciidoctor/blocks_test_drops_line_if_image_target_is_missing_attribute_reference_and_attribute_missing_is_drop_line.adoc", blocksTestDropsLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDropLine},
 
-	{"should not drop line if image target resolves to blank and attribute-missing is drop-line", "asciidoctor/blocks_test_should_not_drop_line_if_image_target_resolves_to_blank_and_attribute_missing_is_drop_line.adoc", blocksTestShouldNotDropLineIfImageTargetResolvesToBlankAndAttributeMissingIsDropLine, nil},
+	{"should not drop line if image target resolves to blank and attribute-missing is drop-line", "asciidoctor/blocks_test_should_not_drop_line_if_image_target_resolves_to_blank_and_attribute_missing_is_drop_line.adoc", blocksTestShouldNotDropLineIfImageTargetResolvesToBlankAndAttributeMissingIsDropLine},
 
-	{"dropped image does not break processing of following section and attribute-missing is drop-line", "asciidoctor/blocks_test_dropped_image_does_not_break_processing_of_following_section_and_attribute_missing_is_drop_line.adoc", blocksTestDroppedImageDoesNotBreakProcessingOfFollowingSectionAndAttributeMissingIsDropLine, nil},
+	{"dropped image does not break processing of following section and attribute-missing is drop-line", "asciidoctor/blocks_test_dropped_image_does_not_break_processing_of_following_section_and_attribute_missing_is_drop_line.adoc", blocksTestDroppedImageDoesNotBreakProcessingOfFollowingSectionAndAttributeMissingIsDropLine},
 
-	{"should pass through image that references uri", "asciidoctor/blocks_test_should_pass_through_image_that_references_uri.adoc", blocksTestShouldPassThroughImageThatReferencesUri, nil},
+	{"should pass through image that references uri", "asciidoctor/blocks_test_should_pass_through_image_that_references_uri.adoc", blocksTestShouldPassThroughImageThatReferencesUri},
 
-	{"should encode spaces in image target if value is a URI", "asciidoctor/blocks_test_should_encode_spaces_in_image_target_if_value_is_a_uri.adoc", blocksTestShouldEncodeSpacesInImageTargetIfValueIsAUri, nil},
+	{"should encode spaces in image target if value is a URI", "asciidoctor/blocks_test_should_encode_spaces_in_image_target_if_value_is_a_uri.adoc", blocksTestShouldEncodeSpacesInImageTargetIfValueIsAUri},
 
-	{"embeds base64-encoded data uri for image when data-uri attribute is set", "asciidoctor/blocks_test_embeds_base_64_encoded_data_uri_for_image_when_data_uri_attribute_is_set.adoc", blocksTestEmbedsBase64EncodedDataUriForImageWhenDataUriAttributeIsSet, nil},
+	{"embeds base64-encoded data uri for image when data-uri attribute is set", "asciidoctor/blocks_test_embeds_base_64_encoded_data_uri_for_image_when_data_uri_attribute_is_set.adoc", blocksTestEmbedsBase64EncodedDataUriForImageWhenDataUriAttributeIsSet},
 
-	{"embeds SVG image with image/svg+xml mimetype when file extension is .svg", "asciidoctor/blocks_test_embeds_svg_image_with_image_svg+xml_mimetype_when_file_extension_is__svg.adoc", blocksTestEmbedsSvgImageWithImageSvgxmlMimetypeWhenFileExtensionIsSvg, nil},
+	{"embeds SVG image with image/svg+xml mimetype when file extension is .svg", "asciidoctor/blocks_test_embeds_svg_image_with_image_svg+xml_mimetype_when_file_extension_is__svg.adoc", blocksTestEmbedsSvgImageWithImageSvgxmlMimetypeWhenFileExtensionIsSvg},
 
-	{"should link to data URI if value of link attribute is self and image is embedded", "asciidoctor/blocks_test_should_link_to_data_uri_if_value_of_link_attribute_is_self_and_image_is_embedded.adoc", blocksTestShouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded, nil},
+	{"should link to data URI if value of link attribute is self and image is embedded", "asciidoctor/blocks_test_should_link_to_data_uri_if_value_of_link_attribute_is_self_and_image_is_embedded.adoc", blocksTestShouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded},
 
-	{"embeds empty base64-encoded data uri for unreadable image when data-uri attribute is set", "asciidoctor/blocks_test_embeds_empty_base_64_encoded_data_uri_for_unreadable_image_when_data_uri_attribute_is_set.adoc", blocksTestEmbedsEmptyBase64EncodedDataUriForUnreadableImageWhenDataUriAttributeIsSet, nil},
+	{"embeds empty base64-encoded data uri for unreadable image when data-uri attribute is set", "asciidoctor/blocks_test_embeds_empty_base_64_encoded_data_uri_for_unreadable_image_when_data_uri_attribute_is_set.adoc", blocksTestEmbedsEmptyBase64EncodedDataUriForUnreadableImageWhenDataUriAttributeIsSet},
 
-	{"embeds base64-encoded data uri with application/octet-stream mimetype when file extension is missing", "asciidoctor/blocks_test_embeds_base_64_encoded_data_uri_with_application_octet_stream_mimetype_when_file_extension_is_missing.adoc", blocksTestEmbedsBase64EncodedDataUriWithApplicationOctetStreamMimetypeWhenFileExtensionIsMissing, nil},
+	{"embeds base64-encoded data uri with application/octet-stream mimetype when file extension is missing", "asciidoctor/blocks_test_embeds_base_64_encoded_data_uri_with_application_octet_stream_mimetype_when_file_extension_is_missing.adoc", blocksTestEmbedsBase64EncodedDataUriWithApplicationOctetStreamMimetypeWhenFileExtensionIsMissing},
 
-	{"can handle embedded data uri images", "asciidoctor/blocks_test_can_handle_embedded_data_uri_images.adoc", blocksTestCanHandleEmbeddedDataUriImages, nil},
+	{"can handle embedded data uri images", "asciidoctor/blocks_test_can_handle_embedded_data_uri_images.adoc", blocksTestCanHandleEmbeddedDataUriImages},
 
-	{"cleans reference to ancestor directories in imagesdir before reading image if safe mode level is at least SAFE", "asciidoctor/blocks_test_cleans_reference_to_ancestor_directories_in_imagesdir_before_reading_image_if_safe_mode_level_is_at_least_safe.adoc", blocksTestCleansReferenceToAncestorDirectoriesInImagesdirBeforeReadingImageIfSafeModeLevelIsAtLeastSafe, nil},
+	{"cleans reference to ancestor directories in imagesdir before reading image if safe mode level is at least SAFE", "asciidoctor/blocks_test_cleans_reference_to_ancestor_directories_in_imagesdir_before_reading_image_if_safe_mode_level_is_at_least_safe.adoc", blocksTestCleansReferenceToAncestorDirectoriesInImagesdirBeforeReadingImageIfSafeModeLevelIsAtLeastSafe},
 
-	{"cleans reference to ancestor directories in target before reading image if safe mode level is at least SAFE", "asciidoctor/blocks_test_cleans_reference_to_ancestor_directories_in_target_before_reading_image_if_safe_mode_level_is_at_least_safe.adoc", blocksTestCleansReferenceToAncestorDirectoriesInTargetBeforeReadingImageIfSafeModeLevelIsAtLeastSafe, nil},
+	{"cleans reference to ancestor directories in target before reading image if safe mode level is at least SAFE", "asciidoctor/blocks_test_cleans_reference_to_ancestor_directories_in_target_before_reading_image_if_safe_mode_level_is_at_least_safe.adoc", blocksTestCleansReferenceToAncestorDirectoriesInTargetBeforeReadingImageIfSafeModeLevelIsAtLeastSafe},
 
-	{"should detect and convert video macro", "asciidoctor/blocks_test_should_detect_and_convert_video_macro.adoc", blocksTestShouldDetectAndConvertVideoMacro, nil},
+	{"should detect and convert video macro", "asciidoctor/blocks_test_should_detect_and_convert_video_macro.adoc", blocksTestShouldDetectAndConvertVideoMacro},
 
-	{"video macro should not use imagesdir attribute to resolve target if target is a URL", "asciidoctor/blocks_test_video_macro_should_not_use_imagesdir_attribute_to_resolve_target_if_target_is_a_url.adoc", blocksTestVideoMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl, nil},
+	{"video macro should not use imagesdir attribute to resolve target if target is a URL", "asciidoctor/blocks_test_video_macro_should_not_use_imagesdir_attribute_to_resolve_target_if_target_is_a_url.adoc", blocksTestVideoMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl},
 
-	{"video macro should output custom HTML with iframe for vimeo service", "asciidoctor/blocks_test_video_macro_should_output_custom_html_with_iframe_for_vimeo_service.adoc", blocksTestVideoMacroShouldOutputCustomHtmlWithIframeForVimeoService, nil},
+	{"video macro should output custom HTML with iframe for vimeo service", "asciidoctor/blocks_test_video_macro_should_output_custom_html_with_iframe_for_vimeo_service.adoc", blocksTestVideoMacroShouldOutputCustomHtmlWithIframeForVimeoService},
 
-	{"audio macro should not use imagesdir attribute to resolve target if target is a URL", "asciidoctor/blocks_test_audio_macro_should_not_use_imagesdir_attribute_to_resolve_target_if_target_is_a_url.adoc", blocksTestAudioMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl, nil},
+	{"audio macro should not use imagesdir attribute to resolve target if target is a URL", "asciidoctor/blocks_test_audio_macro_should_not_use_imagesdir_attribute_to_resolve_target_if_target_is_a_url.adoc", blocksTestAudioMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl},
 
-	{"audio macro should honor all options", "asciidoctor/blocks_test_audio_macro_should_honor_all_options.adoc", blocksTestAudioMacroShouldHonorAllOptions, nil},
+	{"audio macro should honor all options", "asciidoctor/blocks_test_audio_macro_should_honor_all_options.adoc", blocksTestAudioMacroShouldHonorAllOptions},
 
-	{"can resolve icon relative to custom iconsdir", "asciidoctor/blocks_test_can_resolve_icon_relative_to_custom_iconsdir.adoc", blocksTestCanResolveIconRelativeToCustomIconsdir, nil},
+	{"can resolve icon relative to custom iconsdir", "asciidoctor/blocks_test_can_resolve_icon_relative_to_custom_iconsdir.adoc", blocksTestCanResolveIconRelativeToCustomIconsdir},
 
-	{"should add file extension to custom icon if not specified", "asciidoctor/blocks_test_should_add_file_extension_to_custom_icon_if_not_specified.adoc", blocksTestShouldAddFileExtensionToCustomIconIfNotSpecified, nil},
+	{"should add file extension to custom icon if not specified", "asciidoctor/blocks_test_should_add_file_extension_to_custom_icon_if_not_specified.adoc", blocksTestShouldAddFileExtensionToCustomIconIfNotSpecified},
 
-	{"should allow icontype to be specified when using built-in admonition icon", "asciidoctor/blocks_test_should_allow_icontype_to_be_specified_when_using_built_in_admonition_icon.adoc", blocksTestShouldAllowIcontypeToBeSpecifiedWhenUsingBuiltInAdmonitionIcon, nil},
+	{"should allow icontype to be specified when using built-in admonition icon", "asciidoctor/blocks_test_should_allow_icontype_to_be_specified_when_using_built_in_admonition_icon.adoc", blocksTestShouldAllowIcontypeToBeSpecifiedWhenUsingBuiltInAdmonitionIcon},
 
-	{"embeds base64-encoded data uri of icon when data-uri attribute is set and safe mode level is less than SECURE", "asciidoctor/blocks_test_embeds_base_64_encoded_data_uri_of_icon_when_data_uri_attribute_is_set_and_safe_mode_level_is_less_than_secure.adoc", blocksTestEmbedsBase64EncodedDataUriOfIconWhenDataUriAttributeIsSetAndSafeModeLevelIsLessThanSecure, nil},
+	{"embeds base64-encoded data uri of icon when data-uri attribute is set and safe mode level is less than SECURE", "asciidoctor/blocks_test_embeds_base_64_encoded_data_uri_of_icon_when_data_uri_attribute_is_set_and_safe_mode_level_is_less_than_secure.adoc", blocksTestEmbedsBase64EncodedDataUriOfIconWhenDataUriAttributeIsSetAndSafeModeLevelIsLessThanSecure},
 
-	{"should embed base64-encoded data uri of custom icon when data-uri attribute is set", "asciidoctor/blocks_test_should_embed_base_64_encoded_data_uri_of_custom_icon_when_data_uri_attribute_is_set.adoc", blocksTestShouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsSet, nil},
+	{"should embed base64-encoded data uri of custom icon when data-uri attribute is set", "asciidoctor/blocks_test_should_embed_base_64_encoded_data_uri_of_custom_icon_when_data_uri_attribute_is_set.adoc", blocksTestShouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsSet},
 
-	{"does not embed base64-encoded data uri of icon when safe mode level is SECURE or greater", "asciidoctor/blocks_test_does_not_embed_base_64_encoded_data_uri_of_icon_when_safe_mode_level_is_secure_or_greater.adoc", blocksTestDoesNotEmbedBase64EncodedDataUriOfIconWhenSafeModeLevelIsSecureOrGreater, nil},
+	{"does not embed base64-encoded data uri of icon when safe mode level is SECURE or greater", "asciidoctor/blocks_test_does_not_embed_base_64_encoded_data_uri_of_icon_when_safe_mode_level_is_secure_or_greater.adoc", blocksTestDoesNotEmbedBase64EncodedDataUriOfIconWhenSafeModeLevelIsSecureOrGreater},
 
-	{"cleans reference to ancestor directories before reading icon if safe mode level is at least SAFE", "asciidoctor/blocks_test_cleans_reference_to_ancestor_directories_before_reading_icon_if_safe_mode_level_is_at_least_safe.adoc", blocksTestCleansReferenceToAncestorDirectoriesBeforeReadingIconIfSafeModeLevelIsAtLeastSafe, nil},
+	{"cleans reference to ancestor directories before reading icon if safe mode level is at least SAFE", "asciidoctor/blocks_test_cleans_reference_to_ancestor_directories_before_reading_icon_if_safe_mode_level_is_at_least_safe.adoc", blocksTestCleansReferenceToAncestorDirectoriesBeforeReadingIconIfSafeModeLevelIsAtLeastSafe},
 
-	{"should import Font Awesome and use font-based icons when value of icons attribute is font", "asciidoctor/blocks_test_should_import_font_awesome_and_use_font_based_icons_when_value_of_icons_attribute_is_font.adoc", blocksTestShouldImportFontAwesomeAndUseFontBasedIconsWhenValueOfIconsAttributeIsFont, nil},
+	{"should import Font Awesome and use font-based icons when value of icons attribute is font", "asciidoctor/blocks_test_should_import_font_awesome_and_use_font_based_icons_when_value_of_icons_attribute_is_font.adoc", blocksTestShouldImportFontAwesomeAndUseFontBasedIconsWhenValueOfIconsAttributeIsFont},
 
-	{"font-based icon should not override icon specified on admonition", "asciidoctor/blocks_test_font_based_icon_should_not_override_icon_specified_on_admonition.adoc", blocksTestFontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition, nil},
+	{"font-based icon should not override icon specified on admonition", "asciidoctor/blocks_test_font_based_icon_should_not_override_icon_specified_on_admonition.adoc", blocksTestFontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition},
 
-	{"should use http uri scheme for assets when asset-uri-scheme is http", "asciidoctor/blocks_test_should_use_http_uri_scheme_for_assets_when_asset_uri_scheme_is_http.adoc", blocksTestShouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp, nil},
+	{"should use http uri scheme for assets when asset-uri-scheme is http", "asciidoctor/blocks_test_should_use_http_uri_scheme_for_assets_when_asset_uri_scheme_is_http.adoc", blocksTestShouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp},
 
-	{"should use no uri scheme for assets when asset-uri-scheme is blank", "asciidoctor/blocks_test_should_use_no_uri_scheme_for_assets_when_asset_uri_scheme_is_blank.adoc", blocksTestShouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank, nil},
+	{"should use no uri scheme for assets when asset-uri-scheme is blank", "asciidoctor/blocks_test_should_use_no_uri_scheme_for_assets_when_asset_uri_scheme_is_blank.adoc", blocksTestShouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank},
 
-	{"restricts access to ancestor directories when safe mode level is at least SAFE", "asciidoctor/blocks_test_restricts_access_to_ancestor_directories_when_safe_mode_level_is_at_least_safe.adoc", blocksTestRestrictsAccessToAncestorDirectoriesWhenSafeModeLevelIsAtLeastSafe, nil},
+	{"restricts access to ancestor directories when safe mode level is at least SAFE", "asciidoctor/blocks_test_restricts_access_to_ancestor_directories_when_safe_mode_level_is_at_least_safe.adoc", blocksTestRestrictsAccessToAncestorDirectoriesWhenSafeModeLevelIsAtLeastSafe},
 
-	{"should not recognize fenced code blocks with more than three delimiters", "asciidoctor/blocks_test_should_not_recognize_fenced_code_blocks_with_more_than_three_delimiters.adoc", blocksTestShouldNotRecognizeFencedCodeBlocksWithMoreThanThreeDelimiters, nil},
+	{"should not recognize fenced code blocks with more than three delimiters", "asciidoctor/blocks_test_should_not_recognize_fenced_code_blocks_with_more_than_three_delimiters.adoc", blocksTestShouldNotRecognizeFencedCodeBlocksWithMoreThanThreeDelimiters},
 
-	{"should support fenced code blocks with languages", "asciidoctor/blocks_test_should_support_fenced_code_blocks_with_languages.adoc", blocksTestShouldSupportFencedCodeBlocksWithLanguages, nil},
+	{"should support fenced code blocks with languages", "asciidoctor/blocks_test_should_support_fenced_code_blocks_with_languages.adoc", blocksTestShouldSupportFencedCodeBlocksWithLanguages},
 
-	{"should support fenced code blocks with languages and numbering", "asciidoctor/blocks_test_should_support_fenced_code_blocks_with_languages_and_numbering.adoc", blocksTestShouldSupportFencedCodeBlocksWithLanguagesAndNumbering, nil},
+	{"should support fenced code blocks with languages and numbering", "asciidoctor/blocks_test_should_support_fenced_code_blocks_with_languages_and_numbering.adoc", blocksTestShouldSupportFencedCodeBlocksWithLanguagesAndNumbering},
 
-	{"should allow source style to be specified on literal block", "asciidoctor/blocks_test_should_allow_source_style_to_be_specified_on_literal_block.adoc", blocksTestShouldAllowSourceStyleToBeSpecifiedOnLiteralBlock, nil},
+	{"should allow source style to be specified on literal block", "asciidoctor/blocks_test_should_allow_source_style_to_be_specified_on_literal_block.adoc", blocksTestShouldAllowSourceStyleToBeSpecifiedOnLiteralBlock},
 
-	{"should allow source style and language to be specified on literal block", "asciidoctor/blocks_test_should_allow_source_style_and_language_to_be_specified_on_literal_block.adoc", blocksTestShouldAllowSourceStyleAndLanguageToBeSpecifiedOnLiteralBlock, nil},
+	{"should allow source style and language to be specified on literal block", "asciidoctor/blocks_test_should_allow_source_style_and_language_to_be_specified_on_literal_block.adoc", blocksTestShouldAllowSourceStyleAndLanguageToBeSpecifiedOnLiteralBlock},
 
-	{"should make abstract on open block without title a quote block for article", "asciidoctor/blocks_test_should_make_abstract_on_open_block_without_title_a_quote_block_for_article.adoc", blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle, nil},
+	{"should make abstract on open block without title a quote block for article", "asciidoctor/blocks_test_should_make_abstract_on_open_block_without_title_a_quote_block_for_article.adoc", blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle},
 
-	{"should make abstract on open block with title a quote block with title for article", "asciidoctor/blocks_test_should_make_abstract_on_open_block_with_title_a_quote_block_with_title_for_article.adoc", blocksTestShouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArticle, nil},
+	{"should make abstract on open block with title a quote block with title for article", "asciidoctor/blocks_test_should_make_abstract_on_open_block_with_title_a_quote_block_with_title_for_article.adoc", blocksTestShouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArticle},
 
-	{"should allow abstract in document with title if doctype is book", "asciidoctor/blocks_test_should_allow_abstract_in_document_with_title_if_doctype_is_book.adoc", blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBook, nil},
+	{"should allow abstract in document with title if doctype is book", "asciidoctor/blocks_test_should_allow_abstract_in_document_with_title_if_doctype_is_book.adoc", blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBook},
 
-	{"should not allow abstract as direct child of document if doctype is book", "asciidoctor/blocks_test_should_not_allow_abstract_as_direct_child_of_document_if_doctype_is_book.adoc", blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBook, nil},
+	{"should not allow abstract as direct child of document if doctype is book", "asciidoctor/blocks_test_should_not_allow_abstract_as_direct_child_of_document_if_doctype_is_book.adoc", blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBook},
 
-	{"should make abstract on open block without title converted to DocBook", "asciidoctor/blocks_test_should_make_abstract_on_open_block_without_title_converted_to_doc_book.adoc", blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleConvertedToDocBook, nil},
+	{"should make abstract on open block without title converted to DocBook", "asciidoctor/blocks_test_should_make_abstract_on_open_block_without_title_converted_to_doc_book.adoc", blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleConvertedToDocBook},
 
-	{"should make abstract on open block with title converted to DocBook", "asciidoctor/blocks_test_should_make_abstract_on_open_block_with_title_converted_to_doc_book.adoc", blocksTestShouldMakeAbstractOnOpenBlockWithTitleConvertedToDocBook, nil},
+	{"should make abstract on open block with title converted to DocBook", "asciidoctor/blocks_test_should_make_abstract_on_open_block_with_title_converted_to_doc_book.adoc", blocksTestShouldMakeAbstractOnOpenBlockWithTitleConvertedToDocBook},
 
-	{"should allow abstract in document with title if doctype is book converted to DocBook", "asciidoctor/blocks_test_should_allow_abstract_in_document_with_title_if_doctype_is_book_converted_to_doc_book.adoc", blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBookConvertedToDocBook, nil},
+	{"should allow abstract in document with title if doctype is book converted to DocBook", "asciidoctor/blocks_test_should_allow_abstract_in_document_with_title_if_doctype_is_book_converted_to_doc_book.adoc", blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBookConvertedToDocBook},
 
-	{"should not allow abstract as direct child of document if doctype is book converted to DocBook", "asciidoctor/blocks_test_should_not_allow_abstract_as_direct_child_of_document_if_doctype_is_book_converted_to_doc_book.adoc", blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBookConvertedToDocBook, nil},
+	{"should not allow abstract as direct child of document if doctype is book converted to DocBook", "asciidoctor/blocks_test_should_not_allow_abstract_as_direct_child_of_document_if_doctype_is_book_converted_to_doc_book.adoc", blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBookConvertedToDocBook},
 
-	{"should accept partintro on open block without title", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_without_title.adoc", blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitle, nil},
+	{"should accept partintro on open block without title", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_without_title.adoc", blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitle},
 
-	{"should accept partintro on open block with title", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_with_title.adoc", blocksTestShouldAcceptPartintroOnOpenBlockWithTitle, nil},
+	{"should accept partintro on open block with title", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_with_title.adoc", blocksTestShouldAcceptPartintroOnOpenBlockWithTitle},
 
-	{"should exclude partintro if not a child of part", "asciidoctor/blocks_test_should_exclude_partintro_if_not_a_child_of_part.adoc", blocksTestShouldExcludePartintroIfNotAChildOfPart, nil},
+	{"should exclude partintro if not a child of part", "asciidoctor/blocks_test_should_exclude_partintro_if_not_a_child_of_part.adoc", blocksTestShouldExcludePartintroIfNotAChildOfPart},
 
-	{"should not allow partintro unless doctype is book", "asciidoctor/blocks_test_should_not_allow_partintro_unless_doctype_is_book.adoc", blocksTestShouldNotAllowPartintroUnlessDoctypeIsBook, nil},
+	{"should not allow partintro unless doctype is book", "asciidoctor/blocks_test_should_not_allow_partintro_unless_doctype_is_book.adoc", blocksTestShouldNotAllowPartintroUnlessDoctypeIsBook},
 
-	{"should accept partintro on open block without title converted to DocBook", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_without_title_converted_to_doc_book.adoc", blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook, nil},
+	{"should accept partintro on open block without title converted to DocBook", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_without_title_converted_to_doc_book.adoc", blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook},
 
-	{"should accept partintro on open block with title converted to DocBook", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_with_title_converted_to_doc_book.adoc", blocksTestShouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook, nil},
+	{"should accept partintro on open block with title converted to DocBook", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_with_title_converted_to_doc_book.adoc", blocksTestShouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook},
 
-	{"should exclude partintro if not a child of part converted to DocBook", "asciidoctor/blocks_test_should_exclude_partintro_if_not_a_child_of_part_converted_to_doc_book.adoc", blocksTestShouldExcludePartintroIfNotAChildOfPartConvertedToDocBook, nil},
+	{"should exclude partintro if not a child of part converted to DocBook", "asciidoctor/blocks_test_should_exclude_partintro_if_not_a_child_of_part_converted_to_doc_book.adoc", blocksTestShouldExcludePartintroIfNotAChildOfPartConvertedToDocBook},
 
-	{"should not allow partintro unless doctype is book converted to DocBook", "asciidoctor/blocks_test_should_not_allow_partintro_unless_doctype_is_book_converted_to_doc_book.adoc", blocksTestShouldNotAllowPartintroUnlessDoctypeIsBookConvertedToDocBook, nil},
+	{"should not allow partintro unless doctype is book converted to DocBook", "asciidoctor/blocks_test_should_not_allow_partintro_unless_doctype_is_book_converted_to_doc_book.adoc", blocksTestShouldNotAllowPartintroUnlessDoctypeIsBookConvertedToDocBook},
 
-	{"processor should not crash if subs are empty", "asciidoctor/blocks_test_processor_should_not_crash_if_subs_are_empty.adoc", blocksTestProcessorShouldNotCrashIfSubsAreEmpty, nil},
+	{"processor should not crash if subs are empty", "asciidoctor/blocks_test_processor_should_not_crash_if_subs_are_empty.adoc", blocksTestProcessorShouldNotCrashIfSubsAreEmpty},
 
-	{"should be able to append subs to default block substitution list", "asciidoctor/blocks_test_should_be_able_to_append_subs_to_default_block_substitution_list.adoc", blocksTestShouldBeAbleToAppendSubsToDefaultBlockSubstitutionList, nil},
+	{"should be able to append subs to default block substitution list", "asciidoctor/blocks_test_should_be_able_to_append_subs_to_default_block_substitution_list.adoc", blocksTestShouldBeAbleToAppendSubsToDefaultBlockSubstitutionList},
 
-	{"should be able to prepend subs to default block substitution list", "asciidoctor/blocks_test_should_be_able_to_prepend_subs_to_default_block_substitution_list.adoc", blocksTestShouldBeAbleToPrependSubsToDefaultBlockSubstitutionList, nil},
+	{"should be able to prepend subs to default block substitution list", "asciidoctor/blocks_test_should_be_able_to_prepend_subs_to_default_block_substitution_list.adoc", blocksTestShouldBeAbleToPrependSubsToDefaultBlockSubstitutionList},
 
-	{"should be able to remove subs to default block substitution list", "asciidoctor/blocks_test_should_be_able_to_remove_subs_to_default_block_substitution_list.adoc", blocksTestShouldBeAbleToRemoveSubsToDefaultBlockSubstitutionList, nil},
+	{"should be able to remove subs to default block substitution list", "asciidoctor/blocks_test_should_be_able_to_remove_subs_to_default_block_substitution_list.adoc", blocksTestShouldBeAbleToRemoveSubsToDefaultBlockSubstitutionList},
 
-	{"should be able to prepend, append and remove subs from default block substitution list", "asciidoctor/blocks_test_should_be_able_to_prepend_append_and_remove_subs_from_default_block_substitution_list.adoc", blocksTestShouldBeAbleToPrependAppendAndRemoveSubsFromDefaultBlockSubstitutionList, nil},
+	{"should be able to prepend, append and remove subs from default block substitution list", "asciidoctor/blocks_test_should_be_able_to_prepend_append_and_remove_subs_from_default_block_substitution_list.adoc", blocksTestShouldBeAbleToPrependAppendAndRemoveSubsFromDefaultBlockSubstitutionList},
 
-	{"should be able to set subs then modify them", "asciidoctor/blocks_test_should_be_able_to_set_subs_then_modify_them.adoc", blocksTestShouldBeAbleToSetSubsThenModifyThem, nil},
+	{"should be able to set subs then modify them", "asciidoctor/blocks_test_should_be_able_to_set_subs_then_modify_them.adoc", blocksTestShouldBeAbleToSetSubsThenModifyThem},
 
-	{"should not recognize block anchor with illegal id characters", "asciidoctor/blocks_test_should_not_recognize_block_anchor_with_illegal_id_characters.adoc", blocksTestShouldNotRecognizeBlockAnchorWithIllegalIdCharacters, nil},
+	{"should not recognize block anchor with illegal id characters", "asciidoctor/blocks_test_should_not_recognize_block_anchor_with_illegal_id_characters.adoc", blocksTestShouldNotRecognizeBlockAnchorWithIllegalIdCharacters},
 
-	{"should not recognize block anchor that starts with digit", "asciidoctor/blocks_test_should_not_recognize_block_anchor_that_starts_with_digit.adoc", blocksTestShouldNotRecognizeBlockAnchorThatStartsWithDigit, nil},
+	{"should not recognize block anchor that starts with digit", "asciidoctor/blocks_test_should_not_recognize_block_anchor_that_starts_with_digit.adoc", blocksTestShouldNotRecognizeBlockAnchorThatStartsWithDigit},
 
-	{"should recognize block anchor that starts with colon", "asciidoctor/blocks_test_should_recognize_block_anchor_that_starts_with_colon.adoc", blocksTestShouldRecognizeBlockAnchorThatStartsWithColon, nil},
+	{"should recognize block anchor that starts with colon", "asciidoctor/blocks_test_should_recognize_block_anchor_that_starts_with_colon.adoc", blocksTestShouldRecognizeBlockAnchorThatStartsWithColon},
 
-	{"should use specified id and reftext when registering block reference", "asciidoctor/blocks_test_should_use_specified_id_and_reftext_when_registering_block_reference.adoc", blocksTestShouldUseSpecifiedIdAndReftextWhenRegisteringBlockReference, nil},
+	{"should use specified id and reftext when registering block reference", "asciidoctor/blocks_test_should_use_specified_id_and_reftext_when_registering_block_reference.adoc", blocksTestShouldUseSpecifiedIdAndReftextWhenRegisteringBlockReference},
 
-	{"should allow square brackets in block reference text", "asciidoctor/blocks_test_should_allow_square_brackets_in_block_reference_text.adoc", blocksTestShouldAllowSquareBracketsInBlockReferenceText, nil},
+	{"should allow square brackets in block reference text", "asciidoctor/blocks_test_should_allow_square_brackets_in_block_reference_text.adoc", blocksTestShouldAllowSquareBracketsInBlockReferenceText},
 
-	{"should allow comma in block reference text", "asciidoctor/blocks_test_should_allow_comma_in_block_reference_text.adoc", blocksTestShouldAllowCommaInBlockReferenceText, nil},
+	{"should allow comma in block reference text", "asciidoctor/blocks_test_should_allow_comma_in_block_reference_text.adoc", blocksTestShouldAllowCommaInBlockReferenceText},
 
-	{"should resolve attribute reference in title using attribute defined at location of block", "asciidoctor/blocks_test_should_resolve_attribute_reference_in_title_using_attribute_defined_at_location_of_block.adoc", blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocationOfBlock, nil},
+	{"should resolve attribute reference in title using attribute defined at location of block", "asciidoctor/blocks_test_should_resolve_attribute_reference_in_title_using_attribute_defined_at_location_of_block.adoc", blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocationOfBlock},
 
-	{"should substitute attribute references in reftext when registering block reference", "asciidoctor/blocks_test_should_substitute_attribute_references_in_reftext_when_registering_block_reference.adoc", blocksTestShouldSubstituteAttributeReferencesInReftextWhenRegisteringBlockReference, nil},
+	{"should substitute attribute references in reftext when registering block reference", "asciidoctor/blocks_test_should_substitute_attribute_references_in_reftext_when_registering_block_reference.adoc", blocksTestShouldSubstituteAttributeReferencesInReftextWhenRegisteringBlockReference},
 
-	{"should use specified reftext when registering block reference", "asciidoctor/blocks_test_should_use_specified_reftext_when_registering_block_reference.adoc", blocksTestShouldUseSpecifiedReftextWhenRegisteringBlockReference, nil},
+	{"should use specified reftext when registering block reference", "asciidoctor/blocks_test_should_use_specified_reftext_when_registering_block_reference.adoc", blocksTestShouldUseSpecifiedReftextWhenRegisteringBlockReference},
 }
 
 var blocksTestHorizontalRuleBetweenBlocks = &asciidoc.Document{
@@ -4016,8 +4016,12 @@ var blocksTestShouldTransferIdAndReftextOnOpenBlockToDocBookOutput = &asciidoc.D
 		&asciidoc.CrossReference{
 			AttributeList: nil,
 			Elements:      nil,
-			ID:            "open",
-			Format:        0,
+			ID: asciidoc.Elements{
+				&asciidoc.String{
+					Value: "open",
+				},
+			},
+			Format: 0,
 		},
 		&asciidoc.String{
 			Value: "!",
@@ -4029,8 +4033,10 @@ var blocksTestShouldTransferIdAndReftextOnOpenBlockToDocBookOutput = &asciidoc.D
 		&asciidoc.OpenBlock{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.AnchorAttribute{
-					ID: &asciidoc.String{
-						Value: "open",
+					ID: asciidoc.Elements{
+						&asciidoc.String{
+							Value: "open",
+						},
 					},
 					Label: asciidoc.Elements{
 						&asciidoc.String{
@@ -9257,8 +9263,10 @@ var blocksTestShouldRecognizeBlockAnchorThatStartsWithColon = &asciidoc.Document
 		&asciidoc.OpenBlock{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.AnchorAttribute{
-					ID: &asciidoc.String{
-						Value: ":idname",
+					ID: asciidoc.Elements{
+						&asciidoc.String{
+							Value: ":idname",
+						},
 					},
 					Label: nil,
 				},
@@ -9285,8 +9293,10 @@ var blocksTestShouldUseSpecifiedIdAndReftextWhenRegisteringBlockReference = &asc
 		&asciidoc.Listing{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.AnchorAttribute{
-					ID: &asciidoc.String{
-						Value: "debian",
+					ID: asciidoc.Elements{
+						&asciidoc.String{
+							Value: "debian",
+						},
 					},
 					Label: asciidoc.Elements{
 						&asciidoc.String{
@@ -9351,8 +9361,10 @@ var blocksTestShouldAllowCommaInBlockReferenceText = &asciidoc.Document{
 		&asciidoc.Listing{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.AnchorAttribute{
-					ID: &asciidoc.String{
-						Value: "debian",
+					ID: asciidoc.Elements{
+						&asciidoc.String{
+							Value: "debian",
+						},
 					},
 					Label: asciidoc.Elements{
 						&asciidoc.String{
@@ -9404,8 +9416,12 @@ var blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocat
 				&asciidoc.CrossReference{
 					AttributeList: nil,
 					Elements:      nil,
-					ID:            "free-standing",
-					Format:        0,
+					ID: asciidoc.Elements{
+						&asciidoc.String{
+							Value: "free-standing",
+						},
+					},
+					Format: 0,
 				},
 				&asciidoc.String{
 					Value: ".",
@@ -9524,8 +9540,10 @@ var blocksTestShouldSubstituteAttributeReferencesInReftextWhenRegisteringBlockRe
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.AnchorAttribute{
-					ID: &asciidoc.String{
-						Value: "tiger-evolution",
+					ID: asciidoc.Elements{
+						&asciidoc.String{
+							Value: "tiger-evolution",
+						},
 					},
 					Label: asciidoc.Elements{
 						&asciidoc.String{
@@ -9555,8 +9573,10 @@ var blocksTestShouldUseSpecifiedReftextWhenRegisteringBlockReference = &asciidoc
 		&asciidoc.Listing{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.AnchorAttribute{
-					ID: &asciidoc.String{
-						Value: "debian",
+					ID: asciidoc.Elements{
+						&asciidoc.String{
+							Value: "debian",
+						},
 					},
 					Label: nil,
 				},

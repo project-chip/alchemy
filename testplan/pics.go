@@ -152,7 +152,6 @@ func makePicsAlias(spec *spec.Specification, clusters map[string]*matter.Cluster
 	default:
 		slog.Warn("Unknown entity type while building aliases", slog.String("entityType", entityType))
 	}
-	slog.Info("pics parts", slog.String("cluster", parts[1]), slog.String("interface", parts[2]), slog.String("entity", parts[3]), slog.String("id", parts[4]))
 	return ""
 }
 

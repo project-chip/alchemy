@@ -7,7 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 )
@@ -103,9 +104,9 @@ func (doc *Doc) determineDocType() (matter.DocType, error) {
 }
 
 func (doc *Doc) guessDocType() matter.DocType {
-	firstSection := parse.FindFirst[*Section](doc)
+	firstSection := parse.FindFirst[*asciidoc.Section](doc.Reader(), doc)
 	if firstSection != nil {
-		if text.HasCaseInsensitiveSuffix(firstSection.Name, " cluster") {
+		if text.HasCaseInsensitiveSuffix(doc.SectionName(firstSection), " cluster") {
 			return matter.DocTypeCluster
 		}
 	}

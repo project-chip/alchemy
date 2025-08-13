@@ -25,7 +25,7 @@ func (b *Baller) organizeEnumSection(cxt *discoContext, es *subSection) (err err
 
 	enumTable := es.table
 	if enumTable == nil || enumTable.Element == nil {
-		slog.Warn("Could not organize enum section, as no table of enum values was found", log.Path("source", es.section.Base))
+		slog.Warn("Could not organize enum section, as no table of enum values was found", log.Path("source", es.section))
 		return
 	}
 	if enumTable.ColumnMap == nil {
@@ -40,17 +40,17 @@ func (b *Baller) organizeEnumSection(cxt *discoContext, es *subSection) (err err
 
 	err = b.renameTableHeaderCells(cxt, es.section, enumTable, matter.Tables[matter.TableTypeEnum].ColumnRenames)
 	if err != nil {
-		return fmt.Errorf("error renaming table header cells in enum table in section %s in %s: %w", es.section.Name, cxt.doc.Path, err)
+		return fmt.Errorf("error renaming table header cells in enum table in section %s in %s: %w", cxt.doc.SectionName(es.section), cxt.doc.Path, err)
 	}
 
 	err = b.addMissingColumns(cxt, es.section, enumTable, matter.Tables[matter.TableTypeEnum], types.EntityTypeEnumValue)
 	if err != nil {
-		return fmt.Errorf("error adding missing table columns in enum section %s in %s: %w", es.section.Name, cxt.doc.Path, err)
+		return fmt.Errorf("error adding missing table columns in enum section %s in %s: %w", cxt.doc.SectionName(es.section), cxt.doc.Path, err)
 	}
 
 	err = enumTable.Rescan(cxt.doc)
 	if err != nil {
-		return fmt.Errorf("error reordering columns in enum table in section %s in %s: %w", es.section.Name, cxt.doc.Path, err)
+		return fmt.Errorf("error reordering columns in enum table in section %s in %s: %w", cxt.doc.SectionName(es.section), cxt.doc.Path, err)
 
 	}
 	enumTable = es.table

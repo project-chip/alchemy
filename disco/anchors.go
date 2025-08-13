@@ -49,7 +49,7 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 	for _, ag := range anchorGroups {
 		for id, infos := range ag.updatedAnchors {
 			if len(infos) == 1 {
-				infos[0].SyncToDoc(id)
+				infos[0].SyncToDoc(asciidoc.NewStringElements(id))
 			} else if len(infos) > 1 { // We ended up with some duplicate anchors
 				var skip bool
 				for _, info := range infos {
@@ -74,7 +74,7 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 					continue
 				}
 				for i, info := range infos {
-					info.SyncToDoc(disambiguatedIDs[i])
+					info.SyncToDoc(asciidoc.NewStringElements(disambiguatedIDs[i]))
 				}
 			}
 		}
@@ -100,9 +100,9 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 						xref.SyncToDoc(info[0].ID)
 					} else {
 						var logArgs []any
-						logArgs = append(logArgs, slog.String("id", xref.Reference.ID), log.Path("origin", xref.Source))
+						logArgs = append(logArgs, slog.Any("id", xref.Reference.ID), log.Path("origin", xref.Source))
 						for _, info := range to {
-							logArgs = append(logArgs, slog.String("target", info.ID), log.Path("targetPath", info.Source))
+							logArgs = append(logArgs, slog.Any("target", info.ID), log.Path("targetPath", info.Source))
 						}
 						slog.Warn("rewritten xref points to multiple anchors", logArgs...)
 					}
@@ -124,7 +124,7 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 
 func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) (anchorGroups map[*spec.DocGroup]*anchorGroup, err error) {
 	anchorGroups = make(map[*spec.DocGroup]*anchorGroup)
-	unaffiliatedDocs := spec.NewDocGroup("")
+	unaffiliatedDocs := spec.NewDocGroup(nil)
 	for _, input := range inputs {
 		doc := input.Content
 
@@ -151,14 +151,14 @@ func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) 
 
 		for _, as := range da {
 			for _, a := range as {
-				id := a.ID
+				id := a.Identifier()
 				newID := an.normalizeAnchor(a)
 				if id == newID {
 					ag.updatedAnchors[id] = append(ag.updatedAnchors[id], a)
 					continue
 				}
 				if _, existingAnchor := da[newID]; existingAnchor {
-					slog.Warn("Attempting to rename anchor to existing anchor", slog.String("oldAnchor", id), slog.String("newAnchor", newID), log.Element("source", doc.Path, a.Element))
+					slog.Warn("Attempting to rename anchor to existing anchor", slog.Any("oldAnchor", id), slog.String("newAnchor", newID), log.Element("source", doc.Path, a.Element))
 					continue
 				}
 				ag.updatedAnchors[newID] = append(ag.updatedAnchors[newID], a)
@@ -172,17 +172,17 @@ func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) 
 }
 
 func (an AnchorNormalizer) normalizeAnchor(info *spec.Anchor) (id string) {
-	id = info.ID
+	id = info.Identifier()
 	if skipAnchor(info) {
 		return
 	}
 	name := info.Name()
-	if properAnchorPattern.MatchString(info.ID) {
+	if properAnchorPattern.MatchString(info.Identifier()) {
 		if len(info.LabelElements) == 0 || labelText(info.LabelElements) == name {
 			info.LabelElements = normalizeAnchorLabel(info.Name(), info.Element)
 		}
 	} else {
-		normalizedID, normalized := quickNormalizeAnchorID(info.ID)
+		normalizedID, normalized := quickNormalizeAnchorID(info.Identifier())
 		if normalized {
 			id = normalizedID
 			if len(info.LabelElements) == 0 || labelText(info.LabelElements) == name {
@@ -268,7 +268,7 @@ func disambiguateAnchorSet(conflictedAnchors []*spec.Anchor, newID string, ag *a
 		parents[i] = info.Parent
 		newIDs[i] = newID
 	}
-	parentSections := make([]*spec.Section, len(conflictedAnchors))
+	parentSections := make([]*asciidoc.Section, len(conflictedAnchors))
 	for {
 		for i := range conflictedAnchors {
 			parentSection := findRefSection(parents[i])
@@ -283,7 +283,7 @@ func disambiguateAnchorSet(conflictedAnchors []*spec.Anchor, newID string, ag *a
 
 			}
 			parentSections[i] = parentSection
-			parentName := spec.ReferenceName(parentSection.Base)
+			parentName := spec.ReferenceName(conflictedAnchors[i].Document, parentSection)
 			parentName = matter.Case(matter.StripTypeSuffixes(parentName))
 			newIDs[i] = "ref_" + parentName + strings.TrimPrefix(newIDs[i], "ref_")
 		}
