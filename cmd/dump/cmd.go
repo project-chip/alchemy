@@ -6,10 +6,10 @@ import (
 	"os"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/errata"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/matter/spec"
 )
@@ -38,13 +38,13 @@ func (d *Command) Run(cc *cli.Context) (err error) {
 				return fmt.Errorf("error opening doc %s: %w", f, err)
 			}
 
-			for top := range parse.Skim[*spec.Section](doc.Children()) {
+			for top := range parse.Skim[*asciidoc.Section](doc.Iterator(), doc, doc.Children()) {
 				err := spec.AssignSectionTypes(doc, top)
 				if err != nil {
 					return err
 				}
 			}
-			dumpElements(doc, doc.Children(), 0)
+			dumpElements(doc, doc, doc.Children(), 0)
 		} else if d.Json {
 			err = errata.LoadErrataConfig(d.Root)
 			if err != nil {
@@ -84,13 +84,13 @@ func (d *Command) Run(cc *cli.Context) (err error) {
 			if err != nil {
 				return fmt.Errorf("error parsing %s: %w", f, err)
 			}
-			dumpElements(doc, doc.Children(), 0)
+			dumpElements(doc, doc, doc.Children(), 0)
 		} else {
 			doc, err := spec.ReadFile(f, ".")
 			if err != nil {
 				return fmt.Errorf("error opening doc %s: %w", f, err)
 			}
-			dumpElements(doc, doc.Base.Children(), 0)
+			dumpElements(doc, doc.Base, doc.Base.Children(), 0)
 		}
 	}
 	return nil

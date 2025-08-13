@@ -3,6 +3,7 @@ package spec
 import (
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/internal/text"
@@ -10,14 +11,14 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toConditions(d *Doc, dt *matter.DeviceType) (conditions []*matter.Condition, err error) {
+func toConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceType) (conditions []*matter.Condition, err error) {
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
 		} else {
-			err = newGenericParseError(s.Base, "error reading conditions table: %w", err)
+			err = newGenericParseError(s, "error reading conditions table: %w", err)
 		}
 		return
 	}
@@ -53,13 +54,13 @@ func (s *Section) toConditions(d *Doc, dt *matter.DeviceType) (conditions []*mat
 	return
 }
 
-func (s *Section) toBaseDeviceTypeConditions(d *Doc, dt *matter.DeviceType) (conditions []*matter.Condition, err error) {
-	if !text.HasCaseInsensitiveSuffix(s.Name, " Conditions") {
+func toBaseDeviceTypeConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceType) (conditions []*matter.Condition, err error) {
+	if !text.HasCaseInsensitiveSuffix(d.SectionName(s), " Conditions") {
 		return
 	}
 
 	var ti *TableInfo
-	t := FindFirstTable(s)
+	t := FindFirstTable(d, s)
 	if t == nil {
 		return
 	}
@@ -95,13 +96,13 @@ func (s *Section) toBaseDeviceTypeConditions(d *Doc, dt *matter.DeviceType) (con
 	}
 	// There are some condition tables with no valid Matter columns, so we handle them manually
 
-	for i, row := range t.TableRows() {
+	for i, row := range t.TableRows(d.Iterator()) {
 		if i == 0 {
 			// Skip the first row, as it's a header
 			continue
 		}
 		var sb strings.Builder
-		err = readRowCellValueElements(d, row, row.Elements, &sb)
+		err = readRowCellValueElements(d, row, row, row.Elements, &sb)
 		if err != nil {
 			continue
 		}
@@ -173,5 +174,4 @@ func (cf *conditionFinder) suggestIdentifiers(identifier string, suggestions map
 	if cf.inner != nil {
 		cf.inner.suggestIdentifiers(identifier, suggestions)
 	}
-	return
 }

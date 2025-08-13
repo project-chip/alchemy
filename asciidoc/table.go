@@ -381,9 +381,9 @@ func (t *Table) Equals(e Element) bool {
 	return t.Elements.Equals(ot.Elements)
 }
 
-func (t *Table) TableRows() []*TableRow {
-	trs := make([]*TableRow, 0, len(t.Elements))
-	for _, el := range t.Elements {
+func (t *Table) TableRows(iterator Iterator) []*TableRow {
+	trs := make([]*TableRow, 0, iterator.Iterate(t, t.Elements).Count())
+	for el := range iterator.Iterate(t, t.Elements) {
 		if tr, ok := el.(*TableRow); ok {
 			trs = append(trs, tr)
 		}

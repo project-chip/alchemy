@@ -58,15 +58,13 @@ func (sp *Builder) buildSpec(docGroups []*DocGroup) (referencedDocs []*Doc, err 
 	sp.Spec = newSpec(sp.specRoot)
 	spec := sp.Spec
 
-	/*err = buildTree(sp.specRoot, docs)
-	if err != nil {
-		return
-	}
-
-	docGroups := buildDocumentGroups(docs)*/
-
 	for _, dg := range docGroups {
-		referencedDocs = append(referencedDocs, dg.Docs...)
+		for _, d := range dg.Docs {
+			if errata.GetSpec(d.Path.Relative).UtilityInclude {
+				continue
+			}
+			referencedDocs = append(referencedDocs, d)
+		}
 		for _, d := range dg.Docs {
 			setSpec(d, sp.Spec)
 		}
@@ -81,101 +79,108 @@ func (sp *Builder) buildSpec(docGroups []*DocGroup) (referencedDocs []*Doc, err 
 
 	var basicInformationCluster, bridgedDeviceBasicInformationCluster *matter.Cluster
 
-	for _, d := range referencedDocs {
-		slog.Debug("building spec", "path", d.Path)
+	for _, dg := range docGroups {
+		for _, d := range dg.Docs {
+			slog.Debug("building spec", "path", d.Path)
 
-		dt, dterr := d.DocType()
-		if dterr == nil {
-			switch dt {
-			case matter.DocTypeBaseDeviceType:
-				spec.BaseDeviceType, err = d.toBaseDeviceType()
-				if err != nil {
-					return
-				}
-			}
-		}
-
-		var entities []types.Entity
-		entities, err = d.Entities()
-		if err != nil {
-			slog.Warn("error building entities", "doc", d.Path, "error", err)
-			if pe, isParseError := err.(Error); isParseError {
-				spec.addError(pe)
-			} else {
-				err = nil
+			if errata.GetSpec(d.Path.Relative).UtilityInclude {
+				slog.Info("skipping utility include", "path", d.Path.Relative)
 				continue
 			}
-		}
-		spec.Docs[d.Path.Relative] = d
-		for _, m := range entities {
-			switch m := m.(type) {
-			case *matter.ClusterGroup:
-				for _, c := range m.Clusters {
-					sp.addCluster(d, c)
-				}
-			case *matter.Cluster:
-				switch m.Name {
-				case "Basic Information":
-					basicInformationCluster = m
-				case "Bridged Device Basic Information":
-					bridgedDeviceBasicInformationCluster = m
-				}
-				sp.addCluster(d, m)
-			case *matter.DeviceType:
-				spec.DeviceTypes = append(spec.DeviceTypes, m)
-				if m.ID.Valid() {
-					if existing, ok := spec.DeviceTypesByID[m.ID.Value()]; ok {
-						slog.Error("duplicate device type ID", slog.String("deviceTypeId", m.ID.HexString()), log.Path("previousSource", existing), log.Path("newSource", m))
-						spec.addError(&DuplicateEntityIDError{Entity: m, Previous: existing})
-					} else {
-						spec.DeviceTypesByID[m.ID.Value()] = m
-					}
 
+			dt, dterr := d.DocType()
+			if dterr == nil {
+				switch dt {
+				case matter.DocTypeBaseDeviceType:
+					spec.BaseDeviceType, err = d.toBaseDeviceType()
+					if err != nil {
+						return
+					}
 				}
-				existing, ok := spec.DeviceTypesByName[m.Name]
-				if ok {
-					slog.Warn("Duplicate Device Type Name", slog.String("deviceTypeId", m.ID.HexString()), slog.String("deviceTypeName", m.Name), slog.String("existingDeviceTypeId", existing.ID.HexString()))
-					spec.addError(&DuplicateEntityNameError{Entity: m, Previous: existing})
-				}
-				spec.DeviceTypesByName[m.Name] = m
-				switch m.Name {
-				case "Root Node":
-					spec.RootNodeDeviceType = m
-				}
-			case *matter.Namespace:
-				spec.Namespaces = append(spec.Namespaces, m)
-			case *matter.Bitmap:
-				slog.Debug("Found global bitmap", "name", m.Name, "path", d.Path)
-				spec.addEntityByName(m.Name, m, nil)
-				spec.GlobalObjects[m] = struct{}{}
-			case *matter.Enum:
-				slog.Debug("Found global enum", "name", m.Name, "path", d.Path)
-				spec.addEntityByName(m.Name, m, nil)
-				spec.GlobalObjects[m] = struct{}{}
-			case *matter.Struct:
-				slog.Debug("Found global struct", "name", m.Name, "path", d.Path)
-				spec.addEntityByName(m.Name, m, nil)
-				spec.GlobalObjects[m] = struct{}{}
-			case *matter.TypeDef:
-				slog.Debug("Found global typedef", "name", m.Name, "path", d.Path)
-				spec.addEntityByName(m.Name, m, nil)
-				spec.GlobalObjects[m] = struct{}{}
-			case *matter.Command:
-				spec.addEntityByName(m.Name, m, nil)
-				spec.GlobalObjects[m] = struct{}{}
-			case *matter.Event:
-				spec.addEntityByName(m.Name, m, nil)
-				spec.GlobalObjects[m] = struct{}{}
-			default:
-				slog.Warn("unknown entity type", "path", d.Path, "type", fmt.Sprintf("%T", m))
 			}
-			switch m := m.(type) {
-			case *matter.ClusterGroup:
-				for _, c := range m.Clusters {
-					spec.DocRefs[c] = d
+
+			var entities []types.Entity
+			entities, err = d.Entities()
+			if err != nil {
+				slog.Warn("error building entities", "doc", d.Path, "error", err)
+				if pe, isParseError := err.(Error); isParseError {
+					spec.addError(pe)
+				} else {
+					err = nil
+					continue
 				}
-			default:
-				spec.DocRefs[m] = d
+			}
+			spec.Docs[d.Path.Relative] = d
+			for _, m := range entities {
+				switch m := m.(type) {
+				case *matter.ClusterGroup:
+					for _, c := range m.Clusters {
+						sp.addCluster(d, c)
+					}
+				case *matter.Cluster:
+					switch m.Name {
+					case "Basic Information":
+						basicInformationCluster = m
+					case "Bridged Device Basic Information":
+						bridgedDeviceBasicInformationCluster = m
+					}
+					sp.addCluster(d, m)
+				case *matter.DeviceType:
+					spec.DeviceTypes = append(spec.DeviceTypes, m)
+					if m.ID.Valid() {
+						if existing, ok := spec.DeviceTypesByID[m.ID.Value()]; ok {
+							slog.Error("duplicate device type ID", slog.String("deviceTypeId", m.ID.HexString()), log.Path("previousSource", existing), log.Path("newSource", m))
+							spec.addError(&DuplicateEntityIDError{Entity: m, Previous: existing})
+						} else {
+							spec.DeviceTypesByID[m.ID.Value()] = m
+						}
+
+					}
+					existing, ok := spec.DeviceTypesByName[m.Name]
+					if ok {
+						slog.Warn("Duplicate Device Type Name", slog.String("deviceTypeId", m.ID.HexString()), slog.String("deviceTypeName", m.Name), slog.String("existingDeviceTypeId", existing.ID.HexString()))
+						spec.addError(&DuplicateEntityNameError{Entity: m, Previous: existing})
+					}
+					spec.DeviceTypesByName[m.Name] = m
+					switch m.Name {
+					case "Root Node":
+						spec.RootNodeDeviceType = m
+					}
+				case *matter.Namespace:
+					spec.Namespaces = append(spec.Namespaces, m)
+				case *matter.Bitmap:
+					slog.Debug("Found global bitmap", "name", m.Name, "path", d.Path)
+					spec.addEntityByName(m.Name, m, nil)
+					spec.GlobalObjects[m] = d
+				case *matter.Enum:
+					slog.Debug("Found global enum", "name", m.Name, "path", d.Path)
+					spec.addEntityByName(m.Name, m, nil)
+					spec.GlobalObjects[m] = d
+				case *matter.Struct:
+					slog.Debug("Found global struct", "name", m.Name, "path", d.Path)
+					spec.addEntityByName(m.Name, m, nil)
+					spec.GlobalObjects[m] = d
+				case *matter.TypeDef:
+					slog.Debug("Found global typedef", "name", m.Name, "path", d.Path)
+					spec.addEntityByName(m.Name, m, nil)
+					spec.GlobalObjects[m] = d
+				case *matter.Command:
+					spec.addEntityByName(m.Name, m, nil)
+					spec.GlobalObjects[m] = d
+				case *matter.Event:
+					spec.addEntityByName(m.Name, m, nil)
+					spec.GlobalObjects[m] = d
+				default:
+					slog.Warn("unknown entity type", "path", d.Path, "type", fmt.Sprintf("%T", m))
+				}
+				switch m := m.(type) {
+				case *matter.ClusterGroup:
+					for _, c := range m.Clusters {
+						spec.DocRefs[c] = d
+					}
+				default:
+					spec.DocRefs[m] = d
+				}
 			}
 		}
 	}
@@ -223,34 +228,6 @@ func (sp *Builder) buildSpec(docGroups []*DocGroup) (referencedDocs []*Doc, err 
 	return
 }
 
-func buildDocumentGroups(docs []*Doc) (docGroups []*DocGroup) {
-	for _, d := range docs {
-		if len(d.parents) > 0 {
-			continue
-		}
-
-		var isDocRoot bool
-		path := d.Path.Relative
-		for _, docRoot := range errata.DocRoots {
-			if strings.EqualFold(path, docRoot) {
-				isDocRoot = true
-				break
-			}
-		}
-
-		if !isDocRoot {
-			continue
-		}
-
-		slog.Info("doc group", "path", d.Path.Relative)
-		dg := NewDocGroup(d.Path.Relative)
-		docGroups = append(docGroups, dg)
-		setDocGroup(d, dg)
-		//setSpec(d, spec, dg)
-	}
-	return
-}
-
 func (spec *Specification) BuildClusterReferences() {
 	iterateOverDataTypes(spec, func(cluster *matter.Cluster, parent, entity types.Entity) {
 		if cluster != nil {
@@ -278,9 +255,15 @@ func indexAnchors(docs []*Doc) (err error) {
 
 func indexCrossReferences(docs []*Doc) {
 	for _, d := range docs {
+		if errata.GetSpec(d.Path.Relative).UtilityInclude {
+			continue
+		}
 		crossReferences := d.CrossReferences()
 		for id, xrefs := range crossReferences {
 			d.group.crossReferences[id] = append(d.group.crossReferences[id], xrefs...)
+			for _, xref := range xrefs {
+				d.group.crossReferenceDocs[xref.Reference] = d
+			}
 		}
 	}
 }

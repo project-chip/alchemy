@@ -20,7 +20,6 @@ func (sp *TestScriptConverter) convertCommand(testPlan *testplan.Test, s *testpl
 	}
 	switch s.Command {
 	case "readAttribute":
-		slog.Info("Reading attribute", slog.Any("comments", s.Comments))
 		a := commandCluster.Attributes.Get(s.Attribute)
 		if a == nil {
 			slog.Error("Unknown attribute", slog.String("testPlanId", testPlan.ID), slog.String("attribute", s.Attribute))
@@ -77,7 +76,6 @@ func (sp *TestScriptConverter) convertCommand(testPlan *testplan.Test, s *testpl
 			writeAttribute.Conformance = conformance.Set{attributeCheck}
 		}
 		if s.Response.Error != "" {
-			slog.Info("expected error", "error", s.Response.Error)
 			writeAttribute.ExpectedError = s.Response.Error
 		}
 		step.Actions = append(step.Actions, writeAttribute)
@@ -134,7 +132,6 @@ func (sp *TestScriptConverter) convertClusterCommand(testPlan *testplan.Test, s 
 		slog.Error("Unknown command converting test plan to test script", slog.String("testPlanId", testPlan.ID), slog.String("command", s.Command))
 		return
 	}
-	slog.Info("Adding command", "name", command.Name)
 	callCommand := &CallCommand{Cluster: cluster, Command: command}
 	args := s.Arguments.Values.ToValues()
 	for name, value := range args {

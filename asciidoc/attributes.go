@@ -120,3 +120,28 @@ func (a *AttributeList) GetAttributeByName(name AttributeName) *NamedAttribute {
 	}
 	return nil
 }
+
+func (a AttributeList) traverse(parent Parent, yield func(Parent, Parent) bool) bool {
+	for _, attr := range a.Attributes() {
+		switch attr := attr.(type) {
+		case *AnchorAttribute:
+			if !yield(parent, &attr.Label) {
+				return false
+			}
+
+		case *NamedAttribute:
+			if !yield(parent, attr) {
+				return false
+			}
+		case *PositionalAttribute:
+			if !yield(parent, attr) {
+				return false
+			}
+		case *TitleAttribute:
+			if !yield(parent, attr) {
+				return false
+			}
+		}
+	}
+	return true
+}

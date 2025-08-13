@@ -1,6 +1,11 @@
 package spec
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
+)
 
 func Validate(spec *Specification) {
 	validateAttributes(spec)
@@ -10,6 +15,7 @@ func Validate(spec *Specification) {
 	validateEnums(spec)
 	validateStructs(spec)
 	validateDeviceTypes(spec)
+	validateNamespaces(spec)
 }
 
 func stripNonAlphabeticalCharacters(s string) string {
@@ -22,4 +28,16 @@ func stripNonAlphabeticalCharacters(s string) string {
 		}
 	}
 	return result.String()
+}
+
+type idUniqueness[T types.Entity] map[uint64]T
+
+func (iu idUniqueness[T]) check(spec *Specification, id *matter.Number, entity T) {
+	if id.Valid() {
+		if previous, ok := iu[id.Value()]; ok {
+			spec.addError(&DuplicateEntityIDError{Entity: entity, Previous: previous})
+			return
+		}
+		iu[id.Value()] = entity
+	}
 }

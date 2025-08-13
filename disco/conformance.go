@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/errata"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -15,7 +15,7 @@ func (b *Baller) fixConformanceCells(cxt *discoContext, section *subSection, row
 	if len(rows) < 2 {
 		return
 	}
-	if cxt.errata.IgnoreSection(section.section.Name, errata.DiscoPurposeTableConformance) {
+	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section.section), errata.DiscoPurposeTableConformance) {
 		return nil
 	}
 	conformanceIndex, ok := columnMap[matter.TableColumnConformance]
@@ -45,7 +45,7 @@ func (b *Baller) fixConformanceCells(cxt *discoContext, section *subSection, row
 
 func disambiguateConformance(cxt *discoContext) (err error) {
 	globalChoices := make(map[string]string)
-	parse.Traverse(cxt.doc, cxt.doc.Children(), func(table *asciidoc.Table, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Search(cxt.doc.Iterator(), cxt.doc, cxt.doc.Children(), func(table *asciidoc.Table, parent asciidoc.Parent, index int) parse.SearchShould {
 		ti, ok := cxt.parsed.tableCache[table]
 		if !ok {
 

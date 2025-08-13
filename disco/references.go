@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -18,6 +18,7 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 		if len(xrefs) == 0 {
 			continue
 		}
+
 		anchor := doc.FindAnchor(id, xrefs[0].Reference)
 		if anchor == nil {
 			sources := []any{slog.String("id", id)}
@@ -56,7 +57,7 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 		xrefsToChange := make([]*spec.CrossReference, len(xrefs))
 		copy(xrefsToChange, xrefs)
 		for _, xref := range xrefsToChange {
-			if anchor.ID != xref.Reference.ID {
+			if anchor.Identifier() != xref.Identifier() {
 				xref.SyncToDoc(anchor.ID)
 			}
 			if len(xref.Reference.Elements) > 0 {
@@ -69,7 +70,7 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 		}
 	}
 	if an.options.NormalizeAnchors {
-		parse.Traverse(nil, doc.Base.Children(), func(el asciidoc.Element, parent parse.HasElements, index int) parse.SearchShould {
+		parse.Search(doc.Iterator(), nil, doc.Base.Children(), func(el asciidoc.Element, parent asciidoc.Parent, index int) parse.SearchShould {
 			switch el := el.(type) {
 			case *asciidoc.CrossReference:
 				normalizeCrossReference(doc, el)
@@ -85,11 +86,11 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 	}
 }
 
-func removeCrossReferenceStutter(doc *spec.Doc, icr *asciidoc.CrossReference, parent parse.HasElements, index int) {
+func removeCrossReferenceStutter(doc *spec.Doc, icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) {
 	if len(icr.Elements) > 0 {
 		return
 	}
-	anchor := doc.FindAnchor(icr.ID, icr)
+	anchor := doc.FindAnchorByID(icr.ID, icr, icr)
 	if anchor == nil {
 		return
 	}
@@ -120,7 +121,7 @@ func removeCrossReferenceStutter(doc *spec.Doc, icr *asciidoc.CrossReference, pa
 }
 
 func (an AnchorNormalizer) normalizeTypeCrossReferencesInTable(doc *spec.Doc, table *asciidoc.Table) {
-	parse.Traverse(table, table.Elements, func(icr *asciidoc.CrossReference, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Search(doc.Iterator(), table, table.Elements, func(icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) parse.SearchShould {
 		normalizeCrossReference(doc, icr)
 		return parse.SearchShouldContinue
 	})
@@ -132,7 +133,7 @@ func normalizeCrossReference(doc *spec.Doc, icr *asciidoc.CrossReference) {
 		// Don't touch existing labels
 		return
 	}
-	anchor := doc.FindAnchor(icr.ID, icr)
+	anchor := doc.FindAnchorByID(icr.ID, icr, icr)
 	if anchor == nil {
 		return
 	}
@@ -159,9 +160,9 @@ func normalizeCrossReference(doc *spec.Doc, icr *asciidoc.CrossReference) {
 
 }
 
-func findRefSection(parent any) *spec.Section {
+func findRefSection(parent any) *asciidoc.Section {
 	switch p := parent.(type) {
-	case *spec.Section:
+	case *asciidoc.Section:
 		return p
 	case asciidoc.HasParent:
 		return findRefSection(p.Parent())

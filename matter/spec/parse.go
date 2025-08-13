@@ -6,19 +6,10 @@ import (
 	"os"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
 func ParseFile(path asciidoc.Path, specRoot string, attributes ...asciidoc.AttributeName) (*Doc, error) {
-	ac := &preparseContext{
-		docPath:  path,
-		rootPath: specRoot,
-	}
-
-	for _, a := range attributes {
-		ac.Set(string(a), nil)
-	}
 
 	contents, err := os.Open(path.Absolute)
 	if err != nil {
@@ -26,26 +17,25 @@ func ParseFile(path asciidoc.Path, specRoot string, attributes ...asciidoc.Attri
 	}
 	defer contents.Close()
 
-	d, err := parse.Inline(ac, path.Relative, contents)
+	d, err := ReadFile(path.Absolute, specRoot)
 	if err != nil {
 		return nil, fmt.Errorf("parse error in \"%s\": %w", path, err)
 	}
-	doc, err := newDoc(d, path)
+
+	d.parsed = true
+	d.iterator, err = preparse(nil, d, specRoot, attributes)
 	if err != nil {
 		return nil, err
 	}
-	doc.parsed = true
-	return doc, nil
+	return d, nil
 }
 
 type Parser struct {
-	attributes []asciidoc.AttributeName
-
 	options ParserOptions
 }
 
-func NewParser(attributes []asciidoc.AttributeName, parserOptions ParserOptions) (Parser, error) {
-	return Parser{attributes: attributes, options: parserOptions}, nil
+func NewParser(parserOptions ParserOptions) (Parser, error) {
+	return Parser{options: parserOptions}, nil
 }
 
 func (p Parser) Name() string {
@@ -64,7 +54,7 @@ func (p Parser) Process(cxt context.Context, input *pipeline.Data[struct{}], ind
 		return
 	}
 	var doc *Doc
-	doc, err = ParseFile(path, p.options.Root, p.attributes...)
+	doc, err = ReadFile(path.Absolute, p.options.Root)
 	if err != nil {
 		return
 	}

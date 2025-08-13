@@ -16,7 +16,7 @@ import (
 func (b *Baller) organizeCommandsSection(cxt *discoContext) (err error) {
 	for _, commands := range cxt.parsed.commands {
 		if commands.table == nil || commands.table.Element == nil {
-			slog.Warn("Could not organize Commands section, as no table of commands was found", log.Path("source", commands.section.Base))
+			slog.Warn("Could not organize Commands section, as no table of commands was found", log.Path("source", commands.section))
 			return
 		}
 		if commands.table.ColumnMap == nil {
@@ -83,11 +83,11 @@ func (b *Baller) organizeCommandsSection(cxt *discoContext) (err error) {
 	return
 }
 
-func (b *Baller) fixCommandDirection(cxt *discoContext, section *spec.Section, rows []*asciidoc.TableRow, columnMap spec.ColumnIndex) (err error) {
+func (b *Baller) fixCommandDirection(cxt *discoContext, section *asciidoc.Section, rows []*asciidoc.TableRow, columnMap spec.ColumnIndex) (err error) {
 	if len(rows) < 2 {
 		return
 	}
-	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeDataTypeCommandFixDirection) {
+	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section), errata.DiscoPurposeDataTypeCommandFixDirection) {
 		return
 	}
 	accessIndex, ok := columnMap[matter.TableColumnDirection]

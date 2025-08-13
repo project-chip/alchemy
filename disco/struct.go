@@ -25,7 +25,7 @@ func (b *Baller) organizeStructSection(cxt *discoContext, ss *subSection) (err e
 
 	fieldsTable := ss.table
 	if fieldsTable == nil || fieldsTable.Element == nil {
-		slog.Warn("Could not organize struct section, as no table of struct fields was found", log.Path("source", ss.section.Base))
+		slog.Warn("Could not organize struct section, as no table of struct fields was found", log.Path("source", ss.section))
 		return nil
 	}
 	if fieldsTable.ColumnMap == nil {

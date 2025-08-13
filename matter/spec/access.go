@@ -130,13 +130,14 @@ func ParseAccess(vc string, entityType types.EntityType) (a matter.Access, parse
 	}
 	a.OptionalWrite = optionalWrite
 
-	if access[accessCategoryMatchFabric] == "F" {
+	switch access[accessCategoryMatchFabric] {
+	case "F":
 		a.FabricScoping = matter.FabricScopingScoped
 		a.FabricSensitivity = matter.FabricSensitivityInsensitive
-	} else if access[accessCategoryMatchFabric] == "S" {
+	case "S":
 		a.FabricScoping = matter.FabricScopingUnscoped
 		a.FabricSensitivity = matter.FabricSensitivitySensitive
-	} else {
+	default:
 		a.FabricScoping = matter.FabricScopingUnscoped
 		a.FabricSensitivity = matter.FabricSensitivityInsensitive
 	}

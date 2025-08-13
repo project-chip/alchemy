@@ -90,7 +90,7 @@ func commandArgValue(name string, cluster *matter.Cluster, command *matter.Comma
 			return fmt.Sprintf("%v=null", matter.CamelCase(name))
 
 		default:
-			slog.Info("unknown enum arg type", slog.String("cluster", cluster.Name), slog.String("command", command.Name), slog.String("field", name), log.Type("type", value), slog.Any("value", value))
+			slog.Warn("unknown enum arg type", slog.String("cluster", cluster.Name), slog.String("command", command.Name), slog.String("field", name), log.Type("type", value), slog.Any("value", value))
 		}
 	case *matter.Bitmap:
 		parentEntity = entity.Parent()
@@ -111,7 +111,7 @@ func commandArgValue(name string, cluster *matter.Cluster, command *matter.Comma
 		case nil:
 			return fmt.Sprintf("%v=null", matter.CamelCase(name))
 		default:
-			slog.Info("unknown bitmap arg type", slog.String("cluster", cluster.Name), slog.String("command", command.Name), slog.String("field", name), log.Type("type", value), slog.Any("value", value))
+			slog.Warn("unknown bitmap arg type", slog.String("cluster", cluster.Name), slog.String("command", command.Name), slog.String("field", name), log.Type("type", value), slog.Any("value", value))
 		}
 	case *matter.Struct:
 		//Clusters.Objects.ApplicationLauncher.Structs.ApplicationStruct.({CatalogVendorID: catalogVendorId, ApplicationID: NonAvailableApp}))

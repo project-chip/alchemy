@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -16,9 +16,9 @@ import (
 
 type eventFactory struct{}
 
-func (cf *eventFactory) New(spec *Specification, d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (e *matter.Event, err error) {
+func (cf *eventFactory) New(spec *Specification, d *Doc, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (e *matter.Event, err error) {
 
-	e = matter.NewEvent(s.Base, parent)
+	e = matter.NewEvent(s, parent)
 	e.Name = matter.StripTypeSuffixes(name)
 	e.ID, err = ti.ReadID(row, matter.TableColumnID)
 	if err != nil {
@@ -43,8 +43,8 @@ func (cf *eventFactory) New(spec *Specification, d *Doc, s *Section, ti *TableIn
 	return
 }
 
-func (cf *eventFactory) Details(spec *Specification, d *Doc, s *Section, pc *parseContext, e *matter.Event) (err error) {
-	e.Description = getDescription(d, e, s.Elements)
+func (cf *eventFactory) Details(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, e *matter.Event) (err error) {
+	e.Description = getDescription(d, e, s, s.Children())
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
@@ -72,7 +72,7 @@ func (cf *eventFactory) Details(spec *Specification, d *Doc, s *Section, pc *par
 	if err != nil {
 		return
 	}
-	err = s.mapFields(fieldMap, pc)
+	err = mapFields(d, s, fieldMap, pc)
 	if err != nil {
 		return
 	}
@@ -82,14 +82,14 @@ func (cf *eventFactory) Details(spec *Specification, d *Doc, s *Section, pc *par
 	return
 }
 
-func (cf *eventFactory) EntityName(s *Section) string {
-	return strings.ToLower(text.TrimCaseInsensitiveSuffix(s.Name, " Event"))
+func (cf *eventFactory) EntityName(d *Doc, s *asciidoc.Section) string {
+	return strings.ToLower(text.TrimCaseInsensitiveSuffix(d.SectionName(s), " Event"))
 }
 
-func (cf *eventFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
-	return func(yield func(*Section) bool) {
-		parse.SkimFunc(s.Children(), func(s *Section) bool {
-			if s.SecType != matter.SectionEvent {
+func (cf *eventFactory) Children(d *Doc, s *asciidoc.Section) iter.Seq[*asciidoc.Section] {
+	return func(yield func(*asciidoc.Section) bool) {
+		parse.SkimFunc(d.Iterator(), s, s.Children(), func(s *asciidoc.Section) bool {
+			if d.SectionType(s) != matter.SectionEvent {
 				return false
 			}
 			return !yield(s)
@@ -97,8 +97,8 @@ func (cf *eventFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
 	}
 }
 
-func (s *Section) toEvents(spec *Specification, d *Doc, pc *parseContext, parent types.Entity) (events matter.EventSet, err error) {
-	t := FindFirstTable(s)
+func toEvents(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) (events matter.EventSet, err error) {
+	t := FindFirstTable(d, s)
 	if t == nil {
 		return nil, nil
 	}

@@ -4,10 +4,11 @@ import (
 	"context"
 	"log/slog"
 
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -35,7 +36,7 @@ func (z *ZAP) Run(cc *Context) (err error) {
 
 	var specDocs spec.DocSet
 	var specification *spec.Specification
-	specification, _, err = spec.Parse(cc, z.ParserOptions, z.ProcessingOptions, z.ASCIIDocAttributes.ToList())
+	specification, specDocs, err = spec.Parse(cc, z.ParserOptions, z.ProcessingOptions, z.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
 	}
@@ -62,9 +63,9 @@ func (z *ZAP) Run(cc *Context) (err error) {
 				return
 			}
 		}
-		top := parse.FindFirst[*spec.Section](doc)
+		top := parse.FindFirst[*asciidoc.Section](doc.Iterator(), doc)
 		if top != nil {
-			doc.Domain = zap.StringToDomain(top.Name)
+			doc.Domain = zap.StringToDomain(doc.SectionName(top))
 			slog.DebugContext(cxt, "Assigned domain", "file", input.Content.Path.Relative, "domain", doc.Domain)
 		}
 		return

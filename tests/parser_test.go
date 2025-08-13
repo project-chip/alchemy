@@ -12,47 +12,47 @@ func TestParser(t *testing.T) {
 
 var parserTests = parseTests{
 
-	{"parse name with more than 3 parts in author attribute", "asciidoctor/parser_test_parse_name_with_more_than_3_parts_in_author_attribute.adoc", parserTestParseNameWithMoreThan3PartsInAuthorAttribute, nil},
+	{"parse name with more than 3 parts in author attribute", "asciidoctor/parser_test_parse_name_with_more_than_3_parts_in_author_attribute.adoc", parserTestParseNameWithMoreThan3PartsInAuthorAttribute},
 
-	{"use explicit authorinitials if set after author attribute", "asciidoctor/parser_test_use_explicit_authorinitials_if_set_after_author_attribute.adoc", parserTestUseExplicitAuthorinitialsIfSetAfterAuthorAttribute, nil},
+	{"use explicit authorinitials if set after author attribute", "asciidoctor/parser_test_use_explicit_authorinitials_if_set_after_author_attribute.adoc", parserTestUseExplicitAuthorinitialsIfSetAfterAuthorAttribute},
 
-	{"use implicit authors if value of authors attribute matches computed value", "asciidoctor/parser_test_use_implicit_authors_if_value_of_authors_attribute_matches_computed_value.adoc", parserTestUseImplicitAuthorsIfValueOfAuthorsAttributeMatchesComputedValue, nil},
+	{"use implicit authors if value of authors attribute matches computed value", "asciidoctor/parser_test_use_implicit_authors_if_value_of_authors_attribute_matches_computed_value.adoc", parserTestUseImplicitAuthorsIfValueOfAuthorsAttributeMatchesComputedValue},
 
-	{"replace implicit authors if value of authors attribute does not match computed value", "asciidoctor/parser_test_replace_implicit_authors_if_value_of_authors_attribute_does_not_match_computed_value.adoc", parserTestReplaceImplicitAuthorsIfValueOfAuthorsAttributeDoesNotMatchComputedValue, nil},
+	{"replace implicit authors if value of authors attribute does not match computed value", "asciidoctor/parser_test_replace_implicit_authors_if_value_of_authors_attribute_does_not_match_computed_value.adoc", parserTestReplaceImplicitAuthorsIfValueOfAuthorsAttributeDoesNotMatchComputedValue},
 
-	{"sets authorcount to 0 if document has no authors", "asciidoctor/parser_test_sets_authorcount_to_0_if_document_has_no_authors.adoc", parserTestSetsAuthorcountTo0IfDocumentHasNoAuthors, nil},
+	{"sets authorcount to 0 if document has no authors", "asciidoctor/parser_test_sets_authorcount_to_0_if_document_has_no_authors.adoc", parserTestSetsAuthorcountTo0IfDocumentHasNoAuthors},
 
-	{"parse rev number date remark", "asciidoctor/parser_test_parse_rev_number_date_remark.adoc", parserTestParseRevNumberDateRemark, nil},
+	{"parse rev number date remark", "asciidoctor/parser_test_parse_rev_number_date_remark.adoc", parserTestParseRevNumberDateRemark},
 
-	{"parse rev number, data, and remark as attribute references", "asciidoctor/parser_test_parse_rev_number_data_and_remark_as_attribute_references.adoc", parserTestParseRevNumberDataAndRemarkAsAttributeReferences, nil},
+	{"parse rev number, data, and remark as attribute references", "asciidoctor/parser_test_parse_rev_number_data_and_remark_as_attribute_references.adoc", parserTestParseRevNumberDataAndRemarkAsAttributeReferences},
 
-	{"should resolve attribute references in rev number, data, and remark", "asciidoctor/parser_test_should_resolve_attribute_references_in_rev_number_data_and_remark.adoc", parserTestShouldResolveAttributeReferencesInRevNumberDataAndRemark, nil},
+	{"should resolve attribute references in rev number, data, and remark", "asciidoctor/parser_test_should_resolve_attribute_references_in_rev_number_data_and_remark.adoc", parserTestShouldResolveAttributeReferencesInRevNumberDataAndRemark},
 
-	{"parse rev date", "asciidoctor/parser_test_parse_rev_date.adoc", parserTestParseRevDate, nil},
+	{"parse rev date", "asciidoctor/parser_test_parse_rev_date.adoc", parserTestParseRevDate},
 
-	{"parse rev number with trailing comma", "asciidoctor/parser_test_parse_rev_number_with_trailing_comma.adoc", parserTestParseRevNumberWithTrailingComma, nil},
+	{"parse rev number with trailing comma", "asciidoctor/parser_test_parse_rev_number_with_trailing_comma.adoc", parserTestParseRevNumberWithTrailingComma},
 
-	{"parse rev number", "asciidoctor/parser_test_parse_rev_number.adoc", parserTestParseRevNumber, nil},
+	{"parse rev number", "asciidoctor/parser_test_parse_rev_number.adoc", parserTestParseRevNumber},
 
-	{"treats arbitrary text on rev line as revdate", "asciidoctor/parser_test_treats_arbitrary_text_on_rev_line_as_revdate.adoc", parserTestTreatsArbitraryTextOnRevLineAsRevdate, nil},
+	{"treats arbitrary text on rev line as revdate", "asciidoctor/parser_test_treats_arbitrary_text_on_rev_line_as_revdate.adoc", parserTestTreatsArbitraryTextOnRevLineAsRevdate},
 
-	{"parse rev date remark", "asciidoctor/parser_test_parse_rev_date_remark.adoc", parserTestParseRevDateRemark, nil},
+	{"parse rev date remark", "asciidoctor/parser_test_parse_rev_date_remark.adoc", parserTestParseRevDateRemark},
 
-	{"should not mistake attribute entry as rev remark", "asciidoctor/parser_test_should_not_mistake_attribute_entry_as_rev_remark.adoc", parserTestShouldNotMistakeAttributeEntryAsRevRemark, nil},
+	{"should not mistake attribute entry as rev remark", "asciidoctor/parser_test_should_not_mistake_attribute_entry_as_rev_remark.adoc", parserTestShouldNotMistakeAttributeEntryAsRevRemark},
 
-	{"parse rev remark only", "asciidoctor/parser_test_parse_rev_remark_only.adoc", parserTestParseRevRemarkOnly, nil},
+	{"parse rev remark only", "asciidoctor/parser_test_parse_rev_remark_only.adoc", parserTestParseRevRemarkOnly},
 
-	{"skip line comments before author", "asciidoctor/parser_test_skip_line_comments_before_author.adoc", parserTestSkipLineCommentsBeforeAuthor, nil},
+	{"skip line comments before author", "asciidoctor/parser_test_skip_line_comments_before_author.adoc", parserTestSkipLineCommentsBeforeAuthor},
 
-	{"skip block comment before author", "asciidoctor/parser_test_skip_block_comment_before_author.adoc", parserTestSkipBlockCommentBeforeAuthor, nil},
+	{"skip block comment before author", "asciidoctor/parser_test_skip_block_comment_before_author.adoc", parserTestSkipBlockCommentBeforeAuthor},
 
-	{"skip block comment before rev", "asciidoctor/parser_test_skip_block_comment_before_rev.adoc", parserTestSkipBlockCommentBeforeRev, nil},
+	{"skip block comment before rev", "asciidoctor/parser_test_skip_block_comment_before_rev.adoc", parserTestSkipBlockCommentBeforeRev},
 
-	{"break header at line with three forward slashes", "asciidoctor/parser_test_break_header_at_line_with_three_forward_slashes.adoc", parserTestBreakHeaderAtLineWithThreeForwardSlashes, nil},
+	{"break header at line with three forward slashes", "asciidoctor/parser_test_break_header_at_line_with_three_forward_slashes.adoc", parserTestBreakHeaderAtLineWithThreeForwardSlashes},
 
-	{"expands tabs to spaces", "asciidoctor/parser_test_expands_tabs_to_spaces.adoc", parserTestExpandsTabsToSpaces, nil},
+	{"expands tabs to spaces", "asciidoctor/parser_test_expands_tabs_to_spaces.adoc", parserTestExpandsTabsToSpaces},
 
-	{"adjust indentation handles empty lines gracefully", "asciidoctor/parser_test_adjust_indentation_handles_empty_lines_gracefully.adoc", parserTestAdjustIndentationHandlesEmptyLinesGracefully, nil},
+	{"adjust indentation handles empty lines gracefully", "asciidoctor/parser_test_adjust_indentation_handles_empty_lines_gracefully.adoc", parserTestAdjustIndentationHandlesEmptyLinesGracefully},
 }
 
 var parserTestParseNameWithMoreThan3PartsInAuthorAttribute = &asciidoc.Document{

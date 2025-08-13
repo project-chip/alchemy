@@ -6,15 +6,29 @@ InternalCrossReference = CrossReferenceStart id:(CrossReferenceID) label:(AnySpa
     if label != nil {
         lbl = join(label.([]any))
     }
-    return compose(c, asciidoc.NewCrossReference(id.(string), asciidoc.CrossReferenceFormatNatural), setElements[*asciidoc.CrossReference](lbl))
+    return compose(c, asciidoc.NewCrossReference(id.(asciidoc.Elements), asciidoc.CrossReferenceFormatNatural), setElements[*asciidoc.CrossReference](lbl))
 }
 
 CrossReferenceStart = "<<" 
 
-CrossReferenceID <- (Alpha / [:_]) [\p{L}\p{N} _:.-]* { 
+CrossReferenceInitialCharacter = (Alpha / [:_]) {
+    return asciidoc.NewString(string(c.text)), nil
+}
+
+// See: https://docs.asciidoctor.org/asciidoc/latest/attributes/id/#valid-id-characters
+CrossReferenceCharacters = (!AttributeReference  [\p{L}\p{N} _:.-] )+ {
+    return asciidoc.NewString(string(c.text)), nil
+}
+
+
+CrossReferenceID <- start:(AttributeReference / CrossReferenceInitialCharacter) end:(AttributeReference / CrossReferenceCharacters)* { 
     debugPosition(c, "matched cross reference ID: %s\n", string(c.text))
-    // See: https://docs.asciidoctor.org/asciidoc/latest/attributes/id/#valid-id-characters
-    return string(c.text), nil
+    var id []any
+    id = append(id, start)
+     if end != nil {
+        id = append(id, end.([]any)...)
+     }
+    return join(id), nil
 }
 
 CrossReferenceLabel = (
@@ -25,7 +39,20 @@ CrossReferenceLabel = (
 
 CrossReferenceMacroStart = "xref:"
 
-CrossReferenceMacro = CrossReferenceMacroStart path:(Path) attributes:(InlineAttributes) {
+CrossReferenceMacroLabelContent = !"]" InlineElement+ 
+
+
+CrossReferenceMacroLabel = "[" content:(CrossReferenceMacroLabelContent)? "]" {
+    debugPosition(c, "matched cross reference label content: %s\n", string(c.text))
+    return content, nil
+}
+
+
+CrossReferenceMacro = CrossReferenceMacroStart path:(Path) label:(CrossReferenceMacroLabel) {
     debugPosition(c, "matched document cross reference: %s\n", string(c.text))
-    return compose(c, asciidoc.NewCrossReferenceMacro(path.(asciidoc.Elements)), setAttributes[asciidoc.AttributableElement](attributes))
+    var lbl asciidoc.Elements
+    if label != nil {
+        lbl = join(label.([]any))
+    }
+    return compose(c, asciidoc.NewCrossReference(path.(asciidoc.Elements), asciidoc.CrossReferenceFormatMacro), setElements[*asciidoc.CrossReference](lbl))
 }

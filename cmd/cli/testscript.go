@@ -2,7 +2,6 @@ package cli
 
 import (
 	"github.com/project-chip/alchemy/cmd/common"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -29,38 +28,11 @@ func (cmd *TestScript) Run(cc *Context) (err error) {
 		return
 	}
 
-	err = errata.LoadErrataConfig(cmd.ParserOptions.Root)
-	if err != nil {
-		return
-	}
+	var specification *spec.Specification
+	var specDocs spec.DocSet
+	specification, _, err = spec.Parse(cc, cmd.ParserOptions, cmd.ProcessingOptions, cmd.ASCIIDocAttributes.ToList())
 
-	specParser, err := spec.NewParser(cmd.ASCIIDocAttributes.ToList(), cmd.ParserOptions)
-	if err != nil {
-		return
-	}
-
-	specPaths, err := pipeline.Start(cc, specParser.Targets)
-	if err != nil {
-		return
-	}
-
-	specDocs, err := pipeline.Parallel(cc, cmd.ProcessingOptions, specParser, specPaths)
-	if err != nil {
-		return
-	}
-
-	docGroups, err := pipeline.Collective(cc, cmd.ProcessingOptions, spec.NewDocumentGrouper(cmd.ParserOptions.Root), specDocs)
-	if err != nil {
-		return err
-	}
-
-	specBuilder := spec.NewBuilder(cmd.ParserOptions.Root)
-	specDocs, err = pipeline.Collective(cc, cmd.ProcessingOptions, &specBuilder, docGroups)
-	if err != nil {
-		return
-	}
-
-	err = spec.PatchSpecForSdk(specBuilder.Spec)
+	err = spec.PatchSpecForSdk(specification)
 	if err != nil {
 		return
 	}
@@ -70,28 +42,28 @@ func (cmd *TestScript) Run(cc *Context) (err error) {
 		return
 	}
 
-	specDocs, err = filterSpecDocs(cc, specDocs, specBuilder.Spec, cmd.FilterOptions, cmd.ProcessingOptions)
+	specDocs, err = filterSpecDocs(cc, specDocs, specification, cmd.FilterOptions, cmd.ProcessingOptions)
 	if err != nil {
 		return
 	}
 
-	specDocs, err = filterSpecDocs(cc, specDocs, specBuilder.Spec, cmd.FilterOptions, cmd.ProcessingOptions)
+	specDocs, err = filterSpecDocs(cc, specDocs, specification, cmd.FilterOptions, cmd.ProcessingOptions)
 	if err != nil {
 		return
 	}
 
-	err = checkSpecErrors(cc, specBuilder.Spec, cmd.FilterOptions, specDocs)
+	err = checkSpecErrors(cc, specification, cmd.FilterOptions, specDocs)
 	if err != nil {
 		return
 	}
 
-	scriptGenerator := testscript.NewTestScriptGenerator(specBuilder.Spec, cmd.SDKOptions.SdkRoot, picsLabels)
+	scriptGenerator := testscript.NewTestScriptGenerator(specification, cmd.SDKOptions.SdkRoot, picsLabels)
 	testplans, err := pipeline.Parallel(cc, cmd.ProcessingOptions, scriptGenerator, specDocs)
 	if err != nil {
 		return
 	}
 
-	generator := python.NewPythonTestRenderer(specBuilder.Spec, cmd.SDKOptions.SdkRoot, picsLabels, cmd.GeneratorOptions.ToOptions()...)
+	generator := python.NewPythonTestRenderer(specification, cmd.SDKOptions.SdkRoot, picsLabels, cmd.GeneratorOptions.ToOptions()...)
 	var scripts pipeline.StringSet
 	scripts, err = pipeline.Parallel(cc, cmd.ProcessingOptions, generator, testplans)
 	if err != nil {

@@ -4,18 +4,18 @@ import (
 	"log/slog"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toNamespace(spec *Specification, d *Doc, pc *parseContext) (err error) {
+func toNamespace(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext) (err error) {
 	var namespaceTable *TableInfo
 	var valuesTable *TableInfo
-	parse.SkimFunc(s.Children(), func(t *asciidoc.Table) bool {
+	parse.SkimFunc(d.Iterator(), s, s.Children(), func(t *asciidoc.Table) bool {
 		ti, err := ReadTable(d, t)
 		if err != nil {
 			return true
@@ -74,8 +74,15 @@ func (s *Section) toNamespace(spec *Specification, d *Doc, pc *parseContext) (er
 	}
 	pc.entities = append(pc.entities, ns)
 	pc.orderedEntities = append(pc.orderedEntities, ns)
-	pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], ns)
+	pc.entitiesByElement[s] = append(pc.entitiesByElement[s], ns)
 	return
+}
+
+func validateNamespaces(spec *Specification) {
+	deviceTypeIds := make(idUniqueness[*matter.Namespace])
+	for _, ns := range spec.Namespaces {
+		deviceTypeIds.check(spec, ns.ID, ns)
+	}
 }
 
 type tagFinder struct {

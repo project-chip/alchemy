@@ -6,8 +6,8 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -99,7 +99,7 @@ func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.En
 
 		fields = append(fields, f)
 		if existing, ok := fieldMap[f.Name]; ok {
-			slog.Error("duplicate field name", slog.String("name", name), matter.LogEntity("parent", parent), log.Path("source", f))
+			slog.Error("duplicate field name", slog.String("name", name), matter.LogEntity("parent", parent), log.Path("source", f), log.Path("previous", existing))
 			spec.addError(&DuplicateEntityIDError{Entity: f, Previous: existing})
 		}
 		fieldMap[f.Name] = f
@@ -107,53 +107,64 @@ func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.En
 	return
 }
 
-func (s *Section) mapFields(fieldMap map[string]*matter.Field, pc *parseContext) error {
-	for s := range parse.Skim[*Section](s.Children()) {
+func mapFields(d *Doc, section *asciidoc.Section, fieldMap map[string]*matter.Field, pc *parseContext) error {
+	for s := range parse.Skim[*asciidoc.Section](d.Iterator(), section, section.Children()) {
+
 		var name string
-		switch s.SecType {
+		switch d.SectionType(s) {
 		case matter.SectionAttribute:
-			name = text.TrimCaseInsensitiveSuffix(s.Name, " Attribute")
+			name = text.TrimCaseInsensitiveSuffix(d.SectionName(s), " Attribute")
 		case matter.SectionField:
-			name = text.TrimCaseInsensitiveSuffix(s.Name, " Field")
+			name = text.TrimCaseInsensitiveSuffix(d.SectionName(s), " Field")
+		}
+		if d.Path.Relative == "src/app_clusters/ElectricalPowerMeasurement.adoc" {
+			slog.Info("checking EPM section", "name", d.SectionName(s), "section type", d.SectionType(s), log.Path("source", s))
 		}
 		if len(name) == 0 {
 			continue
 		}
 		a, ok := fieldMap[name]
 		if !ok {
+			if d.Path.Relative == "src/app_clusters/ElectricalPowerMeasurement.adoc" {
+				slog.Info("checking EPM section", "no matching name", name)
+			}
+
 			continue
 		}
-		err := findAnonymousType(s, a)
+		err := findAnonymousType(d, s, a)
 		if err != nil {
+			if d.Path.Relative == "src/app_clusters/ElectricalPowerMeasurement.adoc" {
+				slog.Info("error checking EPM section", " matching name", name)
+			}
 			return err
 		}
 		if a.Type != nil && a.Type.BaseType == types.BaseDataTypeTag {
-			err = findTagNamespace(s, a)
+			err = findTagNamespace(d, s, a)
 			if err != nil {
 				return err
 			}
 		}
-		pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], a)
+		pc.entitiesByElement[s] = append(pc.entitiesByElement[s], a)
 	}
 	return nil
 }
 
-func findAnonymousType(s *Section, field *matter.Field) error {
+func findAnonymousType(doc *Doc, s *asciidoc.Section, field *matter.Field) error {
 	if field.Type == nil {
 		return nil
 	}
 	if field.Type.IsEnum() {
-		return findAnonymousEnum(s, field)
+		return findAnonymousEnum(doc, s, field)
 	}
 	if field.Type.IsMap() {
-		return findAnonymousBitmap(s, field)
+		return findAnonymousBitmap(doc, s, field)
 	}
 	return nil
 }
 
-func findAnonymousEnum(s *Section, field *matter.Field) error {
+func findAnonymousEnum(doc *Doc, s *asciidoc.Section, field *matter.Field) error {
 	slog.Debug("possible anonymous enum", "name", field.Name, "type", field.Type)
-	ti, err := parseFirstTable(s.Doc, s)
+	ti, err := parseFirstTable(doc, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			return nil
@@ -164,10 +175,10 @@ func findAnonymousEnum(s *Section, field *matter.Field) error {
 		slog.Debug("no value", "name", field.Name, "type", field.Type)
 		return nil
 	}
-	ae := matter.NewAnonymousEnum(s.Base, field)
+	ae := matter.NewAnonymousEnum(s, field)
 	ae.Type = field.Type
 	for row := range ti.ContentRows() {
-		ev := matter.NewEnumValue(s.Base, ae)
+		ev := matter.NewEnumValue(s, ae)
 		ev.Conformance = conformance.Set{&conformance.Mandatory{}}
 		ev.Value, err = ti.ReadID(row, matter.TableColumnValue)
 		if err != nil {
@@ -198,9 +209,9 @@ func findAnonymousEnum(s *Section, field *matter.Field) error {
 	return nil
 }
 
-func findAnonymousBitmap(s *Section, field *matter.Field) error {
+func findAnonymousBitmap(doc *Doc, s *asciidoc.Section, field *matter.Field) error {
 	slog.Debug("possible anonymous enum", "name", field.Name, "type", field.Type)
-	ti, err := parseFirstTable(s.Doc, s)
+	ti, err := parseFirstTable(doc, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			return nil
@@ -211,7 +222,7 @@ func findAnonymousBitmap(s *Section, field *matter.Field) error {
 		slog.Debug("no bit", "name", field.Name, "type", field.Type)
 		return nil
 	}
-	bm := matter.NewAnonymousBitmap(s.Base, field)
+	bm := matter.NewAnonymousBitmap(s, field)
 	bm.Type = field.Type
 	for row := range ti.ContentRows() {
 		var bit, name, summary string
@@ -245,7 +256,7 @@ func findAnonymousBitmap(s *Section, field *matter.Field) error {
 			name = matter.Case(summary)
 		}
 
-		bv := matter.NewBitmapBit(s.Base, bit, name, summary, conf)
+		bv := matter.NewBitmapBit(s, bit, name, summary, conf)
 		bm.Bits = append(bm.Bits, bv)
 	}
 	if len(bm.Bits) > 0 {
@@ -254,11 +265,11 @@ func findAnonymousBitmap(s *Section, field *matter.Field) error {
 	return nil
 }
 
-func findTagNamespace(s *Section, field *matter.Field) error {
+func findTagNamespace(doc *Doc, s *asciidoc.Section, field *matter.Field) error {
 	var found bool
-	parse.Traverse(s, s.Elements, func(ref *asciidoc.CrossReference, parent parse.HasElements, index int) parse.SearchShould {
-		if ref.ID == "ref_StandardNamespaces" {
-			label := buildReferenceName(ref.Elements)
+	parse.Search(doc.Iterator(), s, s.Elements, func(ref *asciidoc.CrossReference, parent asciidoc.Parent, index int) parse.SearchShould {
+		if doc.anchorId(doc.Iterator(), ref, ref, ref.ID) == "ref_StandardNamespaces" {
+			label := buildReferenceName(doc, ref.Elements)
 			name := strings.TrimSpace(text.TrimCaseInsensitiveSuffix(label, " Namespace"))
 			if len(name) > 0 {
 				field.Type.Name = name
@@ -269,7 +280,7 @@ func findTagNamespace(s *Section, field *matter.Field) error {
 		return parse.SearchShouldContinue
 	})
 	if !found {
-		slog.Warn("Tag field does not specify namespace", slog.String("field", field.Name), log.Element("source", s.Doc.Path, field.Source()))
+		slog.Warn("Tag field does not specify namespace", slog.String("field", field.Name), log.Element("source", doc.Path, field.Source()))
 	}
 	return nil
 }

@@ -1,6 +1,7 @@
 package asciidoc
 
 import (
+	"iter"
 	"strings"
 )
 
@@ -61,4 +62,15 @@ func (s Section) Name() string {
 		}
 	}
 	return sb.String()
+}
+
+func (s *Section) Traverse(parent Parent) iter.Seq2[Parent, Parent] {
+	return func(yield func(Parent, Parent) bool) {
+		if !s.AttributeList.traverse(s, yield) {
+			return
+		}
+		if !yield(s, &s.Title) {
+			return
+		}
+	}
 }

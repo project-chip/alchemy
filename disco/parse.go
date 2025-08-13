@@ -5,8 +5,8 @@ import (
 	"log/slog"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -17,7 +17,7 @@ type docParse struct {
 	doc     *spec.Doc
 	docType matter.DocType
 
-	clusters map[*spec.Section]*clusterInfo
+	clusters map[*asciidoc.Section]*clusterInfo
 
 	classification []*subSection
 	clusterIDs     []*subSection
@@ -37,7 +37,7 @@ type docParse struct {
 }
 
 type subSection struct {
-	section     *spec.Section
+	section     *asciidoc.Section
 	table       *spec.TableInfo
 	parent      *subSection
 	parentIndex int
@@ -57,16 +57,16 @@ func newSubSectionChildPattern(suffix string, indexColumns ...matter.TableColumn
 	return subSectionChildPattern{suffix: suffix, indexColumns: indexColumns}
 }
 
-func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *spec.Section) (dp *docParse, err error) {
+func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *asciidoc.Section) (dp *docParse, err error) {
 	dp = &docParse{
 		doc:              doc,
 		docType:          docType,
-		clusters:         make(map[*spec.Section]*clusterInfo),
+		clusters:         make(map[*asciidoc.Section]*clusterInfo),
 		conformanceCache: make(map[asciidoc.Element]conformance.Set),
 		tableCache:       make(map[*asciidoc.Table]*spec.TableInfo),
 	}
-	for section := range parse.FindAll[*spec.Section](topLevelSection) {
-		switch section.SecType {
+	for section := range parse.FindAll[*asciidoc.Section](doc.Iterator(), topLevelSection) {
+		switch doc.SectionType(section) {
 		case matter.SectionCluster:
 			dp.clusters[section] = &clusterInfo{}
 		case matter.SectionAttributes:
@@ -78,7 +78,7 @@ func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection
 					dp.attributes = append(dp.attributes, attributes)
 				}
 			default:
-				slog.Warn("attributes section in non-cluster doc", log.Element("source", doc.Path, section.Base))
+				slog.Warn("attributes section in non-cluster doc", log.Element("source", doc.Path, section))
 			}
 		case matter.SectionFeatures:
 			switch docType {
@@ -89,7 +89,7 @@ func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection
 					dp.features = append(dp.features, features)
 				}
 			default:
-				slog.Warn("features section in non-cluster doc", log.Element("source", doc.Path, section.Base))
+				slog.Warn("features section in non-cluster doc", log.Element("source", doc.Path, section))
 			}
 		case matter.SectionCommands:
 			var commands *subSection
@@ -151,11 +151,11 @@ func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection
 	return
 }
 
-func newSubSection(dp *docParse, section *spec.Section) (ss *subSection, err error) {
+func newSubSection(dp *docParse, section *asciidoc.Section) (ss *subSection, err error) {
 	return newParentSubSection(dp, section)
 }
 
-func newParentSubSection(dp *docParse, section *spec.Section, childPatterns ...subSectionChildPattern) (ss *subSection, err error) {
+func newParentSubSection(dp *docParse, section *asciidoc.Section, childPatterns ...subSectionChildPattern) (ss *subSection, err error) {
 	ss = &subSection{section: section}
 	ss.table, err = firstTableInfo(dp, section)
 	if err != nil {
@@ -170,9 +170,9 @@ func newParentSubSection(dp *docParse, section *spec.Section, childPatterns ...s
 	return
 }
 
-func firstTableInfo(dp *docParse, section *spec.Section) (ti *spec.TableInfo, err error) {
+func firstTableInfo(dp *docParse, section *asciidoc.Section) (ti *spec.TableInfo, err error) {
 
-	table := spec.FindFirstTable(section)
+	table := spec.FindFirstTable(dp.doc, section)
 	if table != nil {
 		ti, err = spec.ReadTable(dp.doc, table)
 		if err != nil {
@@ -215,8 +215,8 @@ func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSecti
 		subSectionNames[subSectionName] = i
 	}
 	var i int
-	for ss := range parse.Skim[*spec.Section](parent.section.Children()) {
-		name := text.TrimCaseInsensitiveSuffix(ss.Name, childPattern.suffix)
+	for ss := range parse.Skim[*asciidoc.Section](dp.doc.Iterator(), parent.section, parent.section.Children()) {
+		name := text.TrimCaseInsensitiveSuffix(dp.doc.SectionName(ss), childPattern.suffix)
 		var ok bool
 		if _, ok = subSectionNames[name]; !ok {
 			i++
@@ -239,11 +239,11 @@ func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSecti
 	return
 }
 
-func getSubsectionCluster(docParse *docParse, section *spec.Section) *clusterInfo {
-	parent, ok := section.Parent.(*spec.Section)
+func getSubsectionCluster(docParse *docParse, section *asciidoc.Section) *clusterInfo {
+	parent, ok := section.Parent().(*asciidoc.Section)
 	if ok {
 		for parent != nil {
-			if parent.SecType == matter.SectionCluster {
+			if docParse.doc.SectionType(parent) == matter.SectionCluster {
 				ci, ok := docParse.clusters[parent]
 				if !ok {
 					ci = &clusterInfo{}
@@ -251,7 +251,7 @@ func getSubsectionCluster(docParse *docParse, section *spec.Section) *clusterInf
 				}
 				return ci
 			}
-			if parent, ok = parent.Parent.(*spec.Section); !ok {
+			if parent, ok = parent.Parent().(*asciidoc.Section); !ok {
 				break
 			}
 		}

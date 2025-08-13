@@ -12,6 +12,13 @@ func NewString(s string) *String {
 	return &String{Value: s}
 }
 
+func NewStringElements(s ...string) (elements Elements) {
+	for _, s := range s {
+		elements = append(elements, NewString(s))
+	}
+	return
+}
+
 func JoinStrings(ss []*String) *String {
 	var sb strings.Builder
 	for _, s := range ss {

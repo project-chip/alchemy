@@ -303,7 +303,7 @@ func parseNotExpression(d *xml.Decoder, e xml.StartElement) (exp conformance.Exp
 					exp.Not = true
 				case nil:
 					l, c := d.InputPos()
-					slog.Info("notTerm missing expression", "name", t.Name.Local)
+					slog.Warn("notTerm missing expression", "name", t.Name.Local)
 
 					err = fmt.Errorf("notTerm missing expression: %d:%d", l, c)
 				default:

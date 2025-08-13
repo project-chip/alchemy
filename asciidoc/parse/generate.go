@@ -4,7 +4,6 @@ package main
 
 import (
 	"fmt"
-	"log/slog"
 
 	"github.com/dave/dst"
 	"github.com/dave/dst/dstutil"
@@ -28,7 +27,6 @@ func parserPatch(file *dst.File) (err error) {
 			case "newParser":
 				newParser = node
 			case "parseRuleRefExpr":
-				slog.Info("parseRuleRefExpr")
 				parseRuleRefExpr = node
 			}
 		case nil:

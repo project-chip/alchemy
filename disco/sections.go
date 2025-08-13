@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/errata"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -34,12 +34,12 @@ func (b *Baller) organizeSubSections(dc *discoContext) (err error) {
 	return
 }
 
-func reorderSection(sec *spec.Section, sectionOrder []matter.Section) error {
+func reorderSection(doc *spec.Doc, sec *asciidoc.Section, sectionOrder []matter.Section) error {
 	validSectionTypes := make(map[matter.Section]struct{}, len(sectionOrder)+1)
 	for _, st := range sectionOrder {
 		validSectionTypes[st] = struct{}{}
 	}
-	sections := divyUpSection(sec, validSectionTypes)
+	sections := divyUpSection(doc, sec, validSectionTypes)
 
 	newOrder := make(asciidoc.Elements, 0, len(sec.Children()))
 	for _, st := range sectionOrder {
@@ -57,16 +57,17 @@ func reorderSection(sec *spec.Section, sectionOrder []matter.Section) error {
 	return nil
 }
 
-func divyUpSection(sec *spec.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section]asciidoc.Elements {
+func divyUpSection(doc *spec.Doc, sec *asciidoc.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section]asciidoc.Elements {
 	sections := make(map[matter.Section]asciidoc.Elements)
 	lastSectionType := matter.SectionPrefix
 	for _, e := range sec.Children() {
 		switch el := e.(type) {
-		case *spec.Section:
-			if el.SecType != matter.SectionUnknown {
-				_, ok := validSectionTypes[el.SecType]
+		case *asciidoc.Section:
+			st := doc.SectionType(el)
+			if st != matter.SectionUnknown {
+				_, ok := validSectionTypes[st]
 				if ok {
-					lastSectionType = el.SecType
+					lastSectionType = st
 				}
 			}
 		}
@@ -75,23 +76,23 @@ func divyUpSection(sec *spec.Section, validSectionTypes map[matter.Section]struc
 	return sections
 }
 
-func setSectionTitle(sec *spec.Section, title string) {
-	for i, e := range sec.Base.Title {
+func setSectionTitle(doc *spec.Doc, sec *asciidoc.Section, title string) {
+	for i, e := range sec.Title {
 		switch e.(type) {
 		case *asciidoc.String:
-			sec.Base.Title[i] = asciidoc.NewString(title)
-			sec.Name = title
+			sec.Title[i] = asciidoc.NewString(title)
+			doc.SetSectionName(sec, title)
 		}
 	}
 }
 
-func (b *Baller) appendSubsectionTypes(cxt *discoContext, section *spec.Section, columnMap spec.ColumnIndex, rows []*asciidoc.TableRow) {
-	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeDataTypeAppendSuffix) {
+func (b *Baller) appendSubsectionTypes(cxt *discoContext, section *asciidoc.Section, columnMap spec.ColumnIndex, rows []*asciidoc.TableRow) {
+	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section), errata.DiscoPurposeDataTypeAppendSuffix) {
 		return
 	}
 	var subsectionSuffix string
 	var subsectionType matter.Section
-	switch section.SecType {
+	switch cxt.doc.SectionType(section) {
 	case matter.SectionDataTypeBitmap:
 		subsectionSuffix = "Bit"
 		subsectionType = matter.SectionBit
@@ -115,19 +116,20 @@ func (b *Baller) appendSubsectionTypes(cxt *discoContext, section *spec.Section,
 			subSectionNames[name] = struct{}{}
 		}
 		suffix := " " + subsectionSuffix
-		for ss := range parse.FindAll[*spec.Section](section) {
-			name := text.TrimCaseInsensitiveSuffix(ss.Name, suffix)
+		for ss := range parse.FindAll[*asciidoc.Section](cxt.doc.Iterator(), section) {
+			name := text.TrimCaseInsensitiveSuffix(cxt.doc.SectionName(ss), suffix)
 			if _, ok := subSectionNames[name]; !ok {
 				continue
 			}
 			if !b.options.AppendSubsectionTypes {
 				continue
 			}
-			if ss.SecType == matter.SectionUnknown {
-				ss.SecType = subsectionType
+			if cxt.doc.SectionType(ss) == matter.SectionUnknown {
+				cxt.doc.SetSectionType(ss, subsectionType)
 			}
-			if !strings.HasSuffix(strings.ToLower(ss.Name), strings.ToLower(suffix)) {
-				setSectionTitle(ss, ss.Name+suffix)
+			name = cxt.doc.SectionName(ss)
+			if !strings.HasSuffix(strings.ToLower(name), strings.ToLower(suffix)) {
+				setSectionTitle(cxt.doc, ss, name+suffix)
 			}
 		}
 	}

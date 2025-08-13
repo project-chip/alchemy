@@ -2,38 +2,39 @@ package asciidoc
 
 import (
 	"fmt"
+	"iter"
 	"strings"
 )
 
 type AnchorAttribute struct {
 	attribute
 
-	ID    *String `json:"id"`
+	ID    Elements `json:"id"`
 	Label Elements
 }
 
-func NewAnchorAttribute(id *String, label Elements) *AnchorAttribute {
+func NewAnchorAttribute(id Elements, label Elements) *AnchorAttribute {
 	return &AnchorAttribute{ID: id, Label: label}
 }
 
-func (a *AnchorAttribute) Equals(o Attribute) bool {
+func (aa *AnchorAttribute) Equals(o Attribute) bool {
 	oa, ok := o.(*AnchorAttribute)
 	if !ok {
 		return false
 	}
-	if oa.ID.Value != a.ID.Value {
+	if !oa.ID.Equals(aa.ID) {
 		return false
 	}
-	return a.Label.Equals(oa.Label)
+	return aa.Label.Equals(oa.Label)
 }
 
-func (a *AnchorAttribute) Value() any {
-	return a.ID
+func (aa *AnchorAttribute) Value() any {
+	return aa.ID
 }
 
-func (na *AnchorAttribute) SetValue(v any) error {
-	if v, ok := v.(*String); ok {
-		na.ID = v
+func (aa *AnchorAttribute) SetValue(v any) error {
+	if v, ok := v.(Elements); ok {
+		aa.ID = v
 		return nil
 	}
 	return fmt.Errorf("invalid type for AnchorAttribute: %T", v)
@@ -47,25 +48,35 @@ func (AnchorAttribute) QuoteType() AttributeQuoteType {
 	return AttributeQuoteTypeNone
 }
 
-func (na *AnchorAttribute) AsciiDocString() string {
-	if na.ID == nil {
+func (aa *AnchorAttribute) AsciiDocString() string {
+	if aa.ID == nil {
 		return ""
 	}
 	var sb strings.Builder
-	sb.WriteString(na.ID.Value)
-	if len(na.Label) > 0 {
+	for _, e := range aa.ID {
+		attributeAsciiDocStringElement(&sb, e)
+	}
+	if len(aa.Label) > 0 {
 		sb.WriteString(",")
-		for _, e := range na.Label {
+		for _, e := range aa.Label {
 			attributeAsciiDocStringElement(&sb, e)
 		}
 	}
 	return sb.String()
 }
 
+func (aa *AnchorAttribute) Traverse(parent Parent) iter.Seq2[Parent, Parent] {
+	return func(yield func(Parent, Parent) bool) {
+		if !yield(parent, &aa.Label) {
+			return
+		}
+	}
+}
+
 type Anchor struct {
 	position
 
-	ID string
+	ID Elements
 	Elements
 }
 
@@ -86,12 +97,12 @@ func (a *Anchor) Equals(o Element) bool {
 	if !ok {
 		return false
 	}
-	if oa.ID != a.ID {
+	if !oa.ID.Equals(a.ID) {
 		return false
 	}
 	return a.Elements.Equals(oa.Elements)
 }
 
-func NewAnchor(id string, label Elements) *Anchor {
+func NewAnchor(id Elements, label Elements) *Anchor {
 	return &Anchor{ID: id, Elements: label}
 }

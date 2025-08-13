@@ -1,0 +1,4 @@
+
+ifeval::[{asciidoctor-version} > true]
+I didn't make the cut!
+endif::[]

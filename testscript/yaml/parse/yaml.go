@@ -59,7 +59,7 @@ func tryExtractValue[T any](val yaml.MapSlice, key string, defaultValue ...T) (v
 		ok = false
 	}
 	if !ok {
-		slog.Info("unable to cast YAML value", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", value)), slog.String("got", fmt.Sprintf("%T", v)))
+		slog.Warn("unable to cast YAML value", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", value)), slog.String("got", fmt.Sprintf("%T", v)))
 	}
 	return
 }
@@ -99,7 +99,7 @@ func extractObject[T any](val yaml.MapSlice, key string) (value *T, out yaml.Map
 			}
 		}
 	}
-	slog.Info("unable to cast YAML value", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", value)), slog.String("got", fmt.Sprintf("%T", v)))
+	slog.Warn("unable to cast YAML value", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", value)), slog.String("got", fmt.Sprintf("%T", v)))
 	return
 }
 
@@ -132,7 +132,7 @@ func tryExtractArray[T any](val yaml.MapSlice, key string) (value []T, out yaml.
 			if ok {
 				value = append(value, el)
 			} else {
-				slog.Info("unable to cast YAML array value element", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", el)), slog.String("got", fmt.Sprintf("%T", v)))
+				slog.Warn("unable to cast YAML array value element", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", el)), slog.String("got", fmt.Sprintf("%T", v)))
 				return
 			}
 		}
@@ -140,7 +140,7 @@ func tryExtractArray[T any](val yaml.MapSlice, key string) (value []T, out yaml.
 		return
 	default:
 		ok = false
-		slog.Info("unable to cast YAML array value", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", value)), slog.String("got", fmt.Sprintf("%T", v)))
+		slog.Warn("unable to cast YAML array value", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", value)), slog.String("got", fmt.Sprintf("%T", v)))
 		return
 	}
 }

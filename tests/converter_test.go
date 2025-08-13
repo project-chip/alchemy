@@ -12,19 +12,19 @@ func TestConverter(t *testing.T) {
 
 var converterTests = parseTests{
 
-	{"should set Haml format to html5 for html5 backend", "asciidoctor/converter_test_should_set_haml_format_to_html_5_for_html_5_backend.adoc", converterTestShouldSetHamlFormatToHtml5ForHtml5Backend, nil},
+	{"should set Haml format to html5 for html5 backend", "asciidoctor/converter_test_should_set_haml_format_to_html_5_for_html_5_backend.adoc", converterTestShouldSetHamlFormatToHtml5ForHtml5Backend},
 
-	{"should use built-in global cache to cache templates", "asciidoctor/converter_test_should_use_built_in_global_cache_to_cache_templates.adoc", converterTestShouldUseBuiltInGlobalCacheToCacheTemplates, nil},
+	{"should use built-in global cache to cache templates", "asciidoctor/converter_test_should_use_built_in_global_cache_to_cache_templates.adoc", converterTestShouldUseBuiltInGlobalCacheToCacheTemplates},
 
-	{"should load ERB templates using ErubiTemplate if eruby is set to erubi", "asciidoctor/converter_test_should_load_erb_templates_using_erubi_template_if_eruby_is_set_to_erubi.adoc", converterTestShouldLoadErbTemplatesUsingErubiTemplateIfErubyIsSetToErubi, nil},
+	{"should load ERB templates using ErubiTemplate if eruby is set to erubi", "asciidoctor/converter_test_should_load_erb_templates_using_erubi_template_if_eruby_is_set_to_erubi.adoc", converterTestShouldLoadErbTemplatesUsingErubiTemplateIfErubyIsSetToErubi},
 
-	{"should be able to override the outline using a custom template", "asciidoctor/converter_test_should_be_able_to_override_the_outline_using_a_custom_template.adoc", converterTestShouldBeAbleToOverrideTheOutlineUsingACustomTemplate, nil},
+	{"should be able to override the outline using a custom template", "asciidoctor/converter_test_should_be_able_to_override_the_outline_using_a_custom_template.adoc", converterTestShouldBeAbleToOverrideTheOutlineUsingACustomTemplate},
 
-	{"should not expose included method on Converter class", "asciidoctor/converter_test_should_not_expose_included_method_on_converter_class.adoc", converterTestShouldNotExposeIncludedMethodOnConverterClass, nil},
+	{"should not expose included method on Converter class", "asciidoctor/converter_test_should_not_expose_included_method_on_converter_class.adoc", converterTestShouldNotExposeIncludedMethodOnConverterClass},
 
-	{"should use specified converter for specified backend", "asciidoctor/converter_test_should_use_specified_converter_for_specified_backend.adoc", converterTestShouldUseSpecifiedConverterForSpecifiedBackend, nil},
+	{"should use specified converter for specified backend", "asciidoctor/converter_test_should_use_specified_converter_for_specified_backend.adoc", converterTestShouldUseSpecifiedConverterForSpecifiedBackend},
 
-	{"should get converter from specified converter factory", "asciidoctor/converter_test_should_get_converter_from_specified_converter_factory.adoc", converterTestShouldGetConverterFromSpecifiedConverterFactory, nil},
+	{"should get converter from specified converter factory", "asciidoctor/converter_test_should_get_converter_from_specified_converter_factory.adoc", converterTestShouldGetConverterFromSpecifiedConverterFactory},
 }
 
 var converterTestShouldSetHamlFormatToHtml5ForHtml5Backend = &asciidoc.Document{

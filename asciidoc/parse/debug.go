@@ -8,7 +8,7 @@ import (
 var debugParser = false
 var debugParserStack = false
 
-func debug(format string, a ...any) (n int, err error) {
+func debug2(format string, a ...any) (n int, err error) {
 	//return
 	return fmt.Fprintf(os.Stderr, format, a...)
 }

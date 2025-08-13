@@ -13,7 +13,7 @@ func (b *Baller) organizeEventsSection(cxt *discoContext) (err error) {
 	for _, events := range cxt.parsed.events {
 		eventsTable := events.table
 		if eventsTable == nil || eventsTable.Element == nil {
-			slog.Warn("Could not organize Events section, as no table of events was found", log.Path("source", events.section.Base))
+			slog.Warn("Could not organize Events section, as no table of events was found", log.Path("source", events.section))
 			return
 		}
 		if eventsTable.ColumnMap == nil {

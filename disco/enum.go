@@ -25,7 +25,7 @@ func (b *Baller) organizeEnumSection(cxt *discoContext, es *subSection) (err err
 
 	enumTable := es.table
 	if enumTable == nil || enumTable.Element == nil {
-		slog.Warn("Could not organize enum section, as no table of enum values was found", log.Path("source", es.section.Base))
+		slog.Warn("Could not organize enum section, as no table of enum values was found", log.Path("source", es.section))
 		return
 	}
 	if enumTable.ColumnMap == nil {

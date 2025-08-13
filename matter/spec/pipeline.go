@@ -94,7 +94,7 @@ func Read(cxt context.Context, processingOptions pipeline.ProcessingOptions, spe
 func Parse(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions, attributes []asciidoc.AttributeName) (specification *Specification, specDocs DocSet, err error) {
 
 	var specParser Parser
-	specParser, err = NewParser(attributes, parserOptions)
+	specParser, err = NewParser(parserOptions)
 	if err != nil {
 		return
 	}
@@ -115,7 +115,19 @@ func Parse(cxt context.Context, parserOptions ParserOptions, processingOptions p
 		return
 	}
 
-	docGroups, err := pipeline.Collective(cxt, processingOptions, NewDocumentGrouper(parserOptions.Root), specDocs)
+	var docGroups pipeline.Map[string, *pipeline.Data[*DocGroup]]
+	docGroups, err = pipeline.Collective(cxt, processingOptions, NewDocumentGrouper(parserOptions.Root), specDocs)
+	if err != nil {
+		return
+	}
+
+	var preparser *PreParser
+	preparser, err = NewPreParser(parserOptions.Root, attributes)
+	if err != nil {
+		return
+	}
+
+	_, err = pipeline.Parallel(cxt, processingOptions, preparser, docGroups)
 	if err != nil {
 		return
 	}

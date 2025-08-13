@@ -12,193 +12,193 @@ func TestAttributes(t *testing.T) {
 
 var attributesTests = parseTests{
 
-	{"creates an attribute by fusing a legacy multi-line value", "asciidoctor/attributes_test_creates_an_attribute_by_fusing_a_legacy_multi_line_value.adoc", attributesTestCreatesAnAttributeByFusingALegacyMultiLineValue, nil},
+	{"creates an attribute by fusing a legacy multi-line value", "asciidoctor/attributes_test_creates_an_attribute_by_fusing_a_legacy_multi_line_value.adoc", attributesTestCreatesAnAttributeByFusingALegacyMultiLineValue},
 
-	{"creates an attribute by fusing a multi-line value", "asciidoctor/attributes_test_creates_an_attribute_by_fusing_a_multi_line_value.adoc", attributesTestCreatesAnAttributeByFusingAMultiLineValue, nil},
+	{"creates an attribute by fusing a multi-line value", "asciidoctor/attributes_test_creates_an_attribute_by_fusing_a_multi_line_value.adoc", attributesTestCreatesAnAttributeByFusingAMultiLineValue},
 
-	{"honors line break characters in multi-line values", "asciidoctor/attributes_test_honors_line_break_characters_in_multi_line_values.adoc", attributesTestHonorsLineBreakCharactersInMultiLineValues, nil},
+	{"honors line break characters in multi-line values", "asciidoctor/attributes_test_honors_line_break_characters_in_multi_line_values.adoc", attributesTestHonorsLineBreakCharactersInMultiLineValues},
 
-	{"should allow pass macro to surround a multi-line value that contains line breaks", "asciidoctor/attributes_test_should_allow_pass_macro_to_surround_a_multi_line_value_that_contains_line_breaks.adoc", attributesTestShouldAllowPassMacroToSurroundAMultiLineValueThatContainsLineBreaks, nil},
+	{"should allow pass macro to surround a multi-line value that contains line breaks", "asciidoctor/attributes_test_should_allow_pass_macro_to_surround_a_multi_line_value_that_contains_line_breaks.adoc", attributesTestShouldAllowPassMacroToSurroundAMultiLineValueThatContainsLineBreaks},
 
-	{"performs attribute substitution on attribute value", "asciidoctor/attributes_test_performs_attribute_substitution_on_attribute_value.adoc", attributesTestPerformsAttributeSubstitutionOnAttributeValue, nil},
+	{"performs attribute substitution on attribute value", "asciidoctor/attributes_test_performs_attribute_substitution_on_attribute_value.adoc", attributesTestPerformsAttributeSubstitutionOnAttributeValue},
 
-	{"resolves attributes inside attribute value within header", "asciidoctor/attributes_test_resolves_attributes_inside_attribute_value_within_header.adoc", attributesTestResolvesAttributesInsideAttributeValueWithinHeader, nil},
+	{"resolves attributes inside attribute value within header", "asciidoctor/attributes_test_resolves_attributes_inside_attribute_value_within_header.adoc", attributesTestResolvesAttributesInsideAttributeValueWithinHeader},
 
-	{"resolves attributes and pass macro inside attribute value outside header", "asciidoctor/attributes_test_resolves_attributes_and_pass_macro_inside_attribute_value_outside_header.adoc", attributesTestResolvesAttributesAndPassMacroInsideAttributeValueOutsideHeader, nil},
+	{"resolves attributes and pass macro inside attribute value outside header", "asciidoctor/attributes_test_resolves_attributes_and_pass_macro_inside_attribute_value_outside_header.adoc", attributesTestResolvesAttributesAndPassMacroInsideAttributeValueOutsideHeader},
 
-	{"should handle multibyte characters when limiting attribute value size", "asciidoctor/attributes_test_should_handle_multibyte_characters_when_limiting_attribute_value_size.adoc", attributesTestShouldHandleMultibyteCharactersWhenLimitingAttributeValueSize, nil},
+	{"should handle multibyte characters when limiting attribute value size", "asciidoctor/attributes_test_should_handle_multibyte_characters_when_limiting_attribute_value_size.adoc", attributesTestShouldHandleMultibyteCharactersWhenLimitingAttributeValueSize},
 
-	{"should not mangle multibyte characters when limiting attribute value size", "asciidoctor/attributes_test_should_not_mangle_multibyte_characters_when_limiting_attribute_value_size.adoc", attributesTestShouldNotMangleMultibyteCharactersWhenLimitingAttributeValueSize, nil},
+	{"should not mangle multibyte characters when limiting attribute value size", "asciidoctor/attributes_test_should_not_mangle_multibyte_characters_when_limiting_attribute_value_size.adoc", attributesTestShouldNotMangleMultibyteCharactersWhenLimitingAttributeValueSize},
 
-	{"resolves user-home attribute if safe mode is less than SERVER", "asciidoctor/attributes_test_resolves_user_home_attribute_if_safe_mode_is_less_than_server.adoc", attributesTestResolvesUserHomeAttributeIfSafeModeIsLessThanServer, nil},
+	{"resolves user-home attribute if safe mode is less than SERVER", "asciidoctor/attributes_test_resolves_user_home_attribute_if_safe_mode_is_less_than_server.adoc", attributesTestResolvesUserHomeAttributeIfSafeModeIsLessThanServer},
 
-	{"user-home attribute resolves to . if safe mode is SERVER or greater", "asciidoctor/attributes_test_user_home_attribute_resolves_to___if_safe_mode_is_server_or_greater.adoc", attributesTestUserHomeAttributeResolvesToIfSafeModeIsServerOrGreater, nil},
+	{"user-home attribute resolves to . if safe mode is SERVER or greater", "asciidoctor/attributes_test_user_home_attribute_resolves_to___if_safe_mode_is_server_or_greater.adoc", attributesTestUserHomeAttributeResolvesToIfSafeModeIsServerOrGreater},
 
-	{"user-home attribute can be overridden by API if safe mode is less than SERVER", "asciidoctor/attributes_test_user_home_attribute_can_be_overridden_by_api_if_safe_mode_is_less_than_server.adoc", attributesTestUserHomeAttributeCanBeOverriddenByApiIfSafeModeIsLessThanServer, nil},
+	{"user-home attribute can be overridden by API if safe mode is less than SERVER", "asciidoctor/attributes_test_user_home_attribute_can_be_overridden_by_api_if_safe_mode_is_less_than_server.adoc", attributesTestUserHomeAttributeCanBeOverriddenByApiIfSafeModeIsLessThanServer},
 
-	{"user-home attribute can be overridden by API if safe mode is SERVER or greater", "asciidoctor/attributes_test_user_home_attribute_can_be_overridden_by_api_if_safe_mode_is_server_or_greater.adoc", attributesTestUserHomeAttributeCanBeOverriddenByApiIfSafeModeIsServerOrGreater, nil},
+	{"user-home attribute can be overridden by API if safe mode is SERVER or greater", "asciidoctor/attributes_test_user_home_attribute_can_be_overridden_by_api_if_safe_mode_is_server_or_greater.adoc", attributesTestUserHomeAttributeCanBeOverriddenByApiIfSafeModeIsServerOrGreater},
 
-	{"should not recognize pass macro with invalid substitution list in attribute value", "asciidoctor/attributes_test_should_not_recognize_pass_macro_with_invalid_substitution_list_in_attribute_value.adoc", attributesTestShouldNotRecognizePassMacroWithInvalidSubstitutionListInAttributeValue, nil},
+	{"should not recognize pass macro with invalid substitution list in attribute value", "asciidoctor/attributes_test_should_not_recognize_pass_macro_with_invalid_substitution_list_in_attribute_value.adoc", attributesTestShouldNotRecognizePassMacroWithInvalidSubstitutionListInAttributeValue},
 
-	{"attribute set via API overrides attribute set in document", "asciidoctor/attributes_test_attribute_set_via_api_overrides_attribute_set_in_document.adoc", attributesTestAttributeSetViaApiOverridesAttributeSetInDocument, nil},
+	{"attribute set via API overrides attribute set in document", "asciidoctor/attributes_test_attribute_set_via_api_overrides_attribute_set_in_document.adoc", attributesTestAttributeSetViaApiOverridesAttributeSetInDocument},
 
-	{"backend and doctype attributes are set by default in custom configuration", "asciidoctor/attributes_test_backend_and_doctype_attributes_are_set_by_default_in_custom_configuration.adoc", attributesTestBackendAndDoctypeAttributesAreSetByDefaultInCustomConfiguration, nil},
+	{"backend and doctype attributes are set by default in custom configuration", "asciidoctor/attributes_test_backend_and_doctype_attributes_are_set_by_default_in_custom_configuration.adoc", attributesTestBackendAndDoctypeAttributesAreSetByDefaultInCustomConfiguration},
 
-	{"backend attributes are updated if backend attribute is defined in document and safe mode is less than SERVER", "asciidoctor/attributes_test_backend_attributes_are_updated_if_backend_attribute_is_defined_in_document_and_safe_mode_is_less_than_server.adoc", attributesTestBackendAttributesAreUpdatedIfBackendAttributeIsDefinedInDocumentAndSafeModeIsLessThanServer, nil},
+	{"backend attributes are updated if backend attribute is defined in document and safe mode is less than SERVER", "asciidoctor/attributes_test_backend_attributes_are_updated_if_backend_attribute_is_defined_in_document_and_safe_mode_is_less_than_server.adoc", attributesTestBackendAttributesAreUpdatedIfBackendAttributeIsDefinedInDocumentAndSafeModeIsLessThanServer},
 
-	{"backend attributes defined in document options overrides backend attribute in document", "asciidoctor/attributes_test_backend_attributes_defined_in_document_options_overrides_backend_attribute_in_document.adoc", attributesTestBackendAttributesDefinedInDocumentOptionsOverridesBackendAttributeInDocument, nil},
+	{"backend attributes defined in document options overrides backend attribute in document", "asciidoctor/attributes_test_backend_attributes_defined_in_document_options_overrides_backend_attribute_in_document.adoc", attributesTestBackendAttributesDefinedInDocumentOptionsOverridesBackendAttributeInDocument},
 
-	{"set_attribute should set attribute if key is not locked", "asciidoctor/attributes_test_set_attribute_should_set_attribute_if_key_is_not_locked.adoc", attributesTestSetAttributeShouldSetAttributeIfKeyIsNotLocked, nil},
+	{"set_attribute should set attribute if key is not locked", "asciidoctor/attributes_test_set_attribute_should_set_attribute_if_key_is_not_locked.adoc", attributesTestSetAttributeShouldSetAttributeIfKeyIsNotLocked},
 
-	{"convert properly with simple names", "asciidoctor/attributes_test_convert_properly_with_simple_names.adoc", attributesTestConvertProperlyWithSimpleNames, nil},
+	{"convert properly with simple names", "asciidoctor/attributes_test_convert_properly_with_simple_names.adoc", attributesTestConvertProperlyWithSimpleNames},
 
-	{"convert properly with single character name", "asciidoctor/attributes_test_convert_properly_with_single_character_name.adoc", attributesTestConvertProperlyWithSingleCharacterName, nil},
+	{"convert properly with single character name", "asciidoctor/attributes_test_convert_properly_with_single_character_name.adoc", attributesTestConvertProperlyWithSingleCharacterName},
 
-	{"ignores lines with bad attributes if attribute-missing is drop-line", "asciidoctor/attributes_test_ignores_lines_with_bad_attributes_if_attribute_missing_is_drop_line.adoc", attributesTestIgnoresLinesWithBadAttributesIfAttributeMissingIsDropLine, nil},
+	{"ignores lines with bad attributes if attribute-missing is drop-line", "asciidoctor/attributes_test_ignores_lines_with_bad_attributes_if_attribute_missing_is_drop_line.adoc", attributesTestIgnoresLinesWithBadAttributesIfAttributeMissingIsDropLine},
 
-	{"attribute value gets interpreted when converting", "asciidoctor/attributes_test_attribute_value_gets_interpreted_when_converting.adoc", attributesTestAttributeValueGetsInterpretedWhenConverting, nil},
+	{"attribute value gets interpreted when converting", "asciidoctor/attributes_test_attribute_value_gets_interpreted_when_converting.adoc", attributesTestAttributeValueGetsInterpretedWhenConverting},
 
-	{"should not drop line with reference to missing attribute by default", "asciidoctor/attributes_test_should_not_drop_line_with_reference_to_missing_attribute_by_default.adoc", attributesTestShouldNotDropLineWithReferenceToMissingAttributeByDefault, nil},
+	{"should not drop line with reference to missing attribute by default", "asciidoctor/attributes_test_should_not_drop_line_with_reference_to_missing_attribute_by_default.adoc", attributesTestShouldNotDropLineWithReferenceToMissingAttributeByDefault},
 
-	{"should drop line with attribute unassignment by default", "asciidoctor/attributes_test_should_drop_line_with_attribute_unassignment_by_default.adoc", attributesTestShouldDropLineWithAttributeUnassignmentByDefault, nil},
+	{"should drop line with attribute unassignment by default", "asciidoctor/attributes_test_should_drop_line_with_attribute_unassignment_by_default.adoc", attributesTestShouldDropLineWithAttributeUnassignmentByDefault},
 
-	{"should not drop line with attribute unassignment if attribute-undefined is drop", "asciidoctor/attributes_test_should_not_drop_line_with_attribute_unassignment_if_attribute_undefined_is_drop.adoc", attributesTestShouldNotDropLineWithAttributeUnassignmentIfAttributeUndefinedIsDrop, nil},
+	{"should not drop line with attribute unassignment if attribute-undefined is drop", "asciidoctor/attributes_test_should_not_drop_line_with_attribute_unassignment_if_attribute_undefined_is_drop.adoc", attributesTestShouldNotDropLineWithAttributeUnassignmentIfAttributeUndefinedIsDrop},
 
-	{"should drop line that only contains attribute assignment", "asciidoctor/attributes_test_should_drop_line_that_only_contains_attribute_assignment.adoc", attributesTestShouldDropLineThatOnlyContainsAttributeAssignment, nil},
+	{"should drop line that only contains attribute assignment", "asciidoctor/attributes_test_should_drop_line_that_only_contains_attribute_assignment.adoc", attributesTestShouldDropLineThatOnlyContainsAttributeAssignment},
 
-	{"should drop line that only contains unresolved attribute when attribute-missing is drop", "asciidoctor/attributes_test_should_drop_line_that_only_contains_unresolved_attribute_when_attribute_missing_is_drop.adoc", attributesTestShouldDropLineThatOnlyContainsUnresolvedAttributeWhenAttributeMissingIsDrop, nil},
+	{"should drop line that only contains unresolved attribute when attribute-missing is drop", "asciidoctor/attributes_test_should_drop_line_that_only_contains_unresolved_attribute_when_attribute_missing_is_drop.adoc", attributesTestShouldDropLineThatOnlyContainsUnresolvedAttributeWhenAttributeMissingIsDrop},
 
-	{"substitutes inside unordered list items", "asciidoctor/attributes_test_substitutes_inside_unordered_list_items.adoc", attributesTestSubstitutesInsideUnorderedListItems, nil},
+	{"substitutes inside unordered list items", "asciidoctor/attributes_test_substitutes_inside_unordered_list_items.adoc", attributesTestSubstitutesInsideUnorderedListItems},
 
-	{"interpolates author attribute inside attribute entry in header", "asciidoctor/attributes_test_interpolates_author_attribute_inside_attribute_entry_in_header.adoc", attributesTestInterpolatesAuthorAttributeInsideAttributeEntryInHeader, nil},
+	{"interpolates author attribute inside attribute entry in header", "asciidoctor/attributes_test_interpolates_author_attribute_inside_attribute_entry_in_header.adoc", attributesTestInterpolatesAuthorAttributeInsideAttributeEntryInHeader},
 
-	{"interpolates revinfo attribute inside attribute entry in header", "asciidoctor/attributes_test_interpolates_revinfo_attribute_inside_attribute_entry_in_header.adoc", attributesTestInterpolatesRevinfoAttributeInsideAttributeEntryInHeader, nil},
+	{"interpolates revinfo attribute inside attribute entry in header", "asciidoctor/attributes_test_interpolates_revinfo_attribute_inside_attribute_entry_in_header.adoc", attributesTestInterpolatesRevinfoAttributeInsideAttributeEntryInHeader},
 
-	{"attribute entries can resolve previously defined attributes", "asciidoctor/attributes_test_attribute_entries_can_resolve_previously_defined_attributes.adoc", attributesTestAttributeEntriesCanResolvePreviouslyDefinedAttributes, nil},
+	{"attribute entries can resolve previously defined attributes", "asciidoctor/attributes_test_attribute_entries_can_resolve_previously_defined_attributes.adoc", attributesTestAttributeEntriesCanResolvePreviouslyDefinedAttributes},
 
-	{"should warn if unterminated block comment is detected in document header", "asciidoctor/attributes_test_should_warn_if_unterminated_block_comment_is_detected_in_document_header.adoc", attributesTestShouldWarnIfUnterminatedBlockCommentIsDetectedInDocumentHeader, nil},
+	{"should warn if unterminated block comment is detected in document header", "asciidoctor/attributes_test_should_warn_if_unterminated_block_comment_is_detected_in_document_header.adoc", attributesTestShouldWarnIfUnterminatedBlockCommentIsDetectedInDocumentHeader},
 
-	{"substitutes inside block title", "asciidoctor/attributes_test_substitutes_inside_block_title.adoc", attributesTestSubstitutesInsideBlockTitle, nil},
+	{"substitutes inside block title", "asciidoctor/attributes_test_substitutes_inside_block_title.adoc", attributesTestSubstitutesInsideBlockTitle},
 
-	{"sets attribute until it is deleted", "asciidoctor/attributes_test_sets_attribute_until_it_is_deleted.adoc", attributesTestSetsAttributeUntilItIsDeleted, nil},
+	{"sets attribute until it is deleted", "asciidoctor/attributes_test_sets_attribute_until_it_is_deleted.adoc", attributesTestSetsAttributeUntilItIsDeleted},
 
-	{"should allow compat-mode to be set and unset in middle of document", "asciidoctor/attributes_test_should_allow_compat_mode_to_be_set_and_unset_in_middle_of_document.adoc", attributesTestShouldAllowCompatModeToBeSetAndUnsetInMiddleOfDocument, nil},
+	{"should allow compat-mode to be set and unset in middle of document", "asciidoctor/attributes_test_should_allow_compat_mode_to_be_set_and_unset_in_middle_of_document.adoc", attributesTestShouldAllowCompatModeToBeSetAndUnsetInMiddleOfDocument},
 
-	{"does not disturb attribute-looking things escaped with backslash", "asciidoctor/attributes_test_does_not_disturb_attribute_looking_things_escaped_with_backslash.adoc", attributesTestDoesNotDisturbAttributeLookingThingsEscapedWithBackslash, nil},
+	{"does not disturb attribute-looking things escaped with backslash", "asciidoctor/attributes_test_does_not_disturb_attribute_looking_things_escaped_with_backslash.adoc", attributesTestDoesNotDisturbAttributeLookingThingsEscapedWithBackslash},
 
-	{"does not substitute attributes inside literal blocks", "asciidoctor/attributes_test_does_not_substitute_attributes_inside_literal_blocks.adoc", attributesTestDoesNotSubstituteAttributesInsideLiteralBlocks, nil},
+	{"does not substitute attributes inside literal blocks", "asciidoctor/attributes_test_does_not_substitute_attributes_inside_literal_blocks.adoc", attributesTestDoesNotSubstituteAttributesInsideLiteralBlocks},
 
-	{"does not show docdir and shows relative docfile if safe mode is SERVER or greater", "asciidoctor/attributes_test_does_not_show_docdir_and_shows_relative_docfile_if_safe_mode_is_server_or_greater.adoc", attributesTestDoesNotShowDocdirAndShowsRelativeDocfileIfSafeModeIsServerOrGreater, nil},
+	{"does not show docdir and shows relative docfile if safe mode is SERVER or greater", "asciidoctor/attributes_test_does_not_show_docdir_and_shows_relative_docfile_if_safe_mode_is_server_or_greater.adoc", attributesTestDoesNotShowDocdirAndShowsRelativeDocfileIfSafeModeIsServerOrGreater},
 
-	{"shows absolute docdir and docfile paths if safe mode is less than SERVER", "asciidoctor/attributes_test_shows_absolute_docdir_and_docfile_paths_if_safe_mode_is_less_than_server.adoc", attributesTestShowsAbsoluteDocdirAndDocfilePathsIfSafeModeIsLessThanServer, nil},
+	{"shows absolute docdir and docfile paths if safe mode is less than SERVER", "asciidoctor/attributes_test_shows_absolute_docdir_and_docfile_paths_if_safe_mode_is_less_than_server.adoc", attributesTestShowsAbsoluteDocdirAndDocfilePathsIfSafeModeIsLessThanServer},
 
-	{"assigns attribute defined in attribute reference with set prefix and value", "asciidoctor/attributes_test_assigns_attribute_defined_in_attribute_reference_with_set_prefix_and_value.adoc", attributesTestAssignsAttributeDefinedInAttributeReferenceWithSetPrefixAndValue, nil},
+	{"assigns attribute defined in attribute reference with set prefix and value", "asciidoctor/attributes_test_assigns_attribute_defined_in_attribute_reference_with_set_prefix_and_value.adoc", attributesTestAssignsAttributeDefinedInAttributeReferenceWithSetPrefixAndValue},
 
-	{"creates counter", "asciidoctor/attributes_test_creates_counter.adoc", attributesTestCreatesCounter, nil},
+	{"creates counter", "asciidoctor/attributes_test_creates_counter.adoc", attributesTestCreatesCounter},
 
-	{"can seed counter to start at A", "asciidoctor/attributes_test_can_seed_counter_to_start_at_a.adoc", attributesTestCanSeedCounterToStartAtA, nil},
+	{"can seed counter to start at A", "asciidoctor/attributes_test_can_seed_counter_to_start_at_a.adoc", attributesTestCanSeedCounterToStartAtA},
 
-	{"increments counter with positive numeric value", "asciidoctor/attributes_test_increments_counter_with_positive_numeric_value.adoc", attributesTestIncrementsCounterWithPositiveNumericValue, nil},
+	{"increments counter with positive numeric value", "asciidoctor/attributes_test_increments_counter_with_positive_numeric_value.adoc", attributesTestIncrementsCounterWithPositiveNumericValue},
 
-	{"increments counter with negative numeric value", "asciidoctor/attributes_test_increments_counter_with_negative_numeric_value.adoc", attributesTestIncrementsCounterWithNegativeNumericValue, nil},
+	{"increments counter with negative numeric value", "asciidoctor/attributes_test_increments_counter_with_negative_numeric_value.adoc", attributesTestIncrementsCounterWithNegativeNumericValue},
 
-	{"increments counter with ASCII character value", "asciidoctor/attributes_test_increments_counter_with_ascii_character_value.adoc", attributesTestIncrementsCounterWithAsciiCharacterValue, nil},
+	{"increments counter with ASCII character value", "asciidoctor/attributes_test_increments_counter_with_ascii_character_value.adoc", attributesTestIncrementsCounterWithAsciiCharacterValue},
 
-	{"increments counter with non-ASCII character value", "asciidoctor/attributes_test_increments_counter_with_non_ascii_character_value.adoc", attributesTestIncrementsCounterWithNonAsciiCharacterValue, nil},
+	{"increments counter with non-ASCII character value", "asciidoctor/attributes_test_increments_counter_with_non_ascii_character_value.adoc", attributesTestIncrementsCounterWithNonAsciiCharacterValue},
 
-	{"increments counter with emoji character value", "asciidoctor/attributes_test_increments_counter_with_emoji_character_value.adoc", attributesTestIncrementsCounterWithEmojiCharacterValue, nil},
+	{"increments counter with emoji character value", "asciidoctor/attributes_test_increments_counter_with_emoji_character_value.adoc", attributesTestIncrementsCounterWithEmojiCharacterValue},
 
-	{"increments counter with multi-character value", "asciidoctor/attributes_test_increments_counter_with_multi_character_value.adoc", attributesTestIncrementsCounterWithMultiCharacterValue, nil},
+	{"increments counter with multi-character value", "asciidoctor/attributes_test_increments_counter_with_multi_character_value.adoc", attributesTestIncrementsCounterWithMultiCharacterValue},
 
-	{"counter uses 0 as seed value if seed attribute is nil", "asciidoctor/attributes_test_counter_uses_0_as_seed_value_if_seed_attribute_is_nil.adoc", attributesTestCounterUses0AsSeedValueIfSeedAttributeIsNil, nil},
+	{"counter uses 0 as seed value if seed attribute is nil", "asciidoctor/attributes_test_counter_uses_0_as_seed_value_if_seed_attribute_is_nil.adoc", attributesTestCounterUses0AsSeedValueIfSeedAttributeIsNil},
 
-	{"counter value can be reset by attribute entry", "asciidoctor/attributes_test_counter_value_can_be_reset_by_attribute_entry.adoc", attributesTestCounterValueCanBeResetByAttributeEntry, nil},
+	{"counter value can be reset by attribute entry", "asciidoctor/attributes_test_counter_value_can_be_reset_by_attribute_entry.adoc", attributesTestCounterValueCanBeResetByAttributeEntry},
 
-	{"counter value can be advanced by attribute entry", "asciidoctor/attributes_test_counter_value_can_be_advanced_by_attribute_entry.adoc", attributesTestCounterValueCanBeAdvancedByAttributeEntry, nil},
+	{"counter value can be advanced by attribute entry", "asciidoctor/attributes_test_counter_value_can_be_advanced_by_attribute_entry.adoc", attributesTestCounterValueCanBeAdvancedByAttributeEntry},
 
-	{"nested document should use counter from parent document", "asciidoctor/attributes_test_nested_document_should_use_counter_from_parent_document.adoc", attributesTestNestedDocumentShouldUseCounterFromParentDocument, nil},
+	{"nested document should use counter from parent document", "asciidoctor/attributes_test_nested_document_should_use_counter_from_parent_document.adoc", attributesTestNestedDocumentShouldUseCounterFromParentDocument},
 
-	{"should not allow counter to modify locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_to_modify_locked_attribute.adoc", attributesTestShouldNotAllowCounterToModifyLockedAttribute, nil},
+	{"should not allow counter to modify locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_to_modify_locked_attribute.adoc", attributesTestShouldNotAllowCounterToModifyLockedAttribute},
 
-	{"should not allow counter2 to modify locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_2_to_modify_locked_attribute.adoc", attributesTestShouldNotAllowCounter2ToModifyLockedAttribute, nil},
+	{"should not allow counter2 to modify locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_2_to_modify_locked_attribute.adoc", attributesTestShouldNotAllowCounter2ToModifyLockedAttribute},
 
-	{"should not allow counter to modify built-in locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_to_modify_built_in_locked_attribute.adoc", attributesTestShouldNotAllowCounterToModifyBuiltInLockedAttribute, nil},
+	{"should not allow counter to modify built-in locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_to_modify_built_in_locked_attribute.adoc", attributesTestShouldNotAllowCounterToModifyBuiltInLockedAttribute},
 
-	{"should not allow counter2 to modify built-in locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_2_to_modify_built_in_locked_attribute.adoc", attributesTestShouldNotAllowCounter2ToModifyBuiltInLockedAttribute, nil},
+	{"should not allow counter2 to modify built-in locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_2_to_modify_built_in_locked_attribute.adoc", attributesTestShouldNotAllowCounter2ToModifyBuiltInLockedAttribute},
 
-	{"parses named attribute with valid name", "asciidoctor/attributes_test_parses_named_attribute_with_valid_name.adoc", attributesTestParsesNamedAttributeWithValidName, nil},
+	{"parses named attribute with valid name", "asciidoctor/attributes_test_parses_named_attribute_with_valid_name.adoc", attributesTestParsesNamedAttributeWithValidName},
 
-	{"does not parse named attribute if name is invalid", "asciidoctor/attributes_test_does_not_parse_named_attribute_if_name_is_invalid.adoc", attributesTestDoesNotParseNamedAttributeIfNameIsInvalid, nil},
+	{"does not parse named attribute if name is invalid", "asciidoctor/attributes_test_does_not_parse_named_attribute_if_name_is_invalid.adoc", attributesTestDoesNotParseNamedAttributeIfNameIsInvalid},
 
-	{"positional attributes assigned to block", "asciidoctor/attributes_test_positional_attributes_assigned_to_block.adoc", attributesTestPositionalAttributesAssignedToBlock, nil},
+	{"positional attributes assigned to block", "asciidoctor/attributes_test_positional_attributes_assigned_to_block.adoc", attributesTestPositionalAttributesAssignedToBlock},
 
-	{"normal substitutions are performed on single-quoted positional attribute", "asciidoctor/attributes_test_normal_substitutions_are_performed_on_single_quoted_positional_attribute.adoc", attributesTestNormalSubstitutionsArePerformedOnSingleQuotedPositionalAttribute, nil},
+	{"normal substitutions are performed on single-quoted positional attribute", "asciidoctor/attributes_test_normal_substitutions_are_performed_on_single_quoted_positional_attribute.adoc", attributesTestNormalSubstitutionsArePerformedOnSingleQuotedPositionalAttribute},
 
-	{"normal substitutions are performed on single-quoted named attribute", "asciidoctor/attributes_test_normal_substitutions_are_performed_on_single_quoted_named_attribute.adoc", attributesTestNormalSubstitutionsArePerformedOnSingleQuotedNamedAttribute, nil},
+	{"normal substitutions are performed on single-quoted named attribute", "asciidoctor/attributes_test_normal_substitutions_are_performed_on_single_quoted_named_attribute.adoc", attributesTestNormalSubstitutionsArePerformedOnSingleQuotedNamedAttribute},
 
-	{"normal substitutions are performed once on single-quoted named title attribute", "asciidoctor/attributes_test_normal_substitutions_are_performed_once_on_single_quoted_named_title_attribute.adoc", attributesTestNormalSubstitutionsArePerformedOnceOnSingleQuotedNamedTitleAttribute, nil},
+	{"normal substitutions are performed once on single-quoted named title attribute", "asciidoctor/attributes_test_normal_substitutions_are_performed_once_on_single_quoted_named_title_attribute.adoc", attributesTestNormalSubstitutionsArePerformedOnceOnSingleQuotedNamedTitleAttribute},
 
-	{"attribute list may not begin with space", "asciidoctor/attributes_test_attribute_list_may_not_begin_with_space.adoc", attributesTestAttributeListMayNotBeginWithSpace, nil},
+	{"attribute list may not begin with space", "asciidoctor/attributes_test_attribute_list_may_not_begin_with_space.adoc", attributesTestAttributeListMayNotBeginWithSpace},
 
-	{"attribute list may begin with comma", "asciidoctor/attributes_test_attribute_list_may_begin_with_comma.adoc", attributesTestAttributeListMayBeginWithComma, nil},
+	{"attribute list may begin with comma", "asciidoctor/attributes_test_attribute_list_may_begin_with_comma.adoc", attributesTestAttributeListMayBeginWithComma},
 
-	{"first attribute in list may be double quoted", "asciidoctor/attributes_test_first_attribute_in_list_may_be_double_quoted.adoc", attributesTestFirstAttributeInListMayBeDoubleQuoted, nil},
+	{"first attribute in list may be double quoted", "asciidoctor/attributes_test_first_attribute_in_list_may_be_double_quoted.adoc", attributesTestFirstAttributeInListMayBeDoubleQuoted},
 
-	{"first attribute in list may be single quoted", "asciidoctor/attributes_test_first_attribute_in_list_may_be_single_quoted.adoc", attributesTestFirstAttributeInListMayBeSingleQuoted, nil},
+	{"first attribute in list may be single quoted", "asciidoctor/attributes_test_first_attribute_in_list_may_be_single_quoted.adoc", attributesTestFirstAttributeInListMayBeSingleQuoted},
 
-	{"attribute with value None without quotes is ignored", "asciidoctor/attributes_test_attribute_with_value_none_without_quotes_is_ignored.adoc", attributesTestAttributeWithValueNoneWithoutQuotesIsIgnored, nil},
+	{"attribute with value None without quotes is ignored", "asciidoctor/attributes_test_attribute_with_value_none_without_quotes_is_ignored.adoc", attributesTestAttributeWithValueNoneWithoutQuotesIsIgnored},
 
-	{"role? returns true if role is assigned", "asciidoctor/attributes_test_role_returns_true_if_role_is_assigned.adoc", attributesTestRoleReturnsTrueIfRoleIsAssigned, nil},
+	{"role? returns true if role is assigned", "asciidoctor/attributes_test_role_returns_true_if_role_is_assigned.adoc", attributesTestRoleReturnsTrueIfRoleIsAssigned},
 
-	{"role? does not return true if role attribute is set on document", "asciidoctor/attributes_test_role_does_not_return_true_if_role_attribute_is_set_on_document.adoc", attributesTestRoleDoesNotReturnTrueIfRoleAttributeIsSetOnDocument, nil},
+	{"role? does not return true if role attribute is set on document", "asciidoctor/attributes_test_role_does_not_return_true_if_role_attribute_is_set_on_document.adoc", attributesTestRoleDoesNotReturnTrueIfRoleAttributeIsSetOnDocument},
 
-	{"role? can check for exact role name match", "asciidoctor/attributes_test_role_can_check_for_exact_role_name_match.adoc", attributesTestRoleCanCheckForExactRoleNameMatch, nil},
+	{"role? can check for exact role name match", "asciidoctor/attributes_test_role_can_check_for_exact_role_name_match.adoc", attributesTestRoleCanCheckForExactRoleNameMatch},
 
-	{"has_role? can check for presence of role name", "asciidoctor/attributes_test_has_role_can_check_for_presence_of_role_name.adoc", attributesTestHasRoleCanCheckForPresenceOfRoleName, nil},
+	{"has_role? can check for presence of role name", "asciidoctor/attributes_test_has_role_can_check_for_presence_of_role_name.adoc", attributesTestHasRoleCanCheckForPresenceOfRoleName},
 
-	{"has_role? does not look for role defined as document attribute", "asciidoctor/attributes_test_has_role_does_not_look_for_role_defined_as_document_attribute.adoc", attributesTestHasRoleDoesNotLookForRoleDefinedAsDocumentAttribute, nil},
+	{"has_role? does not look for role defined as document attribute", "asciidoctor/attributes_test_has_role_does_not_look_for_role_defined_as_document_attribute.adoc", attributesTestHasRoleDoesNotLookForRoleDefinedAsDocumentAttribute},
 
-	{"roles returns array of role names", "asciidoctor/attributes_test_roles_returns_array_of_role_names.adoc", attributesTestRolesReturnsArrayOfRoleNames, nil},
+	{"roles returns array of role names", "asciidoctor/attributes_test_roles_returns_array_of_role_names.adoc", attributesTestRolesReturnsArrayOfRoleNames},
 
-	{"roles returns empty array if role attribute is not set", "asciidoctor/attributes_test_roles_returns_empty_array_if_role_attribute_is_not_set.adoc", attributesTestRolesReturnsEmptyArrayIfRoleAttributeIsNotSet, nil},
+	{"roles returns empty array if role attribute is not set", "asciidoctor/attributes_test_roles_returns_empty_array_if_role_attribute_is_not_set.adoc", attributesTestRolesReturnsEmptyArrayIfRoleAttributeIsNotSet},
 
-	{"roles= sets the role attribute on the node", "asciidoctor/attributes_test_roles=_sets_the_role_attribute_on_the_node.adoc", attributesTestRolesSetsTheRoleAttributeOnTheNode, nil},
+	{"roles= sets the role attribute on the node", "asciidoctor/attributes_test_roles=_sets_the_role_attribute_on_the_node.adoc", attributesTestRolesSetsTheRoleAttributeOnTheNode},
 
-	{"id, role and options attributes can be specified on block style using shorthand syntax", "asciidoctor/attributes_test_id_role_and_options_attributes_can_be_specified_on_block_style_using_shorthand_syntax.adoc", attributesTestIdRoleAndOptionsAttributesCanBeSpecifiedOnBlockStyleUsingShorthandSyntax, nil},
+	{"id, role and options attributes can be specified on block style using shorthand syntax", "asciidoctor/attributes_test_id_role_and_options_attributes_can_be_specified_on_block_style_using_shorthand_syntax.adoc", attributesTestIdRoleAndOptionsAttributesCanBeSpecifiedOnBlockStyleUsingShorthandSyntax},
 
-	{"id, role and options attributes can be specified using shorthand syntax on block style using multiple block attribute lines", "asciidoctor/attributes_test_id_role_and_options_attributes_can_be_specified_using_shorthand_syntax_on_block_style_using_multiple_block_attribute_lines.adoc", attributesTestIdRoleAndOptionsAttributesCanBeSpecifiedUsingShorthandSyntaxOnBlockStyleUsingMultipleBlockAttributeLines, nil},
+	{"id, role and options attributes can be specified using shorthand syntax on block style using multiple block attribute lines", "asciidoctor/attributes_test_id_role_and_options_attributes_can_be_specified_using_shorthand_syntax_on_block_style_using_multiple_block_attribute_lines.adoc", attributesTestIdRoleAndOptionsAttributesCanBeSpecifiedUsingShorthandSyntaxOnBlockStyleUsingMultipleBlockAttributeLines},
 
-	{"multiple roles and options can be specified in block style using shorthand syntax", "asciidoctor/attributes_test_multiple_roles_and_options_can_be_specified_in_block_style_using_shorthand_syntax.adoc", attributesTestMultipleRolesAndOptionsCanBeSpecifiedInBlockStyleUsingShorthandSyntax, nil},
+	{"multiple roles and options can be specified in block style using shorthand syntax", "asciidoctor/attributes_test_multiple_roles_and_options_can_be_specified_in_block_style_using_shorthand_syntax.adoc", attributesTestMultipleRolesAndOptionsCanBeSpecifiedInBlockStyleUsingShorthandSyntax},
 
-	{"options specified using shorthand syntax on block style across multiple lines should be additive", "asciidoctor/attributes_test_options_specified_using_shorthand_syntax_on_block_style_across_multiple_lines_should_be_additive.adoc", attributesTestOptionsSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeAdditive, nil},
+	{"options specified using shorthand syntax on block style across multiple lines should be additive", "asciidoctor/attributes_test_options_specified_using_shorthand_syntax_on_block_style_across_multiple_lines_should_be_additive.adoc", attributesTestOptionsSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeAdditive},
 
-	{"roles specified using shorthand syntax on block style across multiple lines should be additive", "asciidoctor/attributes_test_roles_specified_using_shorthand_syntax_on_block_style_across_multiple_lines_should_be_additive.adoc", attributesTestRolesSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeAdditive, nil},
+	{"roles specified using shorthand syntax on block style across multiple lines should be additive", "asciidoctor/attributes_test_roles_specified_using_shorthand_syntax_on_block_style_across_multiple_lines_should_be_additive.adoc", attributesTestRolesSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeAdditive},
 
-	{"setting a role using the role attribute replaces any existing roles", "asciidoctor/attributes_test_setting_a_role_using_the_role_attribute_replaces_any_existing_roles.adoc", attributesTestSettingARoleUsingTheRoleAttributeReplacesAnyExistingRoles, nil},
+	{"setting a role using the role attribute replaces any existing roles", "asciidoctor/attributes_test_setting_a_role_using_the_role_attribute_replaces_any_existing_roles.adoc", attributesTestSettingARoleUsingTheRoleAttributeReplacesAnyExistingRoles},
 
-	{"setting a role using the shorthand syntax on block style should not clear the ID", "asciidoctor/attributes_test_setting_a_role_using_the_shorthand_syntax_on_block_style_should_not_clear_the_id.adoc", attributesTestSettingARoleUsingTheShorthandSyntaxOnBlockStyleShouldNotClearTheId, nil},
+	{"setting a role using the shorthand syntax on block style should not clear the ID", "asciidoctor/attributes_test_setting_a_role_using_the_shorthand_syntax_on_block_style_should_not_clear_the_id.adoc", attributesTestSettingARoleUsingTheShorthandSyntaxOnBlockStyleShouldNotClearTheId},
 
-	{"a role can be added using add_role when the node has no roles", "asciidoctor/attributes_test_a_role_can_be_added_using_add_role_when_the_node_has_no_roles.adoc", attributesTestARoleCanBeAddedUsingAddRoleWhenTheNodeHasNoRoles, nil},
+	{"a role can be added using add_role when the node has no roles", "asciidoctor/attributes_test_a_role_can_be_added_using_add_role_when_the_node_has_no_roles.adoc", attributesTestARoleCanBeAddedUsingAddRoleWhenTheNodeHasNoRoles},
 
-	{"a role is not added using add_role if the node already has that role", "asciidoctor/attributes_test_a_role_is_not_added_using_add_role_if_the_node_already_has_that_role.adoc", attributesTestARoleIsNotAddedUsingAddRoleIfTheNodeAlreadyHasThatRole, nil},
+	{"a role is not added using add_role if the node already has that role", "asciidoctor/attributes_test_a_role_is_not_added_using_add_role_if_the_node_already_has_that_role.adoc", attributesTestARoleIsNotAddedUsingAddRoleIfTheNodeAlreadyHasThatRole},
 
-	{"an existing role can be removed using remove_role", "asciidoctor/attributes_test_an_existing_role_can_be_removed_using_remove_role.adoc", attributesTestAnExistingRoleCanBeRemovedUsingRemoveRole, nil},
+	{"an existing role can be removed using remove_role", "asciidoctor/attributes_test_an_existing_role_can_be_removed_using_remove_role.adoc", attributesTestAnExistingRoleCanBeRemovedUsingRemoveRole},
 
-	{"roles are removed when last role is removed using remove_role", "asciidoctor/attributes_test_roles_are_removed_when_last_role_is_removed_using_remove_role.adoc", attributesTestRolesAreRemovedWhenLastRoleIsRemovedUsingRemoveRole, nil},
+	{"roles are removed when last role is removed using remove_role", "asciidoctor/attributes_test_roles_are_removed_when_last_role_is_removed_using_remove_role.adoc", attributesTestRolesAreRemovedWhenLastRoleIsRemovedUsingRemoveRole},
 
-	{"roles are not changed when a non-existent role is removed using remove_role", "asciidoctor/attributes_test_roles_are_not_changed_when_a_non_existent_role_is_removed_using_remove_role.adoc", attributesTestRolesAreNotChangedWhenANonExistentRoleIsRemovedUsingRemoveRole, nil},
+	{"roles are not changed when a non-existent role is removed using remove_role", "asciidoctor/attributes_test_roles_are_not_changed_when_a_non_existent_role_is_removed_using_remove_role.adoc", attributesTestRolesAreNotChangedWhenANonExistentRoleIsRemovedUsingRemoveRole},
 
-	{"roles are not changed when using remove_role if the node has no roles", "asciidoctor/attributes_test_roles_are_not_changed_when_using_remove_role_if_the_node_has_no_roles.adoc", attributesTestRolesAreNotChangedWhenUsingRemoveRoleIfTheNodeHasNoRoles, nil},
+	{"roles are not changed when using remove_role if the node has no roles", "asciidoctor/attributes_test_roles_are_not_changed_when_using_remove_role_if_the_node_has_no_roles.adoc", attributesTestRolesAreNotChangedWhenUsingRemoveRoleIfTheNodeHasNoRoles},
 
-	{"id and role attributes can be specified on section style using shorthand syntax", "asciidoctor/attributes_test_id_and_role_attributes_can_be_specified_on_section_style_using_shorthand_syntax.adoc", attributesTestIdAndRoleAttributesCanBeSpecifiedOnSectionStyleUsingShorthandSyntax, nil},
+	{"id and role attributes can be specified on section style using shorthand syntax", "asciidoctor/attributes_test_id_and_role_attributes_can_be_specified_on_section_style_using_shorthand_syntax.adoc", attributesTestIdAndRoleAttributesCanBeSpecifiedOnSectionStyleUsingShorthandSyntax},
 
-	{"id attribute specified using shorthand syntax should not create a special section", "asciidoctor/attributes_test_id_attribute_specified_using_shorthand_syntax_should_not_create_a_special_section.adoc", attributesTestIdAttributeSpecifiedUsingShorthandSyntaxShouldNotCreateASpecialSection, nil},
+	{"id attribute specified using shorthand syntax should not create a special section", "asciidoctor/attributes_test_id_attribute_specified_using_shorthand_syntax_should_not_create_a_special_section.adoc", attributesTestIdAttributeSpecifiedUsingShorthandSyntaxShouldNotCreateASpecialSection},
 
-	{"Block attributes are additive", "asciidoctor/attributes_test_block_attributes_are_additive.adoc", attributesTestBlockAttributesAreAdditive, nil},
+	{"Block attributes are additive", "asciidoctor/attributes_test_block_attributes_are_additive.adoc", attributesTestBlockAttributesAreAdditive},
 
-	{"Last wins for id attribute", "asciidoctor/attributes_test_last_wins_for_id_attribute.adoc", attributesTestLastWinsForIdAttribute, nil},
+	{"Last wins for id attribute", "asciidoctor/attributes_test_last_wins_for_id_attribute.adoc", attributesTestLastWinsForIdAttribute},
 
-	{"trailing block attributes transfer to the following section", "asciidoctor/attributes_test_trailing_block_attributes_transfer_to_the_following_section.adoc", attributesTestTrailingBlockAttributesTransferToTheFollowingSection, nil},
+	{"trailing block attributes transfer to the following section", "asciidoctor/attributes_test_trailing_block_attributes_transfer_to_the_following_section.adoc", attributesTestTrailingBlockAttributesTransferToTheFollowingSection},
 }
 
 var attributesTestCreatesAnAttributeByFusingALegacyMultiLineValue = &asciidoc.Document{
@@ -570,6 +570,7 @@ var attributesTestShouldNotRecognizePassMacroWithInvalidSubstitutionListInAttrib
 				"holygrail",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -593,6 +594,7 @@ var attributesTestShouldNotRecognizePassMacroWithInvalidSubstitutionListInAttrib
 				"holygrail",
 			},
 			Union: 0,
+			Open:  nil,
 		},
 	},
 }

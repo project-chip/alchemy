@@ -8,8 +8,9 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
@@ -38,7 +39,7 @@ func (dg *DocumentGrouper) Process(cxt context.Context, inputs []*pipeline.Data[
 
 	docGroups := buildDocumentGroups(docs)
 	for _, g := range docGroups {
-		outputs = append(outputs, pipeline.NewData(g.Root, g))
+		outputs = append(outputs, pipeline.NewData(g.Root.Path.Relative, g))
 	}
 	return
 }
@@ -53,7 +54,7 @@ func buildTree(specRoot string, docs []*Doc) error {
 		path := doc.Path
 		docPaths[path.Absolute] = doc
 
-		parse.Traverse(doc, doc.Children(), func(link *asciidoc.FileInclude, parent parse.HasElements, index int) parse.SearchShould {
+		parse.Search(doc.Iterator(), doc, doc.Children(), func(link *asciidoc.FileInclude, parent asciidoc.Parent, index int) parse.SearchShould {
 			tree[doc] = append(tree[doc], link)
 			return parse.SearchShouldContinue
 		})
@@ -88,4 +89,30 @@ func dumpTree(r *Doc, indent int) {
 	for _, c := range r.children {
 		dumpTree(c, indent+1)
 	}
+}
+
+func buildDocumentGroups(docs []*Doc) (docGroups []*DocGroup) {
+	for _, d := range docs {
+		if len(d.parents) > 0 {
+			continue
+		}
+
+		var isDocRoot bool
+		path := d.Path.Relative
+		for _, docRoot := range errata.DocRoots {
+			if strings.EqualFold(path, docRoot) {
+				isDocRoot = true
+				break
+			}
+		}
+
+		if !isDocRoot {
+			continue
+		}
+
+		dg := NewDocGroup(d)
+		docGroups = append(docGroups, dg)
+		setDocGroup(d, dg)
+	}
+	return
 }

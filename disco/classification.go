@@ -13,7 +13,7 @@ func (b *Baller) organizeClassificationSection(cxt *discoContext) (err error) {
 	for _, classification := range cxt.parsed.classification {
 		classificationTable := classification.table
 		if classificationTable == nil || classificationTable.Element == nil {
-			slog.Warn("Could not organize classification section, as no table was found", log.Path("source", classification.section.Base))
+			slog.Warn("Could not organize classification section, as no table was found", log.Path("source", classification.section))
 			return nil
 		}
 		if classificationTable.ColumnMap == nil {

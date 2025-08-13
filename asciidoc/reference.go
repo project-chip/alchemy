@@ -1,5 +1,7 @@
 package asciidoc
 
+import "iter"
+
 type CrossReferenceFormat uint8
 
 const (
@@ -14,11 +16,11 @@ type CrossReference struct {
 	AttributeList
 	Elements
 
-	ID     string
+	ID     Elements
 	Format CrossReferenceFormat
 }
 
-func NewCrossReference(id string, format CrossReferenceFormat) *CrossReference {
+func NewCrossReference(id Elements, format CrossReferenceFormat) *CrossReference {
 	return &CrossReference{ID: id, Format: format}
 }
 
@@ -26,24 +28,26 @@ func (CrossReference) Type() ElementType {
 	return ElementTypeInline
 }
 
-func (a *CrossReference) Equals(o Element) bool {
+func (cr *CrossReference) Equals(o Element) bool {
 	oa, ok := o.(*CrossReference)
 	if !ok {
 		return false
 	}
-	if a.ID != oa.ID {
+	if !cr.ID.Equals(oa.ID) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return cr.Elements.Equals(oa.Elements)
 }
 
-func NewCrossReferenceMacro(path Elements) AttributableElement {
-	if len(path) == 1 {
-		if s, ok := path[0].(*String); ok {
-			return NewCrossReference(s.Value, CrossReferenceFormatMacro)
+func (cr *CrossReference) Traverse(parent Parent) iter.Seq2[Parent, Parent] {
+	return func(yield func(Parent, Parent) bool) {
+		if !cr.AttributeList.traverse(cr, yield) {
+			return
+		}
+		if !yield(cr, &cr.ID) {
+			return
 		}
 	}
-	return NewDocumentCrossReference(path)
 }
 
 type DocumentCrossReference struct {
@@ -63,13 +67,13 @@ func (DocumentCrossReference) Type() ElementType {
 	return ElementTypeInline
 }
 
-func (a *DocumentCrossReference) Equals(o Element) bool {
+func (dcr *DocumentCrossReference) Equals(o Element) bool {
 	oa, ok := o.(*DocumentCrossReference)
 	if !ok {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !dcr.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.ReferencePath.Equals(oa.ReferencePath)
+	return dcr.ReferencePath.Equals(oa.ReferencePath)
 }

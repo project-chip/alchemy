@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -47,7 +48,7 @@ func (b *Baller) disco(cxt context.Context, doc *spec.Doc) error {
 
 	precleanStrings(doc)
 
-	for top := range parse.Skim[*spec.Section](doc.Children()) {
+	for top := range parse.Skim[*asciidoc.Section](doc.Iterator(), doc, doc.Children()) {
 		err := spec.AssignSectionTypes(doc, top)
 		if err != nil {
 			return err
@@ -59,7 +60,7 @@ func (b *Baller) disco(cxt context.Context, doc *spec.Doc) error {
 		return fmt.Errorf("error assigning section types in %s: %w", doc.Path, err)
 	}
 
-	topLevelSection := parse.FindFirst[*spec.Section](doc)
+	topLevelSection := parse.FindFirst[*asciidoc.Section](doc.Iterator(), doc)
 	if topLevelSection == nil {
 		return ErrEmptyDoc
 	}
@@ -108,27 +109,27 @@ func (b *Baller) disco(cxt context.Context, doc *spec.Doc) error {
 	return nil
 }
 
-func (b *Baller) discoBallTopLevelSection(doc *spec.Doc, top *spec.Section, docType matter.DocType) error {
+func (b *Baller) discoBallTopLevelSection(doc *spec.Doc, top *asciidoc.Section, docType matter.DocType) error {
 	if b.options.ReorderSections {
 		sectionOrder, ok := matter.TopLevelSectionOrders[docType]
 		if !ok {
 			slog.Debug("could not determine section order", slog.String("path", doc.Path.Relative), slog.String("docType", docType.String()))
 
 		} else {
-			err := reorderSection(top, sectionOrder)
+			err := reorderSection(doc, top, sectionOrder)
 			if err != nil {
 				return fmt.Errorf("error reordering sections in %s: %w", doc.Path, err)
 			}
 		}
-		dataTypesSection := spec.FindSectionByType(top, matter.SectionDataTypes)
+		dataTypesSection := spec.FindSectionByType(doc, top, matter.SectionDataTypes)
 		if dataTypesSection != nil {
-			err := reorderSection(dataTypesSection, matter.DataTypeSectionOrder)
+			err := reorderSection(doc, dataTypesSection, matter.DataTypeSectionOrder)
 			if err != nil {
 				return fmt.Errorf("error reordering data types section in %s: %w", doc.Path, err)
 			}
 		}
 	}
-	b.ensureTableOptions(top)
-	b.postCleanUpStrings(top)
+	b.ensureTableOptions(doc, top)
+	b.postCleanUpStrings(doc, top)
 	return nil
 }

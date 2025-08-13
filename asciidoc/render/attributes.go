@@ -231,14 +231,17 @@ func renderSelectAttributes(cxt Target, attributes []asciidoc.Attribute, include
 
 func renderAttributeAnchor(cxt Target, anchor *asciidoc.AnchorAttribute, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
 	id := anchor.ID
-	if id != nil && len(id.Value) > 0 && shouldRenderAttributeType(AttributeFilterID, include, exclude) {
+	if id != nil && len(id) > 0 && shouldRenderAttributeType(AttributeFilterID, include, exclude) {
 		if !inline {
 			cxt.EnsureNewLine()
 		}
 		cxt.FlushWrap()
 		cxt.StartBlock()
 		cxt.WriteString("[[")
-		cxt.WriteString(id.Value)
+		err = Elements(cxt, "", id...)
+		if err != nil {
+			return
+		}
 		if len(anchor.Label) > 0 {
 			label := cxt.Subtarget()
 			err = Elements(label, "", anchor.Label...)

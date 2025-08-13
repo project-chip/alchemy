@@ -1,5 +1,6 @@
 package parse
 
+/*
 import (
 	"iter"
 	"slices"
@@ -26,7 +27,7 @@ func FindAll[T any](parent asciidoc.ParentElement) iter.Seq[T] {
 	}
 }
 
-func FindFirst[T any](parent asciidoc.ParentElement) T {
+func FindFirst[T any]( parent asciidoc.ParentElement) T {
 	var found T
 	traverse(parent, parent.Children(), func(el T, parent HasElements, index int) SearchShould {
 		found = el
@@ -136,3 +137,4 @@ func traverse[T any](parent HasElements, els asciidoc.Elements, callback Travers
 	}
 	return SearchShouldContinue
 }
+*/

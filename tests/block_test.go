@@ -5,9 +5,9 @@ import (
 )
 
 var blockTests = parseTests{
-	{"block attributes", "block_attributes.adoc", blockAttributes, nil},
-	{"block comment", "block_comment.adoc", blockComment, nil},
-	{"block image", "block_image.adoc", blockImage, nil},
+	{"block attributes", "block_attributes.adoc", blockAttributes},
+	{"block comment", "block_comment.adoc", blockComment},
+	{"block image", "block_image.adoc", blockImage},
 }
 
 func TestBlockElements(t *testing.T) {

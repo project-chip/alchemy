@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"log/slog"
 	"sync"
 	"unicode"
 	"unicode/utf8"
@@ -19,7 +18,7 @@ type Doc struct {
 	Path asciidoc.Path
 
 	Base *asciidoc.Document
-	asciidoc.Elements
+	//asciidoc.Elements
 
 	docType matter.DocType
 
@@ -28,7 +27,6 @@ type Doc struct {
 	children []*Doc
 
 	referenceIndex
-	attributes map[asciidoc.AttributeName]any
 
 	parsed            bool // Tracks whether this doc was parsed vs. just read (i.e. were file substituions done)
 	entities          []types.Entity
@@ -41,6 +39,8 @@ type Doc struct {
 	group *DocGroup
 
 	errata *errata.Errata
+
+	iterator asciidoc.Iterator
 }
 
 type DocSet pipeline.Map[string, *pipeline.Data[*Doc]]
@@ -53,24 +53,8 @@ func newDoc(d *asciidoc.Document, path asciidoc.Path) (*Doc, error) {
 	doc := &Doc{
 		Base:           d,
 		Path:           path,
-		attributes:     make(map[asciidoc.AttributeName]any),
 		referenceIndex: newReferenceIndex(),
-	}
-	doc.errata = errata.GetErrata(path.Relative)
-	for _, e := range d.Children() {
-		switch el := e.(type) {
-		case *asciidoc.AttributeEntry:
-			doc.attributes[el.Name] = el.Children()
-			doc.Append(e)
-		case *asciidoc.Section:
-			s, err := NewSection(doc, doc, el)
-			if err != nil {
-				return nil, err
-			}
-			doc.Append(s)
-		default:
-			doc.Append(e)
-		}
+		errata:         errata.GetErrata(path.Relative),
 	}
 	return doc, nil
 }
@@ -88,12 +72,34 @@ func (doc *Doc) Errata() *errata.Errata {
 	return doc.errata
 }
 
+func (doc *Doc) Iterator() asciidoc.Iterator {
+	if doc.iterator != nil {
+		return doc.iterator
+	}
+	if doc.group != nil {
+		return doc.group.Iterator
+	}
+	return asciidoc.NewRawIterator()
+}
+
 func (doc *Doc) Parents() []*Doc {
 	doc.RLock()
 	p := make([]*Doc, len(doc.parents))
 	copy(p, doc.parents)
 	doc.RUnlock()
 	return p
+}
+
+func (doc *Doc) Children() asciidoc.Elements {
+	return doc.Base.Children()
+}
+
+func (doc *Doc) SetChildren(e asciidoc.Elements) {
+	doc.Base.SetChildren(e)
+}
+
+func (doc *Doc) Append(e ...asciidoc.Element) {
+	doc.Base.Append(e...)
 }
 
 func (doc *Doc) Type() asciidoc.ElementType {
@@ -121,6 +127,38 @@ func (doc *Doc) addChild(child *Doc) {
 	doc.Lock()
 	doc.children = append(doc.children, child)
 	doc.Unlock()
+}
+
+func (doc *Doc) SectionName(s *asciidoc.Section) (name string) {
+	var ok bool
+	name, ok = doc.sectionNames[s]
+	if !ok && doc.group != nil {
+		name = doc.group.sectionNames[s]
+	}
+	return
+}
+
+func (doc *Doc) SetSectionName(s *asciidoc.Section, name string) {
+	doc.sectionNames[s] = name
+	if doc.group != nil {
+		doc.group.sectionNames[s] = name
+	}
+}
+
+func (doc *Doc) SectionType(s *asciidoc.Section) (st matter.Section) {
+	var ok bool
+	st, ok = doc.sectionTypes[s]
+	if !ok && doc.group != nil {
+		st = doc.group.sectionTypes[s]
+	}
+	return
+}
+
+func (doc *Doc) SetSectionType(s *asciidoc.Section, st matter.Section) {
+	doc.sectionTypes[s] = st
+	if doc.group != nil {
+		doc.group.sectionTypes[s] = st
+	}
 }
 
 func (doc *Doc) Entities() (entities []types.Entity, err error) {
@@ -156,40 +194,4 @@ func (doc *Doc) OrderedEntities() (entities []types.Entity, err error) {
 func (d *Doc) EntitiesForSection(section *asciidoc.Section) ([]types.Entity, bool) {
 	e, ok := d.entitiesBySection[section]
 	return e, ok
-}
-
-func (doc *Doc) Reference(ref string) (types.Entity, bool) {
-
-	a := doc.FindAnchor(ref, doc.Path)
-
-	if a == nil {
-		slog.Warn("unknown reference", slog.String("path", doc.Path.String()), slog.String("reference", ref))
-		return nil, false
-	}
-	wa, ok := a.Element.(asciidoc.Attributable)
-	if !ok {
-		slog.Warn("reference to non-entity", slog.String("path", doc.Path.String()), slog.String("reference", ref))
-		return nil, false
-	}
-	entities, ok := doc.entitiesBySection[wa]
-	if !ok {
-		slog.Warn("unknown reference entity", slog.String("path", doc.Path.String()), slog.String("reference", ref), slog.Any("count", len(doc.entitiesBySection)))
-		for sec, e := range doc.entitiesBySection {
-			slog.Warn("reference", slog.String("path", doc.Path.String()), slog.String("reference", ref), slog.Any("sec", sec), slog.Any("entity", e))
-
-		}
-	}
-	if len(entities) == 0 {
-		slog.Warn("unknown reference entity", slog.String("path", doc.Path.String()), slog.String("reference", ref))
-		return nil, false
-	}
-	if len(entities) > 1 {
-		slog.Warn("ambiguous reference", slog.String("path", doc.Path.String()), slog.String("reference", ref))
-		for _, e := range entities {
-			slog.Warn("reference", slog.String("path", doc.Path.String()), slog.String("reference", ref), slog.Any("entity", e))
-
-		}
-		return nil, false
-	}
-	return entities[0], true
 }
