@@ -16,7 +16,7 @@ import (
 func (b *Baller) organizeCommandsSection(cxt *discoContext) (err error) {
 	for _, commands := range cxt.parsed.commands {
 		if commands.table == nil || commands.table.Element == nil {
-			slog.Warn("Could not organize Commands section, as no table of commands was found", log.Path("source", commands.section.Base))
+			slog.Warn("Could not organize Commands section, as no table of commands was found", log.Path("source", commands.section))
 			return
 		}
 		if commands.table.ColumnMap == nil {
@@ -28,7 +28,7 @@ func (b *Baller) organizeCommandsSection(cxt *discoContext) (err error) {
 		}
 		err = b.renameTableHeaderCells(cxt, commands.section, commands.table, matter.Tables[matter.TableTypeCommands].ColumnRenames)
 		if err != nil {
-			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", commands.section.Name, cxt.doc.Path, err)
+			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.doc.SectionName(commands.section), cxt.doc.Path, err)
 		}
 		err = b.fixAccessCells(cxt, commands, types.EntityTypeCommand)
 		if err != nil {
@@ -65,11 +65,11 @@ func (b *Baller) organizeCommandsSection(cxt *discoContext) (err error) {
 			}
 			err = b.fixConstraintCells(cxt, command.section, command.table)
 			if err != nil {
-				return fmt.Errorf("error fixing command constraint cells in %s in %s: %w", command.section.Name, cxt.doc.Path, err)
+				return fmt.Errorf("error fixing command constraint cells in %s in %s: %w", cxt.doc.SectionName(command.section), cxt.doc.Path, err)
 			}
 			err = b.fixConformanceCells(cxt, command, command.table.Rows, command.table.ColumnMap)
 			if err != nil {
-				return fmt.Errorf("error fixing command conformance cells in %s in %s: %w", command.section.Name, cxt.doc.Path, err)
+				return fmt.Errorf("error fixing command conformance cells in %s in %s: %w", cxt.doc.SectionName(command.section), cxt.doc.Path, err)
 			}
 			b.appendSubsectionTypes(cxt, command.section, command.table.ColumnMap, command.table.Rows)
 			b.removeMandatoryFallbacks(command.table)
@@ -83,11 +83,11 @@ func (b *Baller) organizeCommandsSection(cxt *discoContext) (err error) {
 	return
 }
 
-func (b *Baller) fixCommandDirection(cxt *discoContext, section *spec.Section, rows []*asciidoc.TableRow, columnMap spec.ColumnIndex) (err error) {
+func (b *Baller) fixCommandDirection(cxt *discoContext, section *asciidoc.Section, rows []*asciidoc.TableRow, columnMap spec.ColumnIndex) (err error) {
 	if len(rows) < 2 {
 		return
 	}
-	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeDataTypeCommandFixDirection) {
+	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section), errata.DiscoPurposeDataTypeCommandFixDirection) {
 		return
 	}
 	accessIndex, ok := columnMap[matter.TableColumnDirection]

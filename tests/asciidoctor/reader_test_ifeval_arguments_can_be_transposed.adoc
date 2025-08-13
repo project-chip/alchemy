@@ -1,0 +1,4 @@
+
+ifeval::['0.1.0' <= '{asciidoctor-version}']
+That version will do!
+endif::[]

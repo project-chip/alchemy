@@ -55,7 +55,7 @@ func (t *Test) UnmarshalYAML(unmarshal func(any) error) (err error) {
 			}
 			t.Tests = append(t.Tests, &ts)
 		default:
-			slog.Info("unknown test type!", slog.String("val", fmt.Sprintf("%T", test)))
+			slog.Warn("unknown test type", slog.String("val", fmt.Sprintf("%T", test)))
 		}
 	}
 	if len(yt) > 0 {
@@ -229,7 +229,6 @@ func (tav TestArgumentsValues) ToValues() (values map[string]any) {
 		default:
 			slog.Error("Unexpected type in argument values")
 		}
-		slog.Info("Argument!", log.Type("type", arg))
 	}
 	return
 }
@@ -257,7 +256,6 @@ func (sr *StepResponse) UnmarshalMapSlice(c yaml.MapSlice) error {
 	val, c, valExists = tryExtractValue[any](c, "value", nil)
 	if valExists {
 		if val == nil {
-			slog.Info("setting null value")
 			sr.Value = NullValue
 		} else {
 			sr.Value = val

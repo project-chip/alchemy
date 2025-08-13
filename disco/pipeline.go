@@ -30,7 +30,7 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 
 	if specRoot != "" {
 
-		_, docs, err = spec.Read(cxt, pipelineOptions, specRoot, docPaths)
+		_, docs, err = spec.Read(cxt, pipelineOptions, nil, specRoot, docPaths)
 		if err != nil {
 			return err
 		}

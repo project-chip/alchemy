@@ -9,7 +9,6 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/sanity-io/litter"
 )
 
@@ -17,8 +16,6 @@ type parseTest struct {
 	name   string
 	input  string
 	output *asciidoc.Document
-
-	parseOutput *asciidoc.Document
 }
 
 func (pt *parseTest) run() error {
@@ -30,12 +27,6 @@ func (pt *parseTest) run() error {
 	if err != nil {
 		return err
 	}
-	if pt.parseOutput != nil {
-		err = pt.testInlineParser(in)
-		if err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
@@ -45,22 +36,6 @@ func (pt *parseTest) testParser(in []byte) error {
 		return fmt.Errorf("error parsing %s: %v", pt.name, err)
 	}
 	if !out.Equals(pt.output) {
-		return fmt.Errorf("unexpected result for test %s: %s expected %s", pt.name, cleanObjectDump(litter.Sdump(out)), cleanObjectDump(litter.Sdump(pt.output)))
-	}
-	return nil
-}
-
-func (pt *parseTest) testInlineParser(in []byte) error {
-	path, err := asciidoc.NewPath(pt.name, ".")
-	if err != nil {
-		return err
-	}
-	pc := spec.NewPreparseContext(path, ".")
-	out, err := parse.Inline(pc, "", bytes.NewReader(in))
-	if err != nil {
-		return fmt.Errorf("error parsing %s: %v", pt.name, err)
-	}
-	if !out.Equals(pt.parseOutput) {
 		return fmt.Errorf("unexpected result for test %s: %s expected %s", pt.name, cleanObjectDump(litter.Sdump(out)), cleanObjectDump(litter.Sdump(pt.output)))
 	}
 	return nil

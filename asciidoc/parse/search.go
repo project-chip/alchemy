@@ -12,13 +12,13 @@ const (
 
 type ElementSearchCallback[T any] func(el T, parent asciidoc.Parent, index int) SearchShould
 
-func Iterate[T any](reader asciidoc.Iterator, parent asciidoc.Parent, els asciidoc.Elements, callback ElementSearchCallback[T]) {
-	iterate(reader, parent, els, callback)
+func Search[T any](reader asciidoc.Reader, parent asciidoc.Parent, els asciidoc.Elements, callback ElementSearchCallback[T]) {
+	search(reader, parent, els, callback)
 }
 
-func iterate[T any](reader asciidoc.Iterator, parent asciidoc.Parent, els asciidoc.Elements, callback ElementSearchCallback[T]) SearchShould {
+func search[T any](reader asciidoc.Reader, parent asciidoc.Parent, els asciidoc.Elements, callback ElementSearchCallback[T]) SearchShould {
 	var i int
-	for el := range reader.Iterate(els) {
+	for el := range reader.Iterate(parent, els) {
 		var shortCircuit SearchShould
 		if el, ok := el.(T); ok {
 			shortCircuit = callback(el, parent, i)
@@ -31,12 +31,12 @@ func iterate[T any](reader asciidoc.Iterator, parent asciidoc.Parent, els asciid
 			continue
 		case SearchShouldContinue:
 		}
-
-		if he, ok := el.(asciidoc.Parent); ok {
-			shortCircuit = iterate(reader, he, he.Children(), callback)
-		}
-		if shortCircuit == SearchShouldStop {
-			return shortCircuit
+		switch el := el.(type) {
+		case asciidoc.Parent:
+			shortCircuit = search(reader, el, el.Children(), callback)
+			if shortCircuit == SearchShouldStop {
+				return shortCircuit
+			}
 		}
 	}
 	return SearchShouldContinue

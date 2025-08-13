@@ -179,7 +179,7 @@ func renderConstraintLimit(parent *etree.Element, valueElement *etree.Element, l
 		ref, entity, field := getLimitField(limit)
 		if entity == nil {
 			//err = fmt.Errorf("missing entity on identifier or reference limit")
-			slog.Warn("Missing entity on identifier or reference limit")
+			slog.Warn("Missing entity on identifier or reference limit", matter.LogEntity("entity", parentEntity))
 			renderLimit(parent, valueElement, name, ref)
 			return
 		}
@@ -279,12 +279,12 @@ func renderConstraintReferenceLimit(parent *etree.Element, field constraint.Limi
 		case int:
 			el.CreateAttr("value", strconv.FormatInt(int64(val), 10))
 		default:
-			slog.Info("unknown constant value type", log.Type("type", val))
+			slog.Warn("unknown constant value type", log.Type("type", val))
 		}
 	case nil:
-		slog.Info("unexpected nil constraint limit", log.Path("source", entity), "entity", entity, "limit", limit, "dataType", dataType, "field", field)
+		slog.Warn("unexpected nil constraint limit", log.Path("source", entity), "entity", entity, "limit", limit, "dataType", dataType, "field", field)
 	default:
-		slog.Info("unexpected constraint limit", "entity", entity, "limit", limit, "dataType", dataType, "field", field)
+		slog.Warn("unexpected constraint limit type", "entity", entity, "limit", limit, "dataType", dataType, "field", field)
 	}
 	return false
 }

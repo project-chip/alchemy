@@ -18,7 +18,7 @@ func (b *Baller) organizeAttributesSection(cxt *discoContext) (err error) {
 	for _, attributes := range cxt.parsed.attributes {
 		attributesTable := attributes.table
 		if attributesTable == nil || attributesTable.Element == nil {
-			slog.Warn("Could not organize Attributes section, as no table of attributes was found", log.Path("source", attributes.section.Base))
+			slog.Warn("Could not organize Attributes section, as no table of attributes was found", log.Path("source", attributes.section))
 			return
 		}
 
@@ -32,7 +32,7 @@ func (b *Baller) organizeAttributesSection(cxt *discoContext) (err error) {
 
 		err = b.renameTableHeaderCells(cxt, attributes.section, attributesTable, matter.Tables[matter.TableTypeAttributes].ColumnRenames)
 		if err != nil {
-			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", attributes.section.Name, cxt.doc.Path, err)
+			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.doc.SectionName(attributes.section), cxt.doc.Path, err)
 		}
 
 		err = b.fixAccessCells(cxt, attributes, types.EntityTypeAttribute)
@@ -69,7 +69,7 @@ func (b *Baller) linkIndexTables(cxt *discoContext, section *subSection) error {
 	if !b.options.LinkIndexTables {
 		return nil
 	}
-	if cxt.errata.IgnoreSection(section.section.Name, errata.DiscoPurposeTableLinkIndexes) {
+	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section.section), errata.DiscoPurposeTableLinkIndexes) {
 		return nil
 	}
 	if section.table == nil || section.table.Element == nil {
@@ -97,25 +97,22 @@ func (b *Baller) linkIndexTables(cxt *discoContext, section *subSection) error {
 	}
 	for _, ss := range section.children {
 		s := ss.section
-		attributeName := matter.StripReferenceSuffixes(s.Name)
+		attributeName := matter.StripReferenceSuffixes(cxt.doc.SectionName(s))
 		name := strings.TrimSpace(attributeName)
 
 		cell, ok := attributeCells[strings.ToLower(name)]
 		if !ok {
 			continue
 		}
-		var id string
-		ide := s.Base.GetAttributeByName(asciidoc.AttributeNameID)
+		var id asciidoc.Elements
+		ide := s.GetAttributeByName(asciidoc.AttributeNameID)
 		if ide != nil {
-			id = ide.AsciiDocString()
-			if strings.HasPrefix(id, "_") {
-				ok = false
-			}
+			id = ide.Val
 		}
 		if !ok {
 			label := normalizeAnchorLabel(name, nil)
-			id = normalizeAnchorID(name, nil)
-			spec.NewAnchor(cxt.doc, id, s.Base, section.section, label...).SyncToDoc(id)
+			id = asciidoc.NewStringElements(normalizeAnchorID(name, nil))
+			spec.NewAnchor(cxt.doc, id, s, section.section, label...).SyncToDoc(id)
 		}
 		icr := asciidoc.NewCrossReference(id, asciidoc.CrossReferenceFormatNatural)
 		cell.SetChildren(asciidoc.Elements{icr})

@@ -15,10 +15,8 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/lithammer/dedent"
-	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/paths"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/sanity-io/litter"
 )
 
@@ -31,13 +29,12 @@ type adTestGroup struct {
 }
 
 type adTest struct {
-	Name            string
-	QuotedName      string
-	TestName        string
-	Asciidoc        string
-	AsciidocPath    string
-	DocObject       string
-	ParsedDocObject string
+	Name         string
+	QuotedName   string
+	TestName     string
+	Asciidoc     string
+	AsciidocPath string
+	DocObject    string
 }
 
 func init() {
@@ -85,22 +82,10 @@ func main() {
 			name = strings.ReplaceAll(name, "/", " ")
 			name = strings.ReplaceAll(name, "\"", " ")
 
-			docPath, err := asciidoc.NewPath("test.adoc", ".")
-			if err != nil {
-				slog.Error("failed creating path", "test", t.Name, "err", err)
-				continue
-			}
 			fmt.Printf("parsing test: %s\n", t.Name)
-
-			parsedDoc, err := parse.Inline(spec.NewPreparseContext(docPath, "."), "test.adoc", strings.NewReader(a))
-			if err != nil {
-				slog.Error("failed parsing document", "test", t.Name, "err", err)
-				continue
-			}
 
 			t.TestName = strcase.ToLowerCamel(testName + " " + name)
 			t.DocObject = cleanObjectDump(litter.Sdump(doc))
-			t.ParsedDocObject = cleanObjectDump(litter.Sdump(parsedDoc))
 			fileName := testName + "_" + cleanFileName(strcase.ToSnakeWithIgnore(name, ",")) + ".adoc"
 			t.AsciidocPath = path.Join("asciidoctor/", fileName)
 			renderedDocPath := path.Join("tests/asciidoctor/", fileName)
@@ -180,7 +165,7 @@ func Test{{.Name}}(t *testing.T) {
 
 var {{.ArrayName}}Tests = parseTests{
 	{{range .Tests}}
-	{{"{"}}{{.QuotedName}}, "{{.AsciidocPath}}", {{.TestName}}, nil },
+	{{"{"}}{{.QuotedName}}, "{{.AsciidocPath}}", {{.TestName}} },
 	{{end}}
 }
 

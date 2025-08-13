@@ -12,7 +12,7 @@ func TestLogger(t *testing.T) {
 
 var loggerTests = parseTests{
 
-	{"provides access to logger via static logger method", "asciidoctor/logger_test_provides_access_to_logger_via_static_logger_method.adoc", loggerTestProvidesAccessToLoggerViaStaticLoggerMethod, nil},
+	{"provides access to logger via static logger method", "asciidoctor/logger_test_provides_access_to_logger_via_static_logger_method.adoc", loggerTestProvidesAccessToLoggerViaStaticLoggerMethod},
 }
 
 var loggerTestProvidesAccessToLoggerViaStaticLoggerMethod = &asciidoc.Document{

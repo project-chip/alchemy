@@ -59,7 +59,7 @@ func (c *Yaml2Python) Run(cc *Context) (err error) {
 	}
 
 	var specification *spec.Specification
-	specification, _, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, c.ASCIIDocAttributes.ToList())
+	specification, _, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, nil, c.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
 	}

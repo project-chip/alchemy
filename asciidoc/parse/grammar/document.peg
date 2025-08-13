@@ -4,4 +4,4 @@ Document = content:(Element)+ EndOfFile {
    return flat(content.([]any)), nil
 }
 
-Element = (BlockElement / InlineElements)
+Element = (BlockElement / InlineBlock)

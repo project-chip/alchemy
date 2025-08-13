@@ -90,7 +90,8 @@ func dumpAttributes(el asciidoc.Element, indent int) {
 		case *asciidoc.NamedAttribute:
 			fmt.Printf(" (name: %s)", a.Name)
 		case *asciidoc.AnchorAttribute:
-			fmt.Printf(" (anchor: %s)\n", a.ID.Value)
+			fmt.Printf(" (anchor:)\n")
+			dump(indent+1, a.ID.Children()...)
 			dump(indent+1, a.Label.Children()...)
 			continue
 		case *asciidoc.PositionalAttribute:

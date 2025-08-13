@@ -5,7 +5,7 @@ Anchor = !"\\" "[[" id:(CrossReferenceID) label:(AnySpaces "," label:(AnchorLabe
         lbl = join(label.([]any))
     }
     debugPosition(c, "matched anchor: %s\n", string(c.text))
-    return compose(c, asciidoc.NewAnchor(id.(string), lbl))
+    return compose(c, asciidoc.NewAnchor(id.(asciidoc.Elements), lbl))
 }
 
 AnchorAttribute = !"\\" "[[" id:(CrossReferenceID) label:(AnySpaces "," label:(AnchorLabel) { return label, nil})? "]]" {
@@ -14,7 +14,7 @@ AnchorAttribute = !"\\" "[[" id:(CrossReferenceID) label:(AnySpaces "," label:(A
         lbl = join(label.([]any))
     }
     debugPosition(c, "matched anchor attribute: %s\n", string(c.text))
-    return populatePosition(c, asciidoc.NewAnchorAttribute(asciidoc.NewString(id.(string)), lbl)), nil
+    return populatePosition(c, asciidoc.NewAnchorAttribute(id.(asciidoc.Elements), lbl)), nil
 }
 
 AnchorLabel = ( !"]]"

@@ -12,65 +12,65 @@ func TestExtensions(t *testing.T) {
 
 var extensionsTests = parseTests{
 
-	{"should not activate registry if no extension groups are registered", "asciidoctor/extensions_test_should_not_activate_registry_if_no_extension_groups_are_registered.adoc", extensionsTestShouldNotActivateRegistryIfNoExtensionGroupsAreRegistered, nil},
+	{"should not activate registry if no extension groups are registered", "asciidoctor/extensions_test_should_not_activate_registry_if_no_extension_groups_are_registered.adoc", extensionsTestShouldNotActivateRegistryIfNoExtensionGroupsAreRegistered},
 
-	{"should invoke include processor to process include directive", "asciidoctor/extensions_test_should_invoke_include_processor_to_process_include_directive.adoc", extensionsTestShouldInvokeIncludeProcessorToProcessIncludeDirective, nil},
+	{"should invoke include processor to process include directive", "asciidoctor/extensions_test_should_invoke_include_processor_to_process_include_directive.adoc", extensionsTestShouldInvokeIncludeProcessorToProcessIncludeDirective},
 
-	{"should invoke include processor if it offers to handle include directive", "asciidoctor/extensions_test_should_invoke_include_processor_if_it_offers_to_handle_include_directive.adoc", extensionsTestShouldInvokeIncludeProcessorIfItOffersToHandleIncludeDirective, nil},
+	{"should invoke include processor if it offers to handle include directive", "asciidoctor/extensions_test_should_invoke_include_processor_if_it_offers_to_handle_include_directive.adoc", extensionsTestShouldInvokeIncludeProcessorIfItOffersToHandleIncludeDirective},
 
-	{"should invoke tree processors after parsing document", "asciidoctor/extensions_test_should_invoke_tree_processors_after_parsing_document.adoc", extensionsTestShouldInvokeTreeProcessorsAfterParsingDocument, nil},
+	{"should invoke tree processors after parsing document", "asciidoctor/extensions_test_should_invoke_tree_processors_after_parsing_document.adoc", extensionsTestShouldInvokeTreeProcessorsAfterParsingDocument},
 
-	{"should allow tree processor to replace tree", "asciidoctor/extensions_test_should_allow_tree_processor_to_replace_tree.adoc", extensionsTestShouldAllowTreeProcessorToReplaceTree, nil},
+	{"should allow tree processor to replace tree", "asciidoctor/extensions_test_should_allow_tree_processor_to_replace_tree.adoc", extensionsTestShouldAllowTreeProcessorToReplaceTree},
 
-	{"should honor block title assigned in tree processor", "asciidoctor/extensions_test_should_honor_block_title_assigned_in_tree_processor.adoc", extensionsTestShouldHonorBlockTitleAssignedInTreeProcessor, nil},
+	{"should honor block title assigned in tree processor", "asciidoctor/extensions_test_should_honor_block_title_assigned_in_tree_processor.adoc", extensionsTestShouldHonorBlockTitleAssignedInTreeProcessor},
 
-	{"should invoke postprocessors after converting document", "asciidoctor/extensions_test_should_invoke_postprocessors_after_converting_document.adoc", extensionsTestShouldInvokePostprocessorsAfterConvertingDocument, nil},
+	{"should invoke postprocessors after converting document", "asciidoctor/extensions_test_should_invoke_postprocessors_after_converting_document.adoc", extensionsTestShouldInvokePostprocessorsAfterConvertingDocument},
 
-	{"should yield to document processor block if block has non-zero arity", "asciidoctor/extensions_test_should_yield_to_document_processor_block_if_block_has_non_zero_arity.adoc", extensionsTestShouldYieldToDocumentProcessorBlockIfBlockHasNonZeroArity, nil},
+	{"should yield to document processor block if block has non-zero arity", "asciidoctor/extensions_test_should_yield_to_document_processor_block_if_block_has_non_zero_arity.adoc", extensionsTestShouldYieldToDocumentProcessorBlockIfBlockHasNonZeroArity},
 
-	{"should invoke processor for custom block", "asciidoctor/extensions_test_should_invoke_processor_for_custom_block.adoc", extensionsTestShouldInvokeProcessorForCustomBlock, nil},
+	{"should invoke processor for custom block", "asciidoctor/extensions_test_should_invoke_processor_for_custom_block.adoc", extensionsTestShouldInvokeProcessorForCustomBlock},
 
-	{"should invoke processor for custom block in an AsciiDoc table cell", "asciidoctor/extensions_test_should_invoke_processor_for_custom_block_in_an_ascii_doc_table_cell.adoc", extensionsTestShouldInvokeProcessorForCustomBlockInAnAsciiDocTableCell, nil},
+	{"should invoke processor for custom block in an AsciiDoc table cell", "asciidoctor/extensions_test_should_invoke_processor_for_custom_block_in_an_ascii_doc_table_cell.adoc", extensionsTestShouldInvokeProcessorForCustomBlockInAnAsciiDocTableCell},
 
-	{"should yield to syntax processor block if block has non-zero arity", "asciidoctor/extensions_test_should_yield_to_syntax_processor_block_if_block_has_non_zero_arity.adoc", extensionsTestShouldYieldToSyntaxProcessorBlockIfBlockHasNonZeroArity, nil},
+	{"should yield to syntax processor block if block has non-zero arity", "asciidoctor/extensions_test_should_yield_to_syntax_processor_block_if_block_has_non_zero_arity.adoc", extensionsTestShouldYieldToSyntaxProcessorBlockIfBlockHasNonZeroArity},
 
-	{"should pass cloaked context in attributes passed to process method of custom block", "asciidoctor/extensions_test_should_pass_cloaked_context_in_attributes_passed_to_process_method_of_custom_block.adoc", extensionsTestShouldPassCloakedContextInAttributesPassedToProcessMethodOfCustomBlock, nil},
+	{"should pass cloaked context in attributes passed to process method of custom block", "asciidoctor/extensions_test_should_pass_cloaked_context_in_attributes_passed_to_process_method_of_custom_block.adoc", extensionsTestShouldPassCloakedContextInAttributesPassedToProcessMethodOfCustomBlock},
 
-	{"should allow extension to promote paragraph to compound block", "asciidoctor/extensions_test_should_allow_extension_to_promote_paragraph_to_compound_block.adoc", extensionsTestShouldAllowExtensionToPromoteParagraphToCompoundBlock, nil},
+	{"should allow extension to promote paragraph to compound block", "asciidoctor/extensions_test_should_allow_extension_to_promote_paragraph_to_compound_block.adoc", extensionsTestShouldAllowExtensionToPromoteParagraphToCompoundBlock},
 
-	{"should drop block macro line if target references missing attribute and attribute-missing is drop-line", "asciidoctor/extensions_test_should_drop_block_macro_line_if_target_references_missing_attribute_and_attribute_missing_is_drop_line.adoc", extensionsTestShouldDropBlockMacroLineIfTargetReferencesMissingAttributeAndAttributeMissingIsDropLine, nil},
+	{"should drop block macro line if target references missing attribute and attribute-missing is drop-line", "asciidoctor/extensions_test_should_drop_block_macro_line_if_target_references_missing_attribute_and_attribute_missing_is_drop_line.adoc", extensionsTestShouldDropBlockMacroLineIfTargetReferencesMissingAttributeAndAttributeMissingIsDropLine},
 
-	{"should invoke processor for custom block macro in an AsciiDoc table cell", "asciidoctor/extensions_test_should_invoke_processor_for_custom_block_macro_in_an_ascii_doc_table_cell.adoc", extensionsTestShouldInvokeProcessorForCustomBlockMacroInAnAsciiDocTableCell, nil},
+	{"should invoke processor for custom block macro in an AsciiDoc table cell", "asciidoctor/extensions_test_should_invoke_processor_for_custom_block_macro_in_an_ascii_doc_table_cell.adoc", extensionsTestShouldInvokeProcessorForCustomBlockMacroInAnAsciiDocTableCell},
 
-	{"should fail to convert if name of block macro is illegal", "asciidoctor/extensions_test_should_fail_to_convert_if_name_of_block_macro_is_illegal.adoc", extensionsTestShouldFailToConvertIfNameOfBlockMacroIsIllegal, nil},
+	{"should fail to convert if name of block macro is illegal", "asciidoctor/extensions_test_should_fail_to_convert_if_name_of_block_macro_is_illegal.adoc", extensionsTestShouldFailToConvertIfNameOfBlockMacroIsIllegal},
 
-	{"should parse text in square brackets as attrlist by default", "asciidoctor/extensions_test_should_parse_text_in_square_brackets_as_attrlist_by_default.adoc", extensionsTestShouldParseTextInSquareBracketsAsAttrlistByDefault, nil},
+	{"should parse text in square brackets as attrlist by default", "asciidoctor/extensions_test_should_parse_text_in_square_brackets_as_attrlist_by_default.adoc", extensionsTestShouldParseTextInSquareBracketsAsAttrlistByDefault},
 
-	{"should prefer attributes parsed from inline macro over default attributes", "asciidoctor/extensions_test_should_prefer_attributes_parsed_from_inline_macro_over_default_attributes.adoc", extensionsTestShouldPreferAttributesParsedFromInlineMacroOverDefaultAttributes, nil},
+	{"should prefer attributes parsed from inline macro over default attributes", "asciidoctor/extensions_test_should_prefer_attributes_parsed_from_inline_macro_over_default_attributes.adoc", extensionsTestShouldPreferAttributesParsedFromInlineMacroOverDefaultAttributes},
 
-	{"should not invoke process method or carry over attributes if block processor declares skip content model", "asciidoctor/extensions_test_should_not_invoke_process_method_or_carry_over_attributes_if_block_processor_declares_skip_content_model.adoc", extensionsTestShouldNotInvokeProcessMethodOrCarryOverAttributesIfBlockProcessorDeclaresSkipContentModel, nil},
+	{"should not invoke process method or carry over attributes if block processor declares skip content model", "asciidoctor/extensions_test_should_not_invoke_process_method_or_carry_over_attributes_if_block_processor_declares_skip_content_model.adoc", extensionsTestShouldNotInvokeProcessMethodOrCarryOverAttributesIfBlockProcessorDeclaresSkipContentModel},
 
-	{"should pass attributes by value to block processor", "asciidoctor/extensions_test_should_pass_attributes_by_value_to_block_processor.adoc", extensionsTestShouldPassAttributesByValueToBlockProcessor, nil},
+	{"should pass attributes by value to block processor", "asciidoctor/extensions_test_should_pass_attributes_by_value_to_block_processor.adoc", extensionsTestShouldPassAttributesByValueToBlockProcessor},
 
-	{"should allow extension to replace custom block with a section", "asciidoctor/extensions_test_should_allow_extension_to_replace_custom_block_with_a_section.adoc", extensionsTestShouldAllowExtensionToReplaceCustomBlockWithASection, nil},
+	{"should allow extension to replace custom block with a section", "asciidoctor/extensions_test_should_allow_extension_to_replace_custom_block_with_a_section.adoc", extensionsTestShouldAllowExtensionToReplaceCustomBlockWithASection},
 
-	{"can use parse_content to append blocks to current parent", "asciidoctor/extensions_test_can_use_parse_content_to_append_blocks_to_current_parent.adoc", extensionsTestCanUseParseContentToAppendBlocksToCurrentParent, nil},
+	{"can use parse_content to append blocks to current parent", "asciidoctor/extensions_test_can_use_parse_content_to_append_blocks_to_current_parent.adoc", extensionsTestCanUseParseContentToAppendBlocksToCurrentParent},
 
-	{"should ignore return value of custom block if value is parent", "asciidoctor/extensions_test_should_ignore_return_value_of_custom_block_if_value_is_parent.adoc", extensionsTestShouldIgnoreReturnValueOfCustomBlockIfValueIsParent, nil},
+	{"should ignore return value of custom block if value is parent", "asciidoctor/extensions_test_should_ignore_return_value_of_custom_block_if_value_is_parent.adoc", extensionsTestShouldIgnoreReturnValueOfCustomBlockIfValueIsParent},
 
-	{"should ignore return value of custom block macro if value is parent", "asciidoctor/extensions_test_should_ignore_return_value_of_custom_block_macro_if_value_is_parent.adoc", extensionsTestShouldIgnoreReturnValueOfCustomBlockMacroIfValueIsParent, nil},
+	{"should ignore return value of custom block macro if value is parent", "asciidoctor/extensions_test_should_ignore_return_value_of_custom_block_macro_if_value_is_parent.adoc", extensionsTestShouldIgnoreReturnValueOfCustomBlockMacroIfValueIsParent},
 
-	{"parse_content should not share attributes between parsed blocks", "asciidoctor/extensions_test_parse_content_should_not_share_attributes_between_parsed_blocks.adoc", extensionsTestParseContentShouldNotShareAttributesBetweenParsedBlocks, nil},
+	{"parse_content should not share attributes between parsed blocks", "asciidoctor/extensions_test_parse_content_should_not_share_attributes_between_parsed_blocks.adoc", extensionsTestParseContentShouldNotShareAttributesBetweenParsedBlocks},
 
-	{"can use parse_attributes to parse attrlist", "asciidoctor/extensions_test_can_use_parse_attributes_to_parse_attrlist.adoc", extensionsTestCanUseParseAttributesToParseAttrlist, nil},
+	{"can use parse_attributes to parse attrlist", "asciidoctor/extensions_test_can_use_parse_attributes_to_parse_attrlist.adoc", extensionsTestCanUseParseAttributesToParseAttrlist},
 
-	{"create_section should set up all section properties", "asciidoctor/extensions_test_create_section_should_set_up_all_section_properties.adoc", extensionsTestCreateSectionShouldSetUpAllSectionProperties, nil},
+	{"create_section should set up all section properties", "asciidoctor/extensions_test_create_section_should_set_up_all_section_properties.adoc", extensionsTestCreateSectionShouldSetUpAllSectionProperties},
 
-	{"should add docinfo to document", "asciidoctor/extensions_test_should_add_docinfo_to_document.adoc", extensionsTestShouldAddDocinfoToDocument, nil},
+	{"should add docinfo to document", "asciidoctor/extensions_test_should_add_docinfo_to_document.adoc", extensionsTestShouldAddDocinfoToDocument},
 
-	{"should add multiple docinfo to document", "asciidoctor/extensions_test_should_add_multiple_docinfo_to_document.adoc", extensionsTestShouldAddMultipleDocinfoToDocument, nil},
+	{"should add multiple docinfo to document", "asciidoctor/extensions_test_should_add_multiple_docinfo_to_document.adoc", extensionsTestShouldAddMultipleDocinfoToDocument},
 
-	{"should not assign caption on image block if title is not set on custom block macro", "asciidoctor/extensions_test_should_not_assign_caption_on_image_block_if_title_is_not_set_on_custom_block_macro.adoc", extensionsTestShouldNotAssignCaptionOnImageBlockIfTitleIsNotSetOnCustomBlockMacro, nil},
+	{"should not assign caption on image block if title is not set on custom block macro", "asciidoctor/extensions_test_should_not_assign_caption_on_image_block_if_title_is_not_set_on_custom_block_macro.adoc", extensionsTestShouldNotAssignCaptionOnImageBlockIfTitleIsNotSetOnCustomBlockMacro},
 }
 
 var extensionsTestShouldNotActivateRegistryIfNoExtensionGroupsAreRegistered = &asciidoc.Document{

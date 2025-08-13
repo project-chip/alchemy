@@ -6,19 +6,19 @@ import (
 	"slices"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (b *Baller) ensureTableOptions(root asciidoc.ParentElement) {
+func (b *Baller) ensureTableOptions(doc *spec.Doc, root asciidoc.ParentElement) {
 	if !b.options.NormalizeTableOptions {
 		return
 	}
-	parse.Traverse(root, root.Children(), func(t *asciidoc.Table, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Search(doc.Reader(), root, root.Children(), func(t *asciidoc.Table, parent asciidoc.Parent, index int) parse.SearchShould {
 		var excludedIndexes []int
 		for i, attr := range t.Attributes() {
 			na, ok := attr.(*asciidoc.NamedAttribute)
@@ -41,11 +41,11 @@ func (b *Baller) ensureTableOptions(root asciidoc.ParentElement) {
 	})
 }
 
-func (b *Baller) addMissingColumns(cxt *discoContext, section *spec.Section, ti *spec.TableInfo, tableTemplate matter.Table, entityType types.EntityType) (err error) {
+func (b *Baller) addMissingColumns(cxt *discoContext, section *asciidoc.Section, ti *spec.TableInfo, tableTemplate matter.Table, entityType types.EntityType) (err error) {
 	if !b.options.AddMissingColumns {
 		return
 	}
-	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableAddMissingColumns) {
+	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section), errata.DiscoPurposeTableAddMissingColumns) {
 		return
 	}
 	ti.Element.DeleteAttribute(asciidoc.AttributeNameColumns)
@@ -63,7 +63,7 @@ func (b *Baller) addMissingColumns(cxt *discoContext, section *spec.Section, ti 
 			}
 		}
 	}
-	err = ti.Rescan(section.Doc)
+	err = ti.Rescan(cxt.doc)
 	return
 }
 
@@ -149,11 +149,11 @@ func (b *Baller) getDefaultColumnValue(ti *spec.TableInfo, row *asciidoc.TableRo
 	return ""
 }
 
-func (b *Baller) reorderColumns(cxt *discoContext, section *spec.Section, ti *spec.TableInfo, tableType matter.TableType) (err error) {
+func (b *Baller) reorderColumns(cxt *discoContext, section *asciidoc.Section, ti *spec.TableInfo, tableType matter.TableType) (err error) {
 	if !b.options.ReorderColumns {
 		return
 	}
-	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableReorderColumns) {
+	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section), errata.DiscoPurposeTableReorderColumns) {
 		return
 	}
 	rows := ti.Rows
@@ -296,11 +296,11 @@ func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toI
 	return
 }
 
-func (b *Baller) renameTableHeaderCells(cxt *discoContext, section *spec.Section, table *spec.TableInfo, overrides map[matter.TableColumn]matter.TableColumn) (err error) {
+func (b *Baller) renameTableHeaderCells(cxt *discoContext, section *asciidoc.Section, table *spec.TableInfo, overrides map[matter.TableColumn]matter.TableColumn) (err error) {
 	if !b.options.RenameTableHeaders {
 		return
 	}
-	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableRenameHeaders) {
+	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section), errata.DiscoPurposeTableRenameHeaders) {
 		return
 	}
 	if table.HeaderRowIndex == -1 {

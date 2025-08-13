@@ -71,46 +71,53 @@ ShorthandOption = "%" value:ShorthandAttributeValue {
 
 ShorthandAttributeValue = (!"#" !"." !"%" SingleQuoteAttributeValue / DoubleQuoteAttributeValue / NakedAttributeValue)
 
-SingleQuoteAttributeValue = "'" value:(SingleQuoteAttributeValueElement)* "'" {
-    return &attributeValue{value:join(value.([]any)), quote:asciidoc.AttributeQuoteTypeSingle}, nil
+SingleQuoteAttributeValue = "'" value:(SingleQuoteAttributeValueElements)* "'" {
+    return &attributeValue{value:join(flat(value.([]any))), quote:asciidoc.AttributeQuoteTypeSingle}, nil
 }
 
-SingleQuoteAttributeValueElement = (
-    "\\'" { return asciidoc.NewString("'"), nil } / 
+SingleQuoteAttributeValueElements = content:(AttributeReference / SingleQuoteAttributeValueElement)+
+
+SingleQuoteAttributeValueElement = (!AttributeReference SingleQuoteAttributeValueCharacter)
+
+SingleQuoteAttributeValueCharacter = (
+    ("\\'" { return asciidoc.NewString("'"), nil } ) /
     Alphanumeric / 
-    _ / 
+    _ /
     CurvedQuote / 
-    AttributeReference /
-    [^\r\n\\' ]+ {
-        return asciidoc.NewString(string(c.text)), nil
-    }
-)
+    [^\r\n\\' ]
+) 
 
-DoubleQuoteAttributeValue = "\"" value:(DoubleQuoteAttributeValueElement)* "\"" {
-    return &attributeValue{value:join(value.([]any)), quote:asciidoc.AttributeQuoteTypeDouble}, nil
+DoubleQuoteAttributeValueElements = (AttributeReference / DoubleQuoteAttributeValueElement)
+
+DoubleQuoteAttributeValue = "\"" value:(DoubleQuoteAttributeValueElements)* "\"" {
+    return &attributeValue{value:join(flat(value.([]any))), quote:asciidoc.AttributeQuoteTypeDouble}, nil
 }
 
-DoubleQuoteAttributeValueElement = (
-    "\\\"" { return asciidoc.NewString("\""), nil }  / 
+DoubleQuoteAttributeValueElements = content:(AttributeReference / DoubleQuoteAttributeValueElement)+
+
+DoubleQuoteAttributeValueElement = (!AttributeReference DoubleQuoteAttributeValueCharacter)
+
+DoubleQuoteAttributeValueCharacter = (
+    ("\\\"" { return asciidoc.NewString("'"), nil } ) /
     Alphanumeric / 
-    _ / 
-    CurvedQuote /
-    AttributeReference /
-    [^\r\n\\" ]+ {
-        return asciidoc.NewString(string(c.text)), nil
-    }
+    _ /
+    CurvedQuote / 
+    [^\r\n\\" ]
 )
 
-NakedAttributeValue = !_ value:(
-    AttributeReference / 
-    _ / 
-    [^=\], ]+ { // Stop on commas, equals, spaces or end bracket
-    return asciidoc.NewString(string(c.text)), nil
-    }
-)+ {
+NakedAttributeValue = !_ value:(NakedAttributeValueElements) {
     debugPosition(c, "matched naked attribute value elements: %s\n", string(c.text))
     return &attributeValue{value:join(flat(value.([]any)))}, nil
 }
+
+NakedAttributeValueElements = content:(AttributeReference / NakedAttributeValueElement)+
+
+NakedAttributeValueElement = (!AttributeReference NakedAttributeValueCharacter)
+
+NakedAttributeValueCharacter = (
+    _ / 
+    [^=\], ]
+)
 
 InlineAttributes = "[" attributes:(AttributeList) "]" {
     debugPosition(c, "matched inline attributes: %s\n", string(c.text))

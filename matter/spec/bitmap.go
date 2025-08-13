@@ -3,6 +3,7 @@ package spec
 import (
 	"log/slog"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/internal/text"
@@ -11,29 +12,29 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toBitmap(d *Doc, pc *parseContext, parent types.Entity) (bm *matter.Bitmap, err error) {
-	name := text.TrimCaseInsensitiveSuffix(s.Name, " Type")
+func toBitmap(d *Doc, section *asciidoc.Section, pc *parseContext, parent types.Entity) (bm *matter.Bitmap, err error) {
+	name := text.TrimCaseInsensitiveSuffix(d.SectionName(section), " Type")
 
-	dt := s.GetDataType()
+	dt := GetDataType(d, section)
 	if dt == nil {
 		dt = types.NewDataType(types.BaseDataTypeMap8, false)
-		slog.Warn("Bitmap does not declare its derived data type; assuming map8", log.Element("source", d.Path, s.Base), slog.String("bitmap", name))
+		slog.Warn("Bitmap does not declare its derived data type; assuming map8", log.Element("source", d.Path, section), slog.String("bitmap", name))
 	} else if !dt.IsMap() {
-		return nil, newGenericParseError(s.Base, "unknown bitmap data type: %s", dt.Name)
+		return nil, newGenericParseError(section, "unknown bitmap data type: %s", dt.Name)
 	}
 
-	bm = matter.NewBitmap(s.Base, parent)
+	bm = matter.NewBitmap(section, parent)
 	bm.Name = name
 	bm.Type = dt
 	var ti *TableInfo
-	ti, err = parseFirstTable(d, s)
+	ti, err = parseFirstTable(d, section)
 
 	if err != nil {
 		if err == ErrNoTableFound {
-			slog.Warn("no table found for bitmap", log.Element("source", s.Doc.Path, s.Base), slog.String("name", bm.Name))
+			slog.Warn("no table found for bitmap", log.Element("source", d.Path, section), slog.String("name", bm.Name))
 			err = nil
 		} else {
-			return nil, newGenericParseError(s.Base, "failed reading bitmap %s: %w", name, err)
+			return nil, newGenericParseError(section, "failed reading bitmap %s: %w", name, err)
 		}
 	} else {
 		for row := range ti.ContentRows() {
@@ -65,13 +66,13 @@ func (s *Section) toBitmap(d *Doc, pc *parseContext, parent types.Entity) (bm *m
 			if len(name) == 0 && len(summary) > 0 {
 				name = matter.Case(summary)
 			}
-			bv := matter.NewBitmapBit(s.Base, bit, CanonicalName(name), summary, conf)
+			bv := matter.NewBitmapBit(section, bit, CanonicalName(name), summary, conf)
 			bm.AddBit(bv)
 		}
 	}
 
 	bm.Name = CanonicalName(bm.Name)
-	pc.addEntity(bm, s.Base)
+	pc.addEntity(bm, section)
 	return
 }
 
@@ -113,7 +114,6 @@ func (bf *bitmapFinder) suggestIdentifiers(identifier string, suggestions map[ty
 	if bf.inner != nil {
 		bf.inner.suggestIdentifiers(identifier, suggestions)
 	}
-	return
 }
 
 func validateBitmaps(spec *Specification) {

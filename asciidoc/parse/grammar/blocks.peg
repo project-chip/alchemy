@@ -28,7 +28,6 @@ NakedBlocks = (
     EndIfDef /
     FileInclude /
     DescriptionListItem /
-    ListContinuation /
     NewLine
 ) 
 

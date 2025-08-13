@@ -1,23 +1,24 @@
 package spec
 
 import (
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toTypeDef(d *Doc, pc *parseContext, parent types.Entity) (ms *matter.TypeDef, err error) {
-	name := text.TrimCaseInsensitiveSuffix(s.Name, " Type")
-	ms = matter.NewTypeDef(s.Base, parent)
+func toTypeDef(d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) (ms *matter.TypeDef, err error) {
+	name := text.TrimCaseInsensitiveSuffix(d.SectionName(s), " Type")
+	ms = matter.NewTypeDef(s, parent)
 	ms.Name = name
 
-	dt := s.GetDataType()
+	dt := GetDataType(d, s)
 	if (dt == nil) || !dt.BaseType.IsSimple() {
-		return nil, newGenericParseError(s.Base, "unknown typedef data type: \"%s\"", dt.Name)
+		return nil, newGenericParseError(s, "unknown typedef data type: \"%s\"", dt.Name)
 	}
 	ms.Type = dt
 	pc.orderedEntities = append(pc.orderedEntities, ms)
-	pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], ms)
+	pc.entitiesByElement[s] = append(pc.entitiesByElement[s], ms)
 	ms.Name = CanonicalName(ms.Name)
 	return
 }

@@ -106,8 +106,10 @@ func (p *Renderer) renderAppCluster(doc *spec.Doc, entity types.Entity) (output 
 	case "Base":
 		class.CreateAttr("hierarchy", strings.ToLower(clusterClassification.Hierarchy))
 	default:
-		class.CreateAttr("hierarchy", "derived")
-		class.CreateAttr("baseCluster", clusterClassification.Hierarchy)
+		if clusterClassification.Hierarchy != "" {
+			class.CreateAttr("hierarchy", "derived")
+			class.CreateAttr("baseCluster", clusterClassification.Hierarchy)
+		}
 	}
 	class.CreateAttr("role", strings.ToLower(clusterClassification.Role))
 	class.CreateAttr("picsCode", clusterClassification.PICS)

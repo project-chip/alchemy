@@ -12,7 +12,7 @@ func TestText(t *testing.T) {
 
 var textTests = parseTests{
 
-	{"line breaks", "asciidoctor/text_test_line_breaks.adoc", textTestLineBreaks, nil},
+	{"line breaks", "asciidoctor/text_test_line_breaks.adoc", textTestLineBreaks},
 }
 
 var textTestLineBreaks = &asciidoc.Document{

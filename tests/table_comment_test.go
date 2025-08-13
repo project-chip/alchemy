@@ -449,7 +449,11 @@ var tableComment = &asciidoc.Document{
 								},
 								&asciidoc.CrossReference{
 									Elements: nil,
-									ID:       "ref_DataTypes",
+									ID: asciidoc.Elements{
+										&asciidoc.String{
+											Value: "ref_DataTypes",
+										},
+									},
 								},
 								&asciidoc.String{
 									Value: " of the data field is ",
@@ -460,7 +464,11 @@ var tableComment = &asciidoc.Document{
 											Value: " nullable",
 										},
 									},
-									ID: "ref_Nullable",
+									ID: asciidoc.Elements{
+										&asciidoc.String{
+											Value: "ref_Nullable",
+										},
+									},
 								},
 							},
 							Blank: false,

@@ -13,7 +13,7 @@ func (b *Baller) organizeClassificationSection(cxt *discoContext) (err error) {
 	for _, classification := range cxt.parsed.classification {
 		classificationTable := classification.table
 		if classificationTable == nil || classificationTable.Element == nil {
-			slog.Warn("Could not organize classification section, as no table was found", log.Path("source", classification.section.Base))
+			slog.Warn("Could not organize classification section, as no table was found", log.Path("source", classification.section))
 			return nil
 		}
 		if classificationTable.ColumnMap == nil {
@@ -28,7 +28,7 @@ func (b *Baller) organizeClassificationSection(cxt *discoContext) (err error) {
 
 		err = b.renameTableHeaderCells(cxt, classification.section, classificationTable, matter.Tables[matter.TableTypeClassification].ColumnRenames)
 		if err != nil {
-			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", classification.section.Name, cxt.doc.Path, err)
+			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.doc.SectionName(classification.section), cxt.doc.Path, err)
 		}
 
 		var tableType matter.TableType

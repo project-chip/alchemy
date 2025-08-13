@@ -1,5 +1,6 @@
 
-ListItemValue = line:InlineElement+ &EndOfLine lines:(ListItemLine)* attachedBlocks:(AttachedBlocks)? {
+
+ListItemValue = line:InlineElement+ &EndOfLine lines:(ListItemLine)* attachedBlocks:(AttachedBlocks)?  &EndOfLine {
     value := []any{line}
     if lines != nil {
         value = append(value, lines.([]any)...)
@@ -14,14 +15,38 @@ AttachedBlockElement = "+" AnySpaces NewLine value:(BlockElements) {
     return asciidoc.NewAttachedBlock(value.(asciidoc.Element)), nil
 }
 
-ListContinuation = "+" AnySpaces NewLine value:BlockElement {
+ListContinuationMarker = marker:(EmptyLine* BeginningOfLine "+") {
+    debugPosition(c, "ListContinuationMarker\n")
+    return marker, nil
+}
+
+ListContinuation = ListContinuationMarker AnySpaces NewLine value:ContinuationBlockElement {
+    debugPosition(c, "ListContinuation\n")
     return compose(c, asciidoc.NewListContinuation(value.(asciidoc.Element)))
 }
 
-ListItemLine = EndOfLine !OrderedListMarker !UnorderedListMarker !BlockDelimiters !ConditionalStatement element:(InlineElement)+ &EndOfLine {
+ListItemLine = EndOfLine !OrderedListMarker !UnorderedListMarker !BlockDelimiters !ConditionalStatement !ListContinuationMarker element:(InlineElement)+ &EndOfLine {
     return append([]any{&asciidoc.NewLine{}}, element.([]any)...), nil
 }
 
-AttachedBlocks = blocks:(AttachedBlockElement)+ &EndOfLine {
+AttachedBlocks = blocks:(ListContinuation)+ &EndOfLine {
     return blocks, nil
 }
+
+
+ContinuationBlockElement =  element:(ContinuationBlockElements) &EndOfLine 
+&{
+    debugPosition(c, "checking continuation block element: %T %v\n", element, element)
+    return element != nil, nil
+} {
+    debugPosition(c, "continuation block element: %T %v\n", element, element)
+   return element, nil
+}
+
+ContinuationBlockElements = (
+    AlchemyEscape /
+    AttributableBlocks /
+    Table /
+    NakedBlocks / els:InlineElements {
+            return compose(c, asciidoc.NewParagraph(), setElements[*asciidoc.Paragraph](els.(asciidoc.Elements)))
+    })

@@ -147,6 +147,8 @@ type EndIf struct {
 
 	Attributes AttributeNames
 	Union      ConditionalUnion
+
+	Open Element
 }
 
 func NewEndIf(attributes []AttributeName, union ConditionalUnion) *EndIf {

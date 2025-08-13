@@ -4,7 +4,7 @@ import (
 	"iter"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
@@ -14,10 +14,10 @@ type globalCommandFactory struct {
 	commandFactory
 }
 
-func (cf *globalCommandFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
-	return func(yield func(*Section) bool) {
-		parse.Traverse(d, d.Children(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
-			if s.SecType != matter.SectionCommand {
+func (cf *globalCommandFactory) Children(d *Doc, s *asciidoc.Section) iter.Seq[*asciidoc.Section] {
+	return func(yield func(*asciidoc.Section) bool) {
+		parse.Search(d.Reader(), d, d.Children(), func(sec *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
+			if d.SectionType(sec) != matter.SectionCommand {
 				return parse.SearchShouldContinue
 			}
 			if !yield(s) {
@@ -28,9 +28,9 @@ func (cf *globalCommandFactory) Children(d *Doc, s *Section) iter.Seq[*Section] 
 	}
 }
 
-func (s *Section) toGlobalElements(spec *Specification, d *Doc, pc *parseContext, parent types.Entity) (entities []types.Entity, err error) {
+func toGlobalElements(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) (entities []types.Entity, err error) {
 	var commandsTable *asciidoc.Table
-	parse.SkimFunc(s.Children(), func(t *asciidoc.Table) bool {
+	parse.SkimFunc(d.Reader(), s, s.Children(), func(t *asciidoc.Table) bool {
 		for _, a := range t.AttributeList.Attributes() {
 			switch a := a.(type) {
 			case *asciidoc.TitleAttribute:
@@ -57,10 +57,10 @@ func (s *Section) toGlobalElements(spec *Specification, d *Doc, pc *parseContext
 	}
 
 	// The definnition of global commands is frequently elsewhere, so let's scan the doc for other commmand sections
-	parse.Traverse(d, d.Children(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
-		switch sec.SecType {
+	parse.Search(d.Reader(), d, d.Children(), func(sec *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
+		switch d.SectionType(sec) {
 		case matter.SectionCommand:
-			commandName := text.TrimCaseInsensitiveSuffix(sec.Name, " Command")
+			commandName := text.TrimCaseInsensitiveSuffix(d.SectionName(sec), " Command")
 			command, ok := commandMap[commandName]
 			if !ok {
 				return parse.SearchShouldContinue

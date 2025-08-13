@@ -33,7 +33,7 @@ type Specification struct {
 	DataTypeRefs EntityRefs[types.Entity]
 	DocRefs      map[types.Entity]*Doc
 
-	GlobalObjects types.EntitySet
+	GlobalObjects types.EntitySet[*Doc]
 
 	entities map[string]map[types.Entity]map[*matter.Cluster]struct{}
 
@@ -57,7 +57,7 @@ func newSpec(specRoot string) *Specification {
 		Docs:              make(map[string]*Doc),
 		DocRefs:           make(map[types.Entity]*Doc),
 
-		GlobalObjects: make(types.EntitySet),
+		GlobalObjects: make(types.EntitySet[*Doc]),
 
 		entities:                   make(map[string]map[types.Entity]map[*matter.Cluster]struct{}),
 		deviceTypeCompositionCache: make(map[*matter.DeviceType]*matter.DeviceTypeComposition),
@@ -140,7 +140,12 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 	}
 	if referenceDoc == nil {
 		path, _ := source.Origin()
-		referenceDoc = sef.spec.Docs[path]
+		specPath, err := NewSpecPath(path, sef.spec.Root)
+		if err != nil {
+			slog.Warn("failed to create spec path for reference", "ref", reference, log.Path("source", source), slog.Any("error", err))
+		} else {
+			referenceDoc = sef.spec.Docs[specPath.Relative]
+		}
 	}
 	if referenceDoc == nil {
 		slog.Warn("failed to find document for reference", "ref", reference, log.Path("source", source), slog.Any("cluster", sef.cluster))
@@ -170,6 +175,8 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 
 			entities := anchor.Document.entitiesBySection[el]
 			discoveredEntities = append(discoveredEntities, entities...)
+		default:
+			slog.Warn("unexpected type of anchor element", log.Type("type", el))
 		}
 	}
 	switch len(discoveredEntities) {

@@ -3,13 +3,14 @@ package spec
 import (
 	"log/slog"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toAttributes(spec *Specification, d *Doc, cluster *matter.Cluster, pc *parseContext) (attributes matter.FieldSet, err error) {
+func toAttributes(spec *Specification, d *Doc, section *asciidoc.Section, cluster *matter.Cluster, pc *parseContext) (attributes matter.FieldSet, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(d, s)
+	ti, err = parseFirstTable(d, section)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -21,7 +22,7 @@ func (s *Section) toAttributes(spec *Specification, d *Doc, cluster *matter.Clus
 	if err != nil {
 		return
 	}
-	err = s.mapFields(attributeMap, pc)
+	err = mapFields(d, section, attributeMap, pc)
 	return
 }
 

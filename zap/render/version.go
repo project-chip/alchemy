@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log/slog"
+	"os"
 	"regexp"
 	"slices"
 	"strconv"
@@ -13,7 +14,6 @@ import (
 	"time"
 
 	"github.com/beevik/etree"
-	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/zap"
 )
 
@@ -111,13 +111,18 @@ func (cr *configuratorRenderer) patchAlchemyComment(configurator *zap.Configurat
 		paths = append(paths, d.Path.Relative)
 	}
 	slices.Sort(paths)
+
+	var args []string
+	for _, arg := range os.Args[1:] {
+		args = append(args, strings.TrimPrefix(arg, "--"))
+	}
 	err := alchemyCommentTemplate.Execute(&alchemyCommentText, struct {
 		Path       string
-		Parameters []asciidoc.AttributeName
+		Parameters []string
 		Git        string
 	}{
 		Path:       strings.Join(paths, " "),
-		Parameters: cr.generator.attributes,
+		Parameters: args,
 		Git:        cr.generator.specVersion})
 	if err != nil {
 		return err

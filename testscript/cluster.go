@@ -39,19 +39,6 @@ func (*TestScriptGenerator) buildClusterTest(doc *spec.Doc, cluster *matter.Clus
 		t.PICSList = append(t.PICSList, p)
 	}
 
-	/*t.AddStep(&TestStep{
-		Description: "Read feature map",
-		Actions: []TestAction{
-			&ReadAttribute{
-				remoteAction: remoteAction{
-					Endpoint: math.MaxUint64,
-				},
-				AttributeName: "FeatureMap",
-				Variable:      "feature_map",
-			},
-		},
-	})*/
-
 	variables := make(map[types.Entity]struct{})
 	findReferencedEntities(cluster, variables)
 

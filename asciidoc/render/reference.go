@@ -1,23 +1,20 @@
 package render
 
 import (
-	"strings"
-
 	"github.com/project-chip/alchemy/asciidoc"
 )
 
 func renderInternalCrossReference(cxt Target, cf *asciidoc.CrossReference) (err error) {
 	id := cf.ID
 
-	if strings.HasPrefix(id, "_") {
-		return
-	}
-
 	cxt.StartBlock()
 	switch cf.Format {
 	case asciidoc.CrossReferenceFormatNatural:
 		cxt.WriteString("<<")
-		cxt.WriteString(id)
+		err = Elements(cxt, "", id...)
+		if err != nil {
+			return
+		}
 		if !cf.Elements.IsWhitespace() {
 			cxt.WriteString(",")
 			err = Elements(cxt, "", cf.Children()...)
@@ -28,7 +25,10 @@ func renderInternalCrossReference(cxt Target, cf *asciidoc.CrossReference) (err 
 		cxt.WriteString(">>")
 	case asciidoc.CrossReferenceFormatMacro:
 		cxt.WriteString("xref:")
-		cxt.WriteString(id)
+		err = Elements(cxt, "", id...)
+		if err != nil {
+			return
+		}
 		attributes := cf.Attributes()
 		if len(attributes) == 0 {
 			cxt.WriteString("[]\n")

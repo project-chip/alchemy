@@ -64,8 +64,6 @@ func (sp *TestScriptConverter) Process(cxt context.Context, input *pipeline.Data
 		YamlVariables: testPlan.Config.Extras,
 	}
 
-	slog.Info("yaml", slog.Any("extras", t.YamlVariables))
-
 	for _, g := range testPlan.Groups {
 		step := &TestStep{
 			Name:        g.Name,

@@ -3,7 +3,8 @@ package db
 import (
 	"context"
 
-	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 )
@@ -15,14 +16,14 @@ func (h *Host) indexDoc(ctx context.Context, doc *spec.Doc, raw bool) (*sectionI
 	ds.values.values = map[matter.TableColumn]any{matter.TableColumnName: doc.Path.Base(), matter.TableColumnType: dts}
 	ds.values.extras = map[string]any{"path": doc.Path.Absolute}
 	if raw {
-		for top := range parse.Skim[*spec.Section](doc.Children()) {
+		for top := range parse.Skim[*asciidoc.Section](doc.Reader(), doc, doc.Children()) {
 			err := spec.AssignSectionTypes(doc, top)
 			if err != nil {
 				return nil, err
 			}
-			for s := range parse.Skim[*spec.Section](top.Children()) {
+			for s := range parse.Skim[*asciidoc.Section](doc.Reader(), top, top.Children()) {
 				var err error
-				switch s.SecType {
+				switch doc.SectionType(s) {
 				case matter.SectionClusterID:
 					err = h.indexCluster(ctx, doc, ds, top)
 				}

@@ -1,12 +1,15 @@
-
-
-InlineElements = content:(InlineElement)+ eol:EndOfLine {
-    debugPosition(c, "inline elements: %s\n", string(c.text))
-    els := flat(content.([]any))
+InlineBlock = content:(InlineElements) eol:EndOfLine {
+    debugPosition(c, "inline block: %s\n", string(c.text))
+    els := content.(asciidoc.Elements)
     if eol, ok := eol.(*asciidoc.NewLine); ok {
         els = append(els, eol)
     }
     return els, nil
+}
+
+InlineElements = content:(InlineElement)+ {
+    debugPosition(c, "inline elements: %s\n", string(c.text))
+    return flat(content.([]any)), nil
 }
 
 InlineElement = (

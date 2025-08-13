@@ -100,6 +100,14 @@ func (na *NamedAttribute) SetValue(v any) error {
 	return fmt.Errorf("invalid type for NamedAttribute: %T", v)
 }
 
+func (na *NamedAttribute) Children() Elements {
+	return na.Val
+}
+
+func (na *NamedAttribute) SetChildren(els Elements) {
+	na.Val = els
+}
+
 func (na *NamedAttribute) AttributeType() AttributeType {
 	return attributeNameToType(na.Name)
 }
@@ -146,12 +154,20 @@ func (pa *PositionalAttribute) Value() any {
 	return pa.Val
 }
 
-func (na *PositionalAttribute) SetValue(v any) error {
+func (pa *PositionalAttribute) SetValue(v any) error {
 	if v, ok := v.(Elements); ok {
-		na.Val = v
+		pa.Val = v
 		return nil
 	}
 	return fmt.Errorf("invalid type for PositionalAttribute: %T", v)
+}
+
+func (pa *PositionalAttribute) Children() Elements {
+	return pa.Val
+}
+
+func (pa *PositionalAttribute) SetChildren(els Elements) {
+	pa.Val = els
 }
 
 func (pa *PositionalAttribute) Equals(oa Attribute) bool {
@@ -173,8 +189,8 @@ func (PositionalAttribute) QuoteType() AttributeQuoteType {
 	return AttributeQuoteTypeNone
 }
 
-func (na *PositionalAttribute) AsciiDocString() string {
-	return AttributeAsciiDocString(na.Val)
+func (pa *PositionalAttribute) AsciiDocString() string {
+	return AttributeAsciiDocString(pa.Val)
 }
 
 type TitleAttribute struct {
@@ -191,12 +207,20 @@ func (ta *TitleAttribute) Value() any {
 	return ta.Val
 }
 
-func (na *TitleAttribute) SetValue(v any) error {
+func (ta *TitleAttribute) SetValue(v any) error {
 	if v, ok := v.(Elements); ok {
-		na.Val = v
+		ta.Val = v
 		return nil
 	}
 	return fmt.Errorf("invalid type for TitleAttribute: %T", v)
+}
+
+func (ta *TitleAttribute) Children() Elements {
+	return ta.Val
+}
+
+func (ta *TitleAttribute) SetChildren(els Elements) {
+	ta.Val = els
 }
 
 func (ta *TitleAttribute) Equals(oa Attribute) bool {
@@ -215,8 +239,8 @@ func (TitleAttribute) QuoteType() AttributeQuoteType {
 	return AttributeQuoteTypeNone
 }
 
-func (na *TitleAttribute) AsciiDocString() string {
-	return AttributeAsciiDocString(na.Val)
+func (ta *TitleAttribute) AsciiDocString() string {
+	return AttributeAsciiDocString(ta.Val)
 }
 
 type AttributeReference interface {

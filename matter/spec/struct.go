@@ -4,19 +4,20 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toStruct(spec *Specification, d *Doc, pc *parseContext, parent types.Entity) (ms *matter.Struct, err error) {
-	name := text.TrimCaseInsensitiveSuffix(s.Name, " Type")
+func toStruct(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) (ms *matter.Struct, err error) {
+	name := text.TrimCaseInsensitiveSuffix(d.SectionName(s), " Type")
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading struct \"%s\": %w", name, err)
 	}
-	ms = matter.NewStruct(s.Base, parent)
+	ms = matter.NewStruct(s, parent)
 	ms.Name = name
 
 	if ti.HeaderRowIndex > 0 {
@@ -38,8 +39,8 @@ func (s *Section) toStruct(spec *Specification, d *Doc, pc *parseContext, parent
 		return
 	}
 	pc.orderedEntities = append(pc.orderedEntities, ms)
-	pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], ms)
-	err = s.mapFields(fieldMap, pc)
+	pc.entitiesByElement[s] = append(pc.entitiesByElement[s], ms)
+	err = mapFields(d, s, fieldMap, pc)
 	if err != nil {
 		return
 	}

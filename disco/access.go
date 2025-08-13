@@ -13,7 +13,7 @@ func (b *Baller) fixAccessCells(cxt *discoContext, subSection *subSection, entit
 	if !b.options.FormatAccess {
 		return nil
 	}
-	if cxt.errata.IgnoreSection(subSection.section.Name, errata.DiscoPurposeTableAccess) {
+	if cxt.errata.IgnoreSection(cxt.doc.SectionName(subSection.section), errata.DiscoPurposeTableAccess) {
 		return nil
 	}
 	table := subSection.table

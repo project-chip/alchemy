@@ -47,7 +47,7 @@ func needsConformanceCheckHelper(action testscript.TestAction, options *raymond.
 	case *testscript.TestEventTrigger:
 		return options.Inverse()
 	default:
-		slog.Info("Unexpected action type checking conformance", log.Type("type", action))
+		slog.Warn("Unexpected action type checking conformance", log.Type("type", action))
 		return options.Inverse()
 	}
 }

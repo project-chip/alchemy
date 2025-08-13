@@ -12,133 +12,133 @@ func TestApi(t *testing.T) {
 
 var apiTests = parseTests{
 
-	{"should load input file", "asciidoctor/api_test_should_load_input_file.adoc", apiTestShouldLoadInputFile, nil},
+	{"should load input file", "asciidoctor/api_test_should_load_input_file.adoc", apiTestShouldLoadInputFile},
 
-	{"should load input string", "asciidoctor/api_test_should_load_input_string.adoc", apiTestShouldLoadInputString, nil},
+	{"should load input string", "asciidoctor/api_test_should_load_input_string.adoc", apiTestShouldLoadInputString},
 
-	{"should load input string array", "asciidoctor/api_test_should_load_input_string_array.adoc", apiTestShouldLoadInputStringArray, nil},
+	{"should load input string array", "asciidoctor/api_test_should_load_input_string_array.adoc", apiTestShouldLoadInputStringArray},
 
-	{"should load nil input", "asciidoctor/api_test_should_load_nil_input.adoc", apiTestShouldLoadNilInput, nil},
+	{"should load nil input", "asciidoctor/api_test_should_load_nil_input.adoc", apiTestShouldLoadNilInput},
 
-	{"render method on node is aliased to convert method", "asciidoctor/api_test_render_method_on_node_is_aliased_to_convert_method.adoc", apiTestRenderMethodOnNodeIsAliasedToConvertMethod, nil},
+	{"render method on node is aliased to convert method", "asciidoctor/api_test_render_method_on_node_is_aliased_to_convert_method.adoc", apiTestRenderMethodOnNodeIsAliasedToConvertMethod},
 
-	{"content method on Inline node is aliased to text method", "asciidoctor/api_test_content_method_on_inline_node_is_aliased_to_text_method.adoc", apiTestContentMethodOnInlineNodeIsAliasedToTextMethod, nil},
+	{"content method on Inline node is aliased to text method", "asciidoctor/api_test_content_method_on_inline_node_is_aliased_to_text_method.adoc", apiTestContentMethodOnInlineNodeIsAliasedToTextMethod},
 
-	{"should track file and line information with blocks if sourcemap option is set", "asciidoctor/api_test_should_track_file_and_line_information_with_blocks_if_sourcemap_option_is_set.adoc", apiTestShouldTrackFileAndLineInformationWithBlocksIfSourcemapOptionIsSet, nil},
+	{"should track file and line information with blocks if sourcemap option is set", "asciidoctor/api_test_should_track_file_and_line_information_with_blocks_if_sourcemap_option_is_set.adoc", apiTestShouldTrackFileAndLineInformationWithBlocksIfSourcemapOptionIsSet},
 
-	{"should assign correct lineno for multi-line paragraph inside a conditional preprocessor directive", "asciidoctor/api_test_should_assign_correct_lineno_for_multi_line_paragraph_inside_a_conditional_preprocessor_directive.adoc", apiTestShouldAssignCorrectLinenoForMultiLineParagraphInsideAConditionalPreprocessorDirective, nil},
+	{"should assign correct lineno for multi-line paragraph inside a conditional preprocessor directive", "asciidoctor/api_test_should_assign_correct_lineno_for_multi_line_paragraph_inside_a_conditional_preprocessor_directive.adoc", apiTestShouldAssignCorrectLinenoForMultiLineParagraphInsideAConditionalPreprocessorDirective},
 
-	{"should assign correct source location to blocks that follow a detached list continuation", "asciidoctor/api_test_should_assign_correct_source_location_to_blocks_that_follow_a_detached_list_continuation.adoc", apiTestShouldAssignCorrectSourceLocationToBlocksThatFollowADetachedListContinuation, nil},
+	{"should assign correct source location to blocks that follow a detached list continuation", "asciidoctor/api_test_should_assign_correct_source_location_to_blocks_that_follow_a_detached_list_continuation.adoc", apiTestShouldAssignCorrectSourceLocationToBlocksThatFollowADetachedListContinuation},
 
-	{"should assign correct source location if section occurs on last line of input", "asciidoctor/api_test_should_assign_correct_source_location_if_section_occurs_on_last_line_of_input.adoc", apiTestShouldAssignCorrectSourceLocationIfSectionOccursOnLastLineOfInput, nil},
+	{"should assign correct source location if section occurs on last line of input", "asciidoctor/api_test_should_assign_correct_source_location_if_section_occurs_on_last_line_of_input.adoc", apiTestShouldAssignCorrectSourceLocationIfSectionOccursOnLastLineOfInput},
 
-	{"should allow sourcemap option on document to be modified before document is parsed", "asciidoctor/api_test_should_allow_sourcemap_option_on_document_to_be_modified_before_document_is_parsed.adoc", apiTestShouldAllowSourcemapOptionOnDocumentToBeModifiedBeforeDocumentIsParsed, nil},
+	{"should allow sourcemap option on document to be modified before document is parsed", "asciidoctor/api_test_should_allow_sourcemap_option_on_document_to_be_modified_before_document_is_parsed.adoc", apiTestShouldAllowSourcemapOptionOnDocumentToBeModifiedBeforeDocumentIsParsed},
 
-	{"find_by should return an empty Array if no matches are found", "asciidoctor/api_test_find_by_should_return_an_empty_array_if_no_matches_are_found.adoc", apiTestFindByShouldReturnAnEmptyArrayIfNoMatchesAreFound, nil},
+	{"find_by should return an empty Array if no matches are found", "asciidoctor/api_test_find_by_should_return_an_empty_array_if_no_matches_are_found.adoc", apiTestFindByShouldReturnAnEmptyArrayIfNoMatchesAreFound},
 
-	{"find_by should discover blocks inside AsciiDoc table cells if traverse_documents selector option is true", "asciidoctor/api_test_find_by_should_discover_blocks_inside_ascii_doc_table_cells_if_traverse_documents_selector_option_is_true.adoc", apiTestFindByShouldDiscoverBlocksInsideAsciiDocTableCellsIfTraverseDocumentsSelectorOptionIsTrue, nil},
+	{"find_by should discover blocks inside AsciiDoc table cells if traverse_documents selector option is true", "asciidoctor/api_test_find_by_should_discover_blocks_inside_ascii_doc_table_cells_if_traverse_documents_selector_option_is_true.adoc", apiTestFindByShouldDiscoverBlocksInsideAsciiDocTableCellsIfTraverseDocumentsSelectorOptionIsTrue},
 
-	{"find_by should return inner document of AsciiDoc table cell if traverse_documents selector option is true", "asciidoctor/api_test_find_by_should_return_inner_document_of_ascii_doc_table_cell_if_traverse_documents_selector_option_is_true.adoc", apiTestFindByShouldReturnInnerDocumentOfAsciiDocTableCellIfTraverseDocumentsSelectorOptionIsTrue, nil},
+	{"find_by should return inner document of AsciiDoc table cell if traverse_documents selector option is true", "asciidoctor/api_test_find_by_should_return_inner_document_of_ascii_doc_table_cell_if_traverse_documents_selector_option_is_true.adoc", apiTestFindByShouldReturnInnerDocumentOfAsciiDocTableCellIfTraverseDocumentsSelectorOptionIsTrue},
 
-	{"find_by should match table cells", "asciidoctor/api_test_find_by_should_match_table_cells.adoc", apiTestFindByShouldMatchTableCells, nil},
+	{"find_by should match table cells", "asciidoctor/api_test_find_by_should_match_table_cells.adoc", apiTestFindByShouldMatchTableCells},
 
-	{"find_by should return Array of blocks that match style criteria", "asciidoctor/api_test_find_by_should_return_array_of_blocks_that_match_style_criteria.adoc", apiTestFindByShouldReturnArrayOfBlocksThatMatchStyleCriteria, nil},
+	{"find_by should return Array of blocks that match style criteria", "asciidoctor/api_test_find_by_should_return_array_of_blocks_that_match_style_criteria.adoc", apiTestFindByShouldReturnArrayOfBlocksThatMatchStyleCriteria},
 
-	{"find_by should return Array of blocks that match role criteria", "asciidoctor/api_test_find_by_should_return_array_of_blocks_that_match_role_criteria.adoc", apiTestFindByShouldReturnArrayOfBlocksThatMatchRoleCriteria, nil},
+	{"find_by should return Array of blocks that match role criteria", "asciidoctor/api_test_find_by_should_return_array_of_blocks_that_match_role_criteria.adoc", apiTestFindByShouldReturnArrayOfBlocksThatMatchRoleCriteria},
 
-	{"find_by should return the document title section if context selector is :section", "asciidoctor/api_test_find_by_should_return_the_document_title_section_if_context_selector_is_section.adoc", apiTestFindByShouldReturnTheDocumentTitleSectionIfContextSelectorIssection, nil},
+	{"find_by should return the document title section if context selector is :section", "asciidoctor/api_test_find_by_should_return_the_document_title_section_if_context_selector_is_section.adoc", apiTestFindByShouldReturnTheDocumentTitleSectionIfContextSelectorIssection},
 
-	{"find_by should only return results for which the block argument yields true", "asciidoctor/api_test_find_by_should_only_return_results_for_which_the_block_argument_yields_true.adoc", apiTestFindByShouldOnlyReturnResultsForWhichTheBlockArgumentYieldsTrue, nil},
+	{"find_by should only return results for which the block argument yields true", "asciidoctor/api_test_find_by_should_only_return_results_for_which_the_block_argument_yields_true.adoc", apiTestFindByShouldOnlyReturnResultsForWhichTheBlockArgumentYieldsTrue},
 
-	{"find_by should reject node and its children if block returns :reject", "asciidoctor/api_test_find_by_should_reject_node_and_its_children_if_block_returns_reject.adoc", apiTestFindByShouldRejectNodeAndItsChildrenIfBlockReturnsreject, nil},
+	{"find_by should reject node and its children if block returns :reject", "asciidoctor/api_test_find_by_should_reject_node_and_its_children_if_block_returns_reject.adoc", apiTestFindByShouldRejectNodeAndItsChildrenIfBlockReturnsreject},
 
-	{"find_by should reject node matched by ID selector if block returns :reject", "asciidoctor/api_test_find_by_should_reject_node_matched_by_id_selector_if_block_returns_reject.adoc", apiTestFindByShouldRejectNodeMatchedByIdSelectorIfBlockReturnsreject, nil},
+	{"find_by should reject node matched by ID selector if block returns :reject", "asciidoctor/api_test_find_by_should_reject_node_matched_by_id_selector_if_block_returns_reject.adoc", apiTestFindByShouldRejectNodeMatchedByIdSelectorIfBlockReturnsreject},
 
-	{"find_by should accept node matched by ID selector if block returns :prune", "asciidoctor/api_test_find_by_should_accept_node_matched_by_id_selector_if_block_returns_prune.adoc", apiTestFindByShouldAcceptNodeMatchedByIdSelectorIfBlockReturnsprune, nil},
+	{"find_by should accept node matched by ID selector if block returns :prune", "asciidoctor/api_test_find_by_should_accept_node_matched_by_id_selector_if_block_returns_prune.adoc", apiTestFindByShouldAcceptNodeMatchedByIdSelectorIfBlockReturnsprune},
 
-	{"find_by should accept node but reject its children if block returns :prune", "asciidoctor/api_test_find_by_should_accept_node_but_reject_its_children_if_block_returns_prune.adoc", apiTestFindByShouldAcceptNodeButRejectItsChildrenIfBlockReturnsprune, nil},
+	{"find_by should accept node but reject its children if block returns :prune", "asciidoctor/api_test_find_by_should_accept_node_but_reject_its_children_if_block_returns_prune.adoc", apiTestFindByShouldAcceptNodeButRejectItsChildrenIfBlockReturnsprune},
 
-	{"find_by should stop looking for blocks when StopIteration is raised", "asciidoctor/api_test_find_by_should_stop_looking_for_blocks_when_stop_iteration_is_raised.adoc", apiTestFindByShouldStopLookingForBlocksWhenStopIterationIsRaised, nil},
+	{"find_by should stop looking for blocks when StopIteration is raised", "asciidoctor/api_test_find_by_should_stop_looking_for_blocks_when_stop_iteration_is_raised.adoc", apiTestFindByShouldStopLookingForBlocksWhenStopIterationIsRaised},
 
-	{"find_by should stop looking for blocks when filter block returns :stop directive", "asciidoctor/api_test_find_by_should_stop_looking_for_blocks_when_filter_block_returns_stop_directive.adoc", apiTestFindByShouldStopLookingForBlocksWhenFilterBlockReturnsstopDirective, nil},
+	{"find_by should stop looking for blocks when filter block returns :stop directive", "asciidoctor/api_test_find_by_should_stop_looking_for_blocks_when_filter_block_returns_stop_directive.adoc", apiTestFindByShouldStopLookingForBlocksWhenFilterBlockReturnsstopDirective},
 
-	{"find_by should only return one result when matching by id", "asciidoctor/api_test_find_by_should_only_return_one_result_when_matching_by_id.adoc", apiTestFindByShouldOnlyReturnOneResultWhenMatchingById, nil},
+	{"find_by should only return one result when matching by id", "asciidoctor/api_test_find_by_should_only_return_one_result_when_matching_by_id.adoc", apiTestFindByShouldOnlyReturnOneResultWhenMatchingById},
 
-	{"find_by should stop seeking once match is found", "asciidoctor/api_test_find_by_should_stop_seeking_once_match_is_found.adoc", apiTestFindByShouldStopSeekingOnceMatchIsFound, nil},
+	{"find_by should stop seeking once match is found", "asciidoctor/api_test_find_by_should_stop_seeking_once_match_is_found.adoc", apiTestFindByShouldStopSeekingOnceMatchIsFound},
 
-	{"find_by should return an empty Array if the id criteria matches but the block argument yields false", "asciidoctor/api_test_find_by_should_return_an_empty_array_if_the_id_criteria_matches_but_the_block_argument_yields_false.adoc", apiTestFindByShouldReturnAnEmptyArrayIfTheIdCriteriaMatchesButTheBlockArgumentYieldsFalse, nil},
+	{"find_by should return an empty Array if the id criteria matches but the block argument yields false", "asciidoctor/api_test_find_by_should_return_an_empty_array_if_the_id_criteria_matches_but_the_block_argument_yields_false.adoc", apiTestFindByShouldReturnAnEmptyArrayIfTheIdCriteriaMatchesButTheBlockArgumentYieldsFalse},
 
-	{"find_by should not crash if dlist entry does not have description", "asciidoctor/api_test_find_by_should_not_crash_if_dlist_entry_does_not_have_description.adoc", apiTestFindByShouldNotCrashIfDlistEntryDoesNotHaveDescription, nil},
+	{"find_by should not crash if dlist entry does not have description", "asciidoctor/api_test_find_by_should_not_crash_if_dlist_entry_does_not_have_description.adoc", apiTestFindByShouldNotCrashIfDlistEntryDoesNotHaveDescription},
 
-	{"can substitute an extended syntax highlighter factory implementation using the :syntax_highlighters option", "asciidoctor/api_test_can_substitute_an_extended_syntax_highlighter_factory_implementation_using_the_syntax_highlighters_option.adoc", apiTestCanSubstituteAnExtendedSyntaxHighlighterFactoryImplementationUsingThesyntaxHighlightersOption, nil},
+	{"can substitute an extended syntax highlighter factory implementation using the :syntax_highlighters option", "asciidoctor/api_test_can_substitute_an_extended_syntax_highlighter_factory_implementation_using_the_syntax_highlighters_option.adoc", apiTestCanSubstituteAnExtendedSyntaxHighlighterFactoryImplementationUsingThesyntaxHighlightersOption},
 
-	{"render_file is aliased to convert_file", "asciidoctor/api_test_render_file_is_aliased_to_convert_file.adoc", apiTestRenderFileIsAliasedToConvertFile, nil},
+	{"render_file is aliased to convert_file", "asciidoctor/api_test_render_file_is_aliased_to_convert_file.adoc", apiTestRenderFileIsAliasedToConvertFile},
 
-	{"should embed remote stylesheet by default if SafeMode is less than SECURE and allow-uri-read is set", "asciidoctor/api_test_should_embed_remote_stylesheet_by_default_if_safe_mode_is_less_than_secure_and_allow_uri_read_is_set.adoc", apiTestShouldEmbedRemoteStylesheetByDefaultIfSafeModeIsLessThanSecureAndAllowUriReadIsSet, nil},
+	{"should embed remote stylesheet by default if SafeMode is less than SECURE and allow-uri-read is set", "asciidoctor/api_test_should_embed_remote_stylesheet_by_default_if_safe_mode_is_less_than_secure_and_allow_uri_read_is_set.adoc", apiTestShouldEmbedRemoteStylesheetByDefaultIfSafeModeIsLessThanSecureAndAllowUriReadIsSet},
 
-	{"should not allow linkcss be unset from document if SafeMode is SECURE or greater", "asciidoctor/api_test_should_not_allow_linkcss_be_unset_from_document_if_safe_mode_is_secure_or_greater.adoc", apiTestShouldNotAllowLinkcssBeUnsetFromDocumentIfSafeModeIsSecureOrGreater, nil},
+	{"should not allow linkcss be unset from document if SafeMode is SECURE or greater", "asciidoctor/api_test_should_not_allow_linkcss_be_unset_from_document_if_safe_mode_is_secure_or_greater.adoc", apiTestShouldNotAllowLinkcssBeUnsetFromDocumentIfSafeModeIsSecureOrGreater},
 
-	{"should embed default stylesheet if linkcss is unset from API and SafeMode is SECURE or greater", "asciidoctor/api_test_should_embed_default_stylesheet_if_linkcss_is_unset_from_api_and_safe_mode_is_secure_or_greater.adoc", apiTestShouldEmbedDefaultStylesheetIfLinkcssIsUnsetFromApiAndSafeModeIsSecureOrGreater, nil},
+	{"should embed default stylesheet if linkcss is unset from API and SafeMode is SECURE or greater", "asciidoctor/api_test_should_embed_default_stylesheet_if_linkcss_is_unset_from_api_and_safe_mode_is_secure_or_greater.adoc", apiTestShouldEmbedDefaultStylesheetIfLinkcssIsUnsetFromApiAndSafeModeIsSecureOrGreater},
 
-	{"should embed default stylesheet if safe mode is less than SECURE and linkcss is unset from API", "asciidoctor/api_test_should_embed_default_stylesheet_if_safe_mode_is_less_than_secure_and_linkcss_is_unset_from_api.adoc", apiTestShouldEmbedDefaultStylesheetIfSafeModeIsLessThanSecureAndLinkcssIsUnsetFromApi, nil},
+	{"should embed default stylesheet if safe mode is less than SECURE and linkcss is unset from API", "asciidoctor/api_test_should_embed_default_stylesheet_if_safe_mode_is_less_than_secure_and_linkcss_is_unset_from_api.adoc", apiTestShouldEmbedDefaultStylesheetIfSafeModeIsLessThanSecureAndLinkcssIsUnsetFromApi},
 
-	{"should link to custom stylesheet if specified in stylesheet attribute", "asciidoctor/api_test_should_link_to_custom_stylesheet_if_specified_in_stylesheet_attribute.adoc", apiTestShouldLinkToCustomStylesheetIfSpecifiedInStylesheetAttribute, nil},
+	{"should link to custom stylesheet if specified in stylesheet attribute", "asciidoctor/api_test_should_link_to_custom_stylesheet_if_specified_in_stylesheet_attribute.adoc", apiTestShouldLinkToCustomStylesheetIfSpecifiedInStylesheetAttribute},
 
-	{"should resolve custom stylesheet relative to stylesdir", "asciidoctor/api_test_should_resolve_custom_stylesheet_relative_to_stylesdir.adoc", apiTestShouldResolveCustomStylesheetRelativeToStylesdir, nil},
+	{"should resolve custom stylesheet relative to stylesdir", "asciidoctor/api_test_should_resolve_custom_stylesheet_relative_to_stylesdir.adoc", apiTestShouldResolveCustomStylesheetRelativeToStylesdir},
 
-	{"should resolve custom stylesheet to embed relative to stylesdir", "asciidoctor/api_test_should_resolve_custom_stylesheet_to_embed_relative_to_stylesdir.adoc", apiTestShouldResolveCustomStylesheetToEmbedRelativeToStylesdir, nil},
+	{"should resolve custom stylesheet to embed relative to stylesdir", "asciidoctor/api_test_should_resolve_custom_stylesheet_to_embed_relative_to_stylesdir.adoc", apiTestShouldResolveCustomStylesheetToEmbedRelativeToStylesdir},
 
-	{"should embed custom stylesheet in remote stylesdir if SafeMode is less than SECURE and allow-uri-read is set", "asciidoctor/api_test_should_embed_custom_stylesheet_in_remote_stylesdir_if_safe_mode_is_less_than_secure_and_allow_uri_read_is_set.adoc", apiTestShouldEmbedCustomStylesheetInRemoteStylesdirIfSafeModeIsLessThanSecureAndAllowUriReadIsSet, nil},
+	{"should embed custom stylesheet in remote stylesdir if SafeMode is less than SECURE and allow-uri-read is set", "asciidoctor/api_test_should_embed_custom_stylesheet_in_remote_stylesdir_if_safe_mode_is_less_than_secure_and_allow_uri_read_is_set.adoc", apiTestShouldEmbedCustomStylesheetInRemoteStylesdirIfSafeModeIsLessThanSecureAndAllowUriReadIsSet},
 
-	{"should respect outfilesuffix soft set from API", "asciidoctor/api_test_should_respect_outfilesuffix_soft_set_from_api.adoc", apiTestShouldRespectOutfilesuffixSoftSetFromApi, nil},
+	{"should respect outfilesuffix soft set from API", "asciidoctor/api_test_should_respect_outfilesuffix_soft_set_from_api.adoc", apiTestShouldRespectOutfilesuffixSoftSetFromApi},
 
-	{"with no author", "asciidoctor/api_test_with_no_author.adoc", apiTestWithNoAuthor, nil},
+	{"with no author", "asciidoctor/api_test_with_no_author.adoc", apiTestWithNoAuthor},
 
-	{"with one author", "asciidoctor/api_test_with_one_author.adoc", apiTestWithOneAuthor, nil},
+	{"with one author", "asciidoctor/api_test_with_one_author.adoc", apiTestWithOneAuthor},
 
-	{"with two authors", "asciidoctor/api_test_with_two_authors.adoc", apiTestWithTwoAuthors, nil},
+	{"with two authors", "asciidoctor/api_test_with_two_authors.adoc", apiTestWithTwoAuthors},
 
-	{"with authors as attributes", "asciidoctor/api_test_with_authors_as_attributes.adoc", apiTestWithAuthorsAsAttributes, nil},
+	{"with authors as attributes", "asciidoctor/api_test_with_authors_as_attributes.adoc", apiTestWithAuthorsAsAttributes},
 
-	{"should not crash if nil cell text is passed to Cell constructor", "asciidoctor/api_test_should_not_crash_if_nil_cell_text_is_passed_to_cell_constructor.adoc", apiTestShouldNotCrashIfNilCellTextIsPassedToCellConstructor, nil},
+	{"should not crash if nil cell text is passed to Cell constructor", "asciidoctor/api_test_should_not_crash_if_nil_cell_text_is_passed_to_cell_constructor.adoc", apiTestShouldNotCrashIfNilCellTextIsPassedToCellConstructor},
 
-	{"should set option on node when set_option is called", "asciidoctor/api_test_should_set_option_on_node_when_set_option_is_called.adoc", apiTestShouldSetOptionOnNodeWhenSetOptionIsCalled, nil},
+	{"should set option on node when set_option is called", "asciidoctor/api_test_should_set_option_on_node_when_set_option_is_called.adoc", apiTestShouldSetOptionOnNodeWhenSetOptionIsCalled},
 
-	{"enabled_options should return all options which are set", "asciidoctor/api_test_enabled_options_should_return_all_options_which_are_set.adoc", apiTestEnabledOptionsShouldReturnAllOptionsWhichAreSet, nil},
+	{"enabled_options should return all options which are set", "asciidoctor/api_test_enabled_options_should_return_all_options_which_are_set.adoc", apiTestEnabledOptionsShouldReturnAllOptionsWhichAreSet},
 
-	{"should append option to existing options", "asciidoctor/api_test_should_append_option_to_existing_options.adoc", apiTestShouldAppendOptionToExistingOptions, nil},
+	{"should append option to existing options", "asciidoctor/api_test_should_append_option_to_existing_options.adoc", apiTestShouldAppendOptionToExistingOptions},
 
-	{"should not append option if option is already set", "asciidoctor/api_test_should_not_append_option_if_option_is_already_set.adoc", apiTestShouldNotAppendOptionIfOptionIsAlreadySet, nil},
+	{"should not append option if option is already set", "asciidoctor/api_test_should_not_append_option_if_option_is_already_set.adoc", apiTestShouldNotAppendOptionIfOptionIsAlreadySet},
 
-	{"should return set of option names", "asciidoctor/api_test_should_return_set_of_option_names.adoc", apiTestShouldReturnSetOfOptionNames, nil},
+	{"should return set of option names", "asciidoctor/api_test_should_return_set_of_option_names.adoc", apiTestShouldReturnSetOfOptionNames},
 
-	{"should set linenums option if linenums enabled on source block", "asciidoctor/api_test_should_set_linenums_option_if_linenums_enabled_on_source_block.adoc", apiTestShouldSetLinenumsOptionIfLinenumsEnabledOnSourceBlock, nil},
+	{"should set linenums option if linenums enabled on source block", "asciidoctor/api_test_should_set_linenums_option_if_linenums_enabled_on_source_block.adoc", apiTestShouldSetLinenumsOptionIfLinenumsEnabledOnSourceBlock},
 
-	{"should set linenums option if linenums enabled on fenced code block", "asciidoctor/api_test_should_set_linenums_option_if_linenums_enabled_on_fenced_code_block.adoc", apiTestShouldSetLinenumsOptionIfLinenumsEnabledOnFencedCodeBlock, nil},
+	{"should set linenums option if linenums enabled on fenced code block", "asciidoctor/api_test_should_set_linenums_option_if_linenums_enabled_on_fenced_code_block.adoc", apiTestShouldSetLinenumsOptionIfLinenumsEnabledOnFencedCodeBlock},
 
-	{"should not set linenums attribute if linenums option is enabled on source block", "asciidoctor/api_test_should_not_set_linenums_attribute_if_linenums_option_is_enabled_on_source_block.adoc", apiTestShouldNotSetLinenumsAttributeIfLinenumsOptionIsEnabledOnSourceBlock, nil},
+	{"should not set linenums attribute if linenums option is enabled on source block", "asciidoctor/api_test_should_not_set_linenums_attribute_if_linenums_option_is_enabled_on_source_block.adoc", apiTestShouldNotSetLinenumsAttributeIfLinenumsOptionIsEnabledOnSourceBlock},
 
-	{"should not set linenums attribute if linenums option is enabled on fenced code block", "asciidoctor/api_test_should_not_set_linenums_attribute_if_linenums_option_is_enabled_on_fenced_code_block.adoc", apiTestShouldNotSetLinenumsAttributeIfLinenumsOptionIsEnabledOnFencedCodeBlock, nil},
+	{"should not set linenums attribute if linenums option is enabled on fenced code block", "asciidoctor/api_test_should_not_set_linenums_attribute_if_linenums_option_is_enabled_on_fenced_code_block.adoc", apiTestShouldNotSetLinenumsAttributeIfLinenumsOptionIsEnabledOnFencedCodeBlock},
 
-	{"table column should not be a block or inline", "asciidoctor/api_test_table_column_should_not_be_a_block_or_inline.adoc", apiTestTableColumnShouldNotBeABlockOrInline, nil},
+	{"table column should not be a block or inline", "asciidoctor/api_test_table_column_should_not_be_a_block_or_inline.adoc", apiTestTableColumnShouldNotBeABlockOrInline},
 
-	{"table cell should be a block", "asciidoctor/api_test_table_cell_should_be_a_block.adoc", apiTestTableCellShouldBeABlock, nil},
+	{"table cell should be a block", "asciidoctor/api_test_table_cell_should_be_a_block.adoc", apiTestTableCellShouldBeABlock},
 
-	{"next_adjacent_block should return next block", "asciidoctor/api_test_next_adjacent_block_should_return_next_block.adoc", apiTestNextAdjacentBlockShouldReturnNextBlock, nil},
+	{"next_adjacent_block should return next block", "asciidoctor/api_test_next_adjacent_block_should_return_next_block.adoc", apiTestNextAdjacentBlockShouldReturnNextBlock},
 
-	{"next_adjacent_block should return next sibling of parent if called on last sibling", "asciidoctor/api_test_next_adjacent_block_should_return_next_sibling_of_parent_if_called_on_last_sibling.adoc", apiTestNextAdjacentBlockShouldReturnNextSiblingOfParentIfCalledOnLastSibling, nil},
+	{"next_adjacent_block should return next sibling of parent if called on last sibling", "asciidoctor/api_test_next_adjacent_block_should_return_next_sibling_of_parent_if_called_on_last_sibling.adoc", apiTestNextAdjacentBlockShouldReturnNextSiblingOfParentIfCalledOnLastSibling},
 
-	{"next_adjacent_block should return next sibling of list if called on last item", "asciidoctor/api_test_next_adjacent_block_should_return_next_sibling_of_list_if_called_on_last_item.adoc", apiTestNextAdjacentBlockShouldReturnNextSiblingOfListIfCalledOnLastItem, nil},
+	{"next_adjacent_block should return next sibling of list if called on last item", "asciidoctor/api_test_next_adjacent_block_should_return_next_sibling_of_list_if_called_on_last_item.adoc", apiTestNextAdjacentBlockShouldReturnNextSiblingOfListIfCalledOnLastItem},
 
-	{"next_adjacent_block should return next item in dlist if called on last block of list item", "asciidoctor/api_test_next_adjacent_block_should_return_next_item_in_dlist_if_called_on_last_block_of_list_item.adoc", apiTestNextAdjacentBlockShouldReturnNextItemInDlistIfCalledOnLastBlockOfListItem, nil},
+	{"next_adjacent_block should return next item in dlist if called on last block of list item", "asciidoctor/api_test_next_adjacent_block_should_return_next_item_in_dlist_if_called_on_last_block_of_list_item.adoc", apiTestNextAdjacentBlockShouldReturnNextItemInDlistIfCalledOnLastBlockOfListItem},
 
-	{"should return true when sections? is called on a document or section that has sections", "asciidoctor/api_test_should_return_true_when_sections_is_called_on_a_document_or_section_that_has_sections.adoc", apiTestShouldReturnTrueWhenSectionsIsCalledOnADocumentOrSectionThatHasSections, nil},
+	{"should return true when sections? is called on a document or section that has sections", "asciidoctor/api_test_should_return_true_when_sections_is_called_on_a_document_or_section_that_has_sections.adoc", apiTestShouldReturnTrueWhenSectionsIsCalledOnADocumentOrSectionThatHasSections},
 
-	{"should return false when sections? is called on a document with no sections", "asciidoctor/api_test_should_return_false_when_sections_is_called_on_a_document_with_no_sections.adoc", apiTestShouldReturnFalseWhenSectionsIsCalledOnADocumentWithNoSections, nil},
+	{"should return false when sections? is called on a document with no sections", "asciidoctor/api_test_should_return_false_when_sections_is_called_on_a_document_with_no_sections.adoc", apiTestShouldReturnFalseWhenSectionsIsCalledOnADocumentWithNoSections},
 
-	{"should return false when sections? is called on a section with no sections", "asciidoctor/api_test_should_return_false_when_sections_is_called_on_a_section_with_no_sections.adoc", apiTestShouldReturnFalseWhenSectionsIsCalledOnASectionWithNoSections, nil},
+	{"should return false when sections? is called on a section with no sections", "asciidoctor/api_test_should_return_false_when_sections_is_called_on_a_section_with_no_sections.adoc", apiTestShouldReturnFalseWhenSectionsIsCalledOnASectionWithNoSections},
 
-	{"should return false when sections? is called on anything that is not a section", "asciidoctor/api_test_should_return_false_when_sections_is_called_on_anything_that_is_not_a_section.adoc", apiTestShouldReturnFalseWhenSectionsIsCalledOnAnythingThatIsNotASection, nil},
+	{"should return false when sections? is called on anything that is not a section", "asciidoctor/api_test_should_return_false_when_sections_is_called_on_anything_that_is_not_a_section.adoc", apiTestShouldReturnFalseWhenSectionsIsCalledOnAnythingThatIsNotASection},
 }
 
 var apiTestShouldLoadInputFile = &asciidoc.Document{
@@ -352,6 +352,7 @@ var apiTestShouldTrackFileAndLineInformationWithBlocksIfSourcemapOptionIsSet = &
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
+			Open:       nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -400,6 +401,7 @@ var apiTestShouldAssignCorrectLinenoForMultiLineParagraphInsideAConditionalPrepr
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
+			Open:       nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -432,21 +434,23 @@ var apiTestShouldAssignCorrectSourceLocationToBlocksThatFollowADetachedListConti
 				&asciidoc.String{
 					Value: "child",
 				},
+				&asciidoc.ListContinuation{
+					ChildElement: &asciidoc.Paragraph{
+						AttributeList: nil,
+						Elements: asciidoc.Elements{
+							&asciidoc.String{
+								Value: "paragraph attached to parent",
+							},
+						},
+						Admonition: 0,
+					},
+				},
 			},
 			AttributeList: nil,
 			Indent:        " ",
 			Marker:        "**",
 			Checklist:     0,
 		},
-		&asciidoc.EmptyLine{
-			Text: "",
-		},
-		&asciidoc.LineBreak{},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "paragraph attached to parent",
-		},
-		&asciidoc.NewLine{},
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1813,11 +1817,16 @@ var apiTestFindByShouldStopLookingForBlocksWhenStopIterationIsRaised = &asciidoc
 				&asciidoc.String{
 					Value: "item",
 				},
-				&asciidoc.NewLine{},
-				&asciidoc.LineBreak{},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "paragraph 5",
+				&asciidoc.ListContinuation{
+					ChildElement: &asciidoc.Paragraph{
+						AttributeList: nil,
+						Elements: asciidoc.Elements{
+							&asciidoc.String{
+								Value: "paragraph 5",
+							},
+						},
+						Admonition: 0,
+					},
 				},
 			},
 			AttributeList: nil,
@@ -1884,11 +1893,16 @@ var apiTestFindByShouldStopLookingForBlocksWhenFilterBlockReturnsstopDirective =
 				&asciidoc.String{
 					Value: "item",
 				},
-				&asciidoc.NewLine{},
-				&asciidoc.LineBreak{},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "paragraph 5",
+				&asciidoc.ListContinuation{
+					ChildElement: &asciidoc.Paragraph{
+						AttributeList: nil,
+						Elements: asciidoc.Elements{
+							&asciidoc.String{
+								Value: "paragraph 5",
+							},
+						},
+						Admonition: 0,
+					},
 				},
 			},
 			AttributeList: nil,
@@ -3234,6 +3248,17 @@ var apiTestNextAdjacentBlockShouldReturnNextItemInDlistIfCalledOnLastBlockOfList
 				&asciidoc.String{
 					Value: "desc",
 				},
+				&asciidoc.ListContinuation{
+					ChildElement: &asciidoc.Paragraph{
+						AttributeList: nil,
+						Elements: asciidoc.Elements{
+							&asciidoc.String{
+								Value: "more desc",
+							},
+						},
+						Admonition: 0,
+					},
+				},
 			},
 			AttributeList: nil,
 			Marker:        "::",
@@ -3243,12 +3268,6 @@ var apiTestNextAdjacentBlockShouldReturnNextItemInDlistIfCalledOnLastBlockOfList
 				},
 			},
 		},
-		&asciidoc.LineBreak{},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "more desc",
-		},
-		&asciidoc.NewLine{},
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
