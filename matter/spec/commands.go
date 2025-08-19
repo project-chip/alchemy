@@ -202,15 +202,36 @@ func (cf *commandFinder) suggestIdentifiers(identifier string, suggestions map[t
 }
 
 func validateCommands(spec *Specification) {
-	for c := range spec.Clusters {
-		for _, s := range c.Commands {
-			validateFields(spec, s, s.Fields)
+	for cluster := range spec.Clusters {
+		idsu := make(idUniqueness[*matter.Command])
+		idcu := make(idUniqueness[*matter.Command])
+		nu := make(nameUniqueness[*matter.Command])
+
+		for _, command := range cluster.Commands {
+			switch command.Direction {
+			case matter.InterfaceServer:
+				idsu.check(spec, command.ID, command)
+			case matter.InterfaceClient:
+				idcu.check(spec, command.ID, command)
+			}
+			nu.check(spec, command)
+			validateFields(spec, command, command.Fields)
 		}
 	}
+	idsu := make(idUniqueness[*matter.Command])
+	idcu := make(idUniqueness[*matter.Command])
+	nu := make(nameUniqueness[*matter.Command])
 	for obj := range spec.GlobalObjects {
-		switch obj := obj.(type) {
+		switch command := obj.(type) {
 		case *matter.Command:
-			validateFields(spec, obj, obj.Fields)
+			switch command.Direction {
+			case matter.InterfaceServer:
+				idsu.check(spec, command.ID, command)
+			case matter.InterfaceClient:
+				idcu.check(spec, command.ID, command)
+			}
+			nu.check(spec, command)
+			validateFields(spec, command, command.Fields)
 		}
 	}
 }

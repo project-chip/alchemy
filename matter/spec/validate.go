@@ -3,6 +3,7 @@ package spec
 import (
 	"strings"
 
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -40,4 +41,21 @@ func (iu idUniqueness[T]) check(spec *Specification, id *matter.Number, entity T
 		}
 		iu[id.Value()] = entity
 	}
+}
+
+type nameUniqueness[T types.Entity] map[string]T
+
+func (nu nameUniqueness[T]) check(spec *Specification, entity T) {
+	name := matter.EntityName(entity)
+	if name == "" || text.HasCaseInsensitivePrefix(name, "reserved") {
+		return
+	}
+	name = strings.ToLower(name)
+	if previous, ok := nu[name]; ok {
+		spec.addError(&DuplicateEntityNameError{Entity: entity, Previous: previous})
+		return
+	}
+
+	nu[name] = entity
+
 }

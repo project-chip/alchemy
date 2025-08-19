@@ -79,9 +79,17 @@ func toNamespace(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseCont
 }
 
 func validateNamespaces(spec *Specification) {
-	deviceTypeIds := make(idUniqueness[*matter.Namespace])
+	iu := make(idUniqueness[*matter.Namespace])
+	nu := make(nameUniqueness[*matter.Namespace])
 	for _, ns := range spec.Namespaces {
-		deviceTypeIds.check(spec, ns.ID, ns)
+		iu.check(spec, ns.ID, ns)
+		nu.check(spec, ns)
+		stiu := make(idUniqueness[*matter.SemanticTag])
+		stnu := make(nameUniqueness[*matter.SemanticTag])
+		for _, tag := range ns.SemanticTags {
+			stiu.check(spec, tag.ID, tag)
+			stnu.check(spec, tag)
+		}
 	}
 }
 
