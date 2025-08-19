@@ -80,7 +80,7 @@ func addProvisionalConformance(doc *spec.Doc, e types.Entity, source asciidoc.El
 	switch source := source.(type) {
 	case *asciidoc.TableRow:
 		var table *spec.TableInfo
-		table, err = spec.ReadTable(doc, source.Parent)
+		table, err = spec.ReadTable(doc, doc.Reader(), source.Parent)
 		if err != nil {
 			return
 		}

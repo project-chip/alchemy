@@ -30,7 +30,7 @@ func (b *Baller) fixConstraintCells(cxt *discoContext, section *asciidoc.Section
 			continue
 		}
 
-		dataType, e := ti.ReadDataType(row, matter.TableColumnType)
+		dataType, e := ti.ReadDataType(asciidoc.NewRawReader(), row, matter.TableColumnType)
 		if e != nil {
 			slog.Debug("error reading data type for constraint", slog.String("path", cxt.doc.Path.String()), slog.Any("error", e))
 			continue

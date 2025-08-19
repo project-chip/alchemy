@@ -31,12 +31,12 @@ func NewAnchor(doc *Doc, id asciidoc.Elements, element asciidoc.Element, parent 
 	}
 }
 
-func (a *Anchor) Identifier() string {
-	return a.Document.anchorId(a.Document.Reader(), a.Parent, a.Element, a.ID)
+func (a *Anchor) Identifier(reader asciidoc.Reader) string {
+	return a.Document.anchorId(reader, a.Parent, a.Element, a.ID)
 }
 
-func (a *Anchor) Name() string {
-	name := ReferenceName(a.Document, a.Element)
+func (a *Anchor) Name(reader asciidoc.Reader) string {
+	name := ReferenceName(reader, a.Element)
 	if len(name) > 0 {
 		return name
 	}
@@ -197,7 +197,7 @@ func getAnchorElements(doc *Doc, element asciidoc.Element, crossReferences map[s
 				return
 			}
 		}
-		return
+		return nil, nil
 	}
 	switch idAttr := idAttr.(type) {
 	case *asciidoc.ShorthandAttribute:

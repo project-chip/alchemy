@@ -370,7 +370,6 @@ func (cef *clusterEntityFinder) suggestIdentifiers(identifier string, suggestion
 	if cef.inner != nil {
 		cef.inner.suggestIdentifiers(identifier, suggestions)
 	}
-	return
 }
 
 func (cf *clusterEntityFinder) suggestEntityInCluster(cluster *matter.Cluster) iter.Seq2[string, types.Entity] {
@@ -397,7 +396,6 @@ func (cf *clusterEntityFinder) suggestEntityInCluster(cluster *matter.Cluster) i
 				return
 			}
 		}
-		return
 	}
 
 }

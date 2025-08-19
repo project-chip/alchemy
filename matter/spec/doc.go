@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"sync"
 	"unicode"
 	"unicode/utf8"
 
@@ -13,8 +12,6 @@ import (
 )
 
 type Doc struct {
-	sync.RWMutex
-
 	Path asciidoc.Path
 
 	Base *asciidoc.Document
@@ -131,33 +128,33 @@ func (doc *Doc) addChild(child *Doc) {
 
 func (doc *Doc) SectionName(s *asciidoc.Section) (name string) {
 	var ok bool
-	name, ok = doc.sectionNames[s]
+	name, ok = doc.sectionName(s)
 	if !ok && doc.group != nil {
-		name = doc.group.sectionNames[s]
+		name, _ = doc.group.sectionName(s)
 	}
 	return
 }
 
 func (doc *Doc) SetSectionName(s *asciidoc.Section, name string) {
-	doc.sectionNames[s] = name
+	doc.setSectionName(s, name)
 	if doc.group != nil {
-		doc.group.sectionNames[s] = name
+		doc.group.setSectionName(s, name)
 	}
 }
 
 func (doc *Doc) SectionType(s *asciidoc.Section) (st matter.Section) {
 	var ok bool
-	st, ok = doc.sectionTypes[s]
+	st, ok = doc.sectionType(s)
 	if !ok && doc.group != nil {
-		st = doc.group.sectionTypes[s]
+		st, _ = doc.group.sectionType(s)
 	}
 	return
 }
 
 func (doc *Doc) SetSectionType(s *asciidoc.Section, st matter.Section) {
-	doc.sectionTypes[s] = st
+	doc.setSectionType(s, st)
 	if doc.group != nil {
-		doc.group.sectionTypes[s] = st
+		doc.group.setSectionType(s, st)
 	}
 }
 

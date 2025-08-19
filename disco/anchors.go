@@ -100,9 +100,9 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 						xref.SyncToDoc(info[0].ID)
 					} else {
 						var logArgs []any
-						logArgs = append(logArgs, slog.Any("id", xref.Reference.ID), log.Path("origin", xref.Source))
+						logArgs = append(logArgs, slog.Any("id", xref.Identifier(asciidoc.NewRawReader())), log.Path("origin", xref.Source))
 						for _, info := range to {
-							logArgs = append(logArgs, slog.Any("target", info.ID), log.Path("targetPath", info.Source))
+							logArgs = append(logArgs, slog.Any("target", info.Identifier(asciidoc.NewRawReader())), log.Path("targetPath", info.Source))
 						}
 						slog.Warn("rewritten xref points to multiple anchors", logArgs...)
 					}
@@ -151,7 +151,7 @@ func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) 
 
 		for _, as := range da {
 			for _, a := range as {
-				id := a.Identifier()
+				id := a.Identifier(asciidoc.NewRawReader())
 				newID := an.normalizeAnchor(a)
 				if id == newID {
 					ag.updatedAnchors[id] = append(ag.updatedAnchors[id], a)
@@ -172,21 +172,21 @@ func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) 
 }
 
 func (an AnchorNormalizer) normalizeAnchor(info *spec.Anchor) (id string) {
-	id = info.Identifier()
+	id = info.Identifier(asciidoc.NewRawReader())
 	if skipAnchor(info) {
 		return
 	}
-	name := info.Name()
-	if properAnchorPattern.MatchString(info.Identifier()) {
+	name := info.Name(asciidoc.NewRawReader())
+	if properAnchorPattern.MatchString(id) {
 		if len(info.LabelElements) == 0 || labelText(info.LabelElements) == name {
-			info.LabelElements = normalizeAnchorLabel(info.Name(), info.Element)
+			info.LabelElements = normalizeAnchorLabel(info.Name(asciidoc.NewRawReader()), info.Element)
 		}
 	} else {
-		normalizedID, normalized := quickNormalizeAnchorID(info.Identifier())
+		normalizedID, normalized := quickNormalizeAnchorID(id)
 		if normalized {
 			id = normalizedID
 			if len(info.LabelElements) == 0 || labelText(info.LabelElements) == name {
-				info.LabelElements = normalizeAnchorLabel(info.Name(), info.Element)
+				info.LabelElements = normalizeAnchorLabel(info.Name(asciidoc.NewRawReader()), info.Element)
 			}
 		} else {
 			if len(name) == 0 {
@@ -283,7 +283,7 @@ func disambiguateAnchorSet(conflictedAnchors []*spec.Anchor, newID string, ag *a
 
 			}
 			parentSections[i] = parentSection
-			parentName := spec.ReferenceName(conflictedAnchors[i].Document, parentSection)
+			parentName := spec.ReferenceName(asciidoc.NewRawReader(), parentSection)
 			parentName = matter.Case(matter.StripTypeSuffixes(parentName))
 			newIDs[i] = "ref_" + parentName + strings.TrimPrefix(newIDs[i], "ref_")
 		}

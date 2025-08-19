@@ -464,9 +464,6 @@ func (ppi *PreParseReader) Iterate(parent asciidoc.Parent, elements asciidoc.Ele
 						}
 					}
 				}
-				if len(action.append) > 0 {
-
-				}
 			}
 		}
 		switch parent := parent.(type) {

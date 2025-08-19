@@ -69,7 +69,7 @@ func readDescription(doc *Doc, parent asciidoc.Parent, els asciidoc.Elements, va
 				var val string
 				anchor := doc.FindAnchorByID(el.ID, el, el)
 				if anchor != nil {
-					val = matter.StripTypeSuffixes(ReferenceName(anchor.Document, anchor.Element))
+					val = matter.StripTypeSuffixes(ReferenceName(anchor.Document.Reader(), anchor.Element))
 				} else {
 					val = doc.anchorId(doc.Reader(), el, el, el.ID)
 					val = strings.TrimPrefix(val, "_")

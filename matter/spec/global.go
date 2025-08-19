@@ -16,11 +16,11 @@ type globalCommandFactory struct {
 
 func (cf *globalCommandFactory) Children(d *Doc, s *asciidoc.Section) iter.Seq[*asciidoc.Section] {
 	return func(yield func(*asciidoc.Section) bool) {
-		parse.Search(d.Reader(), d, d.Children(), func(sec *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
+		parse.Search(d.Reader(), s, s.Children(), func(sec *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
 			if d.SectionType(sec) != matter.SectionCommand {
 				return parse.SearchShouldContinue
 			}
-			if !yield(s) {
+			if !yield(sec) {
 				return parse.SearchShouldStop
 			}
 			return parse.SearchShouldContinue

@@ -4,13 +4,17 @@ import (
 	"log/slog"
 	"slices"
 	"strings"
+	"sync"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 )
 
 type referenceIndex struct {
+	sync.RWMutex
+
 	anchorsParsed  bool
 	anchors        map[string][]*Anchor
 	anchorIds      map[asciidoc.Element]string
@@ -19,8 +23,9 @@ type referenceIndex struct {
 	crossReferencesParsed bool
 	crossReferences       map[string][]*CrossReference
 
-	sectionNames map[*asciidoc.Section]string
-	sectionTypes map[*asciidoc.Section]matter.Section
+	sectionNames pipeline.Map[*asciidoc.Section, string]
+
+	sectionTypes pipeline.Map[*asciidoc.Section, matter.Section]
 }
 
 func newReferenceIndex() referenceIndex {
@@ -29,8 +34,8 @@ func newReferenceIndex() referenceIndex {
 		anchorIds:       make(map[asciidoc.Element]string),
 		anchorsByLabel:  make(map[string][]*Anchor),
 		crossReferences: make(map[string][]*CrossReference),
-		sectionNames:    make(map[*asciidoc.Section]string),
-		sectionTypes:    make(map[*asciidoc.Section]matter.Section),
+		sectionNames:    pipeline.NewConcurrentMap[*asciidoc.Section, string](),
+		sectionTypes:    pipeline.NewConcurrentMap[*asciidoc.Section, matter.Section](),
 	}
 }
 
@@ -132,4 +137,20 @@ func (ri *referenceIndex) findAnchorByLabel(source log.Source, label string) *An
 func (ri *referenceIndex) findAnchorsByLabel(label string) (anchors []*Anchor) {
 	anchors = ri.anchorsByLabel[label]
 	return
+}
+
+func (ri *referenceIndex) sectionName(s *asciidoc.Section) (name string, ok bool) {
+	return ri.sectionNames.Load(s)
+}
+
+func (ri *referenceIndex) setSectionName(s *asciidoc.Section, name string) {
+	ri.sectionNames.Store(s, name)
+}
+
+func (ri *referenceIndex) sectionType(s *asciidoc.Section) (sectionType matter.Section, ok bool) {
+	return ri.sectionTypes.Load(s)
+}
+
+func (ri *referenceIndex) setSectionType(s *asciidoc.Section, sectionType matter.Section) {
+	ri.sectionTypes.Store(s, sectionType)
 }

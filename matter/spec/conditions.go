@@ -60,7 +60,7 @@ func toBaseDeviceTypeConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceTy
 	}
 
 	var ti *TableInfo
-	t := FindFirstTable(d, s)
+	t := FindFirstTable(d.Reader(), s)
 	if t == nil {
 		return
 	}
@@ -102,7 +102,7 @@ func toBaseDeviceTypeConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceTy
 			continue
 		}
 		var sb strings.Builder
-		err = readRowCellValueElements(d, row, row, row.Elements, &sb)
+		err = readRowCellValueElements(d, d.Reader(), row, row, row.Elements, &sb)
 		if err != nil {
 			continue
 		}

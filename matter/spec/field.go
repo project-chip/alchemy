@@ -27,7 +27,7 @@ func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.En
 		}
 		f.Name = matter.StripTypeSuffixes(name)
 		f.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
-		f.Type, err = ti.ReadDataType(row, matter.TableColumnType)
+		f.Type, err = ti.ReadDataType(ti.Doc.Reader(), row, matter.TableColumnType)
 		if err != nil {
 			if !conformance.IsDeprecated(f.Conformance) && !conformance.IsDisallowed(f.Conformance) {
 				// Clusters inheriting from other clusters don't supply type information, nor do attributes that are deprecated or disallowed
@@ -259,7 +259,7 @@ func findTagNamespace(doc *Doc, s *asciidoc.Section, field *matter.Field) error 
 	var found bool
 	parse.Search(doc.Reader(), s, s.Elements, func(ref *asciidoc.CrossReference, parent asciidoc.Parent, index int) parse.SearchShould {
 		if doc.anchorId(doc.Reader(), ref, ref, ref.ID) == "ref_StandardNamespaces" {
-			label := buildReferenceName(doc, ref.Elements)
+			label := buildReferenceName(doc.Reader(), ref, ref.Elements)
 			name := strings.TrimSpace(text.TrimCaseInsensitiveSuffix(label, " Namespace"))
 			if len(name) > 0 {
 				field.Type.Name = name

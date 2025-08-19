@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 )
@@ -15,7 +16,7 @@ func (b *Baller) organizeClusterIDSection(cxt *discoContext) (err error) {
 			slog.Warn("Could not organize cluster ID section, as no table was found", log.Path("source", clusterIDs.section))
 			return
 		}
-		if len(clusterIDsTable.Element.TableRows(cxt.doc.Reader())) > 2 {
+		if len(clusterIDsTable.Element.TableRows(asciidoc.NewRawReader())) > 2 {
 			setSectionTitle(cxt.doc, clusterIDs.section, matter.ClusterIDsSectionName)
 		} else {
 			setSectionTitle(cxt.doc, clusterIDs.section, matter.ClusterIDSectionName)

@@ -65,8 +65,8 @@ func (ti *TableInfo) ColumnIndex(columns ...matter.TableColumn) (index int, ok b
 	return
 }
 
-func (ti *TableInfo) Rescan(doc *Doc) (err error) {
-	ti.HeaderRowIndex, ti.ColumnMap, ti.ExtraColumns, err = mapTableColumns(doc, ti.Rows)
+func (ti *TableInfo) Rescan(doc *Doc, reader asciidoc.Reader) (err error) {
+	ti.HeaderRowIndex, ti.ColumnMap, ti.ExtraColumns, err = mapTableColumns(doc, reader, ti.Rows)
 	return
 }
 
@@ -158,7 +158,7 @@ func (ti *TableInfo) ReadNameAtOffset(row *asciidoc.TableRow, offset int) (name 
 		}
 	}
 	var value strings.Builder
-	err = readRowCellValueElements(ti.Doc, row, cell, cellElements, &value)
+	err = readRowCellValueElements(ti.Doc, ti.Doc.Reader(), row, cell, cellElements, &value)
 	if err != nil {
 		return "", nil, err
 	}
@@ -183,7 +183,7 @@ func (ti *TableInfo) ReadValueByIndex(row *asciidoc.TableRow, offset int) (strin
 		return "", nil
 	}
 	var value strings.Builder
-	err := readRowCellValueElements(ti.Doc, row, cell, cellElements, &value)
+	err := readRowCellValueElements(ti.Doc, ti.Doc.Reader(), row, cell, cellElements, &value)
 	if err != nil {
 		return "", err
 	}
@@ -392,18 +392,18 @@ func (ti *TableInfo) ReadLocation(row *asciidoc.TableRow, columns ...matter.Tabl
 	return
 }
 
-func readRowCellValueElements(doc *Doc, row *asciidoc.TableRow, parent asciidoc.Parent, els asciidoc.Elements, value *strings.Builder) (err error) {
-	for el := range doc.Reader().Iterate(parent, els) {
+func readRowCellValueElements(doc *Doc, reader asciidoc.Reader, row *asciidoc.TableRow, parent asciidoc.Parent, els asciidoc.Elements, value *strings.Builder) (err error) {
+	for el := range reader.Iterate(parent, els) {
 		switch el := el.(type) {
 		case *asciidoc.String:
 			value.WriteString(el.Value)
 		case asciidoc.FormattedTextElement:
-			err = readRowCellValueElements(doc, row, el, el.Children(), value)
+			err = readRowCellValueElements(doc, reader, row, el, el.Children(), value)
 		case *asciidoc.Paragraph:
-			err = readRowCellValueElements(doc, row, el, el.Children(), value)
+			err = readRowCellValueElements(doc, reader, row, el, el.Children(), value)
 		case *asciidoc.CrossReference:
 			if len(el.Elements) > 0 {
-				err = readRowCellValueElements(doc, row, el, el.Elements, value)
+				err = readRowCellValueElements(doc, reader, row, el, el.Elements, value)
 				if err != nil {
 					return
 				}
@@ -411,7 +411,7 @@ func readRowCellValueElements(doc *Doc, row *asciidoc.TableRow, parent asciidoc.
 				var val string
 				anchor := doc.FindAnchorByID(el.ID, el, el)
 				if anchor != nil {
-					val = matter.StripTypeSuffixes(ReferenceName(doc, anchor.Element))
+					val = matter.StripTypeSuffixes(ReferenceName(reader, anchor.Element))
 				} else {
 					val = strings.TrimPrefix(val, "ref_") // Trim, and hope someone else has it defined
 				}
@@ -419,14 +419,14 @@ func readRowCellValueElements(doc *Doc, row *asciidoc.TableRow, parent asciidoc.
 			}
 		case *asciidoc.Link:
 			value.WriteString(el.URL.Scheme)
-			err = readRowCellValueElements(doc, row, &el.URL.Path, el.URL.Path, value)
+			err = readRowCellValueElements(doc, reader, row, &el.URL.Path, el.URL.Path, value)
 		case *asciidoc.LinkMacro:
 			value.WriteString(el.URL.Scheme)
-			err = readRowCellValueElements(doc, row, &el.URL.Path, el.URL.Path, value)
+			err = readRowCellValueElements(doc, reader, row, &el.URL.Path, el.URL.Path, value)
 		case *asciidoc.Superscript:
 			// In the special case of superscript elements, we do checks to make sure it's not an asterisk or a footnote, which should be ignored
 			var quotedText strings.Builder
-			err = readRowCellValueElements(doc, row, el, el.Children(), &quotedText)
+			err = readRowCellValueElements(doc, reader, row, el, el.Children(), &quotedText)
 			if err != nil {
 				return
 			}
@@ -445,16 +445,16 @@ func readRowCellValueElements(doc *Doc, row *asciidoc.TableRow, parent asciidoc.
 			value.WriteString(el.Character)
 		case *asciidoc.InlinePassthrough:
 			value.WriteString("+")
-			err = readRowCellValueElements(doc, row, el, el.Children(), value)
+			err = readRowCellValueElements(doc, reader, row, el, el.Children(), value)
 		case *asciidoc.InlineDoublePassthrough:
 			value.WriteString("++")
-			err = readRowCellValueElements(doc, row, el, el.Children(), value)
+			err = readRowCellValueElements(doc, reader, row, el, el.Children(), value)
 		case *asciidoc.ThematicBreak:
 		case *asciidoc.EmptyLine:
 		case *asciidoc.NewLine:
 			value.WriteString(" ")
 		case asciidoc.ParentElement:
-			err = readRowCellValueElements(doc, row, el, el.Children(), value)
+			err = readRowCellValueElements(doc, reader, row, el, el.Children(), value)
 		case *asciidoc.LineBreak:
 			value.WriteString(" ")
 		default:
@@ -634,7 +634,7 @@ func listDataTypePattern(doc *Doc, row *asciidoc.TableRow, elements []asciidoc.E
 	return
 }
 
-func (ti *TableInfo) ReadDataType(row *asciidoc.TableRow, column matter.TableColumn) (*types.DataType, error) {
+func (ti *TableInfo) ReadDataType(reader asciidoc.Reader, row *asciidoc.TableRow, column matter.TableColumn) (*types.DataType, error) {
 	if !ti.Doc.anchorsParsed {
 		ti.Doc.findAnchors()
 	}
@@ -643,7 +643,7 @@ func (ti *TableInfo) ReadDataType(row *asciidoc.TableRow, column matter.TableCol
 		return nil, newGenericParseError(row, "missing %s column for data type", column)
 	}
 	cell := row.Cell(i)
-	cellElements := ti.Doc.Reader().Iterate(cell, cell.Children()).List()
+	cellElements := reader.Iterate(cell, cell.Children()).List()
 
 	if len(cellElements) == 0 {
 		return nil, newGenericParseError(row, "empty %s cell for data type", column)
@@ -675,7 +675,7 @@ func buildDataTypeString(d *Doc, cellElements asciidoc.Elements, sb *strings.Bui
 				var name string
 				anchor := d.FindAnchorByID(v.ID, v, v)
 				if anchor != nil {
-					name = ReferenceName(d, anchor.Element)
+					name = ReferenceName(d.Reader(), anchor.Element)
 					if len(name) == 0 {
 						name = asciidoc.AttributeAsciiDocString(anchor.LabelElements)
 					}

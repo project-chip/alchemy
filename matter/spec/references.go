@@ -17,8 +17,8 @@ type CrossReference struct {
 	Source    matter.Source
 }
 
-func (cr *CrossReference) Identifier() string {
-	return cr.Document.anchorId(cr.Document.Reader(), cr.Parent, cr.Reference, cr.Reference.ID)
+func (cr *CrossReference) Identifier(reader asciidoc.Reader) string {
+	return cr.Document.anchorId(reader, cr.Parent, cr.Reference, cr.Reference.ID)
 }
 
 func (cr *CrossReference) SyncToDoc(id asciidoc.Elements) {
@@ -47,29 +47,29 @@ func (doc *Doc) CrossReferences() map[string][]*CrossReference {
 	return doc.crossReferences
 }
 
-func ReferenceName(doc *Doc, element any) string {
+func ReferenceName(reader asciidoc.Reader, element any) string {
 	if element == nil {
 		return ""
 	}
 	switch el := element.(type) {
 	case *asciidoc.Anchor:
-		return buildReferenceName(doc, el.Elements)
+		return buildReferenceName(reader, el, el.Elements)
 	case *asciidoc.Section:
-		return buildReferenceName(doc, el.Title)
+		return buildReferenceName(reader, el, el.Title)
 	case asciidoc.Attributable:
-		return referenceNameFromAttributes(doc, el)
+		return referenceNameFromAttributes(reader, el)
 	case asciidoc.Element:
-		return ReferenceName(doc, el)
+		return ReferenceName(reader, el)
 	default:
 		slog.Warn("Unknown type to get reference name", "type", fmt.Sprintf("%T", element))
 	}
 	return ""
 }
 
-func buildReferenceName(doc *Doc, set asciidoc.Elements) string {
+func buildReferenceName(reader asciidoc.Reader, parent asciidoc.Parent, set asciidoc.Elements) string {
 	var val strings.Builder
 
-	for el := range doc.Reader().Iterate(doc, set) {
+	for el := range reader.Iterate(parent, set) {
 		switch el := el.(type) {
 		case *asciidoc.String:
 			val.WriteString(el.Value)
@@ -83,7 +83,7 @@ func buildReferenceName(doc *Doc, set asciidoc.Elements) string {
 			}
 			val.WriteString(char)
 		case asciidoc.Attributable:
-			val.WriteString(referenceNameFromAttributes(doc, el))
+			val.WriteString(referenceNameFromAttributes(reader, el))
 		case *asciidoc.CharacterReplacementReference:
 			val.WriteString(el.Value)
 		case *asciidoc.Counter:
@@ -94,7 +94,7 @@ func buildReferenceName(doc *Doc, set asciidoc.Elements) string {
 	return val.String()
 }
 
-func referenceNameFromAttributes(doc *Doc, el asciidoc.Attributable) string {
+func referenceNameFromAttributes(reader asciidoc.Reader, el asciidoc.Attributable) string {
 	for _, a := range el.Attributes() {
 		switch a := a.(type) {
 		case *asciidoc.AnchorAttribute:
@@ -109,7 +109,7 @@ func referenceNameFromAttributes(doc *Doc, el asciidoc.Attributable) string {
 				case string:
 					return v
 				case asciidoc.Elements:
-					return buildReferenceName(doc, v)
+					return buildReferenceName(reader, &a.Val, v)
 				default:
 					slog.Warn("unexpected value of section title attribute", slog.String("type", fmt.Sprintf("%T", a.Value())))
 				}

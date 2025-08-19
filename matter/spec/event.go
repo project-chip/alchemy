@@ -98,7 +98,7 @@ func (cf *eventFactory) Children(d *Doc, s *asciidoc.Section) iter.Seq[*asciidoc
 }
 
 func toEvents(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) (events matter.EventSet, err error) {
-	t := FindFirstTable(d, s)
+	t := FindFirstTable(d.Reader(), s)
 	if t == nil {
 		return nil, nil
 	}
@@ -179,7 +179,6 @@ func (ef *eventFinder) suggestIdentifiers(identifier string, suggestions map[typ
 	if ef.inner != nil {
 		ef.inner.suggestIdentifiers(identifier, suggestions)
 	}
-	return
 }
 
 func validateEvents(spec *Specification) {

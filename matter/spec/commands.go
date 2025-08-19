@@ -35,7 +35,7 @@ func (cf *commandFactory) New(spec *Specification, d *Doc, s *asciidoc.Section, 
 		return nil, err
 	}
 	cmd.Direction = ParseCommandDirection(dir)
-	cmd.Response, _ = ti.ReadDataType(row, matter.TableColumnResponse)
+	cmd.Response, _ = ti.ReadDataType(d.Reader(), row, matter.TableColumnResponse)
 	if cmd.Response != nil {
 		cmd.Response.Name = text.TrimCaseInsensitiveSuffix(cmd.Response.Name, " Command")
 	}
@@ -106,7 +106,7 @@ func (cf *commandFactory) Children(d *Doc, s *asciidoc.Section) iter.Seq[*asciid
 
 func toCommands(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) (commands matter.CommandSet, err error) {
 
-	t := FindFirstTable(d, s)
+	t := FindFirstTable(d.Reader(), s)
 	if t == nil {
 		return nil, nil
 	}
