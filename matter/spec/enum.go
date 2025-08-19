@@ -203,19 +203,15 @@ func validateEnums(spec *Specification) {
 }
 
 func validateEnum(spec *Specification, en *matter.Enum) {
-	enumValues := make(map[uint64]*matter.EnumValue)
+	idu := make(idUniqueness[*matter.EnumValue])
+	nu := make(nameUniqueness[*matter.EnumValue])
+
 	for _, ev := range en.Values {
 		if !ev.Value.Valid() {
 			slog.Warn("Enum value has invalid ID", log.Path("source", ev), matter.LogEntity("parent", en), slog.String("valueName", en.Name))
 			continue
 		}
-		valueId := ev.Value.Value()
-		existing, ok := enumValues[valueId]
-		if ok {
-			slog.Error("Duplicate enum value", log.Path("source", ev), matter.LogEntity("parent", en), slog.String("enumValue", ev.Value.HexString()), slog.String("enumValueName", ev.Name), slog.String("previousEnumValueName", existing.Name))
-			spec.addError(&DuplicateEntityIDError{Entity: ev, Previous: existing})
-		} else {
-			enumValues[valueId] = ev
-		}
+		idu.check(spec, ev.Value, ev)
+		nu.check(spec, ev)
 	}
 }

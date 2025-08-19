@@ -462,9 +462,11 @@ func buildReferencedClusters(deviceType *matter.DeviceType, referencedClusters m
 }
 
 func validateDeviceTypes(spec *Specification) {
-	deviceTypeIds := make(idUniqueness[*matter.DeviceType])
+	iu := make(idUniqueness[*matter.DeviceType])
+	nu := make(nameUniqueness[*matter.DeviceType])
 	for _, dt := range spec.DeviceTypes {
-		deviceTypeIds.check(spec, dt.ID, dt)
+		iu.check(spec, dt.ID, dt)
+		nu.check(spec, dt)
 		referencedClusters := make(map[*matter.Cluster]struct{})
 		buildReferencedClusters(spec.BaseDeviceType, referencedClusters)
 		buildReferencedClusters(dt, referencedClusters)

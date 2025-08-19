@@ -183,14 +183,22 @@ func (ef *eventFinder) suggestIdentifiers(identifier string, suggestions map[typ
 
 func validateEvents(spec *Specification) {
 	for c := range spec.Clusters {
+		idu := make(idUniqueness[*matter.Event])
+		nu := make(nameUniqueness[*matter.Event])
 		for _, e := range c.Events {
+			idu.check(spec, e.ID, e)
+			nu.check(spec, e)
 			validateFields(spec, e, e.Fields)
 		}
 	}
+	idu := make(idUniqueness[*matter.Event])
+	nu := make(nameUniqueness[*matter.Event])
 	for obj := range spec.GlobalObjects {
-		switch obj := obj.(type) {
+		switch e := obj.(type) {
 		case *matter.Event:
-			validateFields(spec, obj, obj.Fields)
+			idu.check(spec, e.ID, e)
+			nu.check(spec, e)
+			validateFields(spec, e, e.Fields)
 		}
 	}
 }

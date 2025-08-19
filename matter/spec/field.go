@@ -316,19 +316,15 @@ func (ff *fieldFinder) suggestIdentifiers(identifier string, suggestions map[typ
 }
 
 func validateFields(spec *Specification, parent types.Entity, fields matter.FieldSet) {
-	fieldIds := make(map[uint64]*matter.Field)
+	idu := make(idUniqueness[*matter.Field])
+	nu := make(nameUniqueness[*matter.Field])
 	for _, f := range fields {
 		if !f.ID.Valid() {
 			slog.Warn("Field has invalid ID", log.Path("source", f), matter.LogEntity("parent", parent), slog.String("fieldName", f.Name))
 		}
 		fieldId := f.ID.Value()
-		existing, ok := fieldIds[fieldId]
-		if ok {
-			slog.Error("Duplicate field ID", log.Path("source", f), matter.LogEntity("parent", parent), slog.String("fieldId", f.ID.HexString()), slog.String("fieldName", f.Name), slog.String("previousFieldName", existing.Name))
-			spec.addError(&DuplicateEntityIDError{Entity: f, Previous: existing})
-		} else {
-			fieldIds[fieldId] = f
-		}
+		idu.check(spec, f.ID, f)
+		nu.check(spec, f)
 		if fieldId >= 0xFE && fieldId <= 0x100 {
 			slog.Warn("Struct is using global field ID", log.Path("source", f), matter.LogEntity("parent", parent), slog.String("fieldName", f.Name), slog.String("fieldId", f.ID.HexString()))
 		}

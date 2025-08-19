@@ -132,7 +132,9 @@ func validateBitmaps(spec *Specification) {
 
 func validateBitmap(spec *Specification, en *matter.Bitmap) {
 	bits := make(map[uint64]matter.Bit)
+	nu := make(nameUniqueness[matter.Bit])
 	for _, b := range en.Bits {
+		nu.check(spec, b)
 		from, to, err := b.Bits()
 		if err != nil {
 			slog.Warn("Unable to determine range of bitmap values", log.Path("source", b), matter.LogEntity("parent", en), slog.String("name", b.Name()), slog.Any("error", err))
