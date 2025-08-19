@@ -75,7 +75,9 @@ func checkSpecErrors[T comparable](cc *Context, s *spec.Specification, filterOpt
 	var errors spec.ParseErrors
 	for _, specError := range s.Errors {
 		path, _ := specError.Origin()
-		path = filepath.Join(s.Root, path)
+		if !filepath.IsAbs(path) {
+			path = filepath.Join(s.Root, path)
+		}
 		_, ok := inputDocs[path]
 		if ok {
 			errors.Errors = append(errors.Errors, specError)
