@@ -177,7 +177,7 @@ func (o *wrappedTarget) WriteRune(r rune) {
 
 func (o *wrappedTarget) EnsureNewLine() {
 	if o.disableWrapCount > 0 || o.currentBlock == nil { // We're writing straight to the stream
-		if o.lastRune == '\n' {
+		if o.lastRune == '\n' || len(o.out) == 0 { // We just wrote a new line, or it's the beginning of the output
 			return
 		}
 		if o.lastRune == ' ' && len(o.out)-1 == o.lastRemovedNewline { // We just removed a newline due to wrapping, so put it back
