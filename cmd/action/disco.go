@@ -7,12 +7,14 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/cmd/action/github"
 	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/config"
 	"github.com/project-chip/alchemy/disco"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/sethvargo/go-githubactions"
 )
 
@@ -68,7 +70,14 @@ func (c *Disco) Run(cc *cli.Context) (err error) {
 	writer := files.NewPatcher[string]("Generating patch file...", &out)
 	writer.Root = githubContext.Workspace
 
-	err = disco.Pipeline(cc, githubContext.Workspace, changedDocs, pipelineOptions, disco.DefaultOptions, nil, writer)
+	parserOptions := spec.ParserOptions{
+		Root: githubContext.Workspace,
+	}
+
+	attributes := []asciidoc.AttributeName{"in-progress"}
+
+	err = disco.Pipeline(cc, parserOptions, changedDocs, pipelineOptions, disco.DefaultOptions, attributes, nil, writer)
+
 	if err != nil {
 		return fmt.Errorf("failed disco-balling: %v", err)
 	}
