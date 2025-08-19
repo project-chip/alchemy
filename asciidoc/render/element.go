@@ -110,6 +110,9 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 			cxt.WriteString("+\n")
 			cxt.FlushWrap()
 			err = Elements(cxt, "", el.Child())
+			if err == nil {
+				cxt.EnsureNewLine()
+			}
 		case *asciidoc.IfDef:
 			renderConditional(cxt, "ifdef::", el.Attributes, el.Union)
 		case *asciidoc.IfNDef:

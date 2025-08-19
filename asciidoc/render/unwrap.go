@@ -32,7 +32,7 @@ func (o *unwrappedTarget) WriteRune(r rune) {
 }
 
 func (o *unwrappedTarget) EnsureNewLine() {
-	if o.lastRune == '\n' {
+	if o.lastRune == '\n' || o.out.Len() == 0 {
 		return
 	}
 	o.WriteRune('\n')

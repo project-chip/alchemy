@@ -29,15 +29,13 @@ func renderInternalCrossReference(cxt Target, cf *asciidoc.CrossReference) (err 
 		if err != nil {
 			return
 		}
-		attributes := cf.Attributes()
-		if len(attributes) == 0 {
-			cxt.WriteString("[]\n")
-		} else {
-			err = renderAttributes(cxt, attributes, true)
-			if err != nil {
-				return
-			}
+
+		cxt.WriteRune('[')
+		err = Elements(cxt, "", cf.Children()...)
+		if err != nil {
+			return
 		}
+		cxt.WriteRune(']')
 	}
 
 	cxt.EndBlock()
