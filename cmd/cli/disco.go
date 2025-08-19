@@ -24,6 +24,6 @@ type Disco struct {
 func (d *Disco) Run(cc *Context) (err error) {
 	writer := files.NewWriter[string]("Writing disco-balled docs", d.OutputOptions)
 
-	err = disco.Pipeline(cc, d.Root, d.Paths, d.ProcessingOptions, d.DiscoOptions, d.RenderOptions.ToOptions(), writer)
+	err = disco.Pipeline(cc, d.ParserOptions, d.Paths, d.ProcessingOptions, d.DiscoOptions, d.ASCIIDocAttributes.ToList(), d.RenderOptions.ToOptions(), writer)
 	return
 }

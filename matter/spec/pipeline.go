@@ -66,8 +66,10 @@ func Parse(cxt context.Context, parserOptions ParserOptions, processingOptions p
 		return
 	}
 
+	specTargeter := Targeter(parserOptions.Root)
+
 	var specPaths pipeline.Paths
-	specPaths, err = pipeline.Start(cxt, specParser.Targets)
+	specPaths, err = pipeline.Start(cxt, specTargeter)
 	if err != nil {
 		return
 	}
