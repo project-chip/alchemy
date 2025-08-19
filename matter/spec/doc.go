@@ -76,7 +76,7 @@ func (doc *Doc) Reader() asciidoc.Reader {
 	if doc.group != nil {
 		return doc.group.Reader
 	}
-	return asciidoc.NewRawReader()
+	return asciidoc.RawReader
 }
 
 func (doc *Doc) Parents() []*Doc {

@@ -33,7 +33,7 @@ func getExistingDataTypes(cxt *discoContext) {
 		return
 	}
 
-	for ss := range parse.FindAll[*asciidoc.Section](asciidoc.NewRawReader(), cxt.parsed.dataTypes.section) {
+	for ss := range parse.FindAll[*asciidoc.Section](asciidoc.RawReader, cxt.parsed.dataTypes.section) {
 		name := matter.StripDataTypeSuffixes(cxt.doc.SectionName(ss))
 		nameKey := strings.ToLower(name)
 		dataType := spec.GetDataType(cxt.doc, ss)
@@ -144,11 +144,11 @@ func (b *Baller) getDataTypes(cxt *discoContext, columnMap spec.ColumnIndex, row
 			if !ok {
 				continue
 			}
-			table := spec.FindFirstTable(asciidoc.NewRawReader(), s)
+			table := spec.FindFirstTable(asciidoc.RawReader, s)
 			if table == nil {
 				continue
 			}
-			ti, err := spec.ReadTable(cxt.doc, asciidoc.NewRawReader(), table)
+			ti, err := spec.ReadTable(cxt.doc, asciidoc.RawReader, table)
 			if err != nil {
 				return nil, fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", cxt.doc.SectionName(s), err)
 			}
@@ -249,12 +249,12 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *asciidoc.Section, suffi
 		if dt.section == nil {
 			continue
 		}
-		table := spec.FindFirstTable(asciidoc.NewRawReader(), dt.section)
+		table := spec.FindFirstTable(asciidoc.RawReader, dt.section)
 		if table == nil {
 			continue
 		}
 		var ti *spec.TableInfo
-		ti, err = spec.ReadTable(cxt.doc, asciidoc.NewRawReader(), table)
+		ti, err = spec.ReadTable(cxt.doc, asciidoc.RawReader, table)
 		if err != nil {
 			err = fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", cxt.doc.SectionName(dt.section), err)
 			return
@@ -403,7 +403,7 @@ func disambiguateDataTypes(infos []*DataTypeEntry) error {
 				return fmt.Errorf("duplicate reference: %s in %T with invalid parent", dataTypeNames[i], parents[i])
 			}
 			parentSections[i] = parentSection
-			refParentID := strings.TrimSpace(matter.StripReferenceSuffixes(spec.ReferenceName(asciidoc.NewRawReader(), parentSection)))
+			refParentID := strings.TrimSpace(matter.StripReferenceSuffixes(spec.ReferenceName(asciidoc.RawReader, parentSection)))
 			dataTypeNames[i] = refParentID + dataTypeNames[i]
 			dataTypeRefs[i] = refParentID + dataTypeNames[i]
 		}
@@ -506,7 +506,7 @@ func (b *Baller) removeMandatoryFallbacks(ti *spec.TableInfo) {
 			continue
 		}
 		fallbackCell := row.Cell(fallbackIndex)
-		def, err := ti.Doc.GetHeaderCellString(asciidoc.NewRawReader(), fallbackCell)
+		def, err := ti.Doc.GetHeaderCellString(asciidoc.RawReader, fallbackCell)
 		if err != nil {
 			continue
 		}

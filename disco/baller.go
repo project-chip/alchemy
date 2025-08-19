@@ -48,7 +48,7 @@ func (b *Baller) disco(cxt context.Context, doc *spec.Doc) error {
 
 	precleanStrings(doc)
 
-	for top := range parse.Skim[*asciidoc.Section](asciidoc.NewRawReader(), doc, doc.Children()) {
+	for top := range parse.Skim[*asciidoc.Section](asciidoc.RawReader, doc, doc.Children()) {
 		err := spec.AssignSectionTypes(doc, top)
 		if err != nil {
 			return err
@@ -60,7 +60,7 @@ func (b *Baller) disco(cxt context.Context, doc *spec.Doc) error {
 		return fmt.Errorf("error assigning section types in %s: %w", doc.Path, err)
 	}
 
-	topLevelSection := parse.FindFirst[*asciidoc.Section](asciidoc.NewRawReader(), doc)
+	topLevelSection := parse.FindFirst[*asciidoc.Section](asciidoc.RawReader, doc)
 	if topLevelSection == nil {
 		return ErrEmptyDoc
 	}
