@@ -98,10 +98,6 @@ func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.En
 		f.Name = CanonicalName(f.Name)
 
 		fields = append(fields, f)
-		if existing, ok := fieldMap[f.Name]; ok {
-			slog.Error("duplicate field name", slog.String("name", name), matter.LogEntity("parent", parent), log.Path("source", f), log.Path("previous", existing))
-			spec.addError(&DuplicateEntityIDError{Entity: f, Previous: existing})
-		}
 		fieldMap[f.Name] = f
 	}
 	return

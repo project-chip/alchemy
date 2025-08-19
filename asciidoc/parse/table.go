@@ -257,41 +257,6 @@ func ReparseTable(table *asciidoc.Table, elements asciidoc.Elements) (err error)
 	return
 }
 
-/*
-func parseInlineCell(tc *asciidoc.TableCell) error {
-	val, err := renderPreParsedDoc(tc.Children())
-	if err != nil {
-		return err
-	}
-	if val == "" {
-		return nil
-	}
-	line, col, offset := tc.Position()
-	col++
-	vals, err := Parse(tc.Path(), []byte(val), Entrypoint("TableCellInlineContent"), initialPosition(line, col, offset))
-	if err != nil {
-		return err
-	}
-	els, ok := vals.(asciidoc.Elements)
-	if !ok {
-		return fmt.Errorf("unexpected type for table cell set: %T", vals)
-	}
-	if len(els) > 0 {
-		if _, ok := els[0].(*asciidoc.EmptyLine); ok {
-			// If the first character is a new line, the parser will interpret that as an empty line, since it thinks there's nothing before it
-			els[0] = &asciidoc.NewLine{}
-		}
-	}
-
-	els, err = coalesce(els)
-	if err != nil {
-		return err
-	}
-
-	tc.SetChildren(els)
-	return nil
-}*/
-
 func parseBlockCell(tc *asciidoc.TableCell) error {
 	out := render.NewUnwrappedTarget(context.Background())
 	err := render.Elements(out, "", tc.Children()...)
