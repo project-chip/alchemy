@@ -11,18 +11,19 @@ ListItemValue = line:InlineElement+ &EndOfLine lines:(ListItemLine)* attachedBlo
     return flat(value), nil
 }
 
-AttachedBlockElement = "+" AnySpaces NewLine value:(BlockElements) {
-    return asciidoc.NewAttachedBlock(value.(asciidoc.Element)), nil
-}
 
-ListContinuationMarker = marker:(EmptyLine* BeginningOfLine "+") {
+ListContinuationMarker = newlines:(EmptyLine*) BeginningOfLine "+" {
     debugPosition(c, "ListContinuationMarker\n")
-    return marker, nil
+    count := len(newlines.([]any))
+    if count > 0 {
+        count--
+    }
+    return count, nil
 }
 
-ListContinuation = ListContinuationMarker AnySpaces NewLine value:ContinuationBlockElement {
+ListContinuation = marker:ListContinuationMarker AnySpaces NewLine value:ContinuationBlockElement {
     debugPosition(c, "ListContinuation\n")
-    return compose(c, asciidoc.NewListContinuation(value.(asciidoc.Element)))
+    return compose(c, asciidoc.NewListContinuation(value.(asciidoc.Element), marker.(int)))
 }
 
 ListItemLine = EndOfLine !OrderedListMarker !UnorderedListMarker !BlockDelimiters !ConditionalStatement !ListContinuationMarker element:(InlineElement)+ &EndOfLine {

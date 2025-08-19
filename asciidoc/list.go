@@ -130,40 +130,11 @@ func (a *DescriptionListItem) Equals(o Element) bool {
 	return a.Elements.Equals(oa.Elements)
 }
 
-type AttachedBlock struct {
-	position
-	raw
-
-	ChildElement Element
-}
-
-func (AttachedBlock) Type() ElementType {
-	return ElementTypeBlock
-}
-
-func NewAttachedBlock(child Element) *AttachedBlock {
-	return &AttachedBlock{
-		ChildElement: child,
-	}
-}
-
-func (a *AttachedBlock) Equals(o Element) bool {
-	oa, ok := o.(*AttachedBlock)
-	if !ok {
-		return false
-	}
-
-	return a.ChildElement.Equals(oa.ChildElement)
-}
-
-func (s *AttachedBlock) Child() Element {
-	return s.ChildElement
-}
-
 type ListContinuation struct {
 	position
 	raw
 
+	NewLineCount int
 	ChildElement Element
 }
 
@@ -175,9 +146,10 @@ func (s *ListContinuation) Child() Element {
 	return s.ChildElement
 }
 
-func NewListContinuation(child Element) *ListContinuation {
+func NewListContinuation(child Element, newLineCount int) *ListContinuation {
 	return &ListContinuation{
 		ChildElement: child,
+		NewLineCount: newLineCount,
 	}
 }
 
