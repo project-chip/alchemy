@@ -104,6 +104,9 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 			err = renderOrderedListElement(cxt, el)
 		case *asciidoc.ListContinuation:
 			cxt.EnsureNewLine()
+			for range el.NewLineCount {
+				cxt.WriteString("\n")
+			}
 			cxt.WriteString("+\n")
 			cxt.FlushWrap()
 			err = Elements(cxt, "", el.Child())
@@ -137,9 +140,6 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 			err = renderAnchor(cxt, el)
 		case *asciidoc.Admonition:
 			renderAdmonition(cxt, el.AdmonitionType)
-		case *asciidoc.AttachedBlock:
-			cxt.WriteString("+\n")
-			err = Elements(cxt, "", el.Child())
 		case *asciidoc.LineBreak:
 			cxt.WriteString("+")
 			cxt.FlushWrap()

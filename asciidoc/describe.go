@@ -61,8 +61,6 @@ func Describe(el Element) string {
 		return fmt.Sprintf("orderedListItem (%s)", el.Marker)
 	case *UnorderedListItem:
 		return fmt.Sprintf("unorderedListItem (%s)", el.Marker)
-	case *AttachedBlock:
-		return "attached"
 	case *Listing:
 		return fmt.Sprintf("listing (%d)", el.Delimiter.Length)
 	case *LiteralBlock:

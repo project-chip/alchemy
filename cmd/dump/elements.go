@@ -186,7 +186,7 @@ func dumpElements(doc *spec.Doc, parent asciidoc.Parent, els asciidoc.Elements, 
 		fmt.Printf("{list els}\n")
 		dumpElements(doc, el.Elements, indent+1)*/
 		case *asciidoc.ListContinuation:
-			fmt.Printf("{list con}\n")
+			fmt.Printf("{list continuation (new line count: %d)}\n", el.NewLineCount)
 			children := asciidoc.Elements{el.Child()}
 			dumpElements(doc, &children, children, indent+1)
 		case *asciidoc.CharacterReplacementReference:
@@ -195,6 +195,8 @@ func dumpElements(doc *spec.Doc, parent asciidoc.Parent, els asciidoc.Elements, 
 			fmt.Printf("{quote delimiter:\"%d\"}:\n", el.Delimiter.Type)
 			dumpAttributes(doc, el.Attributes(), indent+1)
 			dumpElements(doc, el, el.Children(), indent+1)
+		case *asciidoc.UserAttributeReference:
+			fmt.Printf("{user attribute ref:\"%s\"}:\n", el.Value)
 		default:
 			fmt.Printf("unknown render element type: %T\n", el)
 		}

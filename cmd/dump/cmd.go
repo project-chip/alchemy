@@ -71,20 +71,6 @@ func (d *Command) Run(cc *cli.Context) (err error) {
 			encoder := json.NewEncoder(os.Stdout)
 			//encoder.SetIndent("", "\t")
 			return encoder.Encode(entities)
-		} else if d.Inline {
-			err = errata.LoadErrataConfig(d.Root)
-			if err != nil {
-				return
-			}
-			path, err := asciidoc.NewPath(f, d.Root)
-			if err != nil {
-				return fmt.Errorf("error resolving doc path %s: %w", f, err)
-			}
-			doc, err := spec.ParseFile(path, d.Root, d.ASCIIDocAttributes.ToList()...)
-			if err != nil {
-				return fmt.Errorf("error parsing %s: %w", f, err)
-			}
-			dumpElements(doc, doc, doc.Children(), 0)
 		} else {
 			doc, err := spec.ReadFile(f, ".")
 			if err != nil {

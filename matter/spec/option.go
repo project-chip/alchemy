@@ -25,8 +25,7 @@ func (bo BuilderOptions) List() (options []BuilderOption) {
 }
 
 type ParserOptions struct {
-	Root   string `name:"spec-root" default:"connectedhomeip-spec" aliases:"specRoot" help:"the src root of your clone of CHIP-Specifications/connectedhomeip-spec"  group:"Spec:"`
-	Inline bool   `default:"true" help:"use inline parser"  group:"Spec:" hidden:""`
+	Root string `name:"spec-root" default:"connectedhomeip-spec" aliases:"specRoot" help:"the src root of your clone of CHIP-Specifications/connectedhomeip-spec"  group:"Spec:"`
 }
 
 func (po *ParserOptions) AfterApply() error {
