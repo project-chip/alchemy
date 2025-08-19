@@ -24,14 +24,10 @@ type Reader interface {
 	Iterate(parent Parent, elements Elements) ElementIterator
 }
 
-type RawReader struct {
+type rawReader struct {
 }
 
-func NewRawReader() *RawReader {
-	return rawReader
-}
-
-func (rr *RawReader) Iterate(parent Parent, elements Elements) ElementIterator {
+func (rr *rawReader) Iterate(parent Parent, elements Elements) ElementIterator {
 	return func(yield func(Element) bool) {
 		for _, e := range elements {
 			if !yield(e) {
@@ -41,20 +37,11 @@ func (rr *RawReader) Iterate(parent Parent, elements Elements) ElementIterator {
 	}
 }
 
-func (rr *RawReader) Count(elements Elements) int {
+func (rr *rawReader) Count(elements Elements) int {
 	return len(elements)
 }
 
-var rawReader *RawReader = &RawReader{}
-
-type TraversalPosition uint8
-
-const (
-	TraversalPositionUnknown TraversalPosition = iota
-	TraversalPositionTitle
-	TraversalPositionValue
-	TraversalPositionChild
-)
+var RawReader Reader = &rawReader{}
 
 type Traverser interface {
 	Traverse(parent Parent) iter.Seq2[Parent, Parent]

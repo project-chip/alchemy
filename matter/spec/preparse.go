@@ -250,7 +250,7 @@ func preparseFile(pps *preparseFileState, docGroup *DocGroup, doc *Doc, parent a
 	var suppress bool
 	var lastTableCell *asciidoc.TableCell
 	var addToCell bool
-	parse.Traverse(asciidoc.NewRawReader(), parent, els, func(el asciidoc.Element, parent asciidoc.Parent, index int) (should parse.SearchShould) {
+	parse.Traverse(asciidoc.RawReader, parent, els, func(el asciidoc.Element, parent asciidoc.Parent, index int) (should parse.SearchShould) {
 		var remove, replace bool
 		var replaceElements asciidoc.Elements
 		switch el := el.(type) {

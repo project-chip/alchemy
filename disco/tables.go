@@ -18,7 +18,7 @@ func (b *Baller) ensureTableOptions(doc *spec.Doc, root asciidoc.ParentElement) 
 	if !b.options.NormalizeTableOptions {
 		return
 	}
-	parse.Search(asciidoc.NewRawReader(), root, root.Children(), func(t *asciidoc.Table, parent asciidoc.Parent, index int) parse.SearchShould {
+	parse.Search(asciidoc.RawReader, root, root.Children(), func(t *asciidoc.Table, parent asciidoc.Parent, index int) parse.SearchShould {
 		var excludedIndexes []int
 		for i, attr := range t.Attributes() {
 			na, ok := attr.(*asciidoc.NamedAttribute)
@@ -63,7 +63,7 @@ func (b *Baller) addMissingColumns(cxt *discoContext, section *asciidoc.Section,
 			}
 		}
 	}
-	err = ti.Rescan(cxt.doc, asciidoc.NewRawReader())
+	err = ti.Rescan(cxt.doc, asciidoc.RawReader)
 	return
 }
 
@@ -268,7 +268,7 @@ func (b *Baller) reorderColumns(cxt *discoContext, section *asciidoc.Section, ti
 		}
 		cols.Columns = newColumns
 	}
-	err = ti.Rescan(cxt.doc, asciidoc.NewRawReader())
+	err = ti.Rescan(cxt.doc, asciidoc.RawReader)
 	return
 }
 
@@ -330,6 +330,6 @@ func (b *Baller) renameTableHeaderCells(cxt *discoContext, section *asciidoc.Sec
 			setCellString(cell, name)
 		}
 	}
-	err = table.Rescan(cxt.doc, asciidoc.NewRawReader())
+	err = table.Rescan(cxt.doc, asciidoc.RawReader)
 	return
 }

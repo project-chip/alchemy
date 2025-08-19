@@ -58,8 +58,8 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 		xrefsToChange := make([]*spec.CrossReference, len(xrefs))
 		copy(xrefsToChange, xrefs)
 		for _, xref := range xrefsToChange {
-			existingAnchorID := anchor.Identifier(asciidoc.NewRawReader())
-			existingXrefID := xref.Identifier(asciidoc.NewRawReader())
+			existingAnchorID := anchor.Identifier(asciidoc.RawReader)
+			existingXrefID := xref.Identifier(asciidoc.RawReader)
 			if existingAnchorID != existingXrefID {
 				xref.SyncToDoc(anchor.ID)
 			}
@@ -73,7 +73,7 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 		}
 	}
 	if an.options.NormalizeAnchors {
-		parse.Search(asciidoc.NewRawReader(), nil, doc.Base.Children(), func(el asciidoc.Element, parent asciidoc.Parent, index int) parse.SearchShould {
+		parse.Search(asciidoc.RawReader, nil, doc.Base.Children(), func(el asciidoc.Element, parent asciidoc.Parent, index int) parse.SearchShould {
 			switch el := el.(type) {
 			case *asciidoc.CrossReference:
 				normalizeCrossReference(doc, el)
@@ -124,7 +124,7 @@ func removeCrossReferenceStutter(doc *spec.Doc, icr *asciidoc.CrossReference, pa
 }
 
 func (an AnchorNormalizer) normalizeTypeCrossReferencesInTable(doc *spec.Doc, table *asciidoc.Table) {
-	parse.Search(asciidoc.NewRawReader(), table, table.Elements, func(icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) parse.SearchShould {
+	parse.Search(asciidoc.RawReader, table, table.Elements, func(icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) parse.SearchShould {
 		normalizeCrossReference(doc, icr)
 		return parse.SearchShouldContinue
 	})

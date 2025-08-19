@@ -65,7 +65,7 @@ func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection
 		conformanceCache: make(map[asciidoc.Element]conformance.Set),
 		tableCache:       make(map[*asciidoc.Table]*spec.TableInfo),
 	}
-	for section := range parse.FindAll[*asciidoc.Section](asciidoc.NewRawReader(), topLevelSection) {
+	for section := range parse.FindAll[*asciidoc.Section](asciidoc.RawReader, topLevelSection) {
 		switch doc.SectionType(section) {
 		case matter.SectionCluster:
 			dp.clusters[section] = &clusterInfo{}
@@ -172,9 +172,9 @@ func newParentSubSection(dp *docParse, section *asciidoc.Section, childPatterns 
 
 func firstTableInfo(dp *docParse, section *asciidoc.Section) (ti *spec.TableInfo, err error) {
 
-	table := spec.FindFirstTable(asciidoc.NewRawReader(), section)
+	table := spec.FindFirstTable(asciidoc.RawReader, section)
 	if table != nil {
-		ti, err = spec.ReadTable(dp.doc, asciidoc.NewRawReader(), table)
+		ti, err = spec.ReadTable(dp.doc, asciidoc.RawReader, table)
 		if err != nil {
 			return
 		}
@@ -215,7 +215,7 @@ func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSecti
 		subSectionNames[subSectionName] = i
 	}
 	var i int
-	for ss := range parse.Skim[*asciidoc.Section](asciidoc.NewRawReader(), parent.section, parent.section.Children()) {
+	for ss := range parse.Skim[*asciidoc.Section](asciidoc.RawReader, parent.section, parent.section.Children()) {
 		name := text.TrimCaseInsensitiveSuffix(dp.doc.SectionName(ss), childPattern.suffix)
 		var ok bool
 		if _, ok = subSectionNames[name]; !ok {
