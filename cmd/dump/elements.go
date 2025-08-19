@@ -84,7 +84,13 @@ func dumpElements(doc *spec.Doc, parent asciidoc.Parent, els asciidoc.Elements, 
 			dumpAttributes(doc, el.Attributes(), indent+1)
 			dumpElements(doc, el, el.Children(), indent+1)
 		case *asciidoc.CrossReference:
-			fmt.Printf("{xref id:%v label %v}\n", el.ID, el.Elements)
+			fmt.Printf("{xref}\n")
+			dumpElements(doc, el, el.ID, indent+1)
+			if len(el.Elements) > 0 {
+				fmt.Print(strings.Repeat("\t", indent))
+				fmt.Printf("{label}\n")
+				dumpElements(doc, el, el.Elements, indent+1)
+			}
 		case *asciidoc.DocumentCrossReference:
 			fmt.Printf("{doc xref}\n")
 			dumpAttributes(doc, el.Attributes(), indent+1)
