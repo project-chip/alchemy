@@ -116,7 +116,7 @@ func (b *Baller) appendSubsectionTypes(cxt *discoContext, section *asciidoc.Sect
 			subSectionNames[name] = struct{}{}
 		}
 		suffix := " " + subsectionSuffix
-		for ss := range parse.FindAll[*asciidoc.Section](cxt.doc.Reader(), section) {
+		for ss := range parse.FindAll[*asciidoc.Section](asciidoc.NewRawReader(), section) {
 			name := text.TrimCaseInsensitiveSuffix(cxt.doc.SectionName(ss), suffix)
 			if _, ok := subSectionNames[name]; !ok {
 				continue

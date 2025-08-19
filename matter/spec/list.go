@@ -31,7 +31,7 @@ func buildList[T types.Entity, L ~[]T](spec *Specification, d *Doc, s *asciidoc.
 	}
 	var err error
 	var ti *TableInfo
-	ti, err = ReadTable(d, t)
+	ti, err = ReadTable(d, d.Reader(), t)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func buildList[T types.Entity, L ~[]T](spec *Specification, d *Doc, s *asciidoc.
 			name := factory.EntityName(d, s)
 			e, ok = index.byName[strings.ToLower(name)]
 			if !ok {
-				slog.Warn("unknown entity", log.Element("source", d.Path, s), "entityName", s.Name())
+				slog.Warn("unknown entity attempting to match section to parent table", log.Path("sectionPath", s), log.Path("parentTablePath", t), slog.String("entityName", d.SectionName(s)), log.Element("source", d.Path, s))
 				continue
 			}
 		}

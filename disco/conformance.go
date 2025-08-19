@@ -45,12 +45,12 @@ func (b *Baller) fixConformanceCells(cxt *discoContext, section *subSection, row
 
 func disambiguateConformance(cxt *discoContext) (err error) {
 	globalChoices := make(map[string]string)
-	parse.Search(cxt.doc.Reader(), cxt.doc, cxt.doc.Children(), func(table *asciidoc.Table, parent asciidoc.Parent, index int) parse.SearchShould {
+	parse.Search(asciidoc.NewRawReader(), cxt.doc, cxt.doc.Children(), func(table *asciidoc.Table, parent asciidoc.Parent, index int) parse.SearchShould {
 		ti, ok := cxt.parsed.tableCache[table]
 		if !ok {
 
 			var err error
-			ti, err = spec.ReadTable(cxt.doc, table)
+			ti, err = spec.ReadTable(cxt.doc, asciidoc.NewRawReader(), table)
 			if err != nil {
 				return parse.SearchShouldContinue
 			}

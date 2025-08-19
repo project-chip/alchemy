@@ -61,7 +61,7 @@ func buildSectionTitle(pps *preparseFileState, section *asciidoc.Section, reader
 }
 
 func AssignSectionTypes(doc *Doc, top *asciidoc.Section) error {
-	if _, ok := doc.sectionTypes[top]; ok {
+	if _, ok := doc.sectionType(top); ok {
 		return nil
 	}
 	docType, err := doc.DocType()
@@ -333,11 +333,11 @@ func deriveSectionType(doc *Doc, section *asciidoc.Section, parent *asciidoc.Sec
 }
 
 func guessDataTypeFromTable(doc *Doc, section *asciidoc.Section) (sectionType matter.Section) {
-	firstTable := FindFirstTable(doc, section)
+	firstTable := FindFirstTable(doc.Reader(), section)
 	if firstTable == nil {
 		return
 	}
-	ti, err := ReadTable(doc, firstTable)
+	ti, err := ReadTable(doc, doc.Reader(), firstTable)
 	if err != nil {
 		return
 	}

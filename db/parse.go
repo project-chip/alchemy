@@ -21,11 +21,11 @@ type sectionInfo struct {
 var errMissingTable = fmt.Errorf("no table found")
 
 func appendSectionToRow(cxt context.Context, doc *spec.Doc, section *asciidoc.Section, row *dbRow) error {
-	t := spec.FindFirstTable(doc, section)
+	t := spec.FindFirstTable(doc.Reader(), section)
 	if t == nil {
 		return fmt.Errorf("no table found")
 	}
-	ti, err := spec.ReadTable(doc, t)
+	ti, err := spec.ReadTable(doc, doc.Reader(), t)
 	if err != nil {
 		return fmt.Errorf("failed mapping table columns for section %s: %w", doc.SectionName(section), err)
 	}
@@ -65,12 +65,12 @@ func (h *Host) readTableSection(cxt context.Context, doc *spec.Doc, parent *sect
 }
 
 func readTable(cxt context.Context, doc *spec.Doc, section *asciidoc.Section) (rs []*dbRow, err error) {
-	t := spec.FindFirstTable(doc, section)
+	t := spec.FindFirstTable(doc.Reader(), section)
 	if t == nil {
 		return nil, errMissingTable
 	}
 
-	ti, err := spec.ReadTable(doc, t)
+	ti, err := spec.ReadTable(doc, doc.Reader(), t)
 	if err != nil {
 		return nil, err
 	}
