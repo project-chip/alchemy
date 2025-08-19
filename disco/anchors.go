@@ -151,6 +151,9 @@ func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) 
 
 		for _, as := range da {
 			for _, a := range as {
+				if isDynamicAnchor(a) {
+					continue
+				}
 				id := a.Identifier(asciidoc.RawReader)
 				newID := an.normalizeAnchor(a)
 				if id == newID {
@@ -211,12 +214,26 @@ func (an AnchorNormalizer) normalizeAnchor(info *spec.Anchor) (id string) {
 }
 
 func skipAnchor(info *spec.Anchor) bool {
+	if isDynamicAnchor(info) {
+		return true
+	}
 	section, ok := info.Element.(*asciidoc.Section)
 	if !ok {
 		return false
 	}
 	if info.Document.Errata().Disco.IgnoreSection(section.Name(), errata.DiscoPurposeNormalizeAnchor) {
 		return true
+	}
+	return false
+}
+
+func isDynamicAnchor(info *spec.Anchor) bool {
+	for _, idElement := range info.ID {
+		switch idElement.(type) {
+		case *asciidoc.String:
+		default:
+			return true
+		}
 	}
 	return false
 }
