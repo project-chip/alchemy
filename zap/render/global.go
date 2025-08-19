@@ -53,7 +53,7 @@ func (p GlobalObjectsRenderer) Process(cxt context.Context, inputs []*pipeline.D
 			case types.EntityTypeStruct, types.EntityTypeBitmap, types.EntityTypeEnum:
 				globalEntities[entity.EntityType()] = append(globalEntities[entity.EntityType()], entity)
 			default:
-				slog.Warn("Skipping unsupported global entity type", matter.LogEntity("entity", entity))
+				slog.Warn("Skipping currently unsupported global entity type", matter.LogEntity("entity", entity))
 			}
 		}
 	}
