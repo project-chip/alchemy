@@ -39,6 +39,10 @@ func (s *String) Equals(e Element) bool {
 	return os.Value == s.Value
 }
 
+func (s *String) Clone() Element {
+	return &String{Value: s.Value}
+}
+
 type SpecialCharacter struct {
 	Character string
 }
@@ -59,6 +63,10 @@ func (s SpecialCharacter) Equals(e Element) bool {
 	return os.Character == s.Character
 }
 
+func (s SpecialCharacter) Clone() Element {
+	return SpecialCharacter{Character: s.Character}
+}
+
 type LineContinuation struct {
 	position
 	raw
@@ -71,6 +79,10 @@ func (LineContinuation) Type() ElementType {
 func (LineContinuation) Equals(e Element) bool {
 	_, ok := e.(LineContinuation)
 	return ok
+}
+
+func (lc LineContinuation) Clone() Element {
+	return LineContinuation{position: lc.position}
 }
 
 type LineBreak struct {
@@ -87,6 +99,10 @@ func (*LineBreak) Equals(e Element) bool {
 	return ok
 }
 
+func (lb LineBreak) Clone() Element {
+	return &LineBreak{position: lb.position}
+}
+
 type NewLine struct {
 	position
 	raw
@@ -99,6 +115,10 @@ func (NewLine) Type() ElementType {
 func (*NewLine) Equals(e Element) bool {
 	_, ok := e.(*NewLine)
 	return ok
+}
+
+func (nl NewLine) Clone() Element {
+	return &NewLine{position: nl.position}
 }
 
 func StringValue(el Element) string {

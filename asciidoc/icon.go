@@ -17,13 +17,17 @@ func (Icon) Type() ElementType {
 	return ElementTypeInline
 }
 
-func (a *Icon) Equals(o Element) bool {
+func (i *Icon) Equals(o Element) bool {
 	oa, ok := o.(*Icon)
 	if !ok {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !i.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Path == oa.Path
+	return i.Path == oa.Path
+}
+
+func (i *Icon) Clone() Element {
+	return &Icon{position: i.position, raw: i.raw, AttributeList: i.AttributeList.Clone(), Path: i.Path}
 }

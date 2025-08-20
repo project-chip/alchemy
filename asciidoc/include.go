@@ -16,13 +16,17 @@ func (FileInclude) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *FileInclude) Equals(o Element) bool {
+func (fi *FileInclude) Equals(o Element) bool {
 	oa, ok := o.(*FileInclude)
 	if !ok {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !fi.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return fi.Elements.Equals(oa.Elements)
+}
+
+func (fi *FileInclude) Clone() Element {
+	return &FileInclude{position: fi.position, raw: fi.raw, AttributeList: fi.AttributeList.Clone(), Elements: fi.Elements.Clone()}
 }

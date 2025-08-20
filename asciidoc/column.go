@@ -60,6 +60,16 @@ func (tcf *TableColumn) Equals(otcf *TableColumn) bool {
 func (tcf *TableColumn) IsDefault() bool {
 	return tcf.HorizontalAlign.Value == TableCellHorizontalAlignLeft && tcf.VerticalAlign.Value == TableCellVerticalAlignTop && tcf.Width.Value == 1 && tcf.Percentage.Value == 0 && tcf.Style.Value == TableCellStyleDefault
 }
+func (tcf *TableColumn) Clone() *TableColumn {
+	return &TableColumn{
+		Multiplier:      tcf.Multiplier,
+		HorizontalAlign: tcf.HorizontalAlign,
+		VerticalAlign:   tcf.VerticalAlign,
+		Width:           tcf.Width,
+		Percentage:      tcf.Percentage,
+		Style:           tcf.Style,
+	}
+}
 
 func NewTableColumn() *TableColumn {
 	return &TableColumn{
@@ -143,6 +153,14 @@ func (TableColumnsAttribute) AttributeType() AttributeType {
 
 func (TableColumnsAttribute) QuoteType() AttributeQuoteType {
 	return AttributeQuoteTypeDouble
+}
+
+func (ta *TableColumnsAttribute) Clone() Attribute {
+	cols := make([]*TableColumn, len(ta.Columns))
+	for i, col := range ta.Columns {
+		cols[i] = col.Clone()
+	}
+	return &TableColumnsAttribute{attribute: ta.attribute, Columns: cols}
 }
 
 func parseColumnAttribute(a *NamedAttribute) (*TableColumnsAttribute, error) {

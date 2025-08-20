@@ -17,16 +17,20 @@ func (ExampleBlock) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *ExampleBlock) Equals(o Element) bool {
+func (eb *ExampleBlock) Equals(o Element) bool {
 	oa, ok := o.(*ExampleBlock)
 	if !ok {
 		return false
 	}
-	if a.Delimiter != oa.Delimiter {
+	if eb.Delimiter != oa.Delimiter {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !eb.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return eb.Elements.Equals(oa.Elements)
+}
+
+func (eb *ExampleBlock) Clone() Element {
+	return &ExampleBlock{position: eb.position, raw: eb.raw, Delimiter: eb.Delimiter, AttributeList: eb.AttributeList.Clone(), Elements: eb.Elements.Clone()}
 }

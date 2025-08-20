@@ -18,16 +18,20 @@ func (OpenBlock) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *OpenBlock) Equals(o Element) bool {
+func (ob *OpenBlock) Equals(o Element) bool {
 	oa, ok := o.(*OpenBlock)
 	if !ok {
 		return false
 	}
-	if !a.Delimiter.Equals(oa.Delimiter) {
+	if !ob.Delimiter.Equals(oa.Delimiter) {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !ob.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return ob.Elements.Equals(oa.Elements)
+}
+
+func (ob *OpenBlock) Clone() Element {
+	return &OpenBlock{position: ob.position, raw: ob.raw, AttributeList: ob.AttributeList.Clone(), Delimiter: ob.Delimiter, Elements: ob.Elements.Clone()}
 }
