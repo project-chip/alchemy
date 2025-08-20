@@ -105,6 +105,7 @@ func patchParserStruct(parserStruct *dst.StructType) {
 	offsetField.Decorations().Before = dst.EmptyLine
 	offsetField.Decorations().End.Append("// Alchemy patch: we add an offset field to track element positions in the doc")
 	parserStruct.Fields.List = append(parserStruct.Fields.List, offsetField)
+
 }
 
 func patchParseSeqExpr(parseSeqExpr *dst.FuncDecl) {

@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"slices"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -42,7 +43,7 @@ func (p ZclPatcher) Name() string {
 	return "Patching ZCL JSON files with clusters"
 }
 
-func (p ZclPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[[]byte], err error) {
+func (p ZclPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*asciidoc.Document]) (outputs []*pipeline.Data[[]byte], err error) {
 
 	files := make([]string, 0, p.provisionalZclFiles.Size())
 	p.provisionalZclFiles.Range(func(key string, value *pipeline.Data[string]) bool {

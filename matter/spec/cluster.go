@@ -14,23 +14,23 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func toClusters(spec *Specification, d *Doc, section *asciidoc.Section, pc *parseContext) (err error) {
+func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, d *asciidoc.Document, section *asciidoc.Section) (entity types.Entity, err error) {
 	var clusters []*matter.Cluster
 
-	sections := parse.SkimList[*asciidoc.Section](d.Reader(), section, section.Children())
+	sections := parse.SkimList[*asciidoc.Section](reader, section, reader.Children(section))
 
 	// Find the cluster ID section and read the IDs from the table
 	for _, s := range sections {
-		switch d.SectionType(s) {
+		switch library.SectionType(s) {
 		case matter.SectionClusterID:
-			clusters, err = readClusterIDs(d, s)
+			clusters, err = readClusterIDs(reader, d, s)
 		}
 		if err != nil {
 			return
 		}
 	}
 
-	sectionName := d.SectionName(section)
+	sectionName := library.SectionName(section)
 
 	var parentEntity types.Entity
 	var clusterGroup *matter.ClusterGroup
@@ -59,15 +59,15 @@ func toClusters(spec *Specification, d *Doc, section *asciidoc.Section, pc *pars
 	var features *matter.Features
 	var dataTypes []types.Entity
 	for _, s := range sections {
-		switch d.SectionType(s) {
+		switch library.SectionType(s) {
 		case matter.SectionDataTypes, matter.SectionStatusCodes:
 			var dts []types.Entity
-			dts, err = toDataTypes(spec, d, s, pc, parentEntity)
+			dts, err = library.toDataTypes(spec, reader, d, s, parentEntity)
 			if err == nil {
 				dataTypes = append(dataTypes, dts...)
 			}
 		case matter.SectionFeatures:
-			features, err = toFeatures(d, s, pc)
+			features, err = library.toFeatures(reader, d, s)
 			if err != nil {
 				return
 			}
@@ -78,24 +78,26 @@ func toClusters(spec *Specification, d *Doc, section *asciidoc.Section, pc *pars
 	}
 
 	if clusterGroup != nil {
-		pc.addRootEntity(clusterGroup, section)
+		//pc.addRootEntity(clusterGroup, section)
+		entity = clusterGroup
 
 		clusterGroup.AddDataTypes(dataTypes...)
 
-		for _, s := range sections {
-			switch d.SectionType(s) {
+		for _, section := range sections {
+			switch library.SectionType(section) {
 			case matter.SectionClassification:
-				err = readClusterClassification(d, clusterGroup.Name, &clusterGroup.ClusterClassification, s)
+				err = readClusterClassification(reader, d, clusterGroup.Name, &clusterGroup.ClusterClassification, section)
 			}
 			if err != nil {
 				return
 			}
 		}
 	} else {
-		pc.addRootEntity(clusters[0], section)
+		entity = clusters[0]
+		//pc.addRootEntity(clusters[0], section)
 	}
 
-	var description = getDescription(d, clusters[0], section, section.Children())
+	var description = library.getDescription(reader, d, clusters[0], section, reader.Children(section))
 
 	for _, c := range clusters {
 		c.Description = description
@@ -105,35 +107,35 @@ func toClusters(spec *Specification, d *Doc, section *asciidoc.Section, pc *pars
 		}
 
 		for _, s := range sections {
-			switch d.SectionType(s) {
+			switch library.SectionType(s) {
 			case matter.SectionClassification:
-				err = readClusterClassification(d, c.Name, &c.ClusterClassification, s)
+				err = readClusterClassification(reader, d, c.Name, &c.ClusterClassification, s)
 			}
 			if err != nil {
 				return
 			}
 		}
 		for _, s := range sections {
-			switch d.SectionType(s) {
+			switch library.SectionType(s) {
 			case matter.SectionAttributes:
 				var attr []*matter.Field
-				attr, err = toAttributes(spec, d, s, c, pc)
+				attr, err = library.toAttributes(spec, reader, d, s, c)
 				if err == nil {
 					c.Attributes = append(c.Attributes, attr...)
 				}
 			case matter.SectionEvents:
-				c.Events, err = toEvents(spec, d, s, pc, parentEntity)
+				c.Events, err = library.toEvents(spec, reader, d, s, parentEntity)
 			case matter.SectionCommands:
-				c.Commands, err = toCommands(spec, d, s, pc, parentEntity)
+				c.Commands, err = library.toCommands(spec, reader, d, s, parentEntity)
 			case matter.SectionRevisionHistory:
-				c.Revisions, err = readRevisionHistory(d, s)
+				c.Revisions, err = readRevisionHistory(reader, d, s)
 			case matter.SectionDerivedClusterNamespace:
-				err = parseDerivedCluster(d, pc, s, c)
+				err = library.parseDerivedCluster(reader, d, s, c)
 			case matter.SectionClusterID:
 			case matter.SectionDataTypes, matter.SectionFeatures, matter.SectionStatusCodes: // Handled above
 			default:
 				var looseEntities []types.Entity
-				looseEntities, err = findLooseEntities(spec, d, s, pc, parentEntity)
+				looseEntities, err = library.findLooseEntities(spec, reader, d, s, parentEntity)
 				if err != nil {
 					return
 				}
@@ -163,21 +165,21 @@ func toClusters(spec *Specification, d *Doc, section *asciidoc.Section, pc *pars
 	return
 }
 
-func readRevisionHistory(doc *Doc, section *asciidoc.Section) (revisions []*matter.Revision, err error) {
+func readRevisionHistory(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section) (revisions []*matter.Revision, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(doc, section)
+	ti, err = parseFirstTable(reader, doc, section)
 	if err != nil {
 		err = newGenericParseError(section, "failed reading revision history: %w", err)
 		return
 	}
 	for row := range ti.ContentRows() {
 		rev := &matter.Revision{}
-		rev.Number, err = ti.ReadString(row, matter.TableColumnRevision)
+		rev.Number, err = ti.ReadString(reader, row, matter.TableColumnRevision)
 		if err != nil {
 			err = newGenericParseError(row, "error reading revision column: %w", err)
 			return
 		}
-		rev.Description, err = ti.ReadValue(row, matter.TableColumnDescription)
+		rev.Description, err = ti.ReadValue(reader, row, matter.TableColumnDescription)
 		if err != nil {
 			err = newGenericParseError(row, "error reading revision description: %w", err)
 			return
@@ -188,30 +190,30 @@ func readRevisionHistory(doc *Doc, section *asciidoc.Section) (revisions []*matt
 	return
 }
 
-func readClusterIDs(doc *Doc, section *asciidoc.Section) ([]*matter.Cluster, error) {
-	ti, err := parseFirstTable(doc, section)
+func readClusterIDs(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section) ([]*matter.Cluster, error) {
+	ti, err := parseFirstTable(reader, doc, section)
 	if err != nil {
 		return nil, newGenericParseError(section, "failed reading cluster ID: %w", err)
 	}
 	var clusters []*matter.Cluster
 	for row := range ti.ContentRows() {
 		c := matter.NewCluster(section)
-		c.ID, err = ti.ReadID(row, matter.TableColumnClusterID, matter.TableColumnID)
+		c.ID, err = ti.ReadID(reader, row, matter.TableColumnClusterID, matter.TableColumnID)
 		if err != nil {
 			return nil, err
 		}
 		var name string
-		name, err = ti.ReadValue(row, matter.TableColumnClusterName, matter.TableColumnName)
+		name, err = ti.ReadValue(reader, row, matter.TableColumnClusterName, matter.TableColumnName)
 		if err != nil {
 			return nil, err
 		}
 		c.Name = toClusterName(name)
-		c.PICS, err = ti.ReadString(row, matter.TableColumnPICS, matter.TableColumnPICSCode)
+		c.PICS, err = ti.ReadString(reader, row, matter.TableColumnPICS, matter.TableColumnPICSCode)
 		if err != nil {
 			return nil, err
 		}
 
-		c.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
+		c.Conformance = ti.ReadConformance(reader, row, matter.TableColumnConformance)
 		clusters = append(clusters, c)
 	}
 
@@ -232,31 +234,31 @@ func clusterNamesEquivalent(name1 string, name2 string) bool {
 	return strings.EqualFold(name1, name2)
 }
 
-func readClusterClassification(doc *Doc, name string, classification *matter.ClusterClassification, s *asciidoc.Section) error {
-	ti, err := parseFirstTable(doc, s)
+func readClusterClassification(reader asciidoc.Reader, doc *asciidoc.Document, name string, classification *matter.ClusterClassification, s *asciidoc.Section) error {
+	ti, err := parseFirstTable(reader, doc, s)
 	if err != nil {
 		return newGenericParseError(s, "failed reading classification: %w", err)
 	}
 	for row := range ti.ContentRows() {
-		classification.Hierarchy, err = ti.ReadString(row, matter.TableColumnHierarchy)
+		classification.Hierarchy, err = ti.ReadString(reader, row, matter.TableColumnHierarchy)
 		if err != nil {
 			return newGenericParseError(row, "error reading hierarchy column on cluster %s: %w", name, err)
 		}
-		classification.Role, err = ti.ReadString(row, matter.TableColumnRole)
+		classification.Role, err = ti.ReadString(reader, row, matter.TableColumnRole)
 		if err != nil {
 			return newGenericParseError(row, "error reading role column on cluster %s: %w", name, err)
 		}
-		classification.Scope, err = ti.ReadString(row, matter.TableColumnScope, matter.TableColumnContext)
+		classification.Scope, err = ti.ReadString(reader, row, matter.TableColumnScope, matter.TableColumnContext)
 		if err != nil {
 			newGenericParseError(row, "error reading scope column on cluster %s: %w", name, err)
 		}
 		if len(classification.PICS) == 0 {
-			classification.PICS, err = ti.ReadString(row, matter.TableColumnPICS, matter.TableColumnPICSCode)
+			classification.PICS, err = ti.ReadString(reader, row, matter.TableColumnPICS, matter.TableColumnPICSCode)
 			if err != nil {
 				return newGenericParseError(row, "error reading PICS column on cluster %s: %w", name, err)
 			}
 		}
-		classification.Quality, err = ti.ReadQuality(row, types.EntityTypeCluster, matter.TableColumnQuality)
+		classification.Quality, err = ti.ReadQuality(reader, row, types.EntityTypeCluster, matter.TableColumnQuality)
 		if err != nil {
 			return newGenericParseError(row, "error reading Quality column on cluster %s: %w", name, err)
 		}
@@ -265,12 +267,12 @@ func readClusterClassification(doc *Doc, name string, classification *matter.Clu
 			switch ec.Name {
 			case "Context":
 				if len(classification.Scope) == 0 {
-					classification.Scope, err = RenderTableCell(tableCells[ec.Offset])
+					classification.Scope, err = RenderTableCell(reader, tableCells[ec.Offset])
 				}
 			case "Primary Transaction":
 				if len(classification.Scope) == 0 {
 					var pt string
-					pt, err = RenderTableCell(tableCells[ec.Offset])
+					pt, err = RenderTableCell(reader, tableCells[ec.Offset])
 					if err == nil {
 						if strings.HasPrefix(pt, "Type 1") {
 							classification.Scope = "Endpoint"
@@ -287,18 +289,18 @@ func readClusterClassification(doc *Doc, name string, classification *matter.Clu
 	return nil
 }
 
-func parseDerivedCluster(d *Doc, pc *parseContext, s *asciidoc.Section, c *matter.Cluster) error {
-	elements := parse.Skim[*asciidoc.Section](d.Reader(), s, s.Children())
+func (library *Library) parseDerivedCluster(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, c *matter.Cluster) error {
+	elements := parse.Skim[*asciidoc.Section](reader, s, reader.Children(s))
 	for s := range elements {
-		switch d.SectionType(s) {
+		switch library.SectionType(s) {
 		case matter.SectionModeTags:
-			en, err := toModeTags(d, s, c)
+			en, err := library.toModeTags(reader, d, s, c)
 			if err != nil {
 				return err
 			}
 			c.Enums = append(c.Enums, en)
 		case matter.SectionStatusCodes:
-			en, err := toStatusCodes(d, s, pc, c)
+			en, err := library.toStatusCodes(reader, d, s, c)
 			if err != nil {
 				return err
 			}

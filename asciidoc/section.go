@@ -75,8 +75,8 @@ func (s Section) Name() string {
 	return sb.String()
 }
 
-func (s *Section) Traverse(parent Parent) iter.Seq2[Parent, Parent] {
-	return func(yield func(Parent, Parent) bool) {
+func (s *Section) Traverse(parent ParentElement) iter.Seq2[ParentElement, Parent] {
+	return func(yield func(ParentElement, Parent) bool) {
 		if !s.AttributeList.traverse(s, yield) {
 			return
 		}

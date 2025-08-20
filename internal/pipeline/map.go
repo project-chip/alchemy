@@ -12,6 +12,7 @@ type Map[K comparable, V any] interface {
 	Store(key K, value V)
 	LoadOrStore(key K, value V) (actual V, loaded bool)
 	LoadAndStore(key K, value V) (actual V, loaded bool)
+	LoadAndDelete(key K) (value V, loaded bool)
 	Delete(key K)
 	Size() int
 	Range(f func(key K, value V) bool)
@@ -40,6 +41,12 @@ func (um unsafeMap[K, V]) LoadOrStore(key K, value V) (actual V, loaded bool) {
 func (um unsafeMap[K, V]) LoadAndStore(key K, value V) (actual V, loaded bool) {
 	actual, loaded = um[key]
 	um[key] = value
+	return
+}
+
+func (um unsafeMap[K, V]) LoadAndDelete(key K) (value V, loaded bool) {
+	value, loaded = um[key]
+	delete(um, key)
 	return
 }
 

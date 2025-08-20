@@ -17082,7 +17082,7 @@ func GlobalStore(key string, value any) Option {
 }
 
 // ParseFile parses the file identified by filename.
-func ParseFile(filename string, opts ...Option) (i any, err error) {
+func parseFile(filename string, opts ...Option) (i any, err error) {
 	f, err := os.Open(filename)
 	if err != nil {
 		return nil, err
@@ -17092,23 +17092,23 @@ func ParseFile(filename string, opts ...Option) (i any, err error) {
 			err = closeErr
 		}
 	}()
-	return ParseReader(filename, f, opts...)
+	return parseReader(filename, f, opts...)
 }
 
 // ParseReader parses the data from r using filename as information in the
 // error messages.
-func ParseReader(filename string, r io.Reader, opts ...Option) (any, error) {
+func parseReader(filename string, r io.Reader, opts ...Option) (any, error) {
 	b, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}
 
-	return Parse(filename, b, opts...)
+	return parse(filename, b, opts...)
 }
 
 // Parse parses the data from b using filename as information in the
 // error messages.
-func Parse(filename string, b []byte, opts ...Option) (any, error) {
+func parse(filename string, b []byte, opts ...Option) (any, error) {
 	return newParser(filename, b, opts...).parse(g)
 }
 
@@ -17409,7 +17409,8 @@ type parser struct {
 	// recovery expression stack, keeps track of the currently available recovery expression, these are traversed in reverse
 	recoveryStack []map[string]any
 
-	offset position // Alchemy patch: we add an offset field to track element positions in the doc
+	offset   position           // Alchemy patch: we add an offset field to track element positions in the doc
+	document *asciidoc.Document // Alchemy patch: we add a reference to the document being parsed
 }
 
 // push a variable set on the vstack.

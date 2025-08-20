@@ -5,24 +5,23 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func dumpElements(doc *spec.Doc, parent asciidoc.Parent, els asciidoc.Elements, indent int) {
+func dumpElements(reader Reader, parent asciidoc.Parent, els asciidoc.Elements, indent int) {
 
-	for e := range doc.Reader().Iterate(parent, els) {
+	for e := range reader.Iterate(parent, els) {
 		fmt.Print(strings.Repeat("\t", indent))
 		as, ok := e.(*asciidoc.Section)
 		if ok {
-			fmt.Printf("{SEC %d (%s)}:\n", as.Level, doc.SectionType(as))
+			fmt.Printf("{SEC %d (%s)}:\n", as.Level, reader.SectionType(as))
 
-			dumpAttributes(doc, as.Attributes(), indent+1)
+			dumpAttributes(reader, as.Attributes(), indent+1)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{title:}\n")
-			dumpElements(doc, as, as.Title, indent+2)
+			dumpElements(reader, as, as.Title, indent+2)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{body:}\n")
-			dumpElements(doc, as, as.Children(), indent+2)
+			dumpElements(reader, as, as.Children(), indent+2)
 			continue
 		}
 		switch el := e.(type) {
@@ -34,22 +33,22 @@ func dumpElements(doc *spec.Doc, parent asciidoc.Parent, els asciidoc.Elements, 
 			fmt.Printf("{linebreak%s}\n", dumpPosition(el))
 		case *asciidoc.AttributeEntry:
 			fmt.Printf("{attrib%s}: %s", dumpPosition(el), el.Name)
-			dumpElements(doc, el, el.Children(), indent+1)
+			dumpElements(reader, el, reader.Children(el), indent+1)
 			fmt.Print("\n")
 		case *asciidoc.Paragraph:
 			fmt.Printf("{para%s}: ", dumpPosition(el))
 			fmt.Print("\n")
-			dumpAttributes(doc, el.Attributes(), indent+1)
-			dumpElements(doc, el, el.Children(), indent+1)
+			dumpAttributes(reader, el.Attributes(), indent+1)
+			dumpElements(reader, el, reader.Children(el), indent+1)
 		case *asciidoc.Section:
 			fmt.Printf("{sec %d%s}:\n", el.Level, dumpPosition(el))
-			dumpAttributes(doc, el.Attributes(), indent+1)
+			dumpAttributes(reader, el.Attributes(), indent+1)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{title:}\n")
-			dumpElements(doc, el, el.Title, indent+2)
+			dumpElements(reader, el, el.Title, indent+2)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{body:}\n")
-			dumpElements(doc, el, el.Children(), indent+2)
+			dumpElements(reader, el, reader.Children(el), indent+2)
 		case *asciidoc.String:
 			fmt.Print("{str}: ", snippet(el.Value))
 			fmt.Print("\n")
@@ -57,15 +56,15 @@ func dumpElements(doc *spec.Doc, parent asciidoc.Parent, els asciidoc.Elements, 
 		case asciidoc.FormattedTextElement:
 			fmt.Printf("{formatted text %d%s}:\n", el.TextFormat(), dumpPosition(el))
 			if a, ok := el.(asciidoc.Attributable); ok {
-				dumpAttributes(doc, a.Attributes(), indent+1)
+				dumpAttributes(reader, a.Attributes(), indent+1)
 			}
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{body:}\n")
-			dumpElements(doc, el, el.Children(), indent+2)
+			dumpElements(reader, el, reader.Children(el), indent+2)
 		case *asciidoc.Table:
 			fmt.Printf("{tab%s}:\n", dumpPosition(el))
-			dumpAttributes(doc, el.Attributes(), indent+1)
-			dumpTable(doc, el, indent+1)
+			dumpAttributes(reader, el.Attributes(), indent+1)
+			dumpTable(reader, el, indent+1)
 		case *asciidoc.IfDef:
 			fmt.Print("{ifdef ")
 			dumpConditional(el.Attributes, el.Union, indent)
@@ -77,40 +76,40 @@ func dumpElements(doc *spec.Doc, parent asciidoc.Parent, els asciidoc.Elements, 
 			dumpConditional(el.Attributes, el.Union, indent)
 		case *asciidoc.OrderedListItem:
 			fmt.Print("{ole}:\n")
-			dumpAttributes(doc, el.Attributes(), indent+1)
-			dumpElements(doc, el, el.Children(), indent+1)
+			dumpAttributes(reader, el.Attributes(), indent+1)
+			dumpElements(reader, el, reader.Children(el), indent+1)
 		case *asciidoc.UnorderedListItem:
 			fmt.Printf("{uole bs=%s cl=%v}:\n", el.Marker, el.Checklist)
-			dumpAttributes(doc, el.Attributes(), indent+1)
-			dumpElements(doc, el, el.Children(), indent+1)
+			dumpAttributes(reader, el.Attributes(), indent+1)
+			dumpElements(reader, el, reader.Children(el), indent+1)
 		case *asciidoc.CrossReference:
 			fmt.Printf("{xref}\n")
-			dumpElements(doc, el, el.ID, indent+1)
+			dumpElements(reader, el, el.ID, indent+1)
 			if len(el.Elements) > 0 {
 				fmt.Print(strings.Repeat("\t", indent))
 				fmt.Printf("{label}\n")
-				dumpElements(doc, el, el.Elements, indent+1)
+				dumpElements(reader, el, el.Elements, indent+1)
 			}
 		case *asciidoc.DocumentCrossReference:
 			fmt.Printf("{doc xref}\n")
-			dumpAttributes(doc, el.Attributes(), indent+1)
-			dumpElements(doc, &el.ReferencePath, el.ReferencePath, indent+1)
+			dumpAttributes(reader, el.Attributes(), indent+1)
+			dumpElements(reader, &el.ReferencePath, el.ReferencePath, indent+1)
 		case asciidoc.SpecialCharacter:
 			fmt.Printf("{sc: %s}\n", el.Character)
 		case *asciidoc.Link:
 			fmt.Printf("{link: ")
-			dumpLocation(doc, el.URL, indent+1)
+			dumpLocation(reader, el.URL, indent+1)
 			fmt.Print("}\n")
-			dumpAttributes(doc, el.Attributes(), indent+1)
+			dumpAttributes(reader, el.Attributes(), indent+1)
 		case *asciidoc.LinkMacro:
 			fmt.Printf("{link macro: ")
-			dumpLocation(doc, el.URL, indent+1)
+			dumpLocation(reader, el.URL, indent+1)
 			fmt.Print("}\n")
-			dumpAttributes(doc, el.Attributes(), indent+1)
+			dumpAttributes(reader, el.Attributes(), indent+1)
 		case *asciidoc.FileInclude:
 			fmt.Printf("{include:\n")
-			dumpAttributes(doc, el.Attributes(), indent+1)
-			dumpElements(doc, el, el.Children(), indent+1)
+			dumpAttributes(reader, el.Attributes(), indent+1)
+			dumpElements(reader, el, reader.Children(el), indent+1)
 			fmt.Print(strings.Repeat("\t", indent))
 			fmt.Print("}\n")
 		/*case *asciidoc.DocumentHeader:
@@ -118,16 +117,16 @@ func dumpElements(doc *spec.Doc, parent asciidoc.Parent, els asciidoc.Elements, 
 			fmt.Print(strings.Repeat("\t", indent+1))
 			dumpAttributes(el.Attributes, indent+1)
 			fmt.Printf("{title:}\n")
-			dumpElements(doc, el.Title, indent+2)
+			dumpElements( el.Title, indent+2)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{body:}\n")
-			dumpElements(doc, el.Elements, indent+2)
+			dumpElements( el.Elements, indent+2)
 
 		case *asciidoc.Preamble:
 			fmt.Printf("{preamble}\n")
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{body:}\n")
-			dumpElements(doc, el.Elements, indent+2)
+			dumpElements( el.Elements, indent+2)
 			if el.TableOfContents != nil {
 				fmt.Print(strings.Repeat("\t", indent+1))
 				dumpTOC(el.TableOfContents.Sections, indent+2)
@@ -135,7 +134,7 @@ func dumpElements(doc *spec.Doc, parent asciidoc.Parent, els asciidoc.Elements, 
 		case asciidoc.DocumentAuthors:
 			fmt.Print("{authors}\n")
 			for _, a := range el {
-				dumpElements(doc, []any{a}, indent+1)
+				dumpElements( []any{a}, indent+1)
 			}
 		case *asciidoc.DocumentAuthor:
 			fmt.Printf("{author %s", el.Email)
@@ -153,25 +152,25 @@ func dumpElements(doc *spec.Doc, parent asciidoc.Parent, els asciidoc.Elements, 
 				}
 			}
 			if fn != nil {
-				dumpElements(doc, fn.Elements, indent+1)
+				dumpElements( fn.Elements, indent+1)
 
 			}
 		*/
 		case *asciidoc.InlineImage:
 			fmt.Printf("{image: ")
-			dumpElements(doc, &el.ImagePath, el.ImagePath, indent+1)
+			dumpElements(reader, &el.ImagePath, el.ImagePath, indent+1)
 			fmt.Print("}\n")
-			dumpAttributes(doc, el.Attributes(), indent+1)
+			dumpAttributes(reader, el.Attributes(), indent+1)
 		case *asciidoc.BlockImage:
 			fmt.Printf("{imageblock: ")
-			dumpElements(doc, &el.ImagePath, el.ImagePath, indent+1)
+			dumpElements(reader, &el.ImagePath, el.ImagePath, indent+1)
 			fmt.Print("}\n")
-			dumpAttributes(doc, el.Attributes(), indent+1)
+			dumpAttributes(reader, el.Attributes(), indent+1)
 		case *asciidoc.AttributeReset:
 			fmt.Printf("{attr_reset: %s}\n", el.Name)
 		case *asciidoc.Listing:
 			fmt.Printf("{listing\n")
-			dumpAttributes(doc, el.Attributes(), indent+1)
+			dumpAttributes(reader, el.Attributes(), indent+1)
 			for i, l := range el.Lines() {
 				fmt.Print(strings.Repeat("\t", indent+1))
 				fmt.Printf("%d: \"%s\"\n", i, l)
@@ -185,22 +184,22 @@ func dumpElements(doc *spec.Doc, parent asciidoc.Parent, els asciidoc.Elements, 
 			fmt.Printf("{anchor \"%s\"", el.ID)
 			if len(el.Elements) > 0 {
 				fmt.Print("\n")
-				dumpElements(doc, el, el.Children(), indent+1)
+				dumpElements(reader, el, reader.Children(el), indent+1)
 			}
 			fmt.Print("}\n")
 		/*case *asciidoc.ListElements:
 		fmt.Printf("{list els}\n")
-		dumpElements(doc, el.Elements, indent+1)*/
+		dumpElements( el.Elements, indent+1)*/
 		case *asciidoc.ListContinuation:
 			fmt.Printf("{list continuation (new line count: %d)}\n", el.NewLineCount)
 			children := asciidoc.Elements{el.Child()}
-			dumpElements(doc, &children, children, indent+1)
+			dumpElements(reader, &children, children, indent+1)
 		case *asciidoc.CharacterReplacementReference:
 			fmt.Printf("{predef %s}\n", el.Name())
 		case *asciidoc.QuoteBlock:
 			fmt.Printf("{quote delimiter:\"%d\"}:\n", el.Delimiter.Type)
-			dumpAttributes(doc, el.Attributes(), indent+1)
-			dumpElements(doc, el, el.Children(), indent+1)
+			dumpAttributes(reader, el.Attributes(), indent+1)
+			dumpElements(reader, el, reader.Children(el), indent+1)
 		case *asciidoc.UserAttributeReference:
 			fmt.Printf("{user attribute ref:\"%s\"}:\n", el.Value)
 		default:

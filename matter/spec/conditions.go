@@ -11,9 +11,9 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func toConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceType) (conditions []*matter.Condition, err error) {
+func (library *Library) toConditions(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, dt *matter.DeviceType) (conditions []*matter.Condition, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(d, s)
+	ti, err = parseFirstTable(reader, d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -34,7 +34,7 @@ func toConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceType) (condition
 				}
 			}
 			if featureIndex == -1 {
-				err = newGenericParseError(ti.Element, "failed to find tag column in section %s", d.SectionName(s))
+				err = newGenericParseError(ti.Element, "failed to find tag column in section %s", library.SectionName(s))
 				return
 			}
 		}
@@ -42,16 +42,16 @@ func toConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceType) (condition
 	_, hasId := ti.ColumnMap[matter.TableColumnConditionID]
 	for row := range ti.ContentRows() {
 		c := matter.NewCondition(row, dt)
-		c.Feature, _, err = ti.ReadNameAtOffset(row, featureIndex)
+		c.Feature, _, err = ti.ReadNameAtOffset(library, row, featureIndex)
 		if err != nil {
 			return
 		}
-		c.Description, err = ti.ReadString(row, matter.TableColumnDescription)
+		c.Description, err = ti.ReadString(reader, row, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}
 		if hasId {
-			c.ID, err = ti.ReadID(row, matter.TableColumnConditionID)
+			c.ID, err = ti.ReadID(reader, row, matter.TableColumnConditionID)
 			if err != nil {
 				return
 			}
@@ -61,17 +61,17 @@ func toConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceType) (condition
 	return
 }
 
-func toBaseDeviceTypeConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceType) (conditions []*matter.Condition, err error) {
-	if !text.HasCaseInsensitiveSuffix(d.SectionName(s), " Conditions") {
+func (library *Library) toBaseDeviceTypeConditions(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, dt *matter.DeviceType) (conditions []*matter.Condition, err error) {
+	if !text.HasCaseInsensitiveSuffix(library.SectionName(s), " Conditions") {
 		return
 	}
 
 	var ti *TableInfo
-	t := FindFirstTable(d.Reader(), s)
+	t := FindFirstTable(reader, s)
 	if t == nil {
 		return
 	}
-	ti, err = parseTable(d, s, t)
+	ti, err = parseTable(reader, d, s, t)
 	if err == nil {
 		tagOffset := -1
 		if ti.ColumnMap.HasAll(matter.TableColumnTag) {
@@ -91,16 +91,16 @@ func toBaseDeviceTypeConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceTy
 		_, hasId := ti.ColumnMap[matter.TableColumnConditionID]
 		for row := range ti.ContentRows() {
 			c := matter.NewCondition(row, dt)
-			c.Feature, _, err = ti.ReadNameAtOffset(row, tagOffset)
+			c.Feature, _, err = ti.ReadNameAtOffset(library, row, tagOffset)
 			if err != nil {
 				return
 			}
-			c.Description, err = ti.ReadString(row, matter.TableColumnDescription, matter.TableColumnSummary)
+			c.Description, err = ti.ReadString(reader, row, matter.TableColumnDescription, matter.TableColumnSummary)
 			if err != nil {
 				return
 			}
 			if hasId {
-				c.ID, err = ti.ReadID(row, matter.TableColumnConditionID)
+				c.ID, err = ti.ReadID(reader, row, matter.TableColumnConditionID)
 				if err != nil {
 					return
 				}
@@ -115,13 +115,13 @@ func toBaseDeviceTypeConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceTy
 	}
 	// There are some condition tables with no valid Matter columns, so we handle them manually
 
-	for i, row := range t.TableRows(d.Reader()) {
+	for i, row := range t.TableRows(reader) {
 		if i == 0 {
 			// Skip the first row, as it's a header
 			continue
 		}
 		var sb strings.Builder
-		err = readRowCellValueElements(d, d.Reader(), row, row, row.Elements, &sb)
+		err = readRowCellValueElements(reader, row, row, row.Elements, &sb)
 		if err != nil {
 			continue
 		}

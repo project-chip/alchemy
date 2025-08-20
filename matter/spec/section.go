@@ -14,6 +14,13 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
+type SectionInfoCache interface {
+	SectionName(section *asciidoc.Section) string
+	SetSectionName(section *asciidoc.Section, name string)
+	SectionType(section *asciidoc.Section) matter.Section
+	SetSectionType(section *asciidoc.Section, sectionType matter.Section)
+}
+
 func buildSectionTitle(variableStore interface {
 	Get(string) any
 }, section *asciidoc.Section, reader asciidoc.Reader, title *strings.Builder, els ...asciidoc.Element) (err error) {
@@ -69,23 +76,78 @@ func (variableStore) Get(string) any {
 	return nil
 }
 
-func AssignSectionNames(doc *Doc) error {
+func AssignSectionNames(sectionInfoCache SectionInfoCache, reader asciidoc.Reader, doc *asciidoc.Document) error {
 	vs := &variableStore{}
-	parse.Search(asciidoc.RawReader, doc, doc.Children(), func(section *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
+	parse.Search(doc, reader, doc, reader.Children(doc), func(doc *asciidoc.Document, section *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
 		var sb strings.Builder
-		buildSectionTitle(vs, section, asciidoc.RawReader, &sb, section.Title...)
+		buildSectionTitle(vs, section, reader, &sb, section.Title...)
 		slog.Info("assigning name", "name", sb.String())
-		doc.SetSectionName(section, sb.String())
+		sectionInfoCache.SetSectionName(section, sb.String())
 		return parse.SearchShouldContinue
 	})
 	return nil
 }
 
-func AssignSectionTypes(doc *Doc, top *asciidoc.Section) error {
-	if _, ok := doc.sectionType(top); ok {
+func AssignSectionTypes(sectionInfoCache SectionInfoCache, docInfoCache DocumentInfoCache, reader asciidoc.Reader, doc *asciidoc.Document, top *asciidoc.Section) (err error) {
+	//slog.Info("Assigning section type", "path", doc.Path.Relative, log.Path("source", top))
+	var lastDoc *asciidoc.Document
+	parse.Search(doc, reader, doc, reader.Children(doc), func(doc *asciidoc.Document, section *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
+		//slog.Info("Searching section type", "section", sectionInfoCache.SectionName(section), "path", doc.Path.Relative, log.Path("source", top))
+
+		parentSection, _ := parent.(*asciidoc.Section)
+		if doc != lastDoc {
+			// This is the top section of a document
+			var docType matter.DocType
+			docType, err = docInfoCache.DocType(doc)
+			if err != nil {
+				return parse.SearchShouldStop
+			}
+			var parentSectionType matter.Section
+			if parentSection != nil {
+				parentSectionType = sectionInfoCache.SectionType(parentSection)
+			}
+
+			lastDoc = doc
+
+			var secType matter.Section
+			switch parentSectionType {
+			case matter.SectionTop, matter.SectionUnknown:
+				switch docType {
+				case matter.DocTypeCluster:
+					secType = matter.SectionCluster
+				case matter.DocTypeDeviceType, matter.DocTypeBaseDeviceType:
+					secType = matter.SectionDeviceType
+				case matter.DocTypeNamespace:
+					secType = matter.SectionNamespace
+
+				default:
+					secType = matter.SectionTop
+					if strings.HasSuffix(sectionInfoCache.SectionName(section), " Cluster") {
+						secType = matter.SectionCluster
+					}
+				}
+			}
+
+			if secType != matter.SectionUnknown {
+				assignSectionType(sectionInfoCache, doc, section, secType)
+				return parse.SearchShouldContinue
+			}
+		}
+		assignSectionType(sectionInfoCache, doc, section, getSectionType(sectionInfoCache, reader, doc, parentSection, section))
+		switch sectionInfoCache.SectionType(section) {
+		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct, matter.SectionDataTypeDef:
+			if section.Level > 2 {
+				slog.Debug("Unusual depth for section type", slog.String("name", sectionInfoCache.SectionName(section)), slog.String("type", sectionInfoCache.SectionType(section).String()), slog.String("path", doc.Path.String()))
+			}
+		}
+		return parse.SearchShouldContinue
+	})
+	return
+	/*existing := sectionInfoCache.SectionType(top)
+	if existing != matter.SectionUnknown {
 		return nil
 	}
-	docType, err := doc.DocType()
+	docType, err := docInfoCache.DocType(doc)
 	if err != nil {
 		return err
 	}
@@ -99,60 +161,64 @@ func AssignSectionTypes(doc *Doc, top *asciidoc.Section) error {
 		secType = matter.SectionNamespace
 	default:
 		secType = matter.SectionTop
-		if strings.HasSuffix(doc.SectionName(top), " Cluster") {
+		if strings.HasSuffix(sectionInfoCache.SectionName(top), " Cluster") {
 			secType = matter.SectionCluster
 		}
 	}
-	assignSectionType(doc, top, secType)
+	assignSectionType(sectionInfoCache, doc, top, secType)
 
-	parse.Search(doc.Reader(), top, top.Children(), func(section *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
-
+	parse.Search(doc, reader, top, reader.Children(top), func(doc *asciidoc.Document, el any, parent asciidoc.ParentElement, index int) parse.SearchShould {
+		section, ok := el.(*asciidoc.Section)
+		if !ok {
+			return parse.SearchShouldContinue
+		}
 		ps, ok := parent.(*asciidoc.Section)
 		if !ok {
 			return parse.SearchShouldContinue
 		}
 
-		assignSectionType(doc, section, getSectionType(doc, ps, section))
-		switch doc.SectionType(section) {
+		assignSectionType(sectionInfoCache, doc, section, getSectionType(sectionInfoCache, reader, doc, ps, section))
+		switch sectionInfoCache.SectionType(section) {
 		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct, matter.SectionDataTypeDef:
 			if section.Level > 2 {
-				slog.Debug("Unusual depth for section type", slog.String("name", doc.SectionName(section)), slog.String("type", doc.SectionType(section).String()), slog.String("path", doc.Path.String()))
+				slog.Debug("Unusual depth for section type", slog.String("name", sectionInfoCache.SectionName(section)), slog.String("type", sectionInfoCache.SectionType(section).String()), slog.String("path", doc.Path.String()))
 			}
 		}
 		return parse.SearchShouldContinue
 	})
-	return nil
+	return nil*/
 }
 
-func assignSectionType(doc *Doc, s *asciidoc.Section, sectionType matter.Section) {
-	name := doc.SectionName(s)
+func assignSectionType(sectionInfoCache SectionInfoCache, doc *asciidoc.Document, s *asciidoc.Section, sectionType matter.Section) {
+	name := sectionInfoCache.SectionName(s)
+	docErrata := errata.GetErrata(doc.Path.Relative)
 	var ignore bool
 	switch sectionType {
 	case matter.SectionDataTypeBitmap:
-		ignore = doc.errata.Spec.IgnoreSection(name, errata.SpecPurposeDataTypesBitmap)
+		ignore = docErrata.Spec.IgnoreSection(name, errata.SpecPurposeDataTypesBitmap)
 	case matter.SectionDataTypeEnum:
-		ignore = doc.errata.Spec.IgnoreSection(name, errata.SpecPurposeDataTypesEnum)
+		ignore = docErrata.Spec.IgnoreSection(name, errata.SpecPurposeDataTypesEnum)
 	case matter.SectionDataTypeStruct:
-		ignore = doc.errata.Spec.IgnoreSection(name, errata.SpecPurposeDataTypesStruct)
+		ignore = docErrata.Spec.IgnoreSection(name, errata.SpecPurposeDataTypesStruct)
 	case matter.SectionDataTypeDef:
-		ignore = doc.errata.Spec.IgnoreSection(name, errata.SpecPurposeDataTypesDef)
+		ignore = docErrata.Spec.IgnoreSection(name, errata.SpecPurposeDataTypesDef)
 	case matter.SectionCluster:
-		ignore = doc.errata.Spec.IgnoreSection(name, errata.SpecPurposeCluster)
+		ignore = docErrata.Spec.IgnoreSection(name, errata.SpecPurposeCluster)
 	case matter.SectionDeviceType:
-		ignore = doc.errata.Spec.IgnoreSection(name, errata.SpecPurposeDeviceType)
+		ignore = docErrata.Spec.IgnoreSection(name, errata.SpecPurposeDeviceType)
 	case matter.SectionFeatures:
-		ignore = doc.errata.Spec.IgnoreSection(name, errata.SpecPurposeFeatures)
+		ignore = docErrata.Spec.IgnoreSection(name, errata.SpecPurposeFeatures)
 	}
 	if ignore {
 		return
 	}
-	doc.SetSectionType(s, sectionType)
+	sectionInfoCache.SetSectionType(s, sectionType)
 }
 
-func FindSectionByType(doc *Doc, top *asciidoc.Section, sectionType matter.Section) *asciidoc.Section {
+func (library *Library) FindSectionByType(reader asciidoc.Reader, doc *asciidoc.Document, top *asciidoc.Section, sectionType matter.Section) *asciidoc.Section {
 	var found *asciidoc.Section
-	parse.Search(doc.Reader(), top, top.Children(), func(el *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
-		if doc.SectionType(el) == sectionType {
+	parse.Search(doc, reader, top, reader.Children(top), func(doc *asciidoc.Document, el *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
+		if library.SectionType(el) == sectionType {
 			found = el
 			return parse.SearchShouldStop
 		}
@@ -161,8 +227,8 @@ func FindSectionByType(doc *Doc, top *asciidoc.Section, sectionType matter.Secti
 	return found
 }
 
-func getSectionType(doc *Doc, parent *asciidoc.Section, section *asciidoc.Section) matter.Section {
-	name := strings.ToLower(strings.TrimSpace(doc.SectionName(section)))
+func getSectionType(sectionInfoCache SectionInfoCache, reader asciidoc.Reader, doc *asciidoc.Document, parent *asciidoc.Section, section *asciidoc.Section) matter.Section {
+	name := strings.ToLower(strings.TrimSpace(sectionInfoCache.SectionName(section)))
 	// Names that are unambiguous, so parent section doesn't matter
 	switch name {
 	case "introduction":
@@ -190,7 +256,7 @@ func getSectionType(doc *Doc, parent *asciidoc.Section, section *asciidoc.Sectio
 		// section "Element Requirements on Composing Device Types", so
 		// we check if it has an Element field in the table, and if it does,
 		// it's actually element requirements
-		st := guessDataTypeFromTable(doc, section)
+		st := guessDataTypeFromTable(reader, doc, section)
 		if st == matter.SectionComposedDeviceTypeElementRequirements {
 			return st
 		}
@@ -204,7 +270,7 @@ func getSectionType(doc *Doc, parent *asciidoc.Section, section *asciidoc.Sectio
 	case "semantic tag requirements on composing device types", "semantic tag requirements on component device types":
 		return matter.SectionComposedDeviceTypeSemanticTagRequirements
 	}
-	switch doc.SectionType(parent) {
+	switch sectionInfoCache.SectionType(parent) {
 	case matter.SectionTop, matter.SectionCluster, matter.SectionDeviceType:
 		switch name {
 		case "cluster identifiers", "cluster id", "cluster ids":
@@ -229,14 +295,14 @@ func getSectionType(doc *Doc, parent *asciidoc.Section, section *asciidoc.Sectio
 			if strings.HasSuffix(name, " attribute set") {
 				return matter.SectionAttributes
 			}
-			return deriveSectionType(doc, section, parent)
+			return deriveSectionType(sectionInfoCache, reader, doc, section, parent)
 		}
 	case matter.SectionDerivedClusterNamespace:
 		switch name {
 		case "mode tags":
 			return matter.SectionModeTags
 		default:
-			return deriveSectionType(doc, section, parent)
+			return deriveSectionType(sectionInfoCache, reader, doc, section, parent)
 		}
 	case matter.SectionAttributes:
 		if strings.HasSuffix(name, " attribute") {
@@ -270,12 +336,12 @@ func getSectionType(doc *Doc, parent *asciidoc.Section, section *asciidoc.Sectio
 		if strings.HasSuffix(name, "struct") {
 			return matter.SectionDataTypeStruct
 		}
-		return deriveSectionType(doc, section, parent)
+		return deriveSectionType(sectionInfoCache, reader, doc, section, parent)
 	case matter.SectionCommand, matter.SectionDataTypeStruct:
 		if strings.HasSuffix(name, " field") {
 			return matter.SectionField
 		}
-		return deriveSectionType(doc, section, parent)
+		return deriveSectionType(sectionInfoCache, reader, doc, section, parent)
 	case matter.SectionCommands:
 		if strings.HasSuffix(name, " command") {
 			return matter.SectionCommand
@@ -290,15 +356,15 @@ func getSectionType(doc *Doc, parent *asciidoc.Section, section *asciidoc.Sectio
 			return matter.SectionElementRequirements
 		}
 	default:
-		return deriveSectionType(doc, section, parent)
+		return deriveSectionType(sectionInfoCache, reader, doc, section, parent)
 	}
 	return matter.SectionUnknown
 }
 
-func deriveSectionType(doc *Doc, section *asciidoc.Section, parent *asciidoc.Section) matter.Section {
+func deriveSectionType(sectionInfoCache SectionInfoCache, reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, parent *asciidoc.Section) matter.Section {
 
 	// Ugh, some heuristics now
-	name := strings.TrimSpace(doc.SectionName(section))
+	name := strings.TrimSpace(sectionInfoCache.SectionName(section))
 	if text.HasCaseInsensitiveSuffix(name, "Bitmap Type") || text.HasCaseInsensitiveSuffix(name, "Bitmap") {
 		return matter.SectionDataTypeBitmap
 	}
@@ -318,9 +384,9 @@ func deriveSectionType(doc *Doc, section *asciidoc.Section, parent *asciidoc.Sec
 		return matter.SectionConditions
 	}
 	if parent != nil {
-		switch doc.SectionType(parent) {
+		switch sectionInfoCache.SectionType(parent) {
 		case matter.SectionDataTypes:
-			guessedType := guessDataTypeFromTable(doc, section)
+			guessedType := guessDataTypeFromTable(reader, doc, section)
 			if guessedType != matter.SectionUnknown {
 				return guessedType
 			}
@@ -338,7 +404,7 @@ func deriveSectionType(doc *Doc, section *asciidoc.Section, parent *asciidoc.Sec
 			}
 		}
 	}
-	dataType := GetDataType(doc, section)
+	dataType, _ := GetDataType(sectionInfoCache, reader, doc, section)
 	if dataType != nil {
 		if dataType.IsEnum() {
 			return matter.SectionDataTypeEnum
@@ -351,15 +417,15 @@ func deriveSectionType(doc *Doc, section *asciidoc.Section, parent *asciidoc.Sec
 		}
 	}
 	slog.Debug("unknown section type", "path", doc.Path, "name", name)
-	return guessDataTypeFromTable(doc, section)
+	return guessDataTypeFromTable(reader, doc, section)
 }
 
-func guessDataTypeFromTable(doc *Doc, section *asciidoc.Section) (sectionType matter.Section) {
-	firstTable := FindFirstTable(doc.Reader(), section)
+func guessDataTypeFromTable(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section) (sectionType matter.Section) {
+	firstTable := FindFirstTable(reader, section)
 	if firstTable == nil {
 		return
 	}
-	ti, err := ReadTable(doc, doc.Reader(), firstTable)
+	ti, err := ReadTable(doc, reader, firstTable)
 	if err != nil {
 		return
 	}
@@ -402,42 +468,39 @@ func guessDataTypeFromTable(doc *Doc, section *asciidoc.Section) (sectionType ma
 	return
 }
 
-func toEntities(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext) (err error) {
-	switch d.SectionType(s) {
+/*func (library *Library) toEntities(reader asciidoc.Reader, spec *Specification, d *asciidoc.Document, s *asciidoc.Section) (err error) {
+	switch library.SectionType(s) {
 	case matter.SectionCluster:
-		err = toClusters(spec, d, s, pc)
+		err = library.toClusters(spec, reader, d, s)
 		if err != nil {
 			return
 		}
 	case matter.SectionDeviceType:
-		err = toDeviceTypes(spec, d, s, pc)
+		err = library.toDeviceTypes(spec, reader, d, s)
 		if err != nil {
 			return
 		}
 	case matter.SectionNamespace:
-		err = toNamespace(spec, d, s, pc)
+		err = library.toNamespace(spec, reader, d, s)
 		if err != nil {
 			return
 		}
 	default:
-		var looseEntities []types.Entity
-		looseEntities, err = findLooseEntities(spec, d, s, pc, nil)
+		_, err = library.findLooseEntities(spec, reader, d, s, nil)
 		if err != nil {
-			err = newGenericParseError(s, "error reading section \"%s\": %w", d.SectionName(s), err)
+			err = newGenericParseError(s, "error reading section \"%s\": %w", library.SectionName(s), err)
 			return
 		}
-		if len(looseEntities) > 0 {
-			pc.entities = append(pc.entities, looseEntities...)
-		}
+
 	}
 	return
-}
+}*/
 
 var dataTypeDefinitionPattern = regexp.MustCompile(`(?:(?:This\s+data\s+type\s+SHALL\s+be\s+a)|(?:is\s+derived\s+from))\s+(?:<<enum-def\s*,\s*)?(enum8|enum16|enum32|map8|map16|map32|uint8|uint16|uint24|uint32|uint40|uint48|uint56|uint64|int8|int16|int24|int32|int40|int48|int56|int64|string)(?:\s*>>)?`)
 
-func GetDataType(doc *Doc, s *asciidoc.Section) *types.DataType {
+func GetDataType(sectionInfoCache SectionInfoCache, reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section) (*types.DataType, error) {
 	var dts string
-	for el := range doc.Reader().Iterate(s, s.Children()) {
+	for el := range reader.Iterate(s, reader.Children(s)) {
 		switch el := el.(type) {
 		case *asciidoc.EmptyLine:
 		case *asciidoc.String:
@@ -447,13 +510,16 @@ func GetDataType(doc *Doc, s *asciidoc.Section) *types.DataType {
 				break
 			}
 			if strings.HasPrefix(el.Value, "This struct") {
-				dts = text.TrimCaseInsensitiveSuffix(doc.SectionName(s), " Type")
+				dts = text.TrimCaseInsensitiveSuffix(sectionInfoCache.SectionName(s), " Type")
 			}
 		case *asciidoc.CrossReference:
-			crID := doc.anchorId(doc.Reader(), el, el, el.ID)
+			crID, err := reader.StringValue(el, el.ID)
+			if err != nil {
+				return nil, err
+			}
 			switch crID {
 			case "ref_DataTypeBitmap", "ref_DataTypeEnum":
-				label := asciidoc.ValueToString(el.Children())
+				label := asciidoc.ValueToString(reader.Children(el))
 				if len(label) == 0 {
 					continue
 				}
@@ -470,68 +536,82 @@ func GetDataType(doc *Doc, s *asciidoc.Section) *types.DataType {
 		}
 	}
 	if len(dts) > 0 {
-		return types.ParseDataType(dts, false)
+		return types.ParseDataType(dts, false), nil
 	}
-	return nil
+	return nil, nil
 }
 
-func findLooseEntities(spec *Specification, doc *Doc, section *asciidoc.Section, pc *parseContext, parentEntity types.Entity) (entities []types.Entity, err error) {
-	traverseSections(doc, section, errata.SpecPurposeDataTypes, func(section *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
-		switch doc.SectionType(section) {
+func (library *Library) findLooseEntities(spec *Specification, reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, parentEntity types.Entity) (entities []types.Entity, err error) {
+	library.traverseSections(reader, doc, section, errata.SpecPurposeDataTypes, func(doc *asciidoc.Document, section *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
+		switch library.SectionType(section) {
 		case matter.SectionDataTypeBitmap:
 			var bm *matter.Bitmap
-			bm, err = toBitmap(doc, section, pc, parentEntity)
+			bm, err = library.toBitmap(reader, doc, section, parentEntity)
 			if err != nil {
 				slog.Warn("Error converting loose section to bitmap", log.Element("source", doc.Path, section), slog.Any("error", err))
 				err = nil
 			} else {
+				library.addEntity(section, bm)
 				entities = append(entities, bm)
+
 			}
 		case matter.SectionDataTypeEnum:
 			var e *matter.Enum
-			e, err = toEnum(doc, section, pc, parentEntity)
+			e, err = library.toEnum(reader, doc, section, parentEntity)
 			if err != nil {
 				slog.Warn("Error converting loose section to enum", log.Element("source", doc.Path, section), slog.Any("error", err))
 				err = nil
 			} else {
+				library.addEntity(section, e)
 				entities = append(entities, e)
+
 			}
 		case matter.SectionDataTypeStruct:
 			var s *matter.Struct
-			s, err = toStruct(spec, doc, section, pc, parentEntity)
+			s, err = library.toStruct(spec, reader, doc, section, parentEntity)
 			if err != nil {
 				slog.Warn("Error converting loose section to struct", log.Element("source", doc.Path, section), slog.Any("error", err))
 				err = nil
 			} else {
+				library.addEntity(section, s)
 				entities = append(entities, s)
+
 			}
 		case matter.SectionDataTypeDef:
 			var t *matter.TypeDef
-			t, err = toTypeDef(doc, section, pc, parentEntity)
+			t, err = library.toTypeDef(reader, doc, section, parentEntity)
 			if err != nil {
 				slog.Warn("Error converting loose section to typedef", log.Element("source", doc.Path, section), slog.Any("error", err))
 				err = nil
 			} else {
+				library.addEntity(section, t)
 				entities = append(entities, t)
+
 			}
 		case matter.SectionGlobalElements:
 			var ges []types.Entity
-			ges, err = toGlobalElements(spec, doc, section, pc, parentEntity)
+			ges, err = library.toGlobalElements(spec, reader, doc, section, parentEntity)
 			if err != nil {
 				slog.Warn("Error converting loose section to global entities", log.Element("source", doc.Path, section), slog.Any("error", err))
 				err = nil
 			} else {
+				for _, e := range ges {
+					library.addEntity(section, e)
+
+				}
 				entities = append(entities, ges...)
+
 			}
 		case matter.SectionStatusCodes:
 			var me *matter.Enum
-			me, err = toEnum(doc, section, pc, parentEntity)
+			me, err = library.toEnum(reader, doc, section, parentEntity)
 			if err != nil {
-				if err != ErrNotEnoughRowsInTable || doc.parsed {
+				if err != ErrNotEnoughRowsInTable {
 					slog.Warn("Error converting section to status code", log.Element("source", doc.Path, section), slog.Any("error", err))
 				}
 				err = nil
 			} else {
+				library.addEntity(section, me)
 				entities = append(entities, me)
 			}
 		}
@@ -543,12 +623,13 @@ func findLooseEntities(spec *Specification, doc *Doc, section *asciidoc.Section,
 	return
 }
 
-func traverseSections(doc *Doc, parent asciidoc.ParentElement, purpose errata.SpecPurpose, callback parse.ElementSearchCallback[*asciidoc.Section]) (sections []*asciidoc.Section) {
-	parse.Search(doc.Reader(), doc, parent.Children(), func(s *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
-		if doc.errata.Spec.IgnoreSection(doc.SectionName(s), purpose) {
+func (library *Library) traverseSections(reader asciidoc.Reader, doc *asciidoc.Document, parent asciidoc.ParentElement, purpose errata.SpecPurpose, callback parse.ElementSearchCallback[*asciidoc.Section]) (sections []*asciidoc.Section) {
+	parse.Search(doc, reader, doc, reader.Children(parent), func(doc *asciidoc.Document, s *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
+		de := errata.GetSpec(doc.Path.Relative)
+		if de.IgnoreSection(library.SectionName(s), purpose) {
 			return parse.SearchShouldContinue
 		}
-		return callback(s, parent, index)
+		return callback(doc, s, parent, index)
 	})
 	return
 }

@@ -10,12 +10,16 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func toStatusCodes(d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) (e *matter.Enum, err error) {
+func (library *Library) toStatusCodes(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, parent types.Entity) (e *matter.Enum, err error) {
 
-	name := CanonicalName(text.TrimCaseInsensitiveSuffix(d.SectionName(s), " Type"))
+	name := CanonicalName(text.TrimCaseInsensitiveSuffix(library.SectionName(s), " Type"))
 	e = matter.NewEnum(s, parent)
 	e.Name = "StatusCodeEnum"
-	dt := GetDataType(d, s)
+	var dt *types.DataType
+	dt, err = GetDataType(library, reader, d, s)
+	if err != nil {
+		return nil, newGenericParseError(s, "error parsing error code type: %v", err)
+	}
 	if dt == nil {
 		dt = types.NewDataType(types.BaseDataTypeEnum8, false)
 		slog.Warn("Status code does not declare its derived data type; assuming enum8", log.Element("source", d.Path, s), slog.String("enum", name))
@@ -25,13 +29,11 @@ func toStatusCodes(d *Doc, s *asciidoc.Section, pc *parseContext, parent types.E
 
 	e.Type = dt
 
-	e.Values, err = findEnumValues(d, s, e)
+	e.Values, err = library.findEnumValues(reader, d, s, e)
 	if err != nil {
 		return
 	}
-
-	pc.orderedEntities = append(pc.orderedEntities, e)
-	pc.entitiesByElement[s] = append(pc.entitiesByElement[s], e)
+	library.addEntity(s, e)
 	e.Name = CanonicalName(e.Name)
 	return
 }

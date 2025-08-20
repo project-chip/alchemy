@@ -1,17 +1,23 @@
 package spec
 
 import (
-	"strings"
-	"unicode"
-	"unicode/utf8"
-
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/types"
 )
 
+type Document struct {
+	Library  *Library
+	Document *asciidoc.Document
+}
+
+type DocumentInfoCache interface {
+	DocType(document *asciidoc.Document) (matter.DocType, error)
+	SetDocType(document *asciidoc.Document, docType matter.DocType)
+	Parents(document *asciidoc.Document) []*asciidoc.Document
+}
+
+/*
 type Doc struct {
 	Path asciidoc.Path
 
@@ -39,15 +45,16 @@ type Doc struct {
 	errata *errata.Errata
 
 	reader asciidoc.Reader
-}
+}*/
 
-type DocSet pipeline.Map[string, *pipeline.Data[*Doc]]
+type DocSet pipeline.Map[string, *pipeline.Data[*asciidoc.Document]]
 
 func NewDocSet() DocSet {
-	return pipeline.NewMap[string, *pipeline.Data[*Doc]]()
+	return pipeline.NewMap[string, *pipeline.Data[*asciidoc.Document]]()
 }
 
-func newDoc(d *asciidoc.Document, path asciidoc.Path) (*Doc, error) {
+/*
+func newDoc(d *asciidoc.Document, path asciidoc.Path) (*asciidoc.Document, error) {
 	doc := &Doc{
 		Base:           d,
 		Path:           path,
@@ -57,10 +64,6 @@ func newDoc(d *asciidoc.Document, path asciidoc.Path) (*Doc, error) {
 	return doc, nil
 }
 
-func firstLetterIsLower(s string) bool {
-	firstLetter, _ := utf8.DecodeRuneInString(s)
-	return unicode.IsLower(firstLetter)
-}
 
 func (doc *Doc) Footnotes() []*asciidoc.Footnote {
 	return nil
@@ -70,19 +73,10 @@ func (doc *Doc) Errata() *errata.Errata {
 	return doc.errata
 }
 
-func (doc *Doc) Reader() asciidoc.Reader {
-	if doc.reader != nil {
-		return doc.reader
-	}
-	if doc.group != nil {
-		return doc.group.Reader
-	}
-	return asciidoc.RawReader
-}
 
 func (doc *Doc) Parents() []*Doc {
 	doc.RLock()
-	p := make([]*Doc, len(doc.parents))
+	p := make([]*asciidoc.Document, len(doc.parents))
 	copy(p, doc.parents)
 	doc.RUnlock()
 	return p
@@ -206,3 +200,4 @@ func (d *Doc) EntitiesForSection(section *asciidoc.Section) ([]types.Entity, boo
 	e, ok := d.entitiesBySection[section]
 	return e, ok
 }
+*/

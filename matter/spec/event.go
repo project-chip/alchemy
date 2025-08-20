@@ -16,21 +16,21 @@ import (
 
 type eventFactory struct{}
 
-func (cf *eventFactory) New(spec *Specification, d *Doc, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (e *matter.Event, err error) {
+func (cf *eventFactory) New(spec *Specification, library *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (e *matter.Event, err error) {
 
 	e = matter.NewEvent(s, parent)
 	e.Name = matter.StripTypeSuffixes(name)
-	e.ID, err = ti.ReadID(row, matter.TableColumnEventID, matter.TableColumnID)
+	e.ID, err = ti.ReadID(reader, row, matter.TableColumnEventID, matter.TableColumnID)
 	if err != nil {
 		return
 	}
-	e.Priority, err = ti.ReadString(row, matter.TableColumnPriority)
+	e.Priority, err = ti.ReadString(reader, row, matter.TableColumnPriority)
 	if err != nil {
 		return
 	}
-	e.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
+	e.Conformance = ti.ReadConformance(library, row, matter.TableColumnConformance)
 	var a string
-	a, err = ti.ReadString(row, matter.TableColumnAccess)
+	a, err = ti.ReadString(reader, row, matter.TableColumnAccess)
 	if err != nil {
 		return
 	}
@@ -43,10 +43,10 @@ func (cf *eventFactory) New(spec *Specification, d *Doc, s *asciidoc.Section, ti
 	return
 }
 
-func (cf *eventFactory) Details(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, e *matter.Event) (err error) {
-	e.Description = getDescription(d, e, s, s.Children())
+func (cf *eventFactory) Details(spec *Specification, library *Library, reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, e *matter.Event) (err error) {
+	e.Description = library.getDescription(reader, doc, e, section, reader.Children(section))
 	var ti *TableInfo
-	ti, err = parseFirstTable(d, s)
+	ti, err = parseFirstTable(reader, doc, section)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -58,7 +58,7 @@ func (cf *eventFactory) Details(spec *Specification, d *Doc, s *asciidoc.Section
 		firstRow := ti.Rows[0]
 		tableCells := firstRow.TableCells()
 		if len(tableCells) > 0 {
-			cv, rowErr := RenderTableCell(tableCells[0])
+			cv, rowErr := RenderTableCell(reader, tableCells[0])
 			if rowErr == nil {
 				cv = strings.ToLower(cv)
 				if strings.Contains(cv, "fabric sensitive") || strings.Contains(cv, "fabric-sensitive") {
@@ -68,11 +68,11 @@ func (cf *eventFactory) Details(spec *Specification, d *Doc, s *asciidoc.Section
 		}
 	}
 	var fieldMap map[string]*matter.Field
-	e.Fields, fieldMap, err = d.readFields(spec, ti, types.EntityTypeEventField, e)
+	e.Fields, fieldMap, err = library.readFields(spec, reader, ti, types.EntityTypeEventField, e)
 	if err != nil {
 		return
 	}
-	err = mapFields(d, s, fieldMap, pc)
+	err = library.mapFields(reader, doc, section, fieldMap)
 	if err != nil {
 		return
 	}
@@ -82,14 +82,14 @@ func (cf *eventFactory) Details(spec *Specification, d *Doc, s *asciidoc.Section
 	return
 }
 
-func (cf *eventFactory) EntityName(d *Doc, s *asciidoc.Section) string {
-	return strings.ToLower(text.TrimCaseInsensitiveSuffix(d.SectionName(s), " Event"))
+func (cf *eventFactory) EntityName(library *Library, reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section) string {
+	return strings.ToLower(text.TrimCaseInsensitiveSuffix(library.SectionName(s), " Event"))
 }
 
-func (cf *eventFactory) Children(d *Doc, s *asciidoc.Section) iter.Seq[*asciidoc.Section] {
+func (cf *eventFactory) Children(library *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) iter.Seq[*asciidoc.Section] {
 	return func(yield func(*asciidoc.Section) bool) {
-		parse.SkimFunc(d.Reader(), s, s.Children(), func(s *asciidoc.Section) bool {
-			if d.SectionType(s) != matter.SectionEvent {
+		parse.SkimFunc(library, s, reader.Children(s), func(s *asciidoc.Section) bool {
+			if library.SectionType(s) != matter.SectionEvent {
 				return false
 			}
 			return !yield(s)
@@ -97,14 +97,14 @@ func (cf *eventFactory) Children(d *Doc, s *asciidoc.Section) iter.Seq[*asciidoc
 	}
 }
 
-func toEvents(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) (events matter.EventSet, err error) {
-	t := FindFirstTable(d.Reader(), s)
+func (library *Library) toEvents(spec *Specification, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, parent types.Entity) (events matter.EventSet, err error) {
+	t := FindFirstTable(reader, s)
 	if t == nil {
 		return nil, nil
 	}
 
 	var ef eventFactory
-	events, err = buildList(spec, d, s, t, pc, events, &ef, parent)
+	events, err = buildList(spec, library, reader, d, s, t, events, &ef, parent)
 
 	if err != nil {
 		return
@@ -185,11 +185,14 @@ func validateEvents(spec *Specification) {
 	for c := range spec.Clusters {
 		idu := make(idUniqueness[*matter.Event])
 		nu := make(nameUniqueness[*matter.Event])
+		cv := make(conformanceValidation)
 		for _, e := range c.Events {
 			idu.check(spec, e.ID, e)
 			nu.check(spec, e)
+			cv.add(e, e.Conformance)
 			validateFields(spec, e, e.Fields)
 		}
+		cv.check(spec)
 	}
 	idu := make(idUniqueness[*matter.Event])
 	nu := make(nameUniqueness[*matter.Event])

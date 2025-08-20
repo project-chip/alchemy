@@ -10,7 +10,7 @@ import (
 
 func Parse(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions, builderOptions []BuilderOption, attributes []asciidoc.AttributeName) (specification *Specification, specDocs DocSet, err error) {
 
-	var docGroups pipeline.Map[string, *pipeline.Data[*DocGroup]]
+	var docGroups pipeline.Map[string, *pipeline.Data[*Library]]
 	docGroups, specDocs, err = BuildDocumentGroups(cxt, parserOptions, processingOptions)
 	if err != nil {
 		return
@@ -20,14 +20,14 @@ func Parse(cxt context.Context, parserOptions ParserOptions, processingOptions p
 	return
 }
 
-func Build(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions, builderOptions []BuilderOption, docGroups DocGroupSet, attributes []asciidoc.AttributeName) (specification *Specification, specDocs DocSet, err error) {
-	err = PreParse(cxt, parserOptions, processingOptions, docGroups, attributes)
+func Build(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions, builderOptions []BuilderOption, libraries LibrarySet, attributes []asciidoc.AttributeName) (specification *Specification, specDocs DocSet, err error) {
+	err = PreParse(cxt, parserOptions, processingOptions, libraries, attributes)
 	if err != nil {
 		return
 	}
 
 	specBuilder := NewBuilder(parserOptions.Root, builderOptions...)
-	specDocs, err = pipeline.Collective(cxt, processingOptions, &specBuilder, docGroups)
+	specDocs, err = pipeline.Collective(cxt, processingOptions, &specBuilder, libraries)
 	if err != nil {
 		return
 	}
@@ -36,20 +36,20 @@ func Build(cxt context.Context, parserOptions ParserOptions, processingOptions p
 	return
 }
 
-func PreParse(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions, docGroups DocGroupSet, attributes []asciidoc.AttributeName) (err error) {
-	var preparser *PreParser
-	preparser, err = NewPreParser(parserOptions.Root, attributes)
+func PreParse(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions, docGroups LibrarySet, attributes []asciidoc.AttributeName) (err error) {
+	var preparser *LibraryParser
+	preparser, err = NewLibraryParser(parserOptions.Root, attributes)
 	if err != nil {
 		return
 	}
 
-	_, err = pipeline.Parallel(cxt, processingOptions, preparser, docGroups)
+	_, err = pipeline.Parallel(cxt, pipeline.ProcessingOptions{Serial: true}, preparser, docGroups)
 	return
 }
 
-func BuildDocumentGroups(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions) (docGroups DocGroupSet, specDocs DocSet, err error) {
-	var specParser Parser
-	specParser, err = NewParser(parserOptions)
+func BuildDocumentGroups(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions) (docGroups LibrarySet, specDocs DocSet, err error) {
+	var specReader Reader
+	specReader, err = NewReader(parserOptions)
 	if err != nil {
 		return
 	}
@@ -67,11 +67,11 @@ func BuildDocumentGroups(cxt context.Context, parserOptions ParserOptions, proce
 		return
 	}
 
-	specDocs, err = pipeline.Parallel(cxt, processingOptions, specParser, specPaths)
+	specDocs, err = pipeline.Parallel(cxt, processingOptions, specReader, specPaths)
 	if err != nil {
 		return
 	}
 
-	docGroups, err = pipeline.Collective(cxt, processingOptions, NewDocumentGrouper(parserOptions.Root), specDocs)
+	docGroups, err = pipeline.Collective(cxt, processingOptions, NewLibraryBuilder(parserOptions.Root), specDocs)
 	return
 }

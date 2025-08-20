@@ -23,13 +23,20 @@ type Element interface {
 	Clone() Element
 }
 
+type DocumentElement interface {
+	Element
+	Document() *Document
+}
+
 type Parent interface {
 	Children() Elements
 	SetChildren(e Elements)
 }
 type ParentElement interface {
-	Element
+	DocumentElement
 	Parent
+}
+type ElementList interface {
 	Append(e ...Element)
 }
 
@@ -40,6 +47,11 @@ type HasChild interface {
 type HasParent interface {
 	Parent() Element
 	SetParent(e Element)
+}
+
+type ChildElement interface {
+	Element
+	HasParent
 }
 
 func ValueToString(e any) string {

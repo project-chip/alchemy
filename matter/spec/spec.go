@@ -31,16 +31,20 @@ type Specification struct {
 
 	ClusterRefs  EntityRefs[*matter.Cluster]
 	DataTypeRefs EntityRefs[types.Entity]
-	DocRefs      map[types.Entity]*Doc
+	DocRefs      map[types.Entity]*asciidoc.Document
+	LibraryRefs  map[types.Entity]*Library
+	EntityRefs   map[*asciidoc.Document][]types.Entity
 
-	GlobalObjects types.EntitySet[*Doc]
+	GlobalObjects types.EntitySet[*asciidoc.Document]
 
 	entities map[string]map[types.Entity]map[*matter.Cluster]struct{}
 
-	Docs      map[string]*Doc
-	DocGroups []*DocGroup
+	Docs      map[string]*asciidoc.Document
+	Libraries []*Library
 
 	Errors []Error
+
+	libraryIndex map[*asciidoc.Document]*Library
 }
 
 func newSpec(specRoot string) *Specification {
@@ -54,14 +58,22 @@ func newSpec(specRoot string) *Specification {
 		DataTypeRefs:      NewEntityRefs[types.Entity](),
 		DeviceTypesByID:   make(map[uint64]*matter.DeviceType),
 		DeviceTypesByName: make(map[string]*matter.DeviceType),
-		Docs:              make(map[string]*Doc),
-		DocRefs:           make(map[types.Entity]*Doc),
+		Docs:              make(map[string]*asciidoc.Document),
+		DocRefs:           make(map[types.Entity]*asciidoc.Document),
+		LibraryRefs:       make(map[types.Entity]*Library),
+		EntityRefs:        make(map[*asciidoc.Document][]types.Entity),
 
-		GlobalObjects: make(types.EntitySet[*Doc]),
+		GlobalObjects: make(types.EntitySet[*asciidoc.Document]),
 
 		entities:                   make(map[string]map[types.Entity]map[*matter.Cluster]struct{}),
 		deviceTypeCompositionCache: make(map[*matter.DeviceType]*matter.DeviceTypeComposition),
+		libraryIndex:               make(map[*asciidoc.Document]*Library),
 	}
+}
+
+func (s *Specification) LibraryForDocument(doc *asciidoc.Document) (library *Library, ok bool) {
+	library, ok = s.libraryIndex[doc]
+	return
 }
 
 type specEntityFinder struct {
@@ -134,7 +146,7 @@ func (sef *specEntityFinder) findEntityByReference(reference string, label strin
 }
 
 func (sef *specEntityFinder) findSpecEntityByReference(reference string, label string, source log.Source) (e types.Entity) {
-	var referenceDoc *Doc
+	var referenceDoc *asciidoc.Document
 	if sef.cluster != nil {
 		referenceDoc = sef.spec.DocRefs[sef.cluster]
 	}
@@ -152,20 +164,17 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 		return
 	}
 	var anchors []*Anchor
-	group := referenceDoc.Group()
-	if group == nil {
-		anchor := referenceDoc.FindAnchor(reference, source)
-		if anchor == nil {
-			slog.Warn("failed to find anchor for data type reference", "ref", reference, log.Path("source", source), slog.String("cluster", clusterName(sef.cluster)), slog.String("docPath", referenceDoc.Path.Relative))
-			return
-		}
-		anchors = append(anchors, anchor)
-	} else {
-		anchors = group.Anchors(reference)
-		if len(anchors) == 0 {
-			slog.Warn("failed to find anchors for data type reference", "ref", reference, log.Path("source", source), slog.String("cluster", clusterName(sef.cluster)), slog.String("docPath", referenceDoc.Path.Relative))
-			return
-		}
+
+	library, ok := sef.spec.libraryIndex[referenceDoc]
+	if !ok {
+		slog.Warn("failed to find library for reference", "ref", reference, log.Path("source", source), slog.Any("cluster", sef.cluster))
+		return
+	}
+
+	anchors = library.anchors[reference]
+	if len(anchors) == 0 {
+		slog.Warn("failed to find anchors for data type reference", "ref", reference, log.Path("source", source), slog.String("cluster", clusterName(sef.cluster)), slog.String("docPath", referenceDoc.Path.Relative))
+		return
 	}
 
 	var discoveredEntities []types.Entity
@@ -173,7 +182,7 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 		switch el := anchor.Element.(type) {
 		case *asciidoc.Section:
 
-			entities := anchor.Document.entitiesBySection[el]
+			entities := library.entitiesByElement[el]
 			discoveredEntities = append(discoveredEntities, entities...)
 		default:
 			slog.Warn("unexpected type of anchor element", log.Type("type", el))
@@ -182,6 +191,12 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 	switch len(discoveredEntities) {
 	case 0:
 		slog.Warn("no entities found for reference", "ref", reference, log.Path("source", source))
+		for _, anchor := range anchors {
+			switch el := anchor.Element.(type) {
+			case *asciidoc.Section:
+				slog.Warn("anchor element", log.Path("type", el), log.Address("address", el))
+			}
+		}
 	case 1:
 		e = discoveredEntities[0]
 	default:

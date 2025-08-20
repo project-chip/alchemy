@@ -121,14 +121,16 @@ func (a *AttributeList) GetAttributeByName(name AttributeName) *NamedAttribute {
 	return nil
 }
 
-func (a AttributeList) traverse(parent Parent, yield func(Parent, Parent) bool) bool {
+func (a AttributeList) traverse(parent ParentElement, yield func(ParentElement, Parent) bool) bool {
 	for _, attr := range a.Attributes() {
 		switch attr := attr.(type) {
 		case *AnchorAttribute:
+			if !yield(parent, &attr.ID) {
+				return false
+			}
 			if !yield(parent, &attr.Label) {
 				return false
 			}
-
 		case *NamedAttribute:
 			if !yield(parent, attr) {
 				return false

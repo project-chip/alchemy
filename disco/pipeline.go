@@ -29,37 +29,22 @@ func Pipeline(cxt context.Context, parserOptions spec.ParserOptions, docPaths []
 		return
 	}
 
-	if parserOptions.Root != "" {
+	if parserOptions.Root == "" {
+		err = fmt.Errorf("disco ball requires spec root")
+		return
 
+	} else {
 		_, docs, err = spec.Parse(cxt, parserOptions, pipelineOptions, nil, attributes)
 		if err != nil {
 			return err
 		}
 		if len(docPaths) > 0 {
-			filter := paths.NewIncludeFilter[*spec.Doc](parserOptions.Root, docPaths)
+			filter := paths.NewIncludeFilter[*asciidoc.Document](parserOptions.Root, docPaths)
 			docs, err = pipeline.Collective(cxt, pipelineOptions, filter, docs)
 			if err != nil {
 				return err
 			}
 		}
-	} else if len(docPaths) > 0 {
-		var inputs pipeline.Paths
-		inputs, err = pipeline.Start(cxt, paths.NewTargeter(docPaths...))
-		if err != nil {
-			return err
-		}
-
-		docReader, err := spec.NewReader("Reading docs", parserOptions.Root)
-		if err != nil {
-			return err
-		}
-		docs, err = pipeline.Parallel(cxt, pipelineOptions, docReader, inputs)
-		if err != nil {
-			return err
-		}
-	} else {
-		err = fmt.Errorf("disco ball requires spec root or document paths")
-		return
 	}
 
 	if err != nil {

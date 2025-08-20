@@ -65,7 +65,7 @@ func patchProvisional(cxt context.Context, pipelineOptions pipeline.ProcessingOp
 	return
 }
 
-func patchViolation(doc *spec.Doc, v Violation) (err error) {
+func patchViolation(doc *asciidoc.Document, v Violation) (err error) {
 	switch e := v.Entity.(type) {
 	case *matter.EnumValue:
 		source := e.Source()
@@ -76,7 +76,7 @@ func patchViolation(doc *spec.Doc, v Violation) (err error) {
 	return
 }
 
-func addProvisionalConformance(doc *spec.Doc, e types.Entity, source asciidoc.Element) (err error) {
+func addProvisionalConformance(doc *asciidoc.Document, e types.Entity, source asciidoc.Element) (err error) {
 	switch source := source.(type) {
 	case *asciidoc.TableRow:
 		var table *spec.TableInfo

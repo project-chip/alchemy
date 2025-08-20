@@ -6,39 +6,33 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/matter"
 )
 
 type CrossReference struct {
-	Document  *Doc
+	Document  *asciidoc.Document
 	Reference *asciidoc.CrossReference
 	Parent    asciidoc.Parent
 	Source    matter.Source
 }
 
-func (cr *CrossReference) Identifier(reader asciidoc.Reader) string {
-	return cr.Document.anchorId(reader, cr.Parent, cr.Reference, cr.Reference.ID)
-}
-
-func (cr *CrossReference) SyncToDoc(id asciidoc.Elements) {
+/*func (dg *Library) SyncToDoc(reader asciidoc.Reader, cr *CrossReference, id asciidoc.Elements) {
 	if !id.Equals(cr.Reference.ID) {
-		cr.Document.changeCrossReference(cr, id)
-		if cr.Document.group != nil {
-			cr.Document.group.changeCrossReference(cr, id)
-		}
+		dg.changeCrossReference(reader, cr, id)
 		cr.Reference.ID = id
 	}
-}
+}*/
 
-func (doc *Doc) CrossReferences() map[string][]*CrossReference {
+/*
+func (doc *Library) CrossReferences(reader asciidoc.Reader) map[string][]*CrossReference {
 	doc.Lock()
 	if doc.crossReferencesParsed {
 		doc.Unlock()
 		return doc.crossReferences
 	}
-	parse.Search(doc.Reader(), nil, doc.Base.Children(), func(icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) parse.SearchShould {
-		referenceID := doc.anchorId(doc.Reader(), icr, icr, icr.ID)
+
+	parse.Search(reader, nil, doc.Base.Children(), func(icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) parse.SearchShould {
+		referenceID := doc.anchorId(reader, icr, icr, icr.ID)
 		doc.crossReferences[referenceID] = append(doc.crossReferences[referenceID], &CrossReference{Document: doc, Reference: icr, Parent: parent, Source: NewSource(doc, icr)})
 		return parse.SearchShouldContinue
 	})
@@ -46,6 +40,7 @@ func (doc *Doc) CrossReferences() map[string][]*CrossReference {
 	doc.Unlock()
 	return doc.crossReferences
 }
+*/
 
 func ReferenceName(reader asciidoc.Reader, element any) string {
 	if element == nil {

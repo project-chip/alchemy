@@ -13,14 +13,14 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func toDataTypes(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, parentEntity types.Entity) (dataTypes []types.Entity, err error) {
-	traverseSections(d, s, errata.SpecPurposeDataTypes, func(s *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
-		switch d.SectionType(s) {
+func (library *Library) toDataTypes(spec *Specification, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, parentEntity types.Entity) (dataTypes []types.Entity, err error) {
+	library.traverseSections(reader, d, s, errata.SpecPurposeDataTypes, func(doc *asciidoc.Document, s *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
+		switch library.SectionType(s) {
 		case matter.SectionDataTypeBitmap:
 			var mb *matter.Bitmap
-			mb, err = toBitmap(d, s, pc, parentEntity)
+			mb, err = library.toBitmap(reader, doc, s, parentEntity)
 			if err != nil {
-				if err != ErrNotEnoughRowsInTable || d.parsed {
+				if err != ErrNotEnoughRowsInTable {
 					slog.Warn("Error converting section to bitmap", log.Element("source", d.Path, s), slog.Any("error", err))
 				}
 				err = nil
@@ -29,9 +29,9 @@ func toDataTypes(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseCont
 			}
 		case matter.SectionDataTypeEnum:
 			var me *matter.Enum
-			me, err = toEnum(d, s, pc, parentEntity)
+			me, err = library.toEnum(reader, doc, s, parentEntity)
 			if err != nil {
-				if err != ErrNotEnoughRowsInTable || d.parsed {
+				if err != ErrNotEnoughRowsInTable {
 					slog.Warn("Error converting section to enum", log.Element("source", d.Path, s), slog.Any("error", err))
 				}
 				err = nil
@@ -40,9 +40,9 @@ func toDataTypes(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseCont
 			}
 		case matter.SectionDataTypeStruct:
 			var me *matter.Struct
-			me, err = toStruct(spec, d, s, pc, parentEntity)
+			me, err = library.toStruct(spec, reader, doc, s, parentEntity)
 			if err != nil {
-				if err != ErrNotEnoughRowsInTable || d.parsed {
+				if err != ErrNotEnoughRowsInTable {
 					slog.Warn("Error converting section to struct", log.Element("source", d.Path, s), slog.Any("error", err))
 				}
 				err = nil
@@ -51,9 +51,9 @@ func toDataTypes(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseCont
 			}
 		case matter.SectionDataTypeDef:
 			var me *matter.TypeDef
-			me, err = toTypeDef(d, s, pc, parentEntity)
+			me, err = library.toTypeDef(reader, doc, s, parentEntity)
 			if err != nil {
-				if err != ErrNotEnoughRowsInTable || d.parsed {
+				if err != ErrNotEnoughRowsInTable {
 					slog.Warn("Error converting section to typedef", log.Element("source", d.Path, s), slog.Any("error", err))
 				}
 				err = nil
@@ -61,14 +61,13 @@ func toDataTypes(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseCont
 				dataTypes = append(dataTypes, me)
 			}
 		case matter.SectionDataTypeConstant:
-			id, _ := getAnchorElements(d, s, nil)
-			switch d.anchorId(d.Reader(), s, s, id) {
+			id, _ := library.getAnchorElements(doc, s, nil)
+			switch library.anchorId(reader, s, s, id) {
 			case "ref_RespMaxConstant":
 				c := matter.NewConstant(s)
 				c.Name = "RESP_MAX"
 				c.Value = 900
-				pc.orderedEntities = append(pc.orderedEntities, c)
-				pc.entitiesByElement[s] = append(pc.entitiesByElement[s], c)
+				library.addEntity(s, c)
 				dataTypes = append(dataTypes, c)
 			}
 		default:
@@ -90,62 +89,66 @@ func (sp *Builder) resolveClusterDataTypeReferences(onlyBaseClusters bool) {
 		specEntityFinder.cluster = cluster
 		clusterFinder := newClusterEntityFinder(cluster, specEntityFinder)
 
-		doc, ok := sp.Spec.DocRefs[cluster]
+		library, ok := sp.Spec.LibraryRefs[cluster]
 		if !ok {
 			continue
 		}
 
 		for _, a := range cluster.Attributes {
 			clusterFinder.setIdentity(a)
-			sp.resolveFieldDataTypes(doc.Group(), cluster, cluster.Attributes, a, a.Type, clusterFinder)
+			sp.resolveFieldDataTypes(library, cluster, cluster.Attributes, a, a.Type, clusterFinder)
 		}
 		for _, s := range cluster.Structs {
 			for _, f := range s.Fields {
 				clusterFinder.setIdentity(f)
-				sp.resolveFieldDataTypes(doc.Group(), cluster, s.Fields, f, f.Type, clusterFinder)
+				sp.resolveFieldDataTypes(library, cluster, s.Fields, f, f.Type, clusterFinder)
 			}
 		}
 		for _, event := range cluster.Events {
 			for _, f := range event.Fields {
 				clusterFinder.setIdentity(f)
-				sp.resolveFieldDataTypes(doc.Group(), cluster, event.Fields, f, f.Type, clusterFinder)
+				sp.resolveFieldDataTypes(library, cluster, event.Fields, f, f.Type, clusterFinder)
 			}
 		}
 		for _, command := range cluster.Commands {
 			for _, f := range command.Fields {
 				clusterFinder.setIdentity(f)
-				sp.resolveFieldDataTypes(doc.Group(), cluster, command.Fields, f, f.Type, clusterFinder)
+				sp.resolveFieldDataTypes(library, cluster, command.Fields, f, f.Type, clusterFinder)
 			}
 			clusterFinder.setIdentity(command)
-			sp.resolveCommandResponseDataType(doc.Group(), cluster, command, clusterFinder)
+			sp.resolveCommandResponseDataType(library, cluster, command, clusterFinder)
 		}
 	}
 }
 
 func (sp *Builder) resolveGlobalDataTypeReferences() {
 	specEntityFinder := newSpecEntityFinder(sp.Spec, nil, nil)
-	for o, doc := range sp.Spec.GlobalObjects {
+	for o := range sp.Spec.GlobalObjects {
+		library, ok := sp.Spec.LibraryRefs[o]
+		if !ok {
+			continue
+		}
 		switch s := o.(type) {
 		case *matter.Event:
 			for _, f := range s.Fields {
 				specEntityFinder.setIdentity(f)
-				sp.resolveFieldDataTypes(doc.Group(), nil, s.Fields, f, f.Type, specEntityFinder)
+				sp.resolveFieldDataTypes(library, nil, s.Fields, f, f.Type, specEntityFinder)
 			}
 		case *matter.Command:
 			for _, f := range s.Fields {
 				specEntityFinder.setIdentity(f)
-				sp.resolveFieldDataTypes(doc.Group(), nil, s.Fields, f, f.Type, specEntityFinder)
+				sp.resolveFieldDataTypes(library, nil, s.Fields, f, f.Type, specEntityFinder)
 			}
 		case *matter.Struct:
 			for _, f := range s.Fields {
 				specEntityFinder.setIdentity(f)
-				sp.resolveFieldDataTypes(doc.Group(), nil, s.Fields, f, f.Type, specEntityFinder)
+				sp.resolveFieldDataTypes(library, nil, s.Fields, f, f.Type, specEntityFinder)
 			}
 		}
 	}
 }
 
-func (sp *Builder) resolveFieldDataTypes(docGroup *DocGroup, cluster *matter.Cluster, fieldSet matter.FieldSet, field *matter.Field, dataType *types.DataType, finder entityFinder) {
+func (sp *Builder) resolveFieldDataTypes(docGroup *Library, cluster *matter.Cluster, fieldSet matter.FieldSet, field *matter.Field, dataType *types.DataType, finder entityFinder) {
 	if dataType == nil {
 		if !conformance.IsDeprecated(field.Conformance) && !conformance.IsDisallowed(field.Conformance) && !sp.ignoreHierarchy && (cluster == nil || cluster.Hierarchy == "Base") {
 			var clusterName string
@@ -203,7 +206,7 @@ func (sp *Builder) resolveFieldDataTypes(docGroup *DocGroup, cluster *matter.Clu
 	}
 }
 
-func (sp *Builder) resolveCommandResponseDataType(docGroup *DocGroup, cluster *matter.Cluster, command *matter.Command, finder entityFinder) {
+func (sp *Builder) resolveCommandResponseDataType(docGroup *Library, cluster *matter.Cluster, command *matter.Command, finder entityFinder) {
 	if command.Response == nil {
 		return
 	}
@@ -237,7 +240,7 @@ func (sp *Builder) resolveCommandResponseDataType(docGroup *DocGroup, cluster *m
 	}
 }
 
-func (sp *Builder) getCustomDataType(docGroup *DocGroup, dataType *types.DataType, cluster *matter.Cluster, field *matter.Field, finder entityFinder) {
+func (sp *Builder) getCustomDataType(docGroup *Library, dataType *types.DataType, cluster *matter.Cluster, field *matter.Field, finder entityFinder) {
 	switch ref := dataType.Source.(type) {
 	case *asciidoc.CrossReference:
 		dataType.Entity = sp.getCustomDataTypeFromFieldReference(docGroup, cluster, ref, finder)
@@ -251,9 +254,9 @@ func (sp *Builder) getCustomDataType(docGroup *DocGroup, dataType *types.DataTyp
 
 }
 
-func (sp *Builder) getCustomDataTypeFromFieldReference(docGroup *DocGroup, cluster *matter.Cluster, reference *asciidoc.CrossReference, finder entityFinder) (e types.Entity) {
+func (sp *Builder) getCustomDataTypeFromFieldReference(library *Library, cluster *matter.Cluster, reference *asciidoc.CrossReference, finder entityFinder) (e types.Entity) {
 
-	referenceID := docGroup.anchorId(docGroup.Reader, reference, reference, reference.ID)
+	referenceID := library.anchorId(library, reference, reference, reference.ID)
 	var label string
 	if len(reference.Elements) > 0 {
 		var s strings.Builder

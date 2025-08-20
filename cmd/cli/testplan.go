@@ -1,23 +1,15 @@
 package cli
 
 import (
-	"context"
-	"log/slog"
-
-	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/parse"
-	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
-	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
-	testplanRender "github.com/project-chip/alchemy/testplan/render"
-	"github.com/project-chip/alchemy/zap"
+	//testplanRender "github.com/project-chip/alchemy/testplan/render"
 )
 
 type TestPlan struct {
-	testplanRender.RendererOptions `embed:""`
+	//testplanRender.RendererOptions `embed:""`
 
 	common.ASCIIDocAttributes  `embed:""`
 	spec.ParserOptions         `embed:""`
@@ -28,7 +20,7 @@ type TestPlan struct {
 
 func (c *TestPlan) Run(cc *Context) (err error) {
 
-	var specDocs spec.DocSet
+	/*var specDocs spec.DocSet
 	var specification *spec.Specification
 	specification, specDocs, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, nil, c.ASCIIDocAttributes.ToList())
 	if err != nil {
@@ -42,7 +34,7 @@ func (c *TestPlan) Run(cc *Context) (err error) {
 		return err
 	}
 
-	domainIndexer := func(cxt context.Context, input *pipeline.Data[*spec.Doc], index, total int32) (outputs []*pipeline.Data[*spec.Doc], extra []*pipeline.Data[*spec.Doc], err error) {
+	domainIndexer := func(cxt context.Context, input *pipeline.Data[*asciidoc.Document], index, total int32) (outputs []*pipeline.Data[*asciidoc.Document], extra []*pipeline.Data[*asciidoc.Document], err error) {
 		doc := input.Content
 		top := parse.FindFirst[*asciidoc.Section](doc.Reader(), doc)
 		if top != nil {
@@ -103,6 +95,6 @@ func (c *TestPlan) Run(cc *Context) (err error) {
 
 	writer := files.NewWriter[string]("Writing test plans", c.OutputOptions)
 	err = writer.Write(cc, renders, c.ProcessingOptions)
-
+	*/
 	return
 }

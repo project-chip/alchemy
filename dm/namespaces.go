@@ -9,7 +9,6 @@ import (
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/spec"
 )
 
 func getNamespacePath(dmRoot string, path asciidoc.Path, namespaceName string) string {
@@ -21,7 +20,7 @@ func getNamespacePath(dmRoot string, path asciidoc.Path, namespaceName string) s
 	return filepath.Join(dmRoot, fmt.Sprintf("/namespaces/%s.xml", file))
 }
 
-func renderNamespace(doc *spec.Doc, namespace *matter.Namespace) (output string, err error) {
+func renderNamespace(doc *asciidoc.Document, namespace *matter.Namespace) (output string, err error) {
 
 	x := etree.NewDocument()
 
