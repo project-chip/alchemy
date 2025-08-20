@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/dolthub/go-mysql-server/sql"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/db"
@@ -33,8 +34,8 @@ func (cmd *Command) Run(cc *cli.Context) (err error) {
 		return
 	}
 
-	docs := make([]*spec.Doc, 0, specDocs.Size())
-	specDocs.Range(func(key string, value *pipeline.Data[*spec.Doc]) bool {
+	docs := make([]*asciidoc.Document, 0, specDocs.Size())
+	specDocs.Range(func(key string, value *pipeline.Data[*asciidoc.Document]) bool {
 		docs = append(docs, value.Content)
 		return true
 	})

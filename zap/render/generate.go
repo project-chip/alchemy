@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/vcs"
@@ -53,7 +54,7 @@ func (tg TemplateGenerator) Name() string {
 	return "Generating ZAP XML"
 }
 
-func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*spec.Doc], err error) {
+func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*asciidoc.Document], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*asciidoc.Document], err error) {
 	var entities []types.Entity
 	entities, err = input.Content.Entities()
 	if err != nil {
@@ -90,7 +91,7 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*s
 		}
 
 		var configurator *zap.Configurator
-		configurator, err = zap.NewConfigurator(tg.spec, []*spec.Doc{input.Content}, entities, newPath, errata, false)
+		configurator, err = zap.NewConfigurator(tg.spec, []*asciidoc.Document{input.Content}, entities, newPath, errata, false)
 		if err != nil {
 			return
 		}
@@ -153,8 +154,8 @@ func openConfigurator(configurator *zap.Configurator, options pipeline.Processin
 func SplitZAPDocs(cxt context.Context, inputs spec.DocSet) (clusters spec.DocSet, deviceTypes spec.DocSet, namespaces spec.DocSet, err error) {
 	clusters = spec.NewDocSet()
 	deviceTypes = spec.NewDocSet()
-	namespaces = pipeline.NewMap[string, *pipeline.Data[*spec.Doc]]()
-	inputs.Range(func(path string, data *pipeline.Data[*spec.Doc]) bool {
+	namespaces = pipeline.NewMap[string, *pipeline.Data[*asciidoc.Document]]()
+	inputs.Range(func(path string, data *pipeline.Data[*asciidoc.Document]) bool {
 		var hasCluster bool
 		var dts []*matter.DeviceType
 		var ns []*matter.Namespace
@@ -189,7 +190,7 @@ func SplitZAPDocs(cxt context.Context, inputs spec.DocSet) (clusters spec.DocSet
 	return
 }
 
-func getDocDomain(doc *spec.Doc) matter.Domain {
+func getDocDomain(doc *asciidoc.Document) matter.Domain {
 	if doc.Domain != matter.DomainUnknown {
 		return doc.Domain
 	}

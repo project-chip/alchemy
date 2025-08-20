@@ -1,13 +1,6 @@
 package common
 
-import (
-	"context"
-
-	"github.com/project-chip/alchemy/internal/pipeline"
-	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/spec"
-)
-
+/*
 type DocTypeFilter struct {
 	docType matter.DocType
 }
@@ -16,7 +9,7 @@ func (sp *DocTypeFilter) Name() string {
 	return ""
 }
 
-func (sp *DocTypeFilter) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[*spec.Doc], err error) {
+func (sp *DocTypeFilter) Process(cxt context.Context, inputs []*pipeline.Data[*asciidoc.Document]) (outputs []*pipeline.Data[*asciidoc.Document], err error) {
 	for _, i := range inputs {
 		var docType matter.DocType
 		docType, err = i.Content.DocType()
@@ -33,3 +26,4 @@ func (sp *DocTypeFilter) Process(cxt context.Context, inputs []*pipeline.Data[*s
 func NewDocTypeFilter(docType matter.DocType) *DocTypeFilter {
 	return &DocTypeFilter{docType: docType}
 }
+*/

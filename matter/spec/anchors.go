@@ -12,7 +12,7 @@ import (
 )
 
 type Anchor struct {
-	Document      *Doc
+	Document      *asciidoc.Document
 	Source        matter.Source
 	ID            asciidoc.Elements
 	LabelElements asciidoc.Elements
@@ -20,7 +20,7 @@ type Anchor struct {
 	Parent        asciidoc.Parent
 }
 
-func NewAnchor(doc *Doc, id asciidoc.Elements, element asciidoc.Element, parent asciidoc.Parent, label ...asciidoc.Element) *Anchor {
+func NewAnchor(doc *asciidoc.Document, id asciidoc.Elements, element asciidoc.Element, parent asciidoc.Parent, label ...asciidoc.Element) *Anchor {
 	return &Anchor{
 		Document:      doc,
 		Source:        NewSource(doc, element),
@@ -31,8 +31,8 @@ func NewAnchor(doc *Doc, id asciidoc.Elements, element asciidoc.Element, parent 
 	}
 }
 
-func (a *Anchor) Identifier(reader asciidoc.Reader) string {
-	return a.Document.anchorId(reader, a.Parent, a.Element, a.ID)
+func (library *Library) Identifier(reader asciidoc.Reader, a *Anchor) string {
+	return library.anchorId(reader, a.Parent, a.Element, a.ID)
 }
 
 func (a *Anchor) Name(reader asciidoc.Reader) string {
@@ -43,12 +43,9 @@ func (a *Anchor) Name(reader asciidoc.Reader) string {
 	return ""
 }
 
-func (a *Anchor) SyncToDoc(id asciidoc.Elements) {
+func (library *Library) SyncToDoc(a *Anchor, id asciidoc.Elements) {
 	if !id.Equals(a.ID) {
-		a.Document.changeAnchor(a, a.Parent, id)
-		if a.Document.group != nil {
-			a.Document.group.changeAnchor(a, a.Parent, id)
-		}
+		library.changeAnchor(library, a, a.Parent, id)
 		a.ID = id
 	}
 	switch e := a.Element.(type) {
@@ -106,67 +103,64 @@ func (a *Anchor) SyncToDoc(id asciidoc.Elements) {
 
 }
 
-func (doc *Doc) Anchors() (map[string][]*Anchor, error) {
-	if doc.referenceIndex.anchorsParsed {
-		return doc.referenceIndex.anchors, nil
+func (library *Library) Anchors(reader asciidoc.Reader) (map[string][]*Anchor, error) {
+	if library.referenceIndex.anchorsParsed {
+		return library.referenceIndex.anchors, nil
 	}
-	doc.findAnchors()
-	return doc.anchors, nil
+	library.findAnchors(reader)
+	return library.anchors, nil
 }
 
-func (doc *Doc) findAnchors() {
-	var crossReferences map[string][]*CrossReference
-	if doc.group != nil {
-		crossReferences = doc.group.crossReferences
-	} else {
-		crossReferences = doc.CrossReferences()
-	}
-	parse.Search(doc.Reader(), doc, doc.Children(), func(el any, parent asciidoc.Parent, index int) parse.SearchShould {
+func (library *Library) findAnchors(reader asciidoc.Reader) (anchors map[string][]*Anchor) {
+	crossReferences := library.crossReferences
+	parse.Search(library.Root, reader, library.Root, reader.Children(library.Root), func(doc *asciidoc.Document, el any, parent asciidoc.ParentElement, index int) parse.SearchShould {
 		var anchor *Anchor
 		var label string
 		switch el := el.(type) {
 		case *asciidoc.Anchor:
 			anchor = NewAnchor(doc, el.ID, el, parent, el.Elements...)
 		case *asciidoc.Section:
-			anchor = doc.makeAnchor(parent, el, crossReferences)
+			anchor = library.makeAnchor(doc, parent, el, crossReferences)
 			if anchor != nil {
-				label = doc.SectionName(el)
-				doc.anchorsByLabel[label] = append(doc.anchorsByLabel[label], anchor)
+				label = library.SectionName(el)
+				library.anchorsByLabel[label] = append(library.anchorsByLabel[label], anchor)
 			}
 		case asciidoc.Element:
-			anchor = doc.makeAnchor(parent, el, crossReferences)
+			anchor = library.makeAnchor(doc, parent, el, crossReferences)
 		default:
 			slog.Warn("unexpected anchor element", "type", fmt.Sprintf("%T", el))
 			return parse.SearchShouldSkip
 		}
 		if anchor != nil {
-			anchorID := doc.anchorId(doc.Reader(), anchor.Parent, anchor.Element, anchor.ID)
-			doc.anchors[anchorID] = append(doc.anchors[anchorID], anchor)
+			anchorID := library.anchorId(reader, anchor.Parent, anchor.Element, anchor.ID)
+			library.anchors[anchorID] = append(library.anchors[anchorID], anchor)
 			if len(anchor.LabelElements) > 0 {
 				anchorLabel := strings.TrimSpace(asciidoc.AttributeAsciiDocString(anchor.LabelElements))
 				if len(anchorLabel) > 0 && anchorLabel != label {
-					doc.anchorsByLabel[anchorLabel] = append(doc.anchorsByLabel[anchorLabel], anchor)
+					library.anchorsByLabel[anchorLabel] = append(library.anchorsByLabel[anchorLabel], anchor)
 				}
 			}
 
 		}
 		return parse.SearchShouldContinue
 	})
-	doc.anchorsParsed = true
+	library.anchorsParsed = true
+	return
 }
 
-func (doc *Doc) makeAnchor(parent asciidoc.Parent, element asciidoc.Element, crossReferences map[string][]*CrossReference) *Anchor {
+func (library *Library) makeAnchor(doc *asciidoc.Document, parent asciidoc.Parent, element asciidoc.Element, crossReferences map[string][]*CrossReference) *Anchor {
 	// If there's a cross-reference for it, then we'll need to make an anchor
-	id, labelSet := getAnchorElements(doc, element, crossReferences)
+	id, labelSet := library.getAnchorElements(doc, element, crossReferences)
 	if len(id) == 0 {
 		return nil
 	}
-	slog.Debug("Creating anchor for section with cross reference", slog.Any("id", id), slog.String("path", doc.Path.Relative))
+	//anchorId := library.anchorId(library, parent, element, id)
+	//slog.Info("Creating anchor for section with cross reference", slog.String("id", anchorId), slog.String("path", doc.Path.Relative), log.Address("elementAddress", element))
 	a := NewAnchor(doc, id, element, parent, labelSet...)
 	return a
 }
 
-func getAnchorElements(doc *Doc, element asciidoc.Element, crossReferences map[string][]*CrossReference) (id asciidoc.Elements, labelSet asciidoc.Elements) {
+func (library *Library) getAnchorElements(doc *asciidoc.Document, element asciidoc.Element, crossReferences map[string][]*CrossReference) (id asciidoc.Elements, labelSet asciidoc.Elements) {
 	var idAttr asciidoc.Attribute
 	var refTextAttr *asciidoc.NamedAttribute
 	if wa, ok := element.(asciidoc.Attributable); ok {
@@ -191,7 +185,7 @@ func getAnchorElements(doc *Doc, element asciidoc.Element, crossReferences map[s
 
 	if idAttr == nil {
 		if s, ok := element.(*asciidoc.Section); ok && crossReferences != nil {
-			sectionName := doc.SectionName(s)
+			sectionName := library.SectionName(s)
 			id = asciidoc.NewStringElements(sectionName)
 			if _, ok := crossReferences[sectionName]; ok {
 				return
@@ -214,52 +208,32 @@ func getAnchorElements(doc *Doc, element asciidoc.Element, crossReferences map[s
 	return
 }
 
-func (d *Doc) FindAnchor(id string, source log.Source) *Anchor {
-	a := d.findAnchor(source, id)
+func (library *Library) FindAnchor(id string, source log.Source) *Anchor {
+	a := library.findAnchor(source, id)
 	if a != nil {
 		return a
 	}
-	a = d.findAnchorByLabel(source, id)
+	a = library.findAnchorByLabel(source, id)
 	if a != nil {
 		return a
-	}
-	if d.group != nil {
-		a = d.group.findAnchor(source, id)
-		if a != nil {
-			return a
-		}
-		a = d.group.findAnchorByLabel(source, id)
-		if a != nil {
-			return a
-		}
 	}
 
 	return nil
 }
 
-func (d *Doc) FindAnchorByID(id asciidoc.Elements, element asciidoc.ParentElement, source log.Source) *Anchor {
-	anchorID := d.anchorId(d.Reader(), element, element, id)
-	return d.FindAnchor(anchorID, source)
+func (library *Library) FindAnchorByID(id asciidoc.Elements, element asciidoc.ParentElement, source log.Source) *Anchor {
+	anchorID := library.anchorId(library, element, element, id)
+	return library.FindAnchor(anchorID, source)
 }
 
-func (d *Doc) FindAnchors(id string) []*Anchor {
-	a := d.findAnchorsByID(id)
+func (library *Library) FindAnchors(id string) []*Anchor {
+	a := library.findAnchorsByID(id)
 	if a != nil {
 		return a
 	}
-	a = d.findAnchorsByLabel(id)
+	a = library.findAnchorsByLabel(id)
 	if a != nil {
 		return a
-	}
-	if d.group != nil {
-		a = d.group.findAnchorsByID(id)
-		if a != nil {
-			return a
-		}
-		a = d.group.findAnchorsByLabel(id)
-		if a != nil {
-			return a
-		}
 	}
 
 	return nil

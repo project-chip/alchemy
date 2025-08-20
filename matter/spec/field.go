@@ -17,7 +17,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.EntityType, parent types.Entity) (fields []*matter.Field, fieldMap map[string]*matter.Field, err error) {
+func (library *Library) readFields(spec *Specification, reader asciidoc.Reader, ti *TableInfo, entityType types.EntityType, parent types.Entity) (fields []*matter.Field, fieldMap map[string]*matter.Field, err error) {
 	var idColumns []matter.TableColumn
 	switch entityType {
 	case types.EntityTypeAttribute:
@@ -25,44 +25,45 @@ func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.En
 	default:
 		idColumns = []matter.TableColumn{matter.TableColumnFieldID, matter.TableColumnID}
 	}
+
 	fieldMap = make(map[string]*matter.Field)
 	for row := range ti.ContentRows() {
 		f := matter.NewField(row, parent, entityType)
 		var name string
-		name, err = ti.ReadValue(row, matter.TableColumnName)
+		name, err = ti.ReadValue(library, row, matter.TableColumnName)
 		if err != nil {
 			return
 		}
 		f.Name = matter.StripTypeSuffixes(name)
-		f.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
-		f.Type, err = ti.ReadDataType(ti.Doc.Reader(), row, matter.TableColumnType)
+		f.Conformance = ti.ReadConformance(library, row, matter.TableColumnConformance)
+		f.Type, err = ti.ReadDataType(library, reader, row, matter.TableColumnType)
 		if err != nil {
 			if !conformance.IsDeprecated(f.Conformance) && !conformance.IsDisallowed(f.Conformance) {
 				// Clusters inheriting from other clusters don't supply type information, nor do attributes that are deprecated or disallowed
-				slog.Debug("error reading field data type", slog.String("path", d.Path.String()), slog.String("name", name), slog.Any("error", err))
+				slog.Debug("error reading field data type", slog.String("path", ti.Doc.Path.String()), slog.String("name", name), slog.Any("error", err))
 				return
 			} else {
 				err = nil
 			}
 		}
 
-		f.Constraint = ti.ReadConstraint(row, matter.TableColumnConstraint)
+		f.Constraint = ti.ReadConstraint(library, row, matter.TableColumnConstraint)
 		if err != nil {
 			return
 		}
-		f.Quality, err = ti.ReadQuality(row, entityType, matter.TableColumnQuality)
+		f.Quality, err = ti.ReadQuality(reader, row, entityType, matter.TableColumnQuality)
 		if err != nil {
 			return
 		}
-		f.Fallback = ti.ReadFallback(row, matter.TableColumnFallback)
+		f.Fallback = ti.ReadFallback(library, row, matter.TableColumnFallback)
 
 		var a string
-		a, err = ti.ReadString(row, matter.TableColumnAccess)
+		a, err = ti.ReadString(reader, row, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}
 		f.Access, _ = ParseAccess(a, entityType)
-		f.ID, err = ti.ReadID(row, idColumns...)
+		f.ID, err = ti.ReadID(reader, row, idColumns...)
 		if err != nil {
 			return
 		}
@@ -111,15 +112,15 @@ func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.En
 	return
 }
 
-func mapFields(d *Doc, section *asciidoc.Section, fieldMap map[string]*matter.Field, pc *parseContext) error {
-	for s := range parse.Skim[*asciidoc.Section](d.Reader(), section, section.Children()) {
+func (library *Library) mapFields(reader asciidoc.Reader, d *asciidoc.Document, section *asciidoc.Section, fieldMap map[string]*matter.Field) error {
+	for s := range parse.Skim[*asciidoc.Section](reader, section, reader.Children(section)) {
 
 		var name string
-		switch d.SectionType(s) {
+		switch library.SectionType(s) {
 		case matter.SectionAttribute:
-			name = text.TrimCaseInsensitiveSuffix(d.SectionName(s), " Attribute")
+			name = text.TrimCaseInsensitiveSuffix(library.SectionName(s), " Attribute")
 		case matter.SectionField:
-			name = text.TrimCaseInsensitiveSuffix(d.SectionName(s), " Field")
+			name = text.TrimCaseInsensitiveSuffix(library.SectionName(s), " Field")
 		}
 		if len(name) == 0 {
 			continue
@@ -128,38 +129,38 @@ func mapFields(d *Doc, section *asciidoc.Section, fieldMap map[string]*matter.Fi
 		if !ok {
 			continue
 		}
-		err := findAnonymousType(d, s, a)
+		err := library.findAnonymousType(reader, d, s, a)
 		if err != nil {
 			return err
 		}
 		if a.Type != nil && a.Type.BaseType == types.BaseDataTypeTag {
-			err = findTagNamespace(d, s, a, fieldMap)
+			err = library.findTagNamespace(reader, d, s, a, fieldMap)
 			if err != nil {
 				return err
 			}
 		}
 		checkNullText(d, s, a)
-		pc.entitiesByElement[s] = append(pc.entitiesByElement[s], a)
+		library.addEntity(s, a)
 	}
 	return nil
 }
 
-func findAnonymousType(doc *Doc, s *asciidoc.Section, field *matter.Field) error {
+func (library *Library) findAnonymousType(reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section, field *matter.Field) error {
 	if field.Type == nil {
 		return nil
 	}
 	if field.Type.IsEnum() {
-		return findAnonymousEnum(doc, s, field)
+		return library.findAnonymousEnum(reader, doc, s, field)
 	}
 	if field.Type.IsMap() {
-		return findAnonymousBitmap(doc, s, field)
+		return library.findAnonymousBitmap(reader, doc, s, field)
 	}
 	return nil
 }
 
-func findAnonymousEnum(doc *Doc, s *asciidoc.Section, field *matter.Field) error {
+func (library *Library) findAnonymousEnum(reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section, field *matter.Field) error {
 	slog.Debug("possible anonymous enum", "name", field.Name, "type", field.Type)
-	ti, err := parseFirstTable(doc, s)
+	ti, err := parseFirstTable(reader, doc, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			return nil
@@ -175,17 +176,17 @@ func findAnonymousEnum(doc *Doc, s *asciidoc.Section, field *matter.Field) error
 	for row := range ti.ContentRows() {
 		ev := matter.NewEnumValue(s, ae)
 		ev.Conformance = conformance.Set{&conformance.Mandatory{}}
-		ev.Value, err = ti.ReadID(row, matter.TableColumnValue)
+		ev.Value, err = ti.ReadID(reader, row, matter.TableColumnValue)
 		if err != nil {
 			return err
 		}
-		ev.Summary, err = ti.ReadValue(row, matter.TableColumnSummary, matter.TableColumnDescription)
+		ev.Summary, err = ti.ReadValue(library, row, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return err
 		}
 		if len(ev.Summary) == 0 {
 			if len(row.TableCells()) > valueIndex+1 {
-				ev.Summary, err = ti.ReadValueByIndex(row, valueIndex+1)
+				ev.Summary, err = ti.ReadValueByIndex(library, row, valueIndex+1)
 				if err != nil {
 					return err
 				}
@@ -204,9 +205,9 @@ func findAnonymousEnum(doc *Doc, s *asciidoc.Section, field *matter.Field) error
 	return nil
 }
 
-func findAnonymousBitmap(doc *Doc, s *asciidoc.Section, field *matter.Field) error {
+func (library *Library) findAnonymousBitmap(reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section, field *matter.Field) error {
 	slog.Debug("possible anonymous enum", "name", field.Name, "type", field.Type)
-	ti, err := parseFirstTable(doc, s)
+	ti, err := parseFirstTable(reader, doc, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			return nil
@@ -222,22 +223,22 @@ func findAnonymousBitmap(doc *Doc, s *asciidoc.Section, field *matter.Field) err
 	for row := range ti.ContentRows() {
 		var bit, name, summary string
 		conf := conformance.Set{&conformance.Mandatory{}}
-		name, err = ti.ReadValue(row, matter.TableColumnName)
+		name, err = ti.ReadValue(library, row, matter.TableColumnName)
 		if err != nil {
 			return err
 		}
 		name = matter.StripTypeSuffixes(name)
-		summary, err = ti.ReadValue(row, matter.TableColumnSummary, matter.TableColumnDescription)
+		summary, err = ti.ReadValue(library, row, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return err
 		}
 
-		bit, err = ti.ReadString(row, matter.TableColumnBit)
+		bit, err = ti.ReadString(reader, row, matter.TableColumnBit)
 		if err != nil {
 			return err
 		}
 		if len(bit) == 0 {
-			bit, err = ti.ReadString(row, matter.TableColumnValue)
+			bit, err = ti.ReadString(reader, row, matter.TableColumnValue)
 			if err != nil {
 				return err
 			}
@@ -260,12 +261,11 @@ func findAnonymousBitmap(doc *Doc, s *asciidoc.Section, field *matter.Field) err
 	return nil
 }
 
-func findTagNamespace(doc *Doc, s *asciidoc.Section, field *matter.Field, fieldMap map[string]*matter.Field) error {
+func (library *Library) findTagNamespace(reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section, field *matter.Field, fieldMap map[string]*matter.Field) error {
 	var found bool
-
-	parse.Search(doc.Reader(), s, s.Elements, func(ref *asciidoc.CrossReference, parent asciidoc.Parent, index int) parse.SearchShould {
-		if doc.anchorId(doc.Reader(), ref, ref, ref.ID) == "ref_StandardNamespaces" {
-			label := buildReferenceName(doc.Reader(), ref, ref.Elements)
+	parse.Search(doc, reader, s, s.Elements, func(doc *asciidoc.Document, ref *asciidoc.CrossReference, parent asciidoc.ParentElement, index int) parse.SearchShould {
+		if library.anchorId(reader, ref, ref, ref.ID) == "ref_StandardNamespaces" {
+			label := buildReferenceName(reader, ref, ref.Elements)
 			name := strings.TrimSpace(text.TrimCaseInsensitiveSuffix(label, " Namespace"))
 			if len(name) > 0 {
 				field.Type.Name = name
@@ -331,6 +331,7 @@ func (ff *fieldFinder) suggestIdentifiers(identifier string, suggestions map[typ
 func validateFields(spec *Specification, parent types.Entity, fields matter.FieldSet) {
 	idu := make(idUniqueness[*matter.Field])
 	nu := make(nameUniqueness[*matter.Field])
+	cv := make(conformanceValidation)
 	for _, f := range fields {
 		if !f.ID.Valid() {
 			slog.Warn("Field has invalid ID", log.Path("source", f), matter.LogEntity("parent", parent), slog.String("fieldName", f.Name))
@@ -341,9 +342,11 @@ func validateFields(spec *Specification, parent types.Entity, fields matter.Fiel
 		if fieldId >= 0xFE && fieldId <= 0x100 {
 			slog.Warn("Struct is using global field ID", log.Path("source", f), matter.LogEntity("parent", parent), slog.String("fieldName", f.Name), slog.String("fieldId", f.ID.HexString()))
 		}
+		cv.add(f, f.Conformance)
 
 		validateAccess(spec, f, f.Access)
 	}
+	cv.check(spec)
 }
 
 var nullIndicationPattern = regexp.MustCompile(`(?i)(?:\A|\s|\b)(null)(?:\b|\s|\z)`)

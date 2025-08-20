@@ -14,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (b *Baller) ensureTableOptions(doc *spec.Doc, root asciidoc.ParentElement) {
+func (b *Baller) ensureTableOptions(doc *asciidoc.Document, root asciidoc.ParentElement) {
 	if !b.options.NormalizeTableOptions {
 		return
 	}

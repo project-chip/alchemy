@@ -6,9 +6,9 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 )
 
-func FindAll[T any](reader asciidoc.Reader, parent asciidoc.ParentElement) iter.Seq[T] {
+func FindAll[T any](doc *asciidoc.Document, reader asciidoc.Reader, parent asciidoc.ParentElement) iter.Seq[T] {
 	return func(yield func(T) bool) {
-		search(reader, parent, parent.Children(), func(el T, parent asciidoc.Parent, index int) SearchShould {
+		search(doc, reader, parent, reader.Children(parent), func(doc *asciidoc.Document, el T, parent asciidoc.ParentElement, index int) SearchShould {
 			if !yield(el) {
 				return SearchShouldStop
 			}
@@ -17,9 +17,9 @@ func FindAll[T any](reader asciidoc.Reader, parent asciidoc.ParentElement) iter.
 	}
 }
 
-func FindFirst[T any](reader asciidoc.Reader, parent asciidoc.ParentElement) T {
+func FindFirst[T any](doc *asciidoc.Document, reader asciidoc.Reader, parent asciidoc.ParentElement) T {
 	var found T
-	traverse(reader, parent, parent.Children(), func(el T, parent asciidoc.Parent, index int) SearchShould {
+	search(doc, reader, parent, reader.Children(parent), func(doc *asciidoc.Document, el T, parent asciidoc.ParentElement, index int) SearchShould {
 		found = el
 		return SearchShouldStop
 	})

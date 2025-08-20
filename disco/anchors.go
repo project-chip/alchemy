@@ -21,7 +21,7 @@ var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z0-9]+[a-z0-9]*(?:[A-Z]+[a
 var improperAnchorCharactersPattern = regexp.MustCompile(`[^A-Za-z0-9]+`)
 
 type anchorGroup struct {
-	group            *spec.DocGroup
+	group            *asciidoc.DocumentGroup
 	updatedAnchors   map[string][]*spec.Anchor
 	rewrittenAnchors map[string][]*spec.Anchor
 }
@@ -39,13 +39,13 @@ func (r AnchorNormalizer) Name() string {
 	return "Normalizing anchors"
 }
 
-func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[render.InputDocument], err error) {
-	var anchorGroups map[*spec.DocGroup]*anchorGroup
+func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*asciidoc.Document]) (outputs []*pipeline.Data[render.InputDocument], err error) {
+	var anchorGroups map[*asciidoc.DocumentGroup]*anchorGroup
 	anchorGroups, err = p.normalizeAnchors(inputs)
 	if err != nil {
 		return
 	}
-	extraDocs := make(map[*spec.Doc]struct{})
+	extraDocs := make(map[*asciidoc.Document]struct{})
 	for _, ag := range anchorGroups {
 		for id, infos := range ag.updatedAnchors {
 			if len(infos) == 1 {
@@ -90,7 +90,7 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 					extraDocs[xref.Document] = struct{}{}
 				}
 			} else {
-				docs := make(map[*spec.Doc][]*spec.Anchor)
+				docs := make(map[*asciidoc.Document][]*spec.Anchor)
 				for _, info := range to {
 					docs[info.Document] = append(docs[info.Document], info)
 				}
@@ -122,9 +122,9 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 	return
 }
 
-func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) (anchorGroups map[*spec.DocGroup]*anchorGroup, err error) {
-	anchorGroups = make(map[*spec.DocGroup]*anchorGroup)
-	unaffiliatedDocs := spec.NewDocGroup(nil)
+func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*asciidoc.Document]) (anchorGroups map[*asciidoc.DocumentGroup]*anchorGroup, err error) {
+	anchorGroups = make(map[*asciidoc.DocumentGroup]*anchorGroup)
+	unaffiliatedDocs := spec.NewLibrary(nil)
 	for _, input := range inputs {
 		doc := input.Content
 
@@ -143,7 +143,7 @@ func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) 
 		}
 
 		var da map[string][]*spec.Anchor
-		da, err = doc.Anchors()
+		da, err = doc.Anchors(asciidoc.RawReader)
 		if err != nil {
 			err = fmt.Errorf("error fetching anchors in %s: %w", doc.Path, err)
 			return
@@ -314,7 +314,7 @@ func disambiguateAnchorSet(conflictedAnchors []*spec.Anchor, newID string, ag *a
 		}
 		if duplicateIds {
 			for i := range conflictedAnchors {
-				parents[i] = parentSections[i].Parent
+				parents[i] = parentSections[i].Parent()
 			}
 		} else {
 			break

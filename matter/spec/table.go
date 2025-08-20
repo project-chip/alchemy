@@ -14,18 +14,18 @@ import (
 var ErrNoTableFound = fmt.Errorf("no table found")
 var ErrNotEnoughRowsInTable = fmt.Errorf("not enough value rows in table")
 
-func parseFirstTable(doc *Doc, section *asciidoc.Section) (ti *TableInfo, err error) {
-	t := FindFirstTable(doc.Reader(), section)
+func parseFirstTable(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section) (ti *TableInfo, err error) {
+	t := FindFirstTable(reader, section)
 	if t == nil {
 		err = ErrNoTableFound
 		return
 	}
-	return parseTable(doc, section, t)
+	return parseTable(reader, doc, section, t)
 }
 
-func parseTable(doc *Doc, section *asciidoc.Section, t *asciidoc.Table) (ti *TableInfo, err error) {
+func parseTable(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, t *asciidoc.Table) (ti *TableInfo, err error) {
 
-	ti, err = ReadTable(doc, doc.Reader(), t)
+	ti, err = ReadTable(doc, reader, t)
 	if err != nil {
 		err = newGenericParseError(t, "failed mapping table columns for first table in section \"%s\": %w", doc.SectionName(section), err)
 		return
@@ -42,15 +42,15 @@ func parseTable(doc *Doc, section *asciidoc.Section, t *asciidoc.Table) (ti *Tab
 
 func FindFirstTable(reader asciidoc.Reader, section *asciidoc.Section) *asciidoc.Table {
 	var table *asciidoc.Table
-	parse.SkimFunc(reader, section, section.Children(), func(t *asciidoc.Table) bool {
+	parse.SkimFunc(reader, section, reader.Children(section), func(t *asciidoc.Table) bool {
 		table = t
 		return true
 	})
 	return table
 }
 
-func RenderTableCell(cell *asciidoc.TableCell) (string, error) {
-	cellElements := cell.Children()
+func RenderTableCell(reader asciidoc.Reader, cell *asciidoc.TableCell) (string, error) {
+	cellElements := reader.Iterate(cell, reader.Children(cell)).List()
 	if len(cellElements) == 0 {
 		return "", nil
 	}
@@ -62,27 +62,27 @@ func RenderTableCell(cell *asciidoc.TableCell) (string, error) {
 	return out.String(), nil
 }
 
-func (d *Doc) GetHeaderCellString(reader asciidoc.Reader, cell *asciidoc.TableCell) (string, error) {
+func (library *Library) GetHeaderCellString(reader asciidoc.Reader, cell *asciidoc.TableCell) (string, error) {
 
-	cellElements := cell.Children()
-	if reader.Iterate(cell, cell.Children()).Count() == 0 {
+	cellElements := reader.Children(cell)
+	if reader.Iterate(cell, cellElements).Count() == 0 {
 		return "", nil
 	}
 	var v strings.Builder
-	err := readRowCellValueElements(d, reader, cell.Parent, cell, cellElements, &v)
+	err := readRowCellValueElements(reader, cell.Parent, cell, cellElements, &v)
 	if err != nil {
 		return "", newGenericParseError(cell, "error reading table header cell: %w", err)
 	}
 	return v.String(), nil
 }
 
-func ReadTable(doc *Doc, reader asciidoc.Reader, table *asciidoc.Table) (ti *TableInfo, err error) {
+func ReadTable(doc *asciidoc.Document, reader asciidoc.Reader, table *asciidoc.Table) (ti *TableInfo, err error) {
 	ti = &TableInfo{Doc: doc, Element: table, Rows: table.TableRows(reader)}
 	ti.HeaderRowIndex, ti.ColumnMap, ti.ExtraColumns, err = mapTableColumns(doc, reader, ti.Rows)
 	return
 }
 
-func mapTableColumns(doc *Doc, reader asciidoc.Reader, rows []*asciidoc.TableRow) (headerRow int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
+func mapTableColumns(doc *asciidoc.Document, reader asciidoc.Reader, rows []*asciidoc.TableRow) (headerRow int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
 	var cellCount = -1
 	headerRow = -1
 	for i, row := range rows {
@@ -98,7 +98,7 @@ func mapTableColumns(doc *Doc, reader asciidoc.Reader, rows []*asciidoc.TableRow
 		var spares []ExtraColumn
 		for j, cell := range tableCells {
 			var val string
-			val, err = doc.GetHeaderCellString(reader, cell)
+			val, err = reader.StringValue(row, reader.Children(cell))
 			if err != nil {
 				return
 			}

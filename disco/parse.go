@@ -14,7 +14,7 @@ import (
 )
 
 type docParse struct {
-	doc     *spec.Doc
+	doc     *asciidoc.Document
 	docType matter.DocType
 
 	clusters map[*asciidoc.Section]*clusterInfo
@@ -65,7 +65,7 @@ func newSubSectionChildPattern(suffix string, indexColumns ...matter.TableColumn
 	return subSectionChildPattern{suffix: suffix, indexColumns: indexColumns}
 }
 
-func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *asciidoc.Section) (dp *docParse, err error) {
+func (b *Baller) parseDoc(doc *asciidoc.Document, docType matter.DocType, topLevelSection *asciidoc.Section) (dp *docParse, err error) {
 	dp = &docParse{
 		doc:              doc,
 		docType:          docType,

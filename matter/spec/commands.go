@@ -18,34 +18,35 @@ import (
 
 var parentheticalExpressionPattern = regexp.MustCompile(`\s*\([^\)]+\)$`)
 
-type commandFactory struct{}
+type commandFactory struct {
+}
 
-func (cf *commandFactory) New(spec *Specification, d *Doc, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (*matter.Command, error) {
+func (cf *commandFactory) New(spec *Specification, docGroup *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (*matter.Command, error) {
 	cmd := matter.NewCommand(s, parent)
 	var err error
-	cmd.ID, err = ti.ReadID(row, matter.TableColumnCommandID, matter.TableColumnID)
+	cmd.ID, err = ti.ReadID(reader, row, matter.TableColumnCommandID, matter.TableColumnID)
 	if err != nil {
 		return nil, err
 	}
 
 	cmd.Name = text.TrimCaseInsensitiveSuffix(name, " Command")
 	var dir string
-	dir, err = ti.ReadString(row, matter.TableColumnDirection)
+	dir, err = ti.ReadString(reader, row, matter.TableColumnDirection)
 	if err != nil {
 		return nil, err
 	}
 	cmd.Direction = ParseCommandDirection(dir)
-	cmd.Response, _ = ti.ReadDataType(d.Reader(), row, matter.TableColumnResponse)
+	cmd.Response, _ = ti.ReadDataType(docGroup, reader, row, matter.TableColumnResponse)
 	if cmd.Response != nil {
 		cmd.Response.Name = text.TrimCaseInsensitiveSuffix(cmd.Response.Name, " Command")
 	}
-	cmd.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
+	cmd.Conformance = ti.ReadConformance(docGroup, row, matter.TableColumnConformance)
 	var a string
-	a, err = ti.ReadString(row, matter.TableColumnAccess)
+	a, err = ti.ReadString(reader, row, matter.TableColumnAccess)
 	if err != nil {
 		return nil, err
 	}
-	cmd.Quality, err = ti.ReadQuality(row, types.EntityTypeCommand, matter.TableColumnQuality)
+	cmd.Quality, err = ti.ReadQuality(reader, row, types.EntityTypeCommand, matter.TableColumnQuality)
 	if err != nil {
 		return nil, err
 	}
@@ -53,50 +54,52 @@ func (cf *commandFactory) New(spec *Specification, d *Doc, s *asciidoc.Section, 
 	return cmd, nil
 }
 
-func (cf *commandFactory) Details(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, c *matter.Command) (err error) {
-	return readCommand(pc, spec, d, s, c)
+func (cf *commandFactory) Details(spec *Specification, docGroup *Library, reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, command *matter.Command) (err error) {
+	return readCommand(spec, docGroup, reader, doc, section, command)
 }
 
-func readCommand(pc *parseContext, spec *Specification, d *Doc, s *asciidoc.Section, c *matter.Command) (err error) {
-	c.Description = getDescription(d, c, s, s.Children())
+func readCommand(spec *Specification, docGroup *Library, reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, command *matter.Command) (err error) {
+	command.Description = docGroup.getDescription(reader, doc, command, section, reader.Children(section))
 
-	c.Name = CanonicalName(c.Name)
+	command.Name = CanonicalName(command.Name)
 
-	if d.errata.Spec.IgnoreSection(d.SectionName(s), errata.SpecPurposeCommandArguments) {
+	de := errata.GetSpec(doc.Path.Relative)
+
+	if de.IgnoreSection(docGroup.SectionName(section), errata.SpecPurposeCommandArguments) {
 		return
 	}
 	var ti *TableInfo
-	ti, err = parseFirstTable(d, s)
+	ti, err = parseFirstTable(reader, doc, section)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
 		} else {
-			slog.Warn("No valid command parameter table found", log.Element("source", d.Path, s), "command", c.Name)
+			slog.Warn("No valid command parameter table found", log.Element("source", doc.Path, section), "command", command.Name)
 			err = nil
 		}
 		return
 	}
 	var fieldMap map[string]*matter.Field
-	c.Fields, fieldMap, err = d.readFields(spec, ti, types.EntityTypeCommandField, c)
+	command.Fields, fieldMap, err = docGroup.readFields(spec, reader, ti, types.EntityTypeCommandField, command)
 	if err != nil {
 		return
 	}
-	err = mapFields(d, s, fieldMap, pc)
+	err = docGroup.mapFields(reader, doc, section, fieldMap)
 	if err != nil {
 		return
 	}
 	return
 }
 
-func (cf *commandFactory) EntityName(doc *Doc, s *asciidoc.Section) string {
-	name := strings.ToLower(text.TrimCaseInsensitiveSuffix(doc.SectionName(s), " Command"))
+func (cf *commandFactory) EntityName(docGroup *Library, reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section) string {
+	name := strings.ToLower(text.TrimCaseInsensitiveSuffix(docGroup.SectionName(s), " Command"))
 	return parentheticalExpressionPattern.ReplaceAllString(name, "")
 }
 
-func (cf *commandFactory) Children(d *Doc, s *asciidoc.Section) iter.Seq[*asciidoc.Section] {
+func (cf *commandFactory) Children(docGroup *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) iter.Seq[*asciidoc.Section] {
 	return func(yield func(*asciidoc.Section) bool) {
-		parse.SkimFunc(d.Reader(), s, s.Children(), func(s *asciidoc.Section) bool {
-			if d.SectionType(s) != matter.SectionCommand {
+		parse.SkimFunc(reader, s, reader.Children(s), func(s *asciidoc.Section) bool {
+			if docGroup.SectionType(s) != matter.SectionCommand {
 				return false
 			}
 			return !yield(s)
@@ -104,15 +107,15 @@ func (cf *commandFactory) Children(d *Doc, s *asciidoc.Section) iter.Seq[*asciid
 	}
 }
 
-func toCommands(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) (commands matter.CommandSet, err error) {
+func (library *Library) toCommands(spec *Specification, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, parent types.Entity) (commands matter.CommandSet, err error) {
 
-	t := FindFirstTable(d.Reader(), s)
+	t := FindFirstTable(reader, s)
 	if t == nil {
 		return nil, nil
 	}
 
-	var cf commandFactory
-	commands, err = buildList(spec, d, s, t, pc, commands, &cf, parent)
+	cf := commandFactory{}
+	commands, err = buildList(spec, library, reader, d, s, t, commands, &cf, parent)
 
 	cmdMap := make(map[matter.Interface]map[uint64]*matter.Command)
 
@@ -206,6 +209,7 @@ func validateCommands(spec *Specification) {
 		idsu := make(idUniqueness[*matter.Command])
 		idcu := make(idUniqueness[*matter.Command])
 		nu := make(nameUniqueness[*matter.Command])
+		cv := make(conformanceValidation)
 
 		for _, command := range cluster.Commands {
 			switch command.Direction {
@@ -215,8 +219,11 @@ func validateCommands(spec *Specification) {
 				idcu.check(spec, command.ID, command)
 			}
 			nu.check(spec, command)
+			cv.add(command, command.Conformance)
 			validateFields(spec, command, command.Fields)
 		}
+
+		cv.check(spec)
 	}
 	idsu := make(idUniqueness[*matter.Command])
 	idcu := make(idUniqueness[*matter.Command])

@@ -6,6 +6,7 @@ import (
 
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -52,6 +53,8 @@ const (
 	ErrorTypeInvalidConformance
 	ErrorTypeInvalidConstraint
 	ErrorTypeInvalidFallback
+	ErrorTypeConformanceChoiceOrphan
+	ErrorTypeConformanceChoiceMismatch
 )
 
 type Error interface {
@@ -678,16 +681,16 @@ type InvalidConstraintError struct {
 	Source     log.Source
 }
 
-func (cf InvalidConstraintError) Type() ErrorType {
+func (ice InvalidConstraintError) Type() ErrorType {
 	return ErrorTypeInvalidConstraint
 }
 
-func (cf InvalidConstraintError) Origin() (path string, line int) {
-	return cf.Source.Origin()
+func (ice InvalidConstraintError) Origin() (path string, line int) {
+	return ice.Source.Origin()
 }
 
-func (ddt InvalidConstraintError) Error() string {
-	return fmt.Sprintf("invalid constraint: \"%s\"", ddt.Constraint)
+func (ice InvalidConstraintError) Error() string {
+	return fmt.Sprintf("invalid constraint: \"%s\"", ice.Constraint)
 }
 
 type InvalidFallbackError struct {
@@ -695,14 +698,62 @@ type InvalidFallbackError struct {
 	Source   log.Source
 }
 
-func (cf InvalidFallbackError) Type() ErrorType {
+func (ifbe InvalidFallbackError) Type() ErrorType {
 	return ErrorTypeInvalidConstraint
 }
 
-func (cf InvalidFallbackError) Origin() (path string, line int) {
-	return cf.Source.Origin()
+func (ifbe InvalidFallbackError) Origin() (path string, line int) {
+	return ifbe.Source.Origin()
 }
 
-func (ddt InvalidFallbackError) Error() string {
-	return fmt.Sprintf("invalid fallback: \"%s\"", ddt.Fallback)
+func (ifbe InvalidFallbackError) Error() string {
+	return fmt.Sprintf("invalid fallback: \"%s\"", ifbe.Fallback)
+}
+
+type ConformanceChoiceOrphanError struct {
+	Set    string
+	Source log.Source
+}
+
+func (ccoe ConformanceChoiceOrphanError) Type() ErrorType {
+	return ErrorTypeConformanceChoiceOrphan
+}
+
+func (ccoe ConformanceChoiceOrphanError) Origin() (path string, line int) {
+	return ccoe.Source.Origin()
+}
+
+func (ccoe ConformanceChoiceOrphanError) Error() string {
+	return fmt.Sprintf("conformance choice set \"%s\" is unused by any other conformances", ccoe.Set)
+}
+
+type ConformanceChoiceMismatchError struct {
+	Set    string
+	Source log.Source
+
+	Entity              types.Entity
+	ChoiceLimit         conformance.ChoiceLimit
+	Previous            types.Entity
+	PreviousChoiceLimit conformance.ChoiceLimit
+}
+
+func (ccme ConformanceChoiceMismatchError) Type() ErrorType {
+	return ErrorTypeConformanceChoiceMismatch
+}
+
+func (ccme ConformanceChoiceMismatchError) Origin() (path string, line int) {
+	return ccme.Source.Origin()
+}
+
+func (ccme ConformanceChoiceMismatchError) Error() string {
+	var limit string
+	if ccme.ChoiceLimit != nil {
+		limit = ccme.ChoiceLimit.ASCIIDocString()
+	}
+	var previous string
+	if ccme.Previous != nil {
+		previous = ccme.PreviousChoiceLimit.ASCIIDocString()
+	}
+
+	return fmt.Sprintf("mismatch in choice limit \"%s\": %s vs. %s", ccme.Set, limit, previous)
 }

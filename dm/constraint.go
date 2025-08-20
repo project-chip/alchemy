@@ -227,6 +227,8 @@ func renderConstraintLimit(parent *etree.Element, valueElement *etree.Element, l
 	case *constraint.UnspecifiedLimit:
 	case *constraint.ManufacturerLimit:
 		renderLimit(parent, valueElement, name, "MS")
+	case *constraint.DescribedLimit:
+		renderLimit(parent, valueElement, name, "desc")
 	default:
 		err = fmt.Errorf("unknown constraint limit type: %T", limit)
 	}

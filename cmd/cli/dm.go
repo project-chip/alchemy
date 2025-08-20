@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"log/slog"
+
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/dm"
 	"github.com/project-chip/alchemy/internal/files"
@@ -20,6 +22,7 @@ type DataModel struct {
 
 func (c *DataModel) Run(cc *Context) (err error) {
 
+	slog.Info("parser root", "root", c.ParserOptions.Root)
 	builderOptions := []spec.BuilderOption{spec.IgnoreHierarchy(c.IgnoreHierarchy)}
 
 	var specification *spec.Specification

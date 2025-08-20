@@ -11,7 +11,6 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -24,7 +23,7 @@ func getAppClusterPath(dmRoot string, path asciidoc.Path, clusterName string) st
 	return filepath.Join(dmRoot, fmt.Sprintf("/clusters/%s.xml", file))
 }
 
-func (p *Renderer) renderAppCluster(doc *spec.Doc, entity types.Entity) (output string, clusterName string, err error) {
+func (p *Renderer) renderAppCluster(doc *asciidoc.Document, entity types.Entity) (output string, clusterName string, err error) {
 	x := etree.NewDocument()
 
 	x.CreateProcInst("xml", `version="1.0"`)

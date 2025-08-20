@@ -28,7 +28,7 @@ func (r Baller) Name() string {
 	return "Disco balling"
 }
 
-func (r Baller) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[*spec.Doc], extras []*pipeline.Data[*spec.Doc], err error) {
+func (r Baller) Process(cxt context.Context, input *pipeline.Data[*asciidoc.Document], index int32, total int32) (outputs []*pipeline.Data[*asciidoc.Document], extras []*pipeline.Data[*asciidoc.Document], err error) {
 	err = r.disco(cxt, input.Content)
 	if err != nil {
 		if err == ErrEmptyDoc {
@@ -43,7 +43,7 @@ func (r Baller) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], in
 	return
 }
 
-func (b *Baller) disco(cxt context.Context, doc *spec.Doc) error {
+func (b *Baller) disco(cxt context.Context, doc *asciidoc.Document) error {
 
 	dc := newContext(cxt, doc)
 
@@ -130,7 +130,7 @@ func (b *Baller) disco(cxt context.Context, doc *spec.Doc) error {
 	return nil
 }
 
-func (b *Baller) discoBallTopLevelSection(doc *spec.Doc, top *asciidoc.Section, docType matter.DocType) error {
+func (b *Baller) discoBallTopLevelSection(doc *asciidoc.Document, top *asciidoc.Section, docType matter.DocType) error {
 	if b.options.ReorderSections {
 		sectionOrder, ok := matter.TopLevelSectionOrders[docType]
 		if !ok {
