@@ -31,3 +31,7 @@ func (a *StemBlock) Equals(o Element) bool {
 	}
 	return a.LineList.Equals(oa.LineList)
 }
+
+func (a *StemBlock) Clone() Element {
+	return &StemBlock{position: a.position, raw: a.raw, AttributeList: a.AttributeList.Clone(), Delimiter: a.Delimiter, LineList: a.LineList.Clone()}
+}

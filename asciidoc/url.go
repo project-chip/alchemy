@@ -16,10 +16,14 @@ func (URL) Type() ElementType {
 	return ElementTypeInline
 }
 
-func (a URL) Equals(o Element) bool {
+func (u URL) Equals(o Element) bool {
 	oa, ok := o.(URL)
 	if !ok {
 		return false
 	}
-	return a.Scheme == oa.Scheme && a.Path.Equals(oa.Path)
+	return u.Scheme == oa.Scheme && u.Path.Equals(oa.Path)
+}
+
+func (u URL) Clone() Element {
+	return &URL{position: u.position, raw: u.raw, Scheme: u.Scheme, Path: u.Path.Clone()}
 }

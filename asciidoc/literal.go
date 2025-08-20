@@ -31,3 +31,7 @@ func (a *LiteralBlock) Equals(o Element) bool {
 	}
 	return a.LineList.Equals(oa.LineList)
 }
+
+func (a *LiteralBlock) Clone() Element {
+	return &LiteralBlock{position: a.position, raw: a.raw, AttributeList: a.AttributeList.Clone(), Delimiter: a.Delimiter, LineList: a.LineList.Clone()}
+}

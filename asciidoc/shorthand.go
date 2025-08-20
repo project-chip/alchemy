@@ -15,14 +15,18 @@ func NewShorthandStyle(value ...Element) *ShorthandStyle {
 	return &ShorthandStyle{Elements: value}
 }
 
-func (sa *ShorthandStyle) Equals(osa Element) bool {
+func (ss *ShorthandStyle) Equals(osa Element) bool {
 	if osa, ok := osa.(*ShorthandStyle); ok {
 		if osa == nil {
-			return sa == nil
+			return ss == nil
 		}
-		return sa.Elements.Equals(osa.Elements)
+		return ss.Elements.Equals(osa.Elements)
 	}
 	return false
+}
+
+func (ss *ShorthandStyle) Clone() Element {
+	return &ShorthandStyle{attribute: ss.attribute, Elements: ss.Elements.Clone()}
 }
 
 type ShorthandID struct {
@@ -35,14 +39,18 @@ func NewShorthandID(value ...Element) *ShorthandID {
 	return &ShorthandID{Elements: value}
 }
 
-func (sa *ShorthandID) Equals(osa Element) bool {
+func (sid *ShorthandID) Equals(osa Element) bool {
 	if osa, ok := osa.(*ShorthandID); ok {
 		if osa == nil {
-			return sa == nil
+			return sid == nil
 		}
-		return sa.Elements.Equals(osa.Elements)
+		return sid.Elements.Equals(osa.Elements)
 	}
 	return false
+}
+
+func (sid *ShorthandID) Clone() Element {
+	return &ShorthandID{attribute: sid.attribute, Elements: sid.Elements.Clone()}
 }
 
 type ShorthandRole struct {
@@ -55,14 +63,18 @@ func NewShorthandRole(value ...Element) *ShorthandRole {
 	return &ShorthandRole{Elements: value}
 }
 
-func (sa *ShorthandRole) Equals(osa Element) bool {
+func (sr *ShorthandRole) Equals(osa Element) bool {
 	if osa, ok := osa.(*ShorthandRole); ok {
 		if osa == nil {
-			return sa == nil
+			return sr == nil
 		}
-		return sa.Elements.Equals(osa.Elements)
+		return sr.Elements.Equals(osa.Elements)
 	}
 	return false
+}
+
+func (sr *ShorthandRole) Clone() Element {
+	return &ShorthandRole{attribute: sr.attribute, Elements: sr.Elements.Clone()}
 }
 
 type ShorthandOption struct {
@@ -75,15 +87,19 @@ func NewShorthandOption(value ...Element) *ShorthandOption {
 	return &ShorthandOption{Elements: value}
 }
 
-func (sa *ShorthandOption) Equals(osa Element) bool {
+func (so *ShorthandOption) Equals(osa Element) bool {
 	if osa, ok := osa.(*ShorthandOption); ok {
 		if osa == nil {
-			return sa == nil
+			return so == nil
 		}
-		eq := sa.Elements.Equals(osa.Elements)
+		eq := so.Elements.Equals(osa.Elements)
 		return eq
 	}
 	return false
+}
+
+func (so *ShorthandOption) Clone() Element {
+	return &ShorthandOption{attribute: so.attribute, Elements: so.Elements.Clone()}
 }
 
 type ShorthandAttribute struct {
@@ -95,11 +111,11 @@ type ShorthandAttribute struct {
 	Options []*ShorthandOption
 }
 
-func (ae ShorthandAttribute) Type() ElementType {
+func (sa ShorthandAttribute) Type() ElementType {
 	return ElementTypeAttribute
 }
 
-func (ae *ShorthandAttribute) Value() any {
+func (sa *ShorthandAttribute) Value() any {
 	var sb strings.Builder
 
 	return sb.String()
@@ -113,30 +129,30 @@ func (ShorthandAttribute) QuoteType() AttributeQuoteType {
 	return AttributeQuoteTypeNone
 }
 
-func (ta *ShorthandAttribute) Equals(oa Attribute) bool {
+func (sa *ShorthandAttribute) Equals(oa Attribute) bool {
 	ota, ok := oa.(*ShorthandAttribute)
 	if !ok {
 		return false
 	}
-	if !ta.Style.Equals(ota.Style) {
+	if !sa.Style.Equals(ota.Style) {
 		return false
 	}
-	if !ta.ID.Equals(ota.ID) {
+	if !sa.ID.Equals(ota.ID) {
 		return false
 	}
-	if len(ta.Roles) != len(ota.Roles) {
+	if len(sa.Roles) != len(ota.Roles) {
 		return false
 	}
-	for i, r := range ta.Roles {
+	for i, r := range sa.Roles {
 		or := ota.Roles[i]
 		if !r.Equals(or) {
 			return false
 		}
 	}
-	if len(ta.Options) != len(ota.Options) {
+	if len(sa.Options) != len(ota.Options) {
 		return false
 	}
-	for i, r := range ta.Options {
+	for i, r := range sa.Options {
 		or := ota.Options[i]
 		if !r.Equals(or) {
 			return false
@@ -145,30 +161,40 @@ func (ta *ShorthandAttribute) Equals(oa Attribute) bool {
 	return true
 }
 
-func (na *ShorthandAttribute) SetValue(v any) error {
+func (sa *ShorthandAttribute) Clone() Attribute {
+	return &ShorthandAttribute{
+		attribute: sa.attribute,
+		Style:     sa.Style.Clone().(*ShorthandStyle),
+		ID:        sa.ID.Clone().(*ShorthandID),
+		Roles:     make([]*ShorthandRole, len(sa.Roles)),
+		Options:   make([]*ShorthandOption, len(sa.Options)),
+	}
+}
+
+func (sa *ShorthandAttribute) SetValue(v any) error {
 	if _, ok := v.(Elements); ok {
 		return nil
 	}
 	return fmt.Errorf("invalid type for ShorthandAttribute: %T", v)
 }
 
-func (na *ShorthandAttribute) AsciiDocString() string {
+func (sa *ShorthandAttribute) AsciiDocString() string {
 	var s strings.Builder
-	if na.Style != nil {
-		s.WriteString(AttributeAsciiDocString(na.Style.Elements))
+	if sa.Style != nil {
+		s.WriteString(AttributeAsciiDocString(sa.Style.Elements))
 	}
-	if na.ID != nil {
+	if sa.ID != nil {
 		s.WriteRune('#')
-		s.WriteString(AttributeAsciiDocString(na.ID.Elements))
+		s.WriteString(AttributeAsciiDocString(sa.ID.Elements))
 	}
-	if len(na.Roles) > 0 {
-		for _, r := range na.Roles {
+	if len(sa.Roles) > 0 {
+		for _, r := range sa.Roles {
 			s.WriteRune('.')
 			s.WriteString(AttributeAsciiDocString(r.Elements))
 		}
 	}
-	if len(na.Options) > 0 {
-		for _, o := range na.Options {
+	if len(sa.Options) > 0 {
+		for _, o := range sa.Options {
 			s.WriteRune('%')
 			s.WriteString(AttributeAsciiDocString(o.Elements))
 		}

@@ -30,3 +30,7 @@ func (a *SourceBlock) Equals(o Element) bool {
 	}
 	return a.Elements.Equals(oa.Elements)
 }
+
+func (a *SourceBlock) Clone() Element {
+	return &SourceBlock{position: a.position, raw: a.raw, Delimiter: a.Delimiter, AttributeList: a.AttributeList.Clone(), Elements: a.Elements.Clone()}
+}
