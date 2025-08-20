@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/compare"
@@ -64,7 +65,7 @@ func (c *Command) Run(cc *cli.Context) (err error) {
 	zapParser.ResolveReferences()
 
 	var specEntities pipeline.Map[string, *pipeline.Data[[]types.Entity]]
-	specEntities, err = pipeline.Collective(cc, c.ProcessingOptions, &common.EntityFilter[*spec.Doc, types.Entity]{}, specDocs)
+	specEntities, err = pipeline.Collective(cc, c.ProcessingOptions, &common.EntityFilter[*asciidoc.Document, types.Entity]{}, specDocs)
 
 	if err != nil {
 		return

@@ -6,10 +6,11 @@ import (
 
 	"github.com/dolthub/go-mysql-server/memory"
 	"github.com/dolthub/go-mysql-server/sql"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func (h *Host) Build(sc *sql.Context, spec *spec.Specification, docs []*spec.Doc, raw bool) error {
+func (h *Host) Build(sc *sql.Context, spec *spec.Specification, docs []*asciidoc.Document, raw bool) error {
 
 	pro := memory.NewDBProvider(h.db)
 	session := memory.NewSession(sql.NewBaseSession(), pro)

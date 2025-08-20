@@ -1,9 +1,9 @@
 package testplan
 
 import (
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/spec"
 )
 
 type Plan struct {
@@ -15,7 +15,7 @@ type Plan struct {
 	Events            []*matter.Event
 }
 
-func NewPlan(doc *spec.Doc, cluster *matter.Cluster) (p *Plan, err error) {
+func NewPlan(doc *asciidoc.Document, cluster *matter.Cluster) (p *Plan, err error) {
 	p = &Plan{
 		Cluster:    cluster,
 		Attributes: make([]*matter.Field, 0, len(cluster.Attributes)),

@@ -14,12 +14,16 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func toEnum(d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) (e *matter.Enum, err error) {
+func (library *Library) toEnum(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, parent types.Entity) (e *matter.Enum, err error) {
 
-	name := CanonicalName(text.TrimCaseInsensitiveSuffix(d.SectionName(s), " Type"))
+	name := CanonicalName(text.TrimCaseInsensitiveSuffix(library.SectionName(s), " Type"))
 	e = matter.NewEnum(s, parent)
 	e.Name = name
-	dt := GetDataType(d, s)
+	var dt *types.DataType
+	dt, err = GetDataType(library, reader, d, s)
+	if err != nil {
+		return nil, newGenericParseError(s, "error parsing enum data type: %v", err)
+	}
 	if dt == nil {
 		dt = types.NewDataType(types.BaseDataTypeEnum8, false)
 		slog.Warn("Enum does not declare its derived data type; assuming enum8", log.Element("source", d.Path, s), slog.String("enum", name))
@@ -29,19 +33,19 @@ func toEnum(d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) 
 
 	e.Type = dt
 
-	e.Values, err = findEnumValues(d, s, e)
+	e.Values, err = library.findEnumValues(reader, d, s, e)
 	if err != nil {
 		return
 	}
 
 	if len(e.Values) == 0 {
 		var subSectionValues matter.EnumValueSet
-		for el := range d.Reader().Iterate(s, s.Children()) {
+		for el := range reader.Iterate(s, reader.Children(s)) {
 			switch el := el.(type) {
 			case *asciidoc.Section:
-				if strings.HasSuffix(d.SectionName(el), " Range") {
+				if strings.HasSuffix(library.SectionName(el), " Range") {
 					var ssv matter.EnumValueSet
-					ssv, err = findEnumValues(d, el, e)
+					ssv, err = library.findEnumValues(reader, d, el, e)
 					if err != nil {
 						continue
 					}
@@ -53,15 +57,14 @@ func toEnum(d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) 
 		}
 		e.Values = subSectionValues
 	}
-	pc.orderedEntities = append(pc.orderedEntities, e)
-	pc.entitiesByElement[s] = append(pc.entitiesByElement[s], e)
+	library.addEntity(s, e)
 	e.Name = CanonicalName(e.Name)
 	return
 }
 
-func findEnumValues(doc *Doc, s *asciidoc.Section, e *matter.Enum) (matter.EnumValueSet, error) {
+func (library *Library) findEnumValues(reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section, e *matter.Enum) (matter.EnumValueSet, error) {
 	var tables []*asciidoc.Table
-	parse.SkimFunc(doc.Reader(), s, s.Children(), func(t *asciidoc.Table) bool {
+	parse.SkimFunc(reader, s, reader.Children(s), func(t *asciidoc.Table) bool {
 		tables = append(tables, t)
 		return false
 	})
@@ -69,45 +72,45 @@ func findEnumValues(doc *Doc, s *asciidoc.Section, e *matter.Enum) (matter.EnumV
 		return nil, newGenericParseError(e, "no enum field tables found")
 	}
 	for _, t := range tables {
-		ti, err := parseTable(doc, s, t)
+		ti, err := parseTable(reader, doc, s, t)
 		if err != nil {
 			return nil, err
 		}
 		var values matter.EnumValueSet
 		for row := range ti.ContentRows() {
 			ev := matter.NewEnumValue(row, e)
-			ev.Name, err = ti.ReadValue(row, matter.TableColumnName)
+			ev.Name, err = ti.ReadValue(reader, row, matter.TableColumnName)
 			if err != nil {
 				return nil, err
 			}
 			ev.Name = matter.StripTypeSuffixes(ev.Name)
 			if len(ev.Name) == 0 {
-				ev.Name, err = ti.ReadValue(row, matter.TableColumnSummary)
+				ev.Name, err = ti.ReadValue(reader, row, matter.TableColumnSummary)
 				if err != nil {
 					return nil, err
 				}
 				ev.Name = matter.StripTypeSuffixes(ev.Name)
 				if len(ev.Name) == 0 {
-					slog.Debug("skipping enum with no name", slog.String("path", doc.Path.String()), slog.String("section", doc.SectionName(s)))
+					slog.Debug("skipping enum with no name", slog.String("path", doc.Path.String()), slog.String("section", library.SectionName(s)))
 					continue
 				}
 			}
 			ev.Name = CanonicalName(ev.Name)
-			ev.Summary, err = ti.ReadValue(row, matter.TableColumnSummary, matter.TableColumnDescription)
+			ev.Summary, err = ti.ReadValue(reader, row, matter.TableColumnSummary, matter.TableColumnDescription)
 			if err != nil {
 				return nil, err
 			}
-			ev.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
+			ev.Conformance = ti.ReadConformance(reader, row, matter.TableColumnConformance)
 			if ev.Conformance == nil {
 
 				ev.Conformance = conformance.Set{&conformance.Mandatory{}}
 			}
-			ev.Value, err = ti.ReadID(row, matter.TableColumnValue)
+			ev.Value, err = ti.ReadID(reader, row, matter.TableColumnValue)
 			if err != nil {
 				return nil, err
 			}
 			if !ev.Value.Valid() {
-				ev.Value, err = ti.ReadID(row, matter.TableColumnStatusCode)
+				ev.Value, err = ti.ReadID(reader, row, matter.TableColumnStatusCode)
 				if err != nil {
 					return nil, err
 				}
@@ -127,9 +130,9 @@ func findEnumValues(doc *Doc, s *asciidoc.Section, e *matter.Enum) (matter.EnumV
 	return nil, nil
 }
 
-func toModeTags(d *Doc, s *asciidoc.Section, parent types.Entity) (e *matter.Enum, err error) {
+func (library *Library) toModeTags(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, parent types.Entity) (e *matter.Enum, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(d, s)
+	ti, err = parseFirstTable(reader, d, s)
 	if err != nil {
 		return nil, newGenericParseError(s, "failed reading mode tags: %w", err)
 	}
@@ -138,11 +141,11 @@ func toModeTags(d *Doc, s *asciidoc.Section, parent types.Entity) (e *matter.Enu
 	e.Type = types.NewDataType(types.BaseDataTypeEnum16, false)
 	for row := range ti.ContentRows() {
 		ev := matter.NewEnumValue(s, e)
-		ev.Name, err = ti.ReadString(row, matter.TableColumnName)
+		ev.Name, err = ti.ReadString(reader, row, matter.TableColumnName)
 		if err != nil {
 			return
 		}
-		ev.Value, err = ti.ReadID(row, matter.TableColumnModeTagValue)
+		ev.Value, err = ti.ReadID(reader, row, matter.TableColumnModeTagValue)
 		if err != nil {
 			return
 		}
@@ -205,13 +208,15 @@ func validateEnums(spec *Specification) {
 func validateEnum(spec *Specification, en *matter.Enum) {
 	idu := make(idUniqueness[*matter.EnumValue])
 	nu := make(nameUniqueness[*matter.EnumValue])
-
+	cv := make(conformanceValidation)
 	for _, ev := range en.Values {
 		if !ev.Value.Valid() {
 			slog.Warn("Enum value has invalid ID", log.Path("source", ev), matter.LogEntity("parent", en), slog.String("valueName", en.Name))
 			continue
 		}
+		cv.add(ev, ev.Conformance)
 		idu.check(spec, ev.Value, ev)
 		nu.check(spec, ev)
 	}
+	cv.check(spec)
 }

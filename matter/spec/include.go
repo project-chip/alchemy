@@ -8,7 +8,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc/parse"
 )
 
-func readIncludeFile(docGroup *DocGroup, path asciidoc.Path, parent asciidoc.Parent, forceRead bool) (doc *Doc, err error) {
+func readIncludeFile(docGroup *Library, path asciidoc.Path, parent asciidoc.Parent, forceRead bool) (doc *asciidoc.Document, err error) {
 
 	table, isTable := parent.(*asciidoc.Table)
 
@@ -35,23 +35,18 @@ func readIncludeFile(docGroup *DocGroup, path asciidoc.Path, parent asciidoc.Par
 		options = append(options, parse.GlobalStore("table", table))
 	}
 
-	var ad *asciidoc.Document
-	ad, err = parse.Reader(path.Relative, contents, options...)
+	doc, err = parse.Reader(path, contents, options...)
 	if err != nil {
 		slog.Error("error parsing file", slog.String("path", path.Absolute), slog.Any("error", err))
 		return
 	}
 	if isTable {
-		parse.ReparseTable(table, ad.Elements)
-	}
-	doc, err = newDoc(ad, path)
-	if err == nil {
-		doc.group = docGroup
+		parse.ReparseTable(table, doc.Elements)
 	}
 	return
 }
 
-func includePath(context parse.PreParseContext, doc *Doc, include *asciidoc.FileInclude) (path asciidoc.Path, err error) {
+func includePath(context parse.PreParseContext, doc *asciidoc.Document, include *asciidoc.FileInclude) (path asciidoc.Path, err error) {
 
 	var rawPath string
 	rawPath, err = renderPreParsedDoc(include.Children())
@@ -62,5 +57,6 @@ func includePath(context parse.PreParseContext, doc *Doc, include *asciidoc.File
 	if err != nil {
 		return
 	}
+	//slog.Info("resolving path", "dir", doc.Path.Dir(), "path", rawPath, "resolved", path)
 	return
 }

@@ -43,7 +43,7 @@ func (h *Host) indexCommandModels(cxt context.Context, parent *sectionInfo, clus
 	return nil
 }
 
-func (h *Host) indexCommands(cxt context.Context, doc *spec.Doc, ci *sectionInfo, es *asciidoc.Section) error {
+func (h *Host) indexCommands(cxt context.Context, doc *asciidoc.Document, ci *sectionInfo, es *asciidoc.Section) error {
 	if ci.children == nil {
 		ci.children = make(map[string][]*sectionInfo)
 	}

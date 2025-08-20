@@ -9,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func (h *Host) indexDoc(ctx context.Context, doc *spec.Doc, raw bool) (*sectionInfo, error) {
+func (h *Host) indexDoc(ctx context.Context, doc *asciidoc.Document, raw bool) (*sectionInfo, error) {
 	ds := &sectionInfo{id: h.nextID(documentTable), values: &dbRow{}, children: make(map[string][]*sectionInfo)}
 	dt, _ := doc.DocType()
 	dts := matter.DocTypeNames[dt]

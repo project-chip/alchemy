@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -26,7 +27,7 @@ func (sp TestScriptGenerator) Name() string {
 	return "Creating test script steps"
 }
 
-func (sp *TestScriptGenerator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[*Test], extras []*pipeline.Data[*spec.Doc], err error) {
+func (sp *TestScriptGenerator) Process(cxt context.Context, input *pipeline.Data[*asciidoc.Document], index int32, total int32) (outputs []*pipeline.Data[*Test], extras []*pipeline.Data[*asciidoc.Document], err error) {
 	var entities []types.Entity
 	entities, err = input.Content.Entities()
 	if err != nil {

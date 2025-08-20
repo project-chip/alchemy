@@ -8,8 +8,6 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/pipeline"
-	"github.com/project-chip/alchemy/matter"
 )
 
 type referenceIndex struct {
@@ -17,30 +15,24 @@ type referenceIndex struct {
 
 	anchorsParsed  bool
 	anchors        map[string][]*Anchor
-	anchorIds      map[asciidoc.Element]string
+	identifiers    map[asciidoc.Element]string
 	anchorsByLabel map[string][]*Anchor
 
 	crossReferencesParsed bool
 	crossReferences       map[string][]*CrossReference
-
-	sectionNames pipeline.Map[*asciidoc.Section, string]
-
-	sectionTypes pipeline.Map[*asciidoc.Section, matter.Section]
 }
 
 func newReferenceIndex() referenceIndex {
 	return referenceIndex{
 		anchors:         make(map[string][]*Anchor),
-		anchorIds:       make(map[asciidoc.Element]string),
+		identifiers:     make(map[asciidoc.Element]string),
 		anchorsByLabel:  make(map[string][]*Anchor),
 		crossReferences: make(map[string][]*CrossReference),
-		sectionNames:    pipeline.NewConcurrentMap[*asciidoc.Section, string](),
-		sectionTypes:    pipeline.NewConcurrentMap[*asciidoc.Section, matter.Section](),
 	}
 }
 
 func (ri *referenceIndex) anchorId(reader asciidoc.Reader, parent asciidoc.Parent, element asciidoc.Element, id asciidoc.Elements) string {
-	if existing, ok := ri.anchorIds[element]; ok {
+	if existing, ok := ri.identifiers[element]; ok {
 		return existing
 	}
 
@@ -51,14 +43,18 @@ func (ri *referenceIndex) anchorId(reader asciidoc.Reader, parent asciidoc.Paren
 			s.WriteString(el.Value)
 		default:
 			slog.Warn("unexpected type in anchor id", log.Type("type", el))
+			for el := range reader.Iterate(parent, id) {
+				slog.Warn("unexpected type in anchor id2", log.Type("type", el))
+
+			}
 		}
 	}
-	ri.anchorIds[element] = s.String()
+	ri.identifiers[element] = s.String()
 	return s.String()
 }
 
-func (ri *referenceIndex) changeAnchor(anchor *Anchor, parent asciidoc.Parent, id asciidoc.Elements) {
-	anchorID := ri.anchorId(anchor.Document.Reader(), parent, anchor.Element, anchor.ID)
+func (ri *referenceIndex) changeAnchor(reader asciidoc.Reader, anchor *Anchor, parent asciidoc.Parent, id asciidoc.Elements) {
+	anchorID := ri.anchorId(reader, parent, anchor.Element, anchor.ID)
 
 	anchors, ok := ri.anchors[anchorID]
 	if ok {
@@ -72,12 +68,12 @@ func (ri *referenceIndex) changeAnchor(anchor *Anchor, parent asciidoc.Parent, i
 			}
 		}
 	}
-	anchorID = ri.anchorId(anchor.Document.Reader(), anchor.Parent, anchor.Element, id)
+	anchorID = ri.anchorId(reader, anchor.Parent, anchor.Element, id)
 	ri.anchors[anchorID] = append(ri.anchors[anchorID], anchor)
 }
 
-func (ri *referenceIndex) changeCrossReference(reference *CrossReference, id asciidoc.Elements) {
-	referenceID := ri.anchorId(reference.Document.Reader(), reference.Reference, reference.Reference, reference.Reference.ID)
+func (ri *referenceIndex) changeCrossReference(reader asciidoc.Reader, reference *CrossReference, id asciidoc.Elements) {
+	referenceID := ri.anchorId(reader, reference.Reference, reference.Reference, reference.Reference.ID)
 	refs, ok := ri.crossReferences[referenceID]
 	if ok {
 		i := slices.IndexFunc(refs, func(cr *CrossReference) bool { return cr == reference })
@@ -90,7 +86,7 @@ func (ri *referenceIndex) changeCrossReference(reference *CrossReference, id asc
 			}
 		}
 	}
-	referenceID = ri.anchorId(reference.Document.Reader(), reference.Reference, reference.Reference, id)
+	referenceID = ri.anchorId(reader, reference.Reference, reference.Reference, id)
 	ri.crossReferences[referenceID] = append(ri.crossReferences[referenceID], reference)
 }
 
@@ -137,20 +133,4 @@ func (ri *referenceIndex) findAnchorByLabel(source log.Source, label string) *An
 func (ri *referenceIndex) findAnchorsByLabel(label string) (anchors []*Anchor) {
 	anchors = ri.anchorsByLabel[label]
 	return
-}
-
-func (ri *referenceIndex) sectionName(s *asciidoc.Section) (name string, ok bool) {
-	return ri.sectionNames.Load(s)
-}
-
-func (ri *referenceIndex) setSectionName(s *asciidoc.Section, name string) {
-	ri.sectionNames.Store(s, name)
-}
-
-func (ri *referenceIndex) sectionType(s *asciidoc.Section) (sectionType matter.Section, ok bool) {
-	return ri.sectionTypes.Load(s)
-}
-
-func (ri *referenceIndex) setSectionType(s *asciidoc.Section, sectionType matter.Section) {
-	ri.sectionTypes.Store(s, sectionType)
 }

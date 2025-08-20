@@ -99,7 +99,7 @@ func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string,
 	parent.children[tableName] = append(parent.children[tableName], sv)
 }
 
-func (h *Host) indexDataTypes(cxt context.Context, doc *spec.Doc, ds *sectionInfo, dts *asciidoc.Section) (err error) {
+func (h *Host) indexDataTypes(cxt context.Context, doc *asciidoc.Document, ds *sectionInfo, dts *asciidoc.Section) (err error) {
 	if ds.children == nil {
 		ds.children = make(map[string][]*sectionInfo)
 	}

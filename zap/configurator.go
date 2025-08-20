@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -13,7 +14,7 @@ import (
 
 type Configurator struct {
 	Spec    *spec.Specification
-	Docs    []*spec.Doc
+	Docs    []*asciidoc.Document
 	Domain  string
 	OutPath string
 
@@ -30,7 +31,7 @@ type Configurator struct {
 	ExternalEntities map[types.Entity]struct{}
 }
 
-func NewConfigurator(spec *spec.Specification, docs []*spec.Doc, entities []types.Entity, outPath string, errata *errata.SDK, global bool) (*Configurator, error) {
+func NewConfigurator(spec *spec.Specification, docs []*asciidoc.Document, entities []types.Entity, outPath string, errata *errata.SDK, global bool) (*Configurator, error) {
 	c := &Configurator{
 		Spec:    spec,
 		Docs:    docs,

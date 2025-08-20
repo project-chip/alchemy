@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"slices"
 	"strings"
 
-	"github.com/project-chip/alchemy/errata"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
@@ -40,58 +42,167 @@ func (sp Builder) Name() string {
 	return "Building spec"
 }
 
-func (sp *Builder) Process(cxt context.Context, inputs []*pipeline.Data[*DocGroup]) (outputs []*pipeline.Data[*Doc], err error) {
-	docs := make([]*DocGroup, 0, len(inputs))
+func (sp *Builder) Process(cxt context.Context, inputs []*pipeline.Data[*Library]) (outputs []*pipeline.Data[*asciidoc.Document], err error) {
+	docs := make([]*Library, 0, len(inputs))
 	for _, i := range inputs {
 		docs = append(docs, i.Content)
 	}
-	var referencedDocs []*Doc
-	referencedDocs, err = sp.buildSpec(docs)
+	var referencedDocs []*asciidoc.Document
+	referencedDocs, err = sp.buildSpec(cxt, docs)
 	for _, d := range referencedDocs {
 		outputs = append(outputs, pipeline.NewData(d.Path.Absolute, d))
 	}
 	return
 }
 
-func (sp *Builder) buildSpec(docGroups []*DocGroup) (referencedDocs []*Doc, err error) {
+func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referencedDocs []*asciidoc.Document, err error) {
 
 	sp.Spec = newSpec(sp.specRoot)
 	spec := sp.Spec
 
-	for _, dg := range docGroups {
-		for _, d := range dg.Docs {
-			if errata.GetSpec(d.Path.Relative).UtilityInclude {
-				continue
+	slices.SortStableFunc(libraries, func(a *Library, b *Library) int {
+		return strings.Compare(a.Root.Path.Relative, b.Root.Path.Relative)
+	})
+
+	docs := make(map[string][]*asciidoc.Document)
+
+	for _, l := range libraries {
+		l.Spec = spec
+		for _, d := range l.Docs {
+			l.DocType(d)
+			existing, ok := spec.libraryIndex[d]
+			if ok {
+				slog.Warn("Document referenced by multiple libraries", "source", d.Path.Relative, "other", existing.Root.Path.Relative)
+			} else {
+				spec.libraryIndex[d] = l
 			}
-			referencedDocs = append(referencedDocs, d)
+			docs[d.Path.Absolute] = append(docs[d.Path.Absolute], d)
 		}
-		for _, d := range dg.Docs {
-			setSpec(d, sp.Spec)
+		for top := range parse.Skim[*asciidoc.Section](l, l.Root, l.Children(l.Root)) {
+			AssignSectionTypes(l, l, l, l.Root, top)
+			break
+		}
+		if slog.Default().Enabled(cxt, slog.LevelDebug) {
+			dumpLibrary(l)
 		}
 	}
 
-	indexCrossReferences(referencedDocs)
-
-	err = indexAnchors(referencedDocs)
-	if err != nil {
-		return
+	for _, docs := range docs {
+		if len(docs) == 1 {
+			referencedDocs = append(referencedDocs, docs[0])
+			spec.Docs[docs[0].Path.Relative] = docs[0]
+		}
 	}
 
 	var basicInformationCluster, bridgedDeviceBasicInformationCluster *matter.Cluster
 
-	for _, dg := range docGroups {
-		for _, d := range dg.Docs {
+	for _, library := range libraries {
+		library.indexCrossReferences()
+		err = library.indexAnchors()
+		if err != nil {
+			return
+		}
+		for doc, result := range library.parseEntities(spec) {
+			if e, ok := result.(error); ok {
+				if pe, isParseError := e.(Error); isParseError {
+					slog.Error("parse error parsing entities", "err", e, log.Path("source", pe))
+					spec.addError(pe)
+				} else {
+					slog.Error("error parsing entities", "err", e)
+				}
+				continue
+			}
+			switch entity := result.(type) {
+			case *matter.ClusterGroup:
+				for _, c := range entity.Clusters {
+					sp.addCluster(doc, c)
+				}
+			case *matter.Cluster:
+				switch entity.Name {
+				case "Basic Information":
+					basicInformationCluster = entity
+				case "Bridged Device Basic Information":
+					bridgedDeviceBasicInformationCluster = entity
+				}
+				sp.addCluster(doc, entity)
+			case *matter.DeviceType:
+				spec.DeviceTypes = append(spec.DeviceTypes, entity)
+				if entity.ID.Valid() {
+					if existing, ok := spec.DeviceTypesByID[entity.ID.Value()]; ok {
+						slog.Error("duplicate device type ID", slog.String("deviceTypeId", entity.ID.HexString()), log.Path("previousSource", existing), log.Path("newSource", entity))
+						spec.addError(&DuplicateEntityIDError{Entity: entity, Previous: existing})
+					} else {
+						spec.DeviceTypesByID[entity.ID.Value()] = entity
+					}
+
+				}
+				existing, ok := spec.DeviceTypesByName[entity.Name]
+				if ok {
+					slog.Warn("Duplicate Device Type Name", slog.String("deviceTypeId", entity.ID.HexString()), slog.String("deviceTypeName", entity.Name), slog.String("existingDeviceTypeId", existing.ID.HexString()))
+					spec.addError(&DuplicateEntityNameError{Entity: entity, Previous: existing})
+				}
+				spec.DeviceTypesByName[entity.Name] = entity
+				switch entity.Name {
+				case "Root Node":
+					spec.RootNodeDeviceType = entity
+				case "Base Device Type":
+					spec.BaseDeviceType = entity
+				}
+			case *matter.Namespace:
+				spec.Namespaces = append(spec.Namespaces, entity)
+			case *matter.Bitmap:
+				slog.Debug("Found global bitmap", "name", entity.Name, "path", doc.Path)
+				spec.addEntityByName(entity.Name, entity, nil)
+				spec.GlobalObjects[entity] = doc
+			case *matter.Enum:
+				slog.Debug("Found global enum", "name", entity.Name, "path", doc.Path)
+				spec.addEntityByName(entity.Name, entity, nil)
+				spec.GlobalObjects[entity] = doc
+			case *matter.Struct:
+				slog.Debug("Found global struct", "name", entity.Name, "path", doc.Path)
+				spec.addEntityByName(entity.Name, entity, nil)
+				spec.GlobalObjects[entity] = doc
+			case *matter.TypeDef:
+				slog.Debug("Found global typedef", "name", entity.Name, "path", doc.Path)
+				spec.addEntityByName(entity.Name, entity, nil)
+				spec.GlobalObjects[entity] = doc
+			case *matter.Command:
+				spec.addEntityByName(entity.Name, entity, nil)
+				spec.GlobalObjects[entity] = doc
+			case *matter.Event:
+				spec.addEntityByName(entity.Name, entity, nil)
+				spec.GlobalObjects[entity] = doc
+
+			default:
+				slog.Warn("unknown entity type", "path", doc.Path, "type", fmt.Sprintf("%T", entity))
+
+			}
+			switch entity := result.(type) {
+			case *matter.ClusterGroup:
+				spec.EntityRefs[doc] = append(spec.EntityRefs[doc], entity)
+				for _, c := range entity.Clusters {
+					spec.DocRefs[c] = doc
+					spec.LibraryRefs[c] = library
+				}
+			case types.Entity:
+				spec.EntityRefs[doc] = append(spec.EntityRefs[doc], entity)
+				spec.DocRefs[entity] = doc
+				spec.LibraryRefs[entity] = library
+			}
+		}
+		/*for _, d := range dg.Docs {
 			slog.Debug("building spec", "path", d.Path)
 
 			if errata.GetSpec(d.Path.Relative).UtilityInclude {
 				continue
 			}
 
-			dt, dterr := d.DocType()
+			dg.determineDocType(reader, d)
+			dt, dterr := dg.DocType(d)
 			if dterr == nil {
 				switch dt {
 				case matter.DocTypeBaseDeviceType:
-					spec.BaseDeviceType, err = d.toBaseDeviceType()
+					spec.BaseDeviceType, err = dg.toBaseDeviceType(reader)
 					if err != nil {
 						return
 					}
@@ -181,7 +292,7 @@ func (sp *Builder) buildSpec(docGroups []*DocGroup) (referencedDocs []*Doc, err 
 					spec.DocRefs[m] = d
 				}
 			}
-		}
+		}*/
 	}
 
 	if basicInformationCluster == nil {
@@ -194,6 +305,10 @@ func (sp *Builder) buildSpec(docGroups []*DocGroup) (referencedDocs []*Doc, err 
 	}
 	if spec.RootNodeDeviceType == nil {
 		err = fmt.Errorf("missing Root Node Device Type in spec")
+		return
+	}
+	if spec.BaseDeviceType == nil {
+		err = fmt.Errorf("missing Base Device Type in spec")
 		return
 	}
 
@@ -235,39 +350,7 @@ func (spec *Specification) BuildClusterReferences() {
 	})
 }
 
-func indexAnchors(docs []*Doc) (err error) {
-	for _, d := range docs {
-		var anchors map[string][]*Anchor
-		anchors, err = d.Anchors()
-		if err != nil {
-			return
-		}
-		for id, anchor := range anchors {
-			d.group.anchors[id] = append(d.group.anchors[id], anchor...)
-		}
-		for id, anchor := range d.anchorsByLabel {
-			d.group.anchorsByLabel[id] = append(d.group.anchorsByLabel[id], anchor...)
-		}
-	}
-	return
-}
-
-func indexCrossReferences(docs []*Doc) {
-	for _, d := range docs {
-		if errata.GetSpec(d.Path.Relative).UtilityInclude {
-			continue
-		}
-		crossReferences := d.CrossReferences()
-		for id, xrefs := range crossReferences {
-			d.group.crossReferences[id] = append(d.group.crossReferences[id], xrefs...)
-			for _, xref := range xrefs {
-				d.group.crossReferenceDocs[xref.Reference] = d
-			}
-		}
-	}
-}
-
-func (sp *Builder) addCluster(doc *Doc, cluster *matter.Cluster) {
+func (sp *Builder) addCluster(doc *asciidoc.Document, cluster *matter.Cluster) {
 	sp.Spec.Clusters[cluster] = struct{}{}
 	if cluster.ID.Valid() {
 		existing, ok := sp.Spec.ClustersByID[cluster.ID.Value()]
@@ -310,7 +393,7 @@ func (sp *Builder) addCluster(doc *Doc, cluster *matter.Cluster) {
 	sp.noteDocRefs(doc, cluster)
 }
 
-func (sp *Builder) noteDocRefs(doc *Doc, cluster *matter.Cluster) {
+func (sp *Builder) noteDocRefs(doc *asciidoc.Document, cluster *matter.Cluster) {
 	for _, bm := range cluster.Bitmaps {
 		sp.Spec.DocRefs[bm] = doc
 	}

@@ -11,12 +11,12 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/mailgun/raymond/v2"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/testplan"
 )
@@ -43,7 +43,7 @@ func (sp Renderer) Name() string {
 	return "Generating test plans"
 }
 
-func (sp *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*spec.Doc], err error) {
+func (sp *Renderer) Process(cxt context.Context, input *pipeline.Data[*asciidoc.Document], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*asciidoc.Document], err error) {
 	doc := input.Content
 	path := doc.Path
 

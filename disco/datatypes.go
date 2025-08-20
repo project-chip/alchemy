@@ -16,7 +16,7 @@ import (
 )
 
 type DataTypeEntry struct {
-	doc              *spec.Doc
+	doc              *asciidoc.Document
 	name             string
 	ref              string
 	dataType         string
@@ -372,7 +372,7 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *asciidoc.Section, suffi
 	return
 }
 
-func ensureDataTypesSection(doc *spec.Doc, top *asciidoc.Section) (*asciidoc.Section, error) {
+func ensureDataTypesSection(doc *asciidoc.Document, top *asciidoc.Section) (*asciidoc.Section, error) {
 	dataTypesSection := spec.FindSectionByType(doc, top, matter.SectionDataTypes)
 	if dataTypesSection != nil {
 		return dataTypesSection, nil

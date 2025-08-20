@@ -1,20 +1,9 @@
 package parse
 
-import (
-	"context"
-	"fmt"
-	"io"
-	"log/slog"
-	"os"
-	"path/filepath"
-
-	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/internal/pipeline"
-)
-
+/*
 func Elements(path string, reader io.Reader, opts ...Option) (elements asciidoc.Elements, err error) {
 	var vals any
-	vals, err = ParseReader(path, reader, opts...)
+	vals, err = parseReader(path, reader, opts...)
 	if err != nil {
 		slog.Error("error parsing file", slog.String("path", path), slog.Any("error", err))
 		return nil, err
@@ -62,3 +51,4 @@ func (r ElementsReader) Process(cxt context.Context, input *pipeline.Data[struct
 	outputs = append(outputs, &pipeline.Data[asciidoc.Elements]{Path: input.Path, Content: elements})
 	return
 }
+*/

@@ -34,7 +34,7 @@ func (b *Baller) organizeSubSections(dc *discoContext) (err error) {
 	return
 }
 
-func reorderSection(doc *spec.Doc, sec *asciidoc.Section, sectionOrder []matter.Section) error {
+func reorderSection(doc *asciidoc.Document, sec *asciidoc.Section, sectionOrder []matter.Section) error {
 	validSectionTypes := make(map[matter.Section]struct{}, len(sectionOrder)+1)
 	for _, st := range sectionOrder {
 		validSectionTypes[st] = struct{}{}
@@ -57,7 +57,7 @@ func reorderSection(doc *spec.Doc, sec *asciidoc.Section, sectionOrder []matter.
 	return nil
 }
 
-func divyUpSection(doc *spec.Doc, sec *asciidoc.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section]asciidoc.Elements {
+func divyUpSection(doc *asciidoc.Document, sec *asciidoc.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section]asciidoc.Elements {
 	sections := make(map[matter.Section]asciidoc.Elements)
 	lastSectionType := matter.SectionPrefix
 	for _, e := range sec.Children() {
@@ -76,7 +76,7 @@ func divyUpSection(doc *spec.Doc, sec *asciidoc.Section, validSectionTypes map[m
 	return sections
 }
 
-func setSectionTitle(doc *spec.Doc, sec *asciidoc.Section, title string) {
+func setSectionTitle(doc *asciidoc.Document, sec *asciidoc.Section, title string) {
 	for i, e := range sec.Title {
 		switch e.(type) {
 		case *asciidoc.String:

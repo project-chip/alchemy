@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
@@ -13,18 +15,31 @@ import (
 	"github.com/project-chip/alchemy/matter"
 )
 
-func (doc *Doc) DocType() (matter.DocType, error) {
-	if doc.docType != matter.DocTypeUnknown {
-		return doc.docType, nil
+func (library *Library) DocType(doc *asciidoc.Document) (matter.DocType, error) {
+	dt, ok := library.docTypes[doc]
+	if ok {
+		return dt, nil
 	}
-	dt, err := doc.determineDocType()
+	dt, err := determineDocType(library, library, asciidoc.RawReader, doc)
 	if err == nil {
-		doc.docType = dt
+		library.docTypes[doc] = dt
 	}
 	return dt, err
 }
 
-func (doc *Doc) determineDocType() (matter.DocType, error) {
+func (library *Library) SetDocType(doc *asciidoc.Document, dt matter.DocType) {
+	library.docTypes[doc] = dt
+}
+
+func AssignDocType(sectionInfoCache SectionInfoCache, docInfoCache DocumentInfoCache, reader asciidoc.Reader, doc *asciidoc.Document) error {
+	dt, err := determineDocType(sectionInfoCache, docInfoCache, reader, doc)
+	if err == nil {
+		docInfoCache.SetDocType(doc, dt)
+	}
+	return err
+}
+
+func determineDocType(sectionInfoCache SectionInfoCache, docInfoCache DocumentInfoCache, reader asciidoc.Reader, doc *asciidoc.Document) (matter.DocType, error) {
 	if len(doc.Path.Absolute) == 0 {
 		return matter.DocTypeUnknown, fmt.Errorf("missing path")
 	}
@@ -51,7 +66,7 @@ func (doc *Doc) determineDocType() (matter.DocType, error) {
 			if firstLetterIsLower(file) {
 				return matter.DocTypeAppClusterIndex, nil
 			}
-			for _, p := range doc.Parents() {
+			for _, p := range docInfoCache.Parents(doc) {
 				if filepath.Base(p.Path.Relative) == "appclusters.adoc" {
 					return matter.DocTypeAppClusterIndex, nil
 				}
@@ -64,7 +79,7 @@ func (doc *Doc) determineDocType() (matter.DocType, error) {
 			if strings.Contains(strings.ToLower(name), "cluster") {
 				return matter.DocTypeCluster, nil
 			}
-			if dt := doc.guessDocType(); dt != matter.DocTypeUnknown {
+			if dt := guessDocType(sectionInfoCache, reader, doc); dt != matter.DocTypeUnknown {
 				return dt, nil
 			}
 			return matter.DocTypeDataModel, nil
@@ -90,7 +105,7 @@ func (doc *Doc) determineDocType() (matter.DocType, error) {
 			if strings.Contains(strings.ToLower(name), "cluster") {
 				return matter.DocTypeCluster, nil
 			}
-			if dt := doc.guessDocType(); dt != matter.DocTypeUnknown {
+			if dt := guessDocType(sectionInfoCache, reader, doc); dt != matter.DocTypeUnknown {
 				return dt, nil
 			}
 			return matter.DocTypeServiceDeviceManagement, nil
@@ -98,17 +113,22 @@ func (doc *Doc) determineDocType() (matter.DocType, error) {
 			return matter.DocTypeSoftAP, nil
 		}
 	}
-	guess := doc.guessDocType()
+	guess := guessDocType(sectionInfoCache, reader, doc)
 	slog.Debug("could not determine doc type", "path", doc.Path, slog.String("guessing", guess.String()))
 	return guess, nil
 }
 
-func (doc *Doc) guessDocType() matter.DocType {
-	firstSection := parse.FindFirst[*asciidoc.Section](doc.Reader(), doc)
+func guessDocType(sectionInfoCache SectionInfoCache, reader asciidoc.Reader, doc *asciidoc.Document) matter.DocType {
+	firstSection := parse.FindFirst[*asciidoc.Section](doc, reader, doc)
 	if firstSection != nil {
-		if text.HasCaseInsensitiveSuffix(doc.SectionName(firstSection), " cluster") {
+		if text.HasCaseInsensitiveSuffix(sectionInfoCache.SectionName(firstSection), " cluster") {
 			return matter.DocTypeCluster
 		}
 	}
 	return matter.DocTypeUnknown
+}
+
+func firstLetterIsLower(s string) bool {
+	firstLetter, _ := utf8.DecodeRuneInString(s)
+	return unicode.IsLower(firstLetter)
 }

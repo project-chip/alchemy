@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/matter/spec"
 )
 
 /*
@@ -20,9 +19,9 @@ import (
 
 }
 */
-func dumpLocation(doc *spec.Doc, l asciidoc.URL, indent int) {
+func dumpLocation(reader Reader, l asciidoc.URL, indent int) {
 	fmt.Printf("%s", l.Scheme)
-	dumpElements(doc, &l.Path, l.Path, indent)
+	dumpElements(reader, &l.Path, l.Path, indent)
 }
 
 func snippet(str string) string {

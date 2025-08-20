@@ -6,7 +6,6 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
-	"github.com/project-chip/alchemy/matter/spec"
 )
 
 var missingSpaceAfterPunctuationPattern = regexp.MustCompile(`([a-z])([.?!,])([A-Z])`)
@@ -21,7 +20,7 @@ func precleanStrings(doc asciidoc.ParentElement) {
 	})
 }
 
-func (b *Baller) postCleanUpStrings(doc *spec.Doc, root asciidoc.ParentElement) {
+func (b *Baller) postCleanUpStrings(doc *asciidoc.Document, root asciidoc.ParentElement) {
 	parse.Search(asciidoc.RawReader, root, root.Children(), func(el any, parent asciidoc.Parent, index int) parse.SearchShould {
 		switch el := el.(type) {
 		case *asciidoc.Monospace, *asciidoc.DoubleMonospace:

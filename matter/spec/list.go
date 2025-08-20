@@ -17,13 +17,13 @@ type listIndex[T types.Entity] struct {
 }
 
 type entityFactory[T types.Entity] interface {
-	New(spec *Specification, d *Doc, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (T, error)
-	Details(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, e T) error
-	EntityName(d *Doc, s *asciidoc.Section) string
-	Children(d *Doc, s *asciidoc.Section) iter.Seq[*asciidoc.Section]
+	New(spec *Specification, docGroup *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (T, error)
+	Details(spec *Specification, docGroup *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, e T) error
+	EntityName(docGroup *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) string
+	Children(docGroup *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) iter.Seq[*asciidoc.Section]
 }
 
-func buildList[T types.Entity, L ~[]T](spec *Specification, d *Doc, s *asciidoc.Section, t *asciidoc.Table, pc *parseContext, list L, factory entityFactory[T], parent types.Entity) (L, error) {
+func buildList[T types.Entity, L ~[]T](spec *Specification, library *Library, reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, table *asciidoc.Table, list L, factory entityFactory[T], parent types.Entity) (L, error) {
 
 	index := listIndex[T]{
 		byName:      make(map[string]T),
@@ -31,7 +31,7 @@ func buildList[T types.Entity, L ~[]T](spec *Specification, d *Doc, s *asciidoc.
 	}
 	var err error
 	var ti *TableInfo
-	ti, err = ReadTable(d, d.Reader(), t)
+	ti, err = ReadTable(doc, reader, table)
 	if err != nil {
 		return nil, err
 	}
@@ -39,13 +39,13 @@ func buildList[T types.Entity, L ~[]T](spec *Specification, d *Doc, s *asciidoc.
 
 		var name string
 		var xref *asciidoc.CrossReference
-		name, xref, err = ti.ReadName(row, matter.TableColumnName)
+		name, xref, err = ti.ReadName(library, row, matter.TableColumnName)
 		if err != nil {
 			return nil, err
 		}
 
 		var entity T
-		entity, err = factory.New(spec, d, s, ti, row, name, parent)
+		entity, err = factory.New(spec, library, reader, doc, section, ti, row, name, parent)
 		if err != nil {
 			return nil, err
 		}
@@ -53,29 +53,28 @@ func buildList[T types.Entity, L ~[]T](spec *Specification, d *Doc, s *asciidoc.
 		list = append(list, entity)
 		index.byName[strings.ToLower(name)] = entity
 		if xref != nil {
-			anchor := d.FindAnchorByID(xref.ID, xref, xref)
+			anchor := library.FindAnchorByID(xref.ID, xref, xref)
 			if anchor != nil && anchor.Element != nil {
 				index.byReference[anchor.Element] = entity
 			}
 		}
 	}
 
-	for s := range factory.Children(d, s) {
-		e, ok := index.byReference[s]
+	for subSection := range factory.Children(library, reader, doc, section) {
+		e, ok := index.byReference[subSection]
 		if !ok {
-			name := factory.EntityName(d, s)
+			name := factory.EntityName(library, reader, doc, subSection)
 			e, ok = index.byName[strings.ToLower(name)]
 			if !ok {
-				slog.Warn("unknown entity attempting to match section to parent table", log.Path("sectionPath", s), log.Path("parentTablePath", t), slog.String("entityName", d.SectionName(s)), log.Element("source", d.Path, s))
+				slog.Warn("unknown entity attempting to match sub section to parent table", log.Path("sectionPath", subSection), log.Path("parentTablePath", table), slog.String("entityName", library.SectionName(subSection)), log.Element("source", doc.Path, subSection))
 				continue
 			}
 		}
-		err = factory.Details(spec, d, s, pc, e)
+		err = factory.Details(spec, library, reader, doc, subSection, e)
 		if err != nil {
 			return nil, err
 		}
-		pc.orderedEntities = append(pc.orderedEntities, e)
-		pc.entitiesByElement[s] = append(pc.entitiesByElement[s], e)
+		library.addEntity(subSection, e)
 	}
 	return list, nil
 }

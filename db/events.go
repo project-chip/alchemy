@@ -31,7 +31,7 @@ func (h *Host) indexEventModels(cxt context.Context, parent *sectionInfo, cluste
 	return nil
 }
 
-func (h *Host) indexEvents(cxt context.Context, doc *spec.Doc, ci *sectionInfo, es *asciidoc.Section) error {
+func (h *Host) indexEvents(cxt context.Context, doc *asciidoc.Document, ci *sectionInfo, es *asciidoc.Section) error {
 	if ci.children == nil {
 		ci.children = make(map[string][]*sectionInfo)
 	}

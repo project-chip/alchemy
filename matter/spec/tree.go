@@ -2,59 +2,65 @@ package spec
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
-	"path/filepath"
-	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/errata"
-	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
-type DocumentGrouper struct {
+type LibraryBuilder struct {
 	specRoot string
 }
 
-func NewDocumentGrouper(specRoot string) *DocumentGrouper {
-	b := &DocumentGrouper{
+func NewLibraryBuilder(specRoot string) *LibraryBuilder {
+	b := &LibraryBuilder{
 		specRoot: specRoot,
 	}
 	return b
 }
 
-func (dg DocumentGrouper) Name() string {
+func (dg LibraryBuilder) Name() string {
 	return "Grouping spec documents"
 }
 
-func (dg *DocumentGrouper) Process(cxt context.Context, inputs []*pipeline.Data[*Doc]) (outputs []*pipeline.Data[*DocGroup], err error) {
-	docs := make([]*Doc, 0, len(inputs))
+func (dg *LibraryBuilder) Process(cxt context.Context, inputs []*pipeline.Data[*asciidoc.Document]) (outputs []*pipeline.Data[*Library], err error) {
+	/*docs := make([]*asciidoc.Document, 0, len(inputs))
 	for _, i := range inputs {
 		docs = append(docs, i.Content)
 	}
 
-	buildTree(dg.specRoot, docs)
+	buildTree(asciidoc.RawReader, dg.specRoot, docs)
 
 	docGroups := buildDocumentGroups(docs)
 	for _, g := range docGroups {
 		outputs = append(outputs, pipeline.NewData(g.Root.Path.Relative, g))
+	}*/
+
+	docCache := cacheFromPipeline(dg.specRoot, inputs)
+
+	for _, docRoot := range errata.DocRoots {
+		root, ok := docCache.cache.Load(docRoot)
+		if !ok {
+			slog.Warn("doc root not found", "root", docRoot)
+			continue
+		}
+		outputs = append(outputs, pipeline.NewData(root.Path.Relative, NewLibrary(root, docCache)))
 	}
 	return
 }
 
-func buildTree(specRoot string, docs []*Doc) error {
+/*func buildTree(reader asciidoc.Reader, specRoot string, docs []*asciidoc.Document) error {
 
-	tree := make(map[*Doc][]*asciidoc.FileInclude)
-	docPaths := make(map[string]*Doc)
+	tree := make(map[*asciidoc.Document][]*asciidoc.FileInclude)
+	docPaths := make(map[string]*asciidoc.Document)
 
 	for _, doc := range docs {
 
 		path := doc.Path
 		docPaths[path.Absolute] = doc
 
-		parse.Search(doc.Reader(), doc, doc.Children(), func(link *asciidoc.FileInclude, parent asciidoc.Parent, index int) parse.SearchShould {
+		parse.Search(doc, reader, doc, doc.Children(), func(doc *asciidoc.Document, link *asciidoc.FileInclude, parent asciidoc.ParentElement, index int) parse.SearchShould {
 			tree[doc] = append(tree[doc], link)
 			return parse.SearchShouldContinue
 		})
@@ -63,7 +69,7 @@ func buildTree(specRoot string, docs []*Doc) error {
 	for doc, children := range tree {
 		for _, link := range children {
 			var p strings.Builder
-			buildDataTypeString(doc, link.Elements, &p)
+			buildDataTypeString(reader, doc, link.Elements, &p)
 			linkFullPath := filepath.Join(doc.Path.Dir(), p.String())
 			linkPath, err := asciidoc.NewPath(linkFullPath, specRoot)
 			if err != nil {
@@ -83,7 +89,23 @@ func buildTree(specRoot string, docs []*Doc) error {
 	return nil
 }
 
-func dumpTree(r *Doc, indent int) {
+func buildDataTypeString(reader asciidoc.Reader, d *asciidoc.Document, cellElements asciidoc.Elements, sb *strings.Builder) (source asciidoc.Element) {
+	for _, el := range cellElements {
+		switch v := el.(type) {
+		case *asciidoc.String:
+			sb.WriteString(v.Value)
+
+		case *asciidoc.SpecialCharacter:
+		case *asciidoc.Paragraph:
+			source = buildDataTypeString(reader, d, v.Children(), sb)
+		default:
+			slog.Warn("unknown path value element", log.Element("source", d.Path, el), "type", fmt.Sprintf("%T", v))
+		}
+	}
+	return
+}
+
+func dumpTree(r *asciidoc.Document, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Printf("%s (%s)\n", r.Path.Absolute, r.Path.Relative)
 	for _, c := range r.children {
@@ -91,7 +113,7 @@ func dumpTree(r *Doc, indent int) {
 	}
 }
 
-func buildDocumentGroups(docs []*Doc) (docGroups []*DocGroup) {
+func buildDocumentGroups(docs []*Doc) (docGroups []*Library) {
 	for _, d := range docs {
 		if len(d.parents) > 0 {
 			continue
@@ -110,9 +132,10 @@ func buildDocumentGroups(docs []*Doc) (docGroups []*DocGroup) {
 			continue
 		}
 
-		dg := NewDocGroup(d)
+		dg := NewLibrary(d)
 		docGroups = append(docGroups, dg)
 		setDocGroup(d, dg)
 	}
 	return
 }
+*/

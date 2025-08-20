@@ -13,8 +13,8 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
-	for id, xrefs := range doc.CrossReferences() {
+func (an AnchorNormalizer) rewriteCrossReferences(doc *asciidoc.Document) {
+	for id, xrefs := range doc.CrossReferences(asciidoc.RawReader) {
 		if len(xrefs) == 0 {
 			continue
 		}
@@ -89,7 +89,7 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 	}
 }
 
-func removeCrossReferenceStutter(doc *spec.Doc, icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) {
+func removeCrossReferenceStutter(doc *asciidoc.Document, icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) {
 	if len(icr.Elements) > 0 {
 		return
 	}
@@ -123,7 +123,7 @@ func removeCrossReferenceStutter(doc *spec.Doc, icr *asciidoc.CrossReference, pa
 	nextString.Value = replacement
 }
 
-func (an AnchorNormalizer) normalizeTypeCrossReferencesInTable(doc *spec.Doc, table *asciidoc.Table) {
+func (an AnchorNormalizer) normalizeTypeCrossReferencesInTable(doc *asciidoc.Document, table *asciidoc.Table) {
 	parse.Search(asciidoc.RawReader, table, table.Elements, func(icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) parse.SearchShould {
 		normalizeCrossReference(doc, icr)
 		return parse.SearchShouldContinue
@@ -131,7 +131,7 @@ func (an AnchorNormalizer) normalizeTypeCrossReferencesInTable(doc *spec.Doc, ta
 
 }
 
-func normalizeCrossReference(doc *spec.Doc, icr *asciidoc.CrossReference) {
+func normalizeCrossReference(doc *asciidoc.Document, icr *asciidoc.CrossReference) {
 	if len(icr.Elements) > 0 {
 		// Don't touch existing labels
 		return
@@ -169,7 +169,7 @@ func findRefSection(parent any) *asciidoc.Section {
 		return p
 	case asciidoc.HasParent:
 		return findRefSection(p.Parent())
-	case *spec.Doc:
+	case *asciidoc.Document:
 		return nil
 	default:
 		return nil

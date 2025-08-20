@@ -33,13 +33,16 @@ func (b *Bold) Equals(e Element) bool {
 	return b.Elements.Equals(ob.Elements)
 }
 
-func (b *Bold) Traverse(parent Parent) iter.Seq2[Parent, Parent] {
-	return func(yield func(Parent, Parent) bool) {
+func (b *Bold) Traverse(parent ParentElement) iter.Seq2[ParentElement, Parent] {
+	return func(yield func(ParentElement, Parent) bool) {
 		if !b.AttributeList.traverse(b, yield) {
 			return
 		}
 	}
 }
+
+var _ ParentElement = &Bold{}
+var _ Traverser = &Bold{}
 
 func (b *Bold) Clone() Element {
 	return &Bold{position: b.position, raw: b.raw, AttributeList: b.AttributeList.Clone(), Elements: b.Elements.Clone()}
@@ -76,8 +79,8 @@ func (db *DoubleBold) Equals(e Element) bool {
 	return db.Elements.Equals(ob.Elements)
 }
 
-func (db *DoubleBold) Traverse(parent Parent) iter.Seq2[Parent, Parent] {
-	return func(yield func(Parent, Parent) bool) {
+func (db *DoubleBold) Traverse(parent ParentElement) iter.Seq2[ParentElement, Parent] {
+	return func(yield func(ParentElement, Parent) bool) {
 		if !db.AttributeList.traverse(db, yield) {
 			return
 		}
@@ -87,3 +90,6 @@ func (db *DoubleBold) Traverse(parent Parent) iter.Seq2[Parent, Parent] {
 func (db *DoubleBold) Clone() Element {
 	return &Bold{position: db.position, raw: db.raw, AttributeList: db.AttributeList.Clone(), Elements: db.Elements.Clone()}
 }
+
+var _ ParentElement = &DoubleBold{}
+var _ Traverser = &DoubleBold{}

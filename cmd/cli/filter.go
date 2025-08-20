@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"path/filepath"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -13,7 +14,7 @@ import (
 func filterSpecDocs(cc *Context, specDocs spec.DocSet, s *spec.Specification, filterOptions spec.FilterOptions, processingOptions pipeline.ProcessingOptions) (filteredDocs spec.DocSet, err error) {
 	filteredDocs = specDocs
 	if len(filterOptions.Paths) > 0 { // Filter the spec by whatever extra args were passed
-		filter := paths.NewIncludeFilter[*spec.Doc](s.Root, filterOptions.Paths)
+		filter := paths.NewIncludeFilter[*asciidoc.Document](s.Root, filterOptions.Paths)
 		filteredDocs, err = pipeline.Collective(cc, processingOptions, filter, filteredDocs)
 		if err != nil {
 			return
@@ -21,7 +22,7 @@ func filterSpecDocs(cc *Context, specDocs spec.DocSet, s *spec.Specification, fi
 	}
 
 	if len(filterOptions.Exclude) > 0 {
-		filter := paths.NewExcludeFilter[*spec.Doc](s.Root, filterOptions.Exclude)
+		filter := paths.NewExcludeFilter[*asciidoc.Document](s.Root, filterOptions.Exclude)
 		filteredDocs, err = pipeline.Collective(cc, processingOptions, filter, filteredDocs)
 		if err != nil {
 			return

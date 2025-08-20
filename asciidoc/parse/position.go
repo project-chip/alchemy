@@ -5,7 +5,7 @@ import "github.com/project-chip/alchemy/asciidoc"
 func copyPosition[T asciidoc.HasPosition](source any, element T) T {
 	switch source := source.(type) {
 	case asciidoc.HasPosition:
-		element.SetPath(source.Path())
+		element.SetDocument(source.Document())
 		element.SetPosition(source.Position())
 	case asciidoc.Elements:
 		if len(source) > 0 {

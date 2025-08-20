@@ -239,7 +239,7 @@ func parseShorthandAttributeValues(els Elements) (style *ShorthandStyle, id *Sho
 	if len(els) == 0 {
 		return
 	}
-	var currentShorthand ParentElement
+	var currentShorthand ElementList
 	for _, el := range els {
 		switch el := el.(type) {
 		case *String:

@@ -9,11 +9,11 @@ import (
 	"path"
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/tidwall/pretty"
 )
@@ -30,7 +30,7 @@ func (p ClusterListPatcher) Name() string {
 	return "Patching files with cluster list"
 }
 
-func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[[]byte], err error) {
+func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*asciidoc.Document]) (outputs []*pipeline.Data[[]byte], err error) {
 
 	clusterListPath := path.Join(p.sdkRoot, "/src/app/zap_cluster_list.json")
 	var clusterListBytes []byte

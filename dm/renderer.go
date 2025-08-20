@@ -12,6 +12,7 @@ import (
 	"sync"
 
 	"github.com/iancoleman/strcase"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -37,18 +38,18 @@ func (p *Renderer) Name() string {
 	return "Rendering data model"
 }
 
-func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*spec.Doc], err error) {
+func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*asciidoc.Document], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*asciidoc.Document], err error) {
 	doc := input.Content
-	entites, err := doc.Entities()
-	if err != nil {
-		slog.ErrorContext(cxt, "error converting doc to entities", "doc", doc.Path, "error", err)
+	library, ok := p.spec.LibraryForDocument(doc)
+	if !ok {
+		slog.ErrorContext(cxt, "missing library for doc", "doc", doc.Path)
 		err = nil
-		return
 	}
+	entities := library.Spec.EntityRefs[doc]
 	var appClusters []types.Entity
 	var deviceTypes []*matter.DeviceType
 	var namespaces []*matter.Namespace
-	for _, e := range entites {
+	for _, e := range entities {
 		switch e := e.(type) {
 		case *matter.ClusterGroup, *matter.Cluster:
 			appClusters = append(appClusters, e)
@@ -57,16 +58,6 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 		case *matter.Namespace:
 			namespaces = append(namespaces, e)
 		}
-	}
-
-	var dt matter.DocType
-	dt, err = doc.DocType()
-	if err != nil {
-		return
-	}
-	if dt == matter.DocTypeBaseDeviceType && p.spec.BaseDeviceType != nil {
-		// Special case, as this doesn't show up normally
-		deviceTypes = append(deviceTypes, p.spec.BaseDeviceType)
 	}
 
 	if len(appClusters) == 1 {

@@ -14,9 +14,9 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func toFeatures(d *Doc, s *asciidoc.Section, pc *parseContext) (features *matter.Features, err error) {
+func (library *Library) toFeatures(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) (features *matter.Features, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(d, s)
+	ti, err = parseFirstTable(reader, d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -30,32 +30,32 @@ func toFeatures(d *Doc, s *asciidoc.Section, pc *parseContext) (features *matter
 	for row := range ti.ContentRows() {
 		var bit, code, name, summary string
 		var conf conformance.Set
-		bit, err = ti.ReadString(row, matter.TableColumnBit)
+		bit, err = ti.ReadString(reader, row, matter.TableColumnBit)
 		if err != nil {
 			return
 		}
 		if len(bit) == 0 {
-			bit, err = ti.ReadString(row, matter.TableColumnID)
+			bit, err = ti.ReadString(reader, row, matter.TableColumnID)
 			if err != nil {
 				return
 			}
 		}
 
-		name, err = ti.ReadValue(row, matter.TableColumnFeature, matter.TableColumnName)
+		name, err = ti.ReadValue(library, row, matter.TableColumnFeature, matter.TableColumnName)
 		if err != nil {
 			return
 		}
 		name = matter.StripTypeSuffixes(name)
 
-		code, err = ti.ReadString(row, matter.TableColumnCode)
+		code, err = ti.ReadString(reader, row, matter.TableColumnCode)
 		if err != nil {
 			return
 		}
-		summary, err = ti.ReadValue(row, matter.TableColumnSummary, matter.TableColumnDescription)
+		summary, err = ti.ReadValue(library, row, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}
-		conf = ti.ReadConformance(row, matter.TableColumnConformance)
+		conf = ti.ReadConformance(library, row, matter.TableColumnConformance)
 		if conf == nil {
 			conf = conformance.Set{&conformance.Optional{}}
 		}
@@ -64,18 +64,17 @@ func toFeatures(d *Doc, s *asciidoc.Section, pc *parseContext) (features *matter
 		featureMap[name] = f
 	}
 
-	for s := range parse.Skim[*asciidoc.Section](d.Reader(), s, s.Children()) {
-		switch d.SectionType(s) {
+	for s := range parse.Skim[*asciidoc.Section](reader, s, reader.Children(s)) {
+		switch library.SectionType(s) {
 		case matter.SectionFeature:
 
-			name := text.TrimCaseInsensitiveSuffix(d.SectionName(s), " Feature")
+			name := text.TrimCaseInsensitiveSuffix(library.SectionName(s), " Feature")
 			a, ok := featureMap[name]
 			if !ok {
 				slog.Debug("unknown feature", "feature", name)
 				continue
 			}
-
-			pc.entitiesByElement[s] = append(pc.entitiesByElement[s], a)
+			library.addEntity(s, a)
 		}
 	}
 	return

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/xml"
@@ -43,9 +44,9 @@ func (p DeviceTypesPatcher) Name() string {
 	return "Patching device types"
 }
 
-func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[[]byte], err error) {
+func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*asciidoc.Document]) (outputs []*pipeline.Data[[]byte], err error) {
 
-	deviceTypeDocs := make(map[*matter.DeviceType]*spec.Doc)
+	deviceTypeDocs := make(map[*matter.DeviceType]*asciidoc.Document)
 	deviceTypesToUpdateByID := make(map[uint64]*matter.DeviceType)
 	deviceTypesToUpdateByName := make(map[string]*matter.DeviceType)
 	for _, input := range inputs {
