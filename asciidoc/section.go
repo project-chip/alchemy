@@ -53,6 +53,17 @@ func (a *Section) Equals(o Element) bool {
 	return a.Elements.Equals(oa.Elements)
 }
 
+func (s *Section) Clone() Element {
+	return &Section{
+		position:      s.position,
+		raw:           s.raw,
+		AttributeList: s.AttributeList.Clone(),
+		Elements:      s.Elements.Clone(),
+		Title:         s.Title.Clone(),
+		Level:         s.Level,
+	}
+}
+
 func (s Section) Name() string {
 	var sb strings.Builder
 	for _, t := range s.Title {

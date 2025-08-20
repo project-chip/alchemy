@@ -41,6 +41,10 @@ func (b *Bold) Traverse(parent Parent) iter.Seq2[Parent, Parent] {
 	}
 }
 
+func (b *Bold) Clone() Element {
+	return &Bold{position: b.position, raw: b.raw, AttributeList: b.AttributeList.Clone(), Elements: b.Elements.Clone()}
+}
+
 type DoubleBold struct {
 	position
 	raw
@@ -78,4 +82,8 @@ func (db *DoubleBold) Traverse(parent Parent) iter.Seq2[Parent, Parent] {
 			return
 		}
 	}
+}
+
+func (db *DoubleBold) Clone() Element {
+	return &Bold{position: db.position, raw: db.raw, AttributeList: db.AttributeList.Clone(), Elements: db.Elements.Clone()}
 }

@@ -26,3 +26,7 @@ func (a *Subscript) Equals(o Element) bool {
 	}
 	return a.Elements.Equals(oa.Elements)
 }
+
+func (a *Subscript) Clone() Element {
+	return &Subscript{position: a.position, raw: a.raw, AttributeList: a.AttributeList.Clone(), Elements: a.Elements.Clone()}
+}

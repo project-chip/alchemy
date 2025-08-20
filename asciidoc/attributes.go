@@ -145,3 +145,11 @@ func (a AttributeList) traverse(parent Parent, yield func(Parent, Parent) bool) 
 	}
 	return true
 }
+
+func (a AttributeList) Clone() (oa AttributeList) {
+	oa = make(AttributeList, len(a))
+	for i, attr := range a {
+		oa[i] = attr.Clone()
+	}
+	return
+}

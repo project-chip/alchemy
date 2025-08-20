@@ -17,15 +17,19 @@ func (Link) Type() ElementType {
 	return ElementTypeInline
 }
 
-func (a *Link) Equals(o Element) bool {
+func (l *Link) Equals(o Element) bool {
 	oa, ok := o.(*Link)
 	if !ok {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !l.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.URL.Equals(oa.URL)
+	return l.URL.Equals(oa.URL)
+}
+
+func (l *Link) Clone() Element {
+	return &Link{position: l.position, raw: l.raw, AttributeList: l.AttributeList.Clone(), URL: l.URL.Clone().(URL)}
 }
 
 type LinkMacro struct {
@@ -45,13 +49,17 @@ func (LinkMacro) Type() ElementType {
 	return ElementTypeInline
 }
 
-func (a *LinkMacro) Equals(o Element) bool {
+func (lm *LinkMacro) Equals(o Element) bool {
 	oa, ok := o.(*LinkMacro)
 	if !ok {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !lm.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.URL.Equals(oa.URL)
+	return lm.URL.Equals(oa.URL)
+}
+
+func (lm *LinkMacro) Clone() Element {
+	return &LinkMacro{position: lm.position, raw: lm.raw, AttributeList: lm.AttributeList.Clone(), URL: lm.URL.Clone().(URL)}
 }

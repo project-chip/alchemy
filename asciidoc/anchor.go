@@ -73,6 +73,10 @@ func (aa *AnchorAttribute) Traverse(parent Parent) iter.Seq2[Parent, Parent] {
 	}
 }
 
+func (aa *AnchorAttribute) Clone() Attribute {
+	return &AnchorAttribute{attribute: aa.attribute, ID: aa.ID.Clone(), Label: aa.Label.Clone()}
+}
+
 type Anchor struct {
 	position
 
@@ -101,6 +105,10 @@ func (a *Anchor) Equals(o Element) bool {
 		return false
 	}
 	return a.Elements.Equals(oa.Elements)
+}
+
+func (a *Anchor) Clone() Element {
+	return &Anchor{position: a.position, ID: a.ID, Elements: a.Elements.Clone()}
 }
 
 func NewAnchor(id Elements, label Elements) *Anchor {

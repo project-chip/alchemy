@@ -12,10 +12,15 @@ func (BlockAttributes) Type() ElementType {
 	return ElementTypeAttributes
 }
 
-func (uar *BlockAttributes) Equals(e Element) bool {
+func (ba *BlockAttributes) Equals(e Element) bool {
 	ouar, ok := e.(*BlockAttributes)
 	if !ok {
 		return false
 	}
-	return uar.AttributeList.Equals(ouar.AttributeList)
+	return ba.AttributeList.Equals(ouar.AttributeList)
+}
+
+func (ba *BlockAttributes) Clone() Element {
+	return &BlockAttributes{AttributeList: ba.AttributeList.Clone()}
+
 }

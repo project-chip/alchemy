@@ -110,6 +110,13 @@ func (doc *Doc) Equals(other asciidoc.Element) bool {
 	return false
 }
 
+func (doc *Doc) Clone() asciidoc.Element {
+	return &Doc{
+		Path: doc.Path,
+		Base: doc.Base.Clone().(*asciidoc.Document),
+	}
+}
+
 func (doc *Doc) Group() *DocGroup {
 	return doc.group
 }

@@ -20,6 +20,7 @@ const (
 type Element interface {
 	Type() ElementType
 	Equals(o Element) bool
+	Clone() Element
 }
 
 type Parent interface {
