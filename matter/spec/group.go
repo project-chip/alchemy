@@ -6,6 +6,7 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -22,6 +23,8 @@ type DocGroup struct {
 
 	crossReferenceDocs map[*asciidoc.CrossReference]*Doc
 }
+
+type DocGroupSet pipeline.Map[string, *pipeline.Data[*DocGroup]]
 
 func NewDocGroup(root *Doc) *DocGroup {
 	return &DocGroup{
