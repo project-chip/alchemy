@@ -30,7 +30,7 @@ func (b *Baller) organizeClusterIDSection(cxt *discoContext) (err error) {
 			return fmt.Errorf("can't rearrange cluster id table with so few matches in %s", cxt.doc.Path)
 		}
 
-		err = b.renameTableHeaderCells(cxt, clusterIDs.section, clusterIDsTable, nil)
+		err = b.renameTableHeaderCells(cxt, clusterIDs.section, clusterIDsTable, matter.Tables[matter.TableTypeClusterID].ColumnRenames)
 		if err != nil {
 			return fmt.Errorf("error renaming table header cells in cluster ID table in %s: %w", cxt.doc.Path, err)
 		}

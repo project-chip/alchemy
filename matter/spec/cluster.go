@@ -196,7 +196,7 @@ func readClusterIDs(doc *Doc, section *asciidoc.Section) ([]*matter.Cluster, err
 	var clusters []*matter.Cluster
 	for row := range ti.ContentRows() {
 		c := matter.NewCluster(section)
-		c.ID, err = ti.ReadID(row, matter.TableColumnID)
+		c.ID, err = ti.ReadID(row, matter.TableColumnClusterID, matter.TableColumnID)
 		if err != nil {
 			return nil, err
 		}

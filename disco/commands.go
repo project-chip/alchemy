@@ -45,11 +45,6 @@ func (b *Baller) organizeCommandsSection(cxt *discoContext) (err error) {
 			return fmt.Errorf("error fixing command direction in commands table in %s: %w", cxt.doc.Path, err)
 		}
 
-		err = b.renameTableHeaderCells(cxt, commands.section, commands.table, nil)
-		if err != nil {
-			return fmt.Errorf("error table header cells in commands table in %s: %w", cxt.doc.Path, err)
-		}
-
 		err = b.linkIndexTables(cxt, commands)
 		if err != nil {
 			return err

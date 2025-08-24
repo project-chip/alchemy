@@ -26,11 +26,6 @@ func (b *Baller) organizeClassificationSection(cxt *discoContext) (err error) {
 			return nil
 		}
 
-		err = b.renameTableHeaderCells(cxt, classification.section, classificationTable, matter.Tables[matter.TableTypeClassification].ColumnRenames)
-		if err != nil {
-			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.doc.SectionName(classification.section), cxt.doc.Path, err)
-		}
-
 		var tableType matter.TableType
 
 		switch cxt.parsed.docType {
@@ -38,6 +33,11 @@ func (b *Baller) organizeClassificationSection(cxt *discoContext) (err error) {
 			tableType = matter.TableTypeAppClusterClassification
 		case matter.DocTypeDeviceType:
 			tableType = matter.TableTypeDeviceTypeClassification
+		}
+
+		err = b.renameTableHeaderCells(cxt, classification.section, classificationTable, matter.Tables[tableType].ColumnRenames)
+		if err != nil {
+			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.doc.SectionName(classification.section), cxt.doc.Path, err)
 		}
 
 		if tableType != matter.TableTypeUnknown {

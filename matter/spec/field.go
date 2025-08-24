@@ -17,6 +17,13 @@ import (
 )
 
 func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.EntityType, parent types.Entity) (fields []*matter.Field, fieldMap map[string]*matter.Field, err error) {
+	var idColumns []matter.TableColumn
+	switch entityType {
+	case types.EntityTypeAttribute:
+		idColumns = []matter.TableColumn{matter.TableColumnAttributeID, matter.TableColumnID}
+	default:
+		idColumns = []matter.TableColumn{matter.TableColumnFieldID, matter.TableColumnID}
+	}
 	fieldMap = make(map[string]*matter.Field)
 	for row := range ti.ContentRows() {
 		f := matter.NewField(row, parent, entityType)
@@ -54,7 +61,7 @@ func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.En
 			return
 		}
 		f.Access, _ = ParseAccess(a, entityType)
-		f.ID, err = ti.ReadID(row, matter.TableColumnID)
+		f.ID, err = ti.ReadID(row, idColumns...)
 		if err != nil {
 			return
 		}

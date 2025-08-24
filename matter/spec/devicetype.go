@@ -87,7 +87,7 @@ func readDeviceTypeIDs(doc *Doc, s *asciidoc.Section) ([]*matter.DeviceType, err
 	var deviceTypes []*matter.DeviceType
 	for row := range ti.ContentRows() {
 		c := matter.NewDeviceType(row)
-		c.ID, err = ti.ReadID(row, matter.TableColumnID)
+		c.ID, err = ti.ReadID(row, matter.TableColumnDeviceID, matter.TableColumnID)
 		if err != nil {
 			return nil, err
 		}
