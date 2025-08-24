@@ -30,7 +30,11 @@ const (
 	TableColumnCode
 	TableColumnStatusCode
 	TableColumnFeature
+	TableColumnAttributeID
 	TableColumnClusterID
+	TableColumnEventID
+	TableColumnCommandID
+	TableColumnFieldID
 	TableColumnDevice
 	TableColumnDeviceID
 	TableColumnDeviceName
@@ -74,8 +78,10 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnStatusCode:   "Status Code",
 	TableColumnFeature:      "Feature",
 	TableColumnClusterID:    "Cluster ID",
+	TableColumnEventID:      "Event ID",
+	TableColumnCommandID:    "Command ID",
 	TableColumnDevice:       "Device",
-	TableColumnDeviceID:     "Device ID",
+	TableColumnDeviceID:     "Device Type ID",
 	TableColumnDeviceName:   "Device Name",
 	TableColumnSupersetOf:   "Superset Of",
 	TableColumnClass:        "Class",
@@ -92,6 +98,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnNamespace:    "Namespace",
 	TableColumnLocation:     "Location",
 	TableColumnField:        "Field",
+	TableColumnFieldID:      "Field ID",
 }
 
 func (tc TableColumn) String() string {
@@ -173,11 +180,14 @@ var Tables = map[TableType]Table{
 	},
 	TableTypeDeviceTypeClassification: {
 		ColumnOrder: []TableColumn{
-			TableColumnID,
+			TableColumnDeviceID,
 			TableColumnDeviceName,
 			TableColumnSupersetOf,
 			TableColumnClass, // This will get renamed to Scope
 			TableColumnScope,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnID: TableColumnDeviceID,
 		},
 	},
 	TableTypeClassification: {
@@ -188,7 +198,7 @@ var Tables = map[TableType]Table{
 	},
 	TableTypeClusterID: {
 		ColumnOrder: []TableColumn{
-			TableColumnID,
+			TableColumnClusterID,
 			TableColumnName,
 			TableColumnConformance,
 		},
@@ -197,10 +207,13 @@ var Tables = map[TableType]Table{
 			TableColumnName,
 			TableColumnConformance,
 		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnID: TableColumnClusterID,
+		},
 	},
 	TableTypeCommands: {
 		ColumnOrder: []TableColumn{
-			TableColumnID,
+			TableColumnCommandID,
 			TableColumnName,
 			TableColumnDirection,
 			TableColumnResponse,
@@ -208,16 +221,22 @@ var Tables = map[TableType]Table{
 			TableColumnQuality,
 			TableColumnConformance,
 		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnID: TableColumnCommandID,
+		},
 	},
 	TableTypeCommandFields: {
 		ColumnOrder: []TableColumn{
-			TableColumnID,
+			TableColumnFieldID,
 			TableColumnName,
 			TableColumnDirection,
 			TableColumnResponse,
 			TableColumnAccess,
 			TableColumnQuality,
 			TableColumnConformance,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnID: TableColumnFieldID,
 		},
 	},
 	TableTypeStruct: {
@@ -255,23 +274,29 @@ var Tables = map[TableType]Table{
 	},
 	TableTypeEvents: {
 		ColumnOrder: []TableColumn{
-			TableColumnID,
+			TableColumnEventID,
 			TableColumnName,
 			TableColumnPriority,
 			TableColumnQuality,
 			TableColumnAccess,
 			TableColumnConformance,
 		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnID: TableColumnEventID,
+		},
 	},
 	TableTypeEventFields: {
 		ColumnOrder: []TableColumn{
-			TableColumnID,
+			TableColumnFieldID,
 			TableColumnName,
 			TableColumnType,
 			TableColumnConstraint,
 			TableColumnQuality,
 			TableColumnFallback,
 			TableColumnConformance,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnID: TableColumnFieldID,
 		},
 	},
 	TableTypeFeatures: {
@@ -288,7 +313,7 @@ var Tables = map[TableType]Table{
 	},
 	TableTypeDeviceTypeRequirements: {
 		ColumnOrder: []TableColumn{
-			TableColumnID,
+			TableColumnDeviceID,
 			TableColumnName,
 			TableColumnConstraint,
 			TableColumnConformance,

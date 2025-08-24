@@ -41,7 +41,7 @@ func (b *Baller) organizeBitmapSection(cxt *discoContext, bms *subSection) (err 
 		return nil
 	}
 
-	err = b.renameTableHeaderCells(cxt, bms.section, bitsTable, nil)
+	err = b.renameTableHeaderCells(cxt, bms.section, bitsTable, matter.Tables[matter.TableTypeBitmap].ColumnRenames)
 	if err != nil {
 		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.doc.SectionName(bms.section), cxt.doc.Path, err)
 	}

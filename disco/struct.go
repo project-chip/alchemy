@@ -38,10 +38,10 @@ func (b *Baller) organizeStructSection(cxt *discoContext, ss *subSection) (err e
 		return nil
 	}
 
-	err = b.renameTableHeaderCells(cxt, ss.section, fieldsTable, nil)
+	/*err = b.renameTableHeaderCells(cxt, ss.section, fieldsTable, nil)
 	if err != nil {
 		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.doc.SectionName(ss.section), cxt.doc.Path, err)
-	}
+	}*/
 
 	err = b.fixAccessCells(cxt, ss, types.EntityTypeStruct)
 	if err != nil {
