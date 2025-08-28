@@ -56,7 +56,8 @@ func handleError(ctx *kong.Context, err error) {
 			fmt.Fprintf(os.Stderr, "%s\n", e)
 		}
 		fmt.Fprintf(os.Stderr, "\n\n")
-
+	} else if e, ok := err.(spec.Error); ok {
+		fmt.Fprintf(os.Stderr, "%s (%s)\n", e.Error(), log.Origin(e))
 	} else {
 		ctx.FatalIfErrorf(err)
 	}
