@@ -15,6 +15,15 @@ import (
 )
 
 func handleError(ctx *kong.Context, err error) {
+
+	if u, ok := err.(interface {
+		Unwrap() []error
+	}); ok {
+		errors := u.Unwrap()
+		if len(errors) == 1 {
+			err = errors[0]
+		}
+	}
 	var shallowError *vcs.ShallowRepositoryError
 	var notARepoError *vcs.NotARepositoryError
 	var parseErrors *spec.ParseErrors
