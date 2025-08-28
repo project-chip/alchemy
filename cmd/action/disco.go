@@ -79,7 +79,15 @@ func (c *Disco) Run(cc *cli.Context) (err error) {
 	err = disco.Pipeline(cc, parserOptions, changedDocs, pipelineOptions, disco.DefaultOptions, attributes, nil, writer)
 
 	if err != nil {
-		return fmt.Errorf("failed disco-balling: %v", err)
+		var message string
+		switch err := err.(type) {
+		case spec.Error:
+			path, line := err.Origin()
+			message = fmt.Sprintf("%s (%s:%d)", err.Error(), path, line)
+		default:
+			message = err.Error()
+		}
+		return fmt.Errorf("failed disco-balling: %s", message)
 	}
 
 	if out.Len() > 0 {
