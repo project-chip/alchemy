@@ -35,7 +35,7 @@ func parseTable(doc *Doc, section *asciidoc.Section, t *asciidoc.Table) (ti *Tab
 		return
 	}
 	if ti.ColumnMap == nil {
-		err = newGenericParseError(t, "can't read table without columns")
+		err = newGenericParseError(t, "can't read table with no columns having standard Matter column names")
 	}
 	return
 }
