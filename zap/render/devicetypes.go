@@ -50,11 +50,7 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	deviceTypesToUpdateByID := make(map[uint64]*matter.DeviceType)
 	deviceTypesToUpdateByName := make(map[string]*matter.DeviceType)
 	for _, input := range inputs {
-		var entities []types.Entity
-		entities, err = input.Content.Entities()
-		if err != nil {
-			return
-		}
+		entities := p.spec.EntitiesForDocument(input.Content)
 
 		for _, entity := range entities {
 			switch dt := entity.(type) {

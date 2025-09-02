@@ -14,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, d *asciidoc.Document, section *asciidoc.Section) (entity types.Entity, err error) {
+func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, d *asciidoc.Document, section *asciidoc.Section, domain matter.Domain) (entity types.Entity, err error) {
 	var clusters []*matter.Cluster
 
 	sections := parse.SkimList[*asciidoc.Section](reader, section, reader.Children(section))
@@ -23,7 +23,7 @@ func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, 
 	for _, s := range sections {
 		switch library.SectionType(s) {
 		case matter.SectionClusterID:
-			clusters, err = readClusterIDs(reader, d, s)
+			clusters, err = readClusterIDs(reader, d, s, domain)
 		}
 		if err != nil {
 			return
@@ -190,7 +190,7 @@ func readRevisionHistory(reader asciidoc.Reader, doc *asciidoc.Document, section
 	return
 }
 
-func readClusterIDs(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section) ([]*matter.Cluster, error) {
+func readClusterIDs(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, domain matter.Domain) ([]*matter.Cluster, error) {
 	ti, err := parseFirstTable(reader, doc, section)
 	if err != nil {
 		return nil, newGenericParseError(section, "failed reading cluster ID: %w", err)
@@ -198,6 +198,7 @@ func readClusterIDs(reader asciidoc.Reader, doc *asciidoc.Document, section *asc
 	var clusters []*matter.Cluster
 	for row := range ti.ContentRows() {
 		c := matter.NewCluster(section)
+		c.Domain = domain
 		c.ID, err = ti.ReadID(reader, row, matter.TableColumnClusterID, matter.TableColumnID)
 		if err != nil {
 			return nil, err

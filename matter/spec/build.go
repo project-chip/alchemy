@@ -82,6 +82,7 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 			AssignSectionTypes(l, l, l, l.Root, top)
 			break
 		}
+		dumpLibrary(l)
 		if slog.Default().Enabled(cxt, slog.LevelDebug) {
 			dumpLibrary(l)
 		}
@@ -95,6 +96,59 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 	}
 
 	var basicInformationCluster, bridgedDeviceBasicInformationCluster *matter.Cluster
+	basicInformationCluster, bridgedDeviceBasicInformationCluster, err = sp.readEntities(spec, libraries)
+	if err != nil {
+		return
+	}
+
+	if basicInformationCluster == nil {
+		err = fmt.Errorf("missing Basic Information Cluster in spec")
+		return
+	}
+	if bridgedDeviceBasicInformationCluster == nil {
+		err = fmt.Errorf("missing Bridged Device Basic Information Cluster in spec")
+		return
+	}
+	if spec.RootNodeDeviceType == nil {
+		err = fmt.Errorf("missing Root Node Device Type in spec")
+		return
+	}
+	if spec.BaseDeviceType == nil {
+		err = fmt.Errorf("missing Base Device Type in spec")
+		return
+	}
+
+	sp.resolveClusterDataTypeReferences(true)
+	sp.resolveGlobalDataTypeReferences()
+	if !sp.ignoreHierarchy {
+		sp.resolveHierarchy()
+	}
+	err = spec.associateDeviceTypeRequirements()
+	if err != nil {
+		return
+	}
+
+	sp.resolveClusterDataTypeReferences(false)
+
+	sp.resolveConformances()
+	sp.resolveConstraints()
+	err = updateBridgedBasicInformationCluster(spec, basicInformationCluster, bridgedDeviceBasicInformationCluster)
+	if err != nil {
+		return
+	}
+
+	spec.BuildClusterReferences()
+	spec.BuildDataTypeReferences()
+
+	sp.noteConformanceResolutionFailures(spec)
+	sp.noteConstraintResolutionFailures(spec)
+
+	Validate(spec)
+
+	return
+}
+
+func (sp *Builder) readEntities(spec *Specification, libraries []*Library) (basicInformationCluster *matter.Cluster, bridgedDeviceBasicInformationCluster *matter.Cluster, err error) {
 
 	for _, library := range libraries {
 		library.indexCrossReferences()
@@ -179,166 +233,18 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 			}
 			switch entity := result.(type) {
 			case *matter.ClusterGroup:
-				spec.EntityRefs[doc] = append(spec.EntityRefs[doc], entity)
+				spec.entityRefs[doc] = append(spec.entityRefs[doc], entity)
 				for _, c := range entity.Clusters {
 					spec.DocRefs[c] = doc
 					spec.LibraryRefs[c] = library
 				}
 			case types.Entity:
-				spec.EntityRefs[doc] = append(spec.EntityRefs[doc], entity)
+				spec.entityRefs[doc] = append(spec.entityRefs[doc], entity)
 				spec.DocRefs[entity] = doc
 				spec.LibraryRefs[entity] = library
 			}
 		}
-		/*for _, d := range dg.Docs {
-			slog.Debug("building spec", "path", d.Path)
-
-			if errata.GetSpec(d.Path.Relative).UtilityInclude {
-				continue
-			}
-
-			dg.determineDocType(reader, d)
-			dt, dterr := dg.DocType(d)
-			if dterr == nil {
-				switch dt {
-				case matter.DocTypeBaseDeviceType:
-					spec.BaseDeviceType, err = dg.toBaseDeviceType(reader)
-					if err != nil {
-						return
-					}
-				}
-			}
-
-			var entities []types.Entity
-			entities, err = d.Entities()
-			if err != nil {
-				slog.Error("error building entities", "doc", d.Path, "error", err)
-				if pe, isParseError := err.(Error); isParseError {
-					spec.addError(pe)
-				} else {
-					err = nil
-					continue
-				}
-			}
-			spec.Docs[d.Path.Relative] = d
-			for _, m := range entities {
-				switch m := m.(type) {
-				case *matter.ClusterGroup:
-					for _, c := range m.Clusters {
-						sp.addCluster(d, c)
-					}
-				case *matter.Cluster:
-					switch m.Name {
-					case "Basic Information":
-						basicInformationCluster = m
-					case "Bridged Device Basic Information":
-						bridgedDeviceBasicInformationCluster = m
-					}
-					sp.addCluster(d, m)
-				case *matter.DeviceType:
-					spec.DeviceTypes = append(spec.DeviceTypes, m)
-					if m.ID.Valid() {
-						if existing, ok := spec.DeviceTypesByID[m.ID.Value()]; ok {
-							slog.Error("duplicate device type ID", slog.String("deviceTypeId", m.ID.HexString()), log.Path("previousSource", existing), log.Path("newSource", m))
-							spec.addError(&DuplicateEntityIDError{Entity: m, Previous: existing})
-						} else {
-							spec.DeviceTypesByID[m.ID.Value()] = m
-						}
-
-					}
-					existing, ok := spec.DeviceTypesByName[m.Name]
-					if ok {
-						slog.Error("Duplicate Device Type Name", slog.String("deviceTypeId", m.ID.HexString()), slog.String("deviceTypeName", m.Name), slog.String("existingDeviceTypeId", existing.ID.HexString()))
-						spec.addError(&DuplicateEntityNameError{Entity: m, Previous: existing})
-					}
-					spec.DeviceTypesByName[m.Name] = m
-					switch m.Name {
-					case "Root Node":
-						spec.RootNodeDeviceType = m
-					}
-				case *matter.Namespace:
-					spec.Namespaces = append(spec.Namespaces, m)
-				case *matter.Bitmap:
-					slog.Debug("Found global bitmap", "name", m.Name, "path", d.Path)
-					spec.addEntityByName(m.Name, m, nil)
-					spec.GlobalObjects[m] = d
-				case *matter.Enum:
-					slog.Debug("Found global enum", "name", m.Name, "path", d.Path)
-					spec.addEntityByName(m.Name, m, nil)
-					spec.GlobalObjects[m] = d
-				case *matter.Struct:
-					slog.Debug("Found global struct", "name", m.Name, "path", d.Path)
-					spec.addEntityByName(m.Name, m, nil)
-					spec.GlobalObjects[m] = d
-				case *matter.TypeDef:
-					slog.Debug("Found global typedef", "name", m.Name, "path", d.Path)
-					spec.addEntityByName(m.Name, m, nil)
-					spec.GlobalObjects[m] = d
-				case *matter.Command:
-					spec.addEntityByName(m.Name, m, nil)
-					spec.GlobalObjects[m] = d
-				case *matter.Event:
-					spec.addEntityByName(m.Name, m, nil)
-					spec.GlobalObjects[m] = d
-				default:
-					slog.Warn("unknown entity type", "path", d.Path, "type", fmt.Sprintf("%T", m))
-				}
-				switch m := m.(type) {
-				case *matter.ClusterGroup:
-					for _, c := range m.Clusters {
-						spec.DocRefs[c] = d
-					}
-				default:
-					spec.DocRefs[m] = d
-				}
-			}
-		}*/
 	}
-
-	if basicInformationCluster == nil {
-		err = fmt.Errorf("missing Basic Information Cluster in spec")
-		return
-	}
-	if bridgedDeviceBasicInformationCluster == nil {
-		err = fmt.Errorf("missing Bridged Device Basic Information Cluster in spec")
-		return
-	}
-	if spec.RootNodeDeviceType == nil {
-		err = fmt.Errorf("missing Root Node Device Type in spec")
-		return
-	}
-	if spec.BaseDeviceType == nil {
-		err = fmt.Errorf("missing Base Device Type in spec")
-		return
-	}
-
-	sp.resolveClusterDataTypeReferences(true)
-	sp.resolveGlobalDataTypeReferences()
-	if !sp.ignoreHierarchy {
-		sp.resolveHierarchy()
-	}
-	err = spec.associateDeviceTypeRequirements()
-	if err != nil {
-		return
-	}
-
-	sp.resolveClusterDataTypeReferences(false)
-
-	sp.resolveConformances()
-	sp.resolveConstraints()
-	err = updateBridgedBasicInformationCluster(spec, basicInformationCluster, bridgedDeviceBasicInformationCluster)
-	if err != nil {
-		return
-	}
-
-	spec.BuildClusterReferences()
-	spec.BuildDataTypeReferences()
-
-	sp.noteConformanceResolutionFailures(spec)
-	sp.noteConstraintResolutionFailures(spec)
-
-	Validate(spec)
-
 	return
 }
 

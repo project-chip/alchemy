@@ -54,11 +54,7 @@ func (p ZclPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*asciid
 	clusterMap := make(map[string]*matter.Cluster)
 	for _, input := range inputs {
 		doc := input.Content
-		var entities []types.Entity
-		entities, err = doc.Entities()
-		if err != nil {
-			return
-		}
+		entities := p.spec.EntitiesForDocument(doc)
 		for _, e := range entities {
 			switch e := e.(type) {
 			case *matter.Cluster:

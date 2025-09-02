@@ -45,7 +45,7 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*asciidoc.D
 		slog.ErrorContext(cxt, "missing library for doc", "doc", doc.Path)
 		err = nil
 	}
-	entities := library.Spec.EntityRefs[doc]
+	entities := library.Spec.EntitiesForDocument(doc)
 	var appClusters []types.Entity
 	var deviceTypes []*matter.DeviceType
 	var namespaces []*matter.Namespace

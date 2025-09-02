@@ -28,7 +28,7 @@ func patchProvisional(cxt context.Context, pipelineOptions pipeline.ProcessingOp
 		return err
 	}
 
-	docReader, err := spec.NewReader("Reading docs", s.Root)
+	docReader, err := spec.NewReader(spec.ParserOptions{Root: s.Root})
 	if err != nil {
 		return err
 	}
@@ -80,11 +80,11 @@ func addProvisionalConformance(doc *asciidoc.Document, e types.Entity, source as
 	switch source := source.(type) {
 	case *asciidoc.TableRow:
 		var table *spec.TableInfo
-		table, err = spec.ReadTable(doc, doc.Reader(), source.Parent)
+		table, err = spec.ReadTable(doc, asciidoc.RawReader, source.Parent)
 		if err != nil {
 			return
 		}
-		conf := table.ReadConformance(source, matter.TableColumnConformance)
+		conf := table.ReadConformance(asciidoc.RawReader, source, matter.TableColumnConformance)
 		if conformance.IsProvisional(conf) {
 			slog.Error("Already provisional!")
 			return
