@@ -51,7 +51,7 @@ func patchProvisional(cxt context.Context, pipelineOptions pipeline.ProcessingOp
 		}
 	}
 
-	renderDocs := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[render.InputDocument]](docs.Size())
+	renderDocs := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[*asciidoc.Document]](docs.Size())
 	pipeline.Cast(docs, renderDocs)
 
 	renderer := render.NewRenderer()

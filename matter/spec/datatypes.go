@@ -240,10 +240,10 @@ func (sp *Builder) resolveCommandResponseDataType(library *Library, cluster *mat
 	}
 }
 
-func (sp *Builder) getCustomDataType(docGroup *Library, dataType *types.DataType, cluster *matter.Cluster, field *matter.Field, finder entityFinder) {
+func (sp *Builder) getCustomDataType(library *Library, dataType *types.DataType, cluster *matter.Cluster, field *matter.Field, finder entityFinder) {
 	switch ref := dataType.Source.(type) {
 	case *asciidoc.CrossReference:
-		dataType.Entity = sp.getCustomDataTypeFromFieldReference(docGroup, cluster, ref, finder)
+		dataType.Entity = sp.getCustomDataTypeFromFieldReference(library, cluster, ref, finder)
 		if dataType.Entity != nil {
 			// We have a reference to a data type; use that
 			return

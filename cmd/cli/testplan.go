@@ -1,15 +1,17 @@
 package cli
 
 import (
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
-	//testplanRender "github.com/project-chip/alchemy/testplan/render"
+	testplanRender "github.com/project-chip/alchemy/testplan/render"
 )
 
 type TestPlan struct {
-	//testplanRender.RendererOptions `embed:""`
+	testplanRender.RendererOptions `embed:""`
 
 	common.ASCIIDocAttributes  `embed:""`
 	spec.ParserOptions         `embed:""`
@@ -20,33 +22,11 @@ type TestPlan struct {
 
 func (c *TestPlan) Run(cc *Context) (err error) {
 
-	/*var specDocs spec.DocSet
+	var specDocs spec.DocSet
 	var specification *spec.Specification
 	specification, specDocs, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, nil, c.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
-	}
-
-	var appClusterIndexes spec.DocSet
-	appClusterIndexes, err = pipeline.Collective(cc, c.ProcessingOptions, common.NewDocTypeFilter(matter.DocTypeAppClusterIndex), specDocs)
-
-	if err != nil {
-		return err
-	}
-
-	domainIndexer := func(cxt context.Context, input *pipeline.Data[*asciidoc.Document], index, total int32) (outputs []*pipeline.Data[*asciidoc.Document], extra []*pipeline.Data[*asciidoc.Document], err error) {
-		doc := input.Content
-		top := parse.FindFirst[*asciidoc.Section](doc.Reader(), doc)
-		if top != nil {
-			doc.Domain = zap.StringToDomain(doc.SectionName(top))
-			slog.DebugContext(cxt, "Assigned domain", "file", doc.SectionName(top), "domain", doc.Domain)
-		}
-		return
-	}
-
-	_, err = pipeline.Parallel(cc, c.ProcessingOptions, pipeline.ParallelFunc("Assigning index domains", domainIndexer), appClusterIndexes)
-	if err != nil {
-		return err
 	}
 
 	specDocs, err = filterSpecDocs(cc, specDocs, specification, c.FilterOptions, c.ProcessingOptions)
@@ -64,7 +44,7 @@ func (c *TestPlan) Run(cc *Context) (err error) {
 		return
 	}
 
-	generator := testplanRender.NewRenderer(c.RendererOptions)
+	generator := testplanRender.NewRenderer(specification, c.RendererOptions)
 	var testplans pipeline.StringSet
 	testplans, err = pipeline.Parallel(cc, c.ProcessingOptions, generator, specDocs)
 	if err != nil {
@@ -80,7 +60,7 @@ func (c *TestPlan) Run(cc *Context) (err error) {
 		return err
 	}
 
-	ids := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[render.InputDocument]](testplanDocs.Size())
+	ids := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[*asciidoc.Document]](testplanDocs.Size())
 	err = pipeline.Cast(testplanDocs, ids)
 	if err != nil {
 		return err
@@ -95,6 +75,6 @@ func (c *TestPlan) Run(cc *Context) (err error) {
 
 	writer := files.NewWriter[string]("Writing test plans", c.OutputOptions)
 	err = writer.Write(cc, renders, c.ProcessingOptions)
-	*/
+
 	return
 }

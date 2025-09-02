@@ -1,9 +1,12 @@
 package cli
 
 import (
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 type Format struct {
@@ -15,7 +18,7 @@ type Format struct {
 }
 
 func (f *Format) Run(cc *Context) (err error) {
-	/*var inputs pipeline.Paths
+	var inputs pipeline.Paths
 
 	inputs, err = pipeline.Start(cc, paths.NewTargeter(f.Paths...))
 
@@ -23,7 +26,7 @@ func (f *Format) Run(cc *Context) (err error) {
 		return err
 	}
 
-	docReader, err := spec.NewReader("Reading docs", "")
+	docReader, err := spec.NewReader(spec.ParserOptions{Root: "."})
 	if err != nil {
 		return err
 	}
@@ -32,7 +35,7 @@ func (f *Format) Run(cc *Context) (err error) {
 		return err
 	}
 
-	ids := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[render.InputDocument]](docs.Size())
+	ids := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[*asciidoc.Document]](docs.Size())
 	err = pipeline.Cast(docs, ids)
 	if err != nil {
 		return err
@@ -46,6 +49,6 @@ func (f *Format) Run(cc *Context) (err error) {
 	}
 
 	writer := files.NewWriter[string]("Formatting docs", f.OutputOptions)
-	err = writer.Write(cc, renders, f.ProcessingOptions)*/
+	err = writer.Write(cc, renders, f.ProcessingOptions)
 	return
 }
