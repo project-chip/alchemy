@@ -17,6 +17,7 @@ import (
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/testplan"
 )
@@ -24,6 +25,7 @@ import (
 type GeneratorOption func(g *Renderer)
 
 type Renderer struct {
+	spec    *spec.Specification
 	options RendererOptions
 }
 
@@ -33,8 +35,8 @@ type RendererOptions struct {
 	TemplateRoot string `default:"" aliases:"templateRoot" help:"the root of your local template files; if not specified, Alchemy will use an internal copy" group:"Test Plans:"`
 }
 
-func NewRenderer(options RendererOptions) *Renderer {
-	g := &Renderer{options: options}
+func NewRenderer(specification *spec.Specification, options RendererOptions) *Renderer {
+	g := &Renderer{spec: specification, options: options}
 
 	return g
 }
@@ -47,13 +49,9 @@ func (sp *Renderer) Process(cxt context.Context, input *pipeline.Data[*asciidoc.
 	doc := input.Content
 	path := doc.Path
 
-	var entities []types.Entity
-	entities, err = doc.Entities()
-	if err != nil {
-		return
-	}
+	entities := sp.spec.EntitiesForDocument(doc)
 
-	destinations := buildDestinations(sp.options.TestRoot, entities, doc.Errata().TestPlan)
+	destinations := buildDestinations(sp.options.TestRoot, entities, errata.GetErrata(doc.Path.Relative).TestPlan)
 
 	var t *raymond.Template
 	t, err = sp.loadTemplate()
