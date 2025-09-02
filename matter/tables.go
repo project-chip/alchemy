@@ -49,6 +49,7 @@ const (
 	TableColumnElement
 	TableColumnClientServer
 	TableColumnCondition
+	TableColumnConditionID
 	TableColumnModeTagValue
 	TableColumnNamespace
 	TableColumnLocation
@@ -94,6 +95,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnElement:      "Element",
 	TableColumnClientServer: "Client/Server",
 	TableColumnCondition:    "Condition",
+	TableColumnConditionID:  "Condition ID",
 	TableColumnModeTagValue: "Mode Tag Value",
 	TableColumnNamespace:    "Namespace",
 	TableColumnLocation:     "Location",
