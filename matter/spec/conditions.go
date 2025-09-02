@@ -39,6 +39,7 @@ func toConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceType) (condition
 			}
 		}
 	}
+	_, hasId := ti.ColumnMap[matter.TableColumnConditionID]
 	for row := range ti.ContentRows() {
 		c := matter.NewCondition(row, dt)
 		c.Feature, _, err = ti.ReadNameAtOffset(row, featureIndex)
@@ -48,6 +49,12 @@ func toConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceType) (condition
 		c.Description, err = ti.ReadString(row, matter.TableColumnDescription)
 		if err != nil {
 			return
+		}
+		if hasId {
+			c.ID, err = ti.ReadID(row, matter.TableColumnConditionID)
+			if err != nil {
+				return
+			}
 		}
 		conditions = append(conditions, c)
 	}
@@ -76,6 +83,7 @@ func toBaseDeviceTypeConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceTy
 		if tagOffset == -1 {
 			return
 		}
+		_, hasId := ti.ColumnMap[matter.TableColumnConditionID]
 		for row := range ti.ContentRows() {
 			c := matter.NewCondition(row, dt)
 			c.Feature, _, err = ti.ReadNameAtOffset(row, tagOffset)
@@ -85,6 +93,12 @@ func toBaseDeviceTypeConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceTy
 			c.Description, err = ti.ReadString(row, matter.TableColumnDescription, matter.TableColumnSummary)
 			if err != nil {
 				return
+			}
+			if hasId {
+				c.ID, err = ti.ReadID(row, matter.TableColumnConditionID)
+				if err != nil {
+					return
+				}
 			}
 			conditions = append(conditions, c)
 		}

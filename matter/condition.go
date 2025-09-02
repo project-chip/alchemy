@@ -8,6 +8,7 @@ import (
 
 type Condition struct {
 	entity
+	ID          *Number
 	Feature     string
 	Description string
 }
