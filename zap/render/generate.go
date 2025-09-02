@@ -14,7 +14,6 @@ import (
 	"github.com/project-chip/alchemy/internal/vcs"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/zap"
 )
 
@@ -55,32 +54,29 @@ func (tg TemplateGenerator) Name() string {
 }
 
 func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*asciidoc.Document], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*asciidoc.Document], err error) {
-	var entities []types.Entity
-	entities, err = input.Content.Entities()
-	if err != nil {
-		return
-	}
+	d := input.Content
+	entities := tg.spec.EntitiesForDocument(d)
 
-	errata := errata.GetSDK(input.Content.Path.Relative)
+	errata := errata.GetSDK(d.Path.Relative)
 
 	if errata.SkipFile {
 		return
 	}
 
-	destinations := ZAPTemplateDestinations(tg.sdkRoot, input.Content.Path.Relative, entities, errata)
+	destinations := ZAPTemplateDestinations(tg.sdkRoot, d.Path.Relative, entities, errata)
 
 	dependencies := pipeline.NewConcurrentMap[string, bool]()
 
-	dependencies.Store(input.Content.Path.Relative, true)
+	dependencies.Store(d.Path.Relative, true)
 
 	for newPath, entities := range destinations {
 
 		if len(entities) == 0 {
-			slog.WarnContext(cxt, "Skipped spec file with no entities", "from", input.Content.Path, "to", newPath)
+			slog.WarnContext(cxt, "Skipped spec file with no entities", "from", d.Path, "to", newPath)
 			continue
 		}
 
-		input.Content.Domain = getDocDomain(input.Content)
+		/*input.Content.Domain = getDocDomain(input.Content)
 
 		if input.Content.Domain == matter.DomainUnknown {
 			if errata.Domain != matter.DomainUnknown {
@@ -88,10 +84,10 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*a
 			} else {
 				input.Content.Domain = matter.DomainGeneral
 			}
-		}
+		}*/
 
 		var configurator *zap.Configurator
-		configurator, err = zap.NewConfigurator(tg.spec, []*asciidoc.Document{input.Content}, entities, newPath, errata, false)
+		configurator, err = zap.NewConfigurator(tg.spec, []*asciidoc.Document{d}, entities, newPath, errata, false)
 		if err != nil {
 			return
 		}
@@ -117,7 +113,7 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*a
 
 		result, err = tg.renderZapTemplate(configurator, doc)
 		if err != nil {
-			err = fmt.Errorf("failed rendering %s: %w", input.Content.Path, err)
+			err = fmt.Errorf("failed rendering %s: %w", d.Path.Relative, err)
 			return
 		}
 		outputs = append(outputs, &pipeline.Data[string]{Path: newPath, Content: result})
@@ -151,26 +147,23 @@ func openConfigurator(configurator *zap.Configurator, options pipeline.Processin
 	return
 }
 
-func SplitZAPDocs(cxt context.Context, inputs spec.DocSet) (clusters spec.DocSet, deviceTypes spec.DocSet, namespaces spec.DocSet, err error) {
-	clusters = spec.NewDocSet()
-	deviceTypes = spec.NewDocSet()
+func SplitZAPDocs(cxt context.Context, spec *spec.Specification, inputs spec.DocSet) (clusters spec.DocSet, deviceTypes spec.DocSet, namespaces spec.DocSet, err error) {
+	clusters = pipeline.NewMap[string, *pipeline.Data[*asciidoc.Document]]()
+	deviceTypes = pipeline.NewMap[string, *pipeline.Data[*asciidoc.Document]]()
 	namespaces = pipeline.NewMap[string, *pipeline.Data[*asciidoc.Document]]()
 	inputs.Range(func(path string, data *pipeline.Data[*asciidoc.Document]) bool {
 		var hasCluster bool
 		var dts []*matter.DeviceType
 		var ns []*matter.Namespace
-		var entities []types.Entity
-		entities, err = data.Content.Entities()
-		if err != nil {
-			slog.ErrorContext(cxt, "error converting doc to entities", "doc", data.Content.Path, "error", err)
-			err = nil
-			return true
-		}
+		entities := spec.EntitiesForDocument(data.Content)
 		for _, e := range entities {
 			switch e := e.(type) {
 			case *matter.Cluster, *matter.ClusterGroup:
 				hasCluster = true
 			case *matter.DeviceType:
+				if e.Name == "Base Device Type" {
+					continue
+				}
 				dts = append(dts, e)
 			case *matter.Namespace:
 				ns = append(ns, e)
@@ -190,6 +183,7 @@ func SplitZAPDocs(cxt context.Context, inputs spec.DocSet) (clusters spec.DocSet
 	return
 }
 
+/*
 func getDocDomain(doc *asciidoc.Document) matter.Domain {
 	if doc.Domain != matter.DomainUnknown {
 		return doc.Domain
@@ -202,3 +196,4 @@ func getDocDomain(doc *asciidoc.Document) matter.Domain {
 	}
 	return matter.DomainUnknown
 }
+*/

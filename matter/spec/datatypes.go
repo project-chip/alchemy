@@ -148,7 +148,7 @@ func (sp *Builder) resolveGlobalDataTypeReferences() {
 	}
 }
 
-func (sp *Builder) resolveFieldDataTypes(docGroup *Library, cluster *matter.Cluster, fieldSet matter.FieldSet, field *matter.Field, dataType *types.DataType, finder entityFinder) {
+func (sp *Builder) resolveFieldDataTypes(library *Library, cluster *matter.Cluster, fieldSet matter.FieldSet, field *matter.Field, dataType *types.DataType, finder entityFinder) {
 	if dataType == nil {
 		if !conformance.IsDeprecated(field.Conformance) && !conformance.IsDisallowed(field.Conformance) && !sp.ignoreHierarchy && (cluster == nil || cluster.Hierarchy == "Base") {
 			var clusterName string
@@ -170,11 +170,11 @@ func (sp *Builder) resolveFieldDataTypes(docGroup *Library, cluster *matter.Clus
 	case types.BaseDataTypeTag:
 		sp.getTagNamespace(field)
 	case types.BaseDataTypeList:
-		sp.resolveFieldDataTypes(docGroup, cluster, fieldSet, field, dataType.EntryType, finder)
+		sp.resolveFieldDataTypes(library, cluster, fieldSet, field, dataType.EntryType, finder)
 	case types.BaseDataTypeCustom:
 		if dataType.Entity == nil {
 			finder.setIdentity(field)
-			sp.getCustomDataType(docGroup, dataType, cluster, field, finder)
+			sp.getCustomDataType(library, dataType, cluster, field, finder)
 			if dataType.Entity == nil {
 				slog.Error("unknown custom data type", slog.String("cluster", clusterName(cluster)), slog.String("field", field.Name), slog.String("type", dataType.Name), log.Path("source", field), log.Type("element", dataType.Source))
 				sp.Spec.addError(&UnknownCustomDataTypeError{Field: field, DataType: dataType})
@@ -190,7 +190,7 @@ func (sp *Builder) resolveFieldDataTypes(docGroup *Library, cluster *matter.Clus
 		case *matter.Struct:
 			// If this data type is a struct, we need to resolve all data types on its fields
 			for _, f := range e.Fields {
-				sp.resolveFieldDataTypes(docGroup, cluster, fieldSet, f, f.Type, finder)
+				sp.resolveFieldDataTypes(library, cluster, fieldSet, f, f.Type, finder)
 			}
 		case *matter.TypeDef:
 			switch e.Name {
@@ -206,7 +206,7 @@ func (sp *Builder) resolveFieldDataTypes(docGroup *Library, cluster *matter.Clus
 	}
 }
 
-func (sp *Builder) resolveCommandResponseDataType(docGroup *Library, cluster *matter.Cluster, command *matter.Command, finder entityFinder) {
+func (sp *Builder) resolveCommandResponseDataType(library *Library, cluster *matter.Cluster, command *matter.Command, finder entityFinder) {
 	if command.Response == nil {
 		return
 	}
@@ -215,7 +215,7 @@ func (sp *Builder) resolveCommandResponseDataType(docGroup *Library, cluster *ma
 	}
 	switch source := command.Response.Source.(type) {
 	case *asciidoc.CrossReference:
-		command.Response.Entity = sp.getCustomDataTypeFromFieldReference(docGroup, cluster, source, newCommandFinder(cluster.Commands, finder))
+		command.Response.Entity = sp.getCustomDataTypeFromFieldReference(library, cluster, source, newCommandFinder(cluster.Commands, finder))
 	case nil:
 
 	}

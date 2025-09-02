@@ -33,7 +33,7 @@ type Specification struct {
 	DataTypeRefs EntityRefs[types.Entity]
 	DocRefs      map[types.Entity]*asciidoc.Document
 	LibraryRefs  map[types.Entity]*Library
-	EntityRefs   map[*asciidoc.Document][]types.Entity
+	entityRefs   map[*asciidoc.Document][]types.Entity
 
 	GlobalObjects types.EntitySet[*asciidoc.Document]
 
@@ -61,7 +61,7 @@ func newSpec(specRoot string) *Specification {
 		Docs:              make(map[string]*asciidoc.Document),
 		DocRefs:           make(map[types.Entity]*asciidoc.Document),
 		LibraryRefs:       make(map[types.Entity]*Library),
-		EntityRefs:        make(map[*asciidoc.Document][]types.Entity),
+		entityRefs:        make(map[*asciidoc.Document][]types.Entity),
 
 		GlobalObjects: make(types.EntitySet[*asciidoc.Document]),
 
@@ -76,6 +76,10 @@ func (s *Specification) LibraryForDocument(doc *asciidoc.Document) (library *Lib
 	return
 }
 
+func (s *Specification) EntitiesForDocument(doc *asciidoc.Document) []types.Entity {
+	return s.entityRefs[doc]
+}
+
 type specEntityFinder struct {
 	entityFinderCommon
 
@@ -84,7 +88,7 @@ type specEntityFinder struct {
 }
 
 func newSpecEntityFinder(spec *Specification, cluster *matter.Cluster, inner entityFinder) *specEntityFinder {
-	return &specEntityFinder{entityFinderCommon: entityFinderCommon{inner: inner}, spec: spec}
+	return &specEntityFinder{entityFinderCommon: entityFinderCommon{inner: inner}, spec: spec, cluster: cluster}
 }
 
 func (sef *specEntityFinder) findEntityByIdentifier(identifier string, source log.Source) types.Entity {
@@ -156,7 +160,10 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 		if err != nil {
 			slog.Warn("failed to create spec path for reference", "ref", reference, log.Path("source", source), slog.Any("error", err))
 		} else {
-			referenceDoc = sef.spec.Docs[specPath.Relative]
+			ld := sef.spec.Docs[specPath.Relative]
+			if ld != nil {
+				referenceDoc = ld
+			}
 		}
 	}
 	if referenceDoc == nil {

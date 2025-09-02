@@ -17,10 +17,10 @@ type listIndex[T types.Entity] struct {
 }
 
 type entityFactory[T types.Entity] interface {
-	New(spec *Specification, docGroup *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (T, error)
-	Details(spec *Specification, docGroup *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, e T) error
-	EntityName(docGroup *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) string
-	Children(docGroup *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) iter.Seq[*asciidoc.Section]
+	New(spec *Specification, library *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (T, error)
+	Details(spec *Specification, library *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, e T) error
+	EntityName(library *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) string
+	Children(library *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) iter.Seq[*asciidoc.Section]
 }
 
 func buildList[T types.Entity, L ~[]T](spec *Specification, library *Library, reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, table *asciidoc.Table, list L, factory entityFactory[T], parent types.Entity) (L, error) {

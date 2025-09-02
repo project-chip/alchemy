@@ -10,13 +10,13 @@ import (
 
 func Parse(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions, builderOptions []BuilderOption, attributes []asciidoc.AttributeName) (specification *Specification, specDocs DocSet, err error) {
 
-	var docGroups pipeline.Map[string, *pipeline.Data[*Library]]
-	docGroups, specDocs, err = BuildDocumentGroups(cxt, parserOptions, processingOptions)
+	var libraries pipeline.Map[string, *pipeline.Data[*Library]]
+	libraries, specDocs, err = BuildLibraries(cxt, parserOptions, processingOptions)
 	if err != nil {
 		return
 	}
 
-	specification, specDocs, err = Build(cxt, parserOptions, processingOptions, builderOptions, docGroups, attributes)
+	specification, specDocs, err = Build(cxt, parserOptions, processingOptions, builderOptions, libraries, attributes)
 	return
 }
 
@@ -36,18 +36,18 @@ func Build(cxt context.Context, parserOptions ParserOptions, processingOptions p
 	return
 }
 
-func PreParse(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions, docGroups LibrarySet, attributes []asciidoc.AttributeName) (err error) {
+func PreParse(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions, libraries LibrarySet, attributes []asciidoc.AttributeName) (err error) {
 	var preparser *LibraryParser
 	preparser, err = NewLibraryParser(parserOptions.Root, attributes)
 	if err != nil {
 		return
 	}
 
-	_, err = pipeline.Parallel(cxt, pipeline.ProcessingOptions{Serial: true}, preparser, docGroups)
+	_, err = pipeline.Parallel(cxt, pipeline.ProcessingOptions{Serial: true}, preparser, libraries)
 	return
 }
 
-func BuildDocumentGroups(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions) (docGroups LibrarySet, specDocs DocSet, err error) {
+func BuildLibraries(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions) (libraries LibrarySet, specDocs DocSet, err error) {
 	var specReader Reader
 	specReader, err = NewReader(parserOptions)
 	if err != nil {
@@ -67,11 +67,12 @@ func BuildDocumentGroups(cxt context.Context, parserOptions ParserOptions, proce
 		return
 	}
 
-	specDocs, err = pipeline.Parallel(cxt, processingOptions, specReader, specPaths)
+	var docs pipeline.Map[string, *pipeline.Data[*asciidoc.Document]]
+	docs, err = pipeline.Parallel(cxt, processingOptions, specReader, specPaths)
 	if err != nil {
 		return
 	}
 
-	docGroups, err = pipeline.Collective(cxt, processingOptions, NewLibraryBuilder(parserOptions.Root), specDocs)
+	libraries, err = pipeline.Collective(cxt, processingOptions, NewLibraryBuilder(parserOptions.Root), docs)
 	return
 }

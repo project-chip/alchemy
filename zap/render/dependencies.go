@@ -37,11 +37,7 @@ func (p DependencyTracer) Process(cxt context.Context, inputs []*pipeline.Data[*
 		docMap[input.Content] = struct{}{}
 	}
 	for _, input := range inputs {
-		var entities []types.Entity
-		entities, err = input.Content.Entities()
-		if err != nil {
-			return
-		}
+		entities := p.spec.EntitiesForDocument(input.Content)
 		p.findDependencies(p.spec, entities, docMap)
 	}
 	for doc := range docMap {

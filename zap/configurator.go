@@ -48,7 +48,7 @@ func NewConfigurator(spec *spec.Specification, docs []*asciidoc.Document, entiti
 		ExternalEntities: make(map[types.Entity]struct{}),
 	}
 	if len(docs) > 0 {
-		c.Domain = matter.DomainNames[docs[0].Domain]
+		//c.Domain = matter.DomainNames[docs[0].Domain]
 	}
 
 	for _, m := range entities {

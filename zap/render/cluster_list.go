@@ -10,20 +10,22 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/tidwall/pretty"
 )
 
 type ClusterListPatcher struct {
+	spec    *spec.Specification
 	sdkRoot string
 }
 
-func NewClusterListPatcher(sdkRoot string) *ClusterListPatcher {
-	return &ClusterListPatcher{sdkRoot: sdkRoot}
+func NewClusterListPatcher(spec *spec.Specification, sdkRoot string) *ClusterListPatcher {
+	return &ClusterListPatcher{spec: spec, sdkRoot: sdkRoot}
 }
 
 func (p ClusterListPatcher) Name() string {
@@ -49,12 +51,8 @@ func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	var names []string
 	for _, input := range inputs {
 		doc := input.Content
-		var entities []types.Entity
-		entities, err = doc.Entities()
-		if err != nil {
-			return
-		}
-		errata := doc.Errata()
+		entities := p.spec.EntitiesForDocument(input.Content)
+		errata := errata.GetErrata(doc.Path.Relative)
 		for _, e := range entities {
 			switch e := e.(type) {
 			case *matter.Cluster:

@@ -34,10 +34,7 @@ type Library struct {
 
 	entities          []types.Entity
 	orderedEntities   []types.Entity
-	globalObjects     []types.Entity
 	entitiesByElement map[asciidoc.Attributable][]types.Entity
-
-	//preparseState map[asciidoc.Element]*elementOverlay
 
 	strings map[asciidoc.Parent]string
 
@@ -57,7 +54,7 @@ func NewLibrary(root *asciidoc.Document, cache *DocCache) *Library {
 		crossReferenceDocs: make(map[*asciidoc.CrossReference]*asciidoc.Document),
 		index:              map[string]*asciidoc.Document{},
 		parents:            make(map[*asciidoc.Document][]*asciidoc.Document),
-		children:           map[*asciidoc.Document][]*asciidoc.Document{},
+		children:           make(map[*asciidoc.Document][]*asciidoc.Document),
 		entitiesByElement:  make(map[asciidoc.Attributable][]types.Entity),
 		strings:            make(map[asciidoc.Parent]string),
 		cache:              cache,
@@ -68,90 +65,6 @@ func NewLibrary(root *asciidoc.Document, cache *DocCache) *Library {
 	}
 }
 
-/*
-func (library *Library) Iterate(parent asciidoc.Parent, elements asciidoc.Elements) asciidoc.ElementIterator {
-	return func(yield func(asciidoc.Element) bool) {
-		for _, el := range elements {
-			action, ok := library.preparseState[el]
-			if !ok {
-				if !yield(el) {
-					return
-				}
-			} else {
-				if action.remove {
-					continue
-				}
-				if len(action.replace) > 0 {
-					for _, el := range action.replace {
-						if !yield(el) {
-							return
-						}
-					}
-				}
-			}
-		}
-		switch parent := parent.(type) {
-		case asciidoc.Element:
-			if action, ok := library.preparseState[parent]; ok {
-				if len(action.append) > 0 {
-					for _, el := range action.append {
-						if !yield(el) {
-							return
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-func (library *Library) StringValue(parent asciidoc.Parent, elements asciidoc.Elements) (string, error) {
-	val, ok := library.strings[parent]
-	if ok {
-		return val, nil
-	}
-	var s strings.Builder
-	for el := range library.Iterate(parent, elements) {
-		switch el := el.(type) {
-		case *asciidoc.String:
-			s.WriteString(el.Value)
-		default:
-			return "", fmt.Errorf("unexpected type in anchor id: %T", el)
-		}
-	}
-	library.strings[parent] = s.String()
-	return s.String(), nil
-}
-*/
-
-func setDocGroup(d *asciidoc.Document, docGroup *Library) {
-	/*if d.group != nil {
-		if d.group.Root.Path.Relative != docGroup.Root.Path.Relative && d.Path.Base() != "matter-defines.adoc" {
-			slog.Warn("multiple doc group roots", "path", d.Path.String(), "root", d.group.Root, "newRoot", docGroup.Root)
-		}
-		return
-	}*/
-	docGroup.Docs = append(docGroup.Docs, d)
-	docGroup.index[d.Path.Relative] = d
-	//d.group = docGroup
-	/*for _, c := range d.children {
-		setDocGroup(c, docGroup)
-	}*/
-}
-
-/*
-func setSpec(d *asciidoc.Document, si *Specification) {
-
-		d.spec = si
-		for _, c := range d.children {
-			setSpec(c, si)
-		}
-	}
-*/
-/*func (dg *DocGroup) Anchors(id string) []*Anchor {
-	return dg.anchors[id]
-}*/
-
 func (library *Library) CrossReferences(id string) []*CrossReference {
 	return library.crossReferences[id]
 }
@@ -161,37 +74,20 @@ func (library *Library) Parents(doc *asciidoc.Document) []*asciidoc.Document {
 }
 
 func (library *Library) indexAnchors() (err error) {
-	//var anchors map[string][]*Anchor
 	_, err = library.Anchors(library)
 	if err != nil {
 		return
 	}
-	/*for id, anchor := range anchors {
-		library.anchorsByLabel[id] = append(library.anchorsByLabel[id], anchor...)
-	}
-	*/
+
 	return
 }
 
 func (library *Library) indexCrossReferences() {
 	parse.Traverse(library.Root, library, library.Root, library.Children(library.Root), func(doc *asciidoc.Document, cr *asciidoc.CrossReference, parent asciidoc.ParentElement, offset int) parse.SearchShould {
 		referenceID := library.anchorId(library, cr, cr, cr.ID)
-		//slog.Info("adding cross reference", "id", referenceID, log.Path("source", cr))
 		library.crossReferences[referenceID] = append(library.crossReferences[referenceID], &CrossReference{Document: doc, Reference: cr, Parent: parent, Source: NewSource(doc, cr)})
 		return parse.SearchShouldContinue
 	})
-	/*for _, d := range library.Docs {
-		if errata.GetSpec(d.Path.Relative).UtilityInclude {
-			continue
-		}
-		crossReferences := d.CrossReferences(library.Reader)
-		for id, xrefs := range crossReferences {
-			d.group.crossReferences[id] = append(d.group.crossReferences[id], xrefs...)
-			for _, xref := range xrefs {
-				d.group.crossReferenceDocs[xref.Reference] = d
-			}
-		}
-	}*/
 }
 
 func (library *Library) addEntity(element *asciidoc.Section, entity types.Entity) {
@@ -238,6 +134,12 @@ func (si *Specification) addEntityByName(name string, entity types.Entity, clust
 
 func (library *Library) SectionName(s *asciidoc.Section) (name string) {
 	name, _ = library.sectionNames.Load(s)
+	if name == "" {
+		var title strings.Builder
+		buildSectionTitle(&variableStore{}, s, library, &title, s.Title...)
+		name = title.String()
+		library.sectionNames.Store(s, name)
+	}
 	return
 }
 

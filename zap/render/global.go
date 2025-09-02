@@ -43,8 +43,7 @@ func (p GlobalObjectsRenderer) Process(cxt context.Context, inputs []*pipeline.D
 
 	globalEntities := make(map[types.EntityType][]types.Entity)
 	for _, input := range inputs {
-		var entities []types.Entity
-		entities, err = input.Content.Entities()
+		entities := p.spec.EntitiesForDocument(input.Content)
 		if err != nil {
 			return
 		}

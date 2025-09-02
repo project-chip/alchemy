@@ -6,46 +6,21 @@ import (
 	"github.com/project-chip/alchemy/matter"
 )
 
-type Document struct {
+/*type LibraryDocument struct {
 	Library  *Library
 	Document *asciidoc.Document
+	Domain   matter.Domain
 }
+
+func (d *LibraryDocument) Entities() []types.Entity {
+	return d.Library.Spec.EntityRefs[d.Document]
+}*/
 
 type DocumentInfoCache interface {
 	DocType(document *asciidoc.Document) (matter.DocType, error)
 	SetDocType(document *asciidoc.Document, docType matter.DocType)
 	Parents(document *asciidoc.Document) []*asciidoc.Document
 }
-
-/*
-type Doc struct {
-	Path asciidoc.Path
-
-	Base *asciidoc.Document
-	//asciidoc.Elements
-
-	docType matter.DocType
-
-	Domain   matter.Domain
-	parents  []*Doc
-	children []*Doc
-
-	referenceIndex
-
-	parsed            bool // Tracks whether this doc was parsed vs. just read (i.e. were file substituions done)
-	entities          []types.Entity
-	orderedEntities   []types.Entity
-	globalObjects     []types.Entity
-	entitiesBySection map[asciidoc.Attributable][]types.Entity
-	entitiesParsed    bool
-
-	spec  *Specification
-	group *DocGroup
-
-	errata *errata.Errata
-
-	reader asciidoc.Reader
-}*/
 
 type DocSet pipeline.Map[string, *pipeline.Data[*asciidoc.Document]]
 

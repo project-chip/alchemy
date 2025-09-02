@@ -21,7 +21,7 @@ var parentheticalExpressionPattern = regexp.MustCompile(`\s*\([^\)]+\)$`)
 type commandFactory struct {
 }
 
-func (cf *commandFactory) New(spec *Specification, docGroup *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (*matter.Command, error) {
+func (cf *commandFactory) New(spec *Specification, library *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (*matter.Command, error) {
 	cmd := matter.NewCommand(s, parent)
 	var err error
 	cmd.ID, err = ti.ReadID(reader, row, matter.TableColumnCommandID, matter.TableColumnID)
@@ -36,11 +36,11 @@ func (cf *commandFactory) New(spec *Specification, docGroup *Library, reader asc
 		return nil, err
 	}
 	cmd.Direction = ParseCommandDirection(dir)
-	cmd.Response, _ = ti.ReadDataType(docGroup, reader, row, matter.TableColumnResponse)
+	cmd.Response, _ = ti.ReadDataType(library, reader, row, matter.TableColumnResponse)
 	if cmd.Response != nil {
 		cmd.Response.Name = text.TrimCaseInsensitiveSuffix(cmd.Response.Name, " Command")
 	}
-	cmd.Conformance = ti.ReadConformance(docGroup, row, matter.TableColumnConformance)
+	cmd.Conformance = ti.ReadConformance(library, row, matter.TableColumnConformance)
 	var a string
 	a, err = ti.ReadString(reader, row, matter.TableColumnAccess)
 	if err != nil {
@@ -54,18 +54,18 @@ func (cf *commandFactory) New(spec *Specification, docGroup *Library, reader asc
 	return cmd, nil
 }
 
-func (cf *commandFactory) Details(spec *Specification, docGroup *Library, reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, command *matter.Command) (err error) {
-	return readCommand(spec, docGroup, reader, doc, section, command)
+func (cf *commandFactory) Details(spec *Specification, library *Library, reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, command *matter.Command) (err error) {
+	return readCommand(spec, library, reader, doc, section, command)
 }
 
-func readCommand(spec *Specification, docGroup *Library, reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, command *matter.Command) (err error) {
-	command.Description = docGroup.getDescription(reader, doc, command, section, reader.Children(section))
+func readCommand(spec *Specification, library *Library, reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, command *matter.Command) (err error) {
+	command.Description = library.getDescription(reader, doc, command, section, reader.Children(section))
 
 	command.Name = CanonicalName(command.Name)
 
 	de := errata.GetSpec(doc.Path.Relative)
 
-	if de.IgnoreSection(docGroup.SectionName(section), errata.SpecPurposeCommandArguments) {
+	if de.IgnoreSection(library.SectionName(section), errata.SpecPurposeCommandArguments) {
 		return
 	}
 	var ti *TableInfo
@@ -80,26 +80,26 @@ func readCommand(spec *Specification, docGroup *Library, reader asciidoc.Reader,
 		return
 	}
 	var fieldMap map[string]*matter.Field
-	command.Fields, fieldMap, err = docGroup.readFields(spec, reader, ti, types.EntityTypeCommandField, command)
+	command.Fields, fieldMap, err = library.readFields(spec, reader, ti, types.EntityTypeCommandField, command)
 	if err != nil {
 		return
 	}
-	err = docGroup.mapFields(reader, doc, section, fieldMap)
+	err = library.mapFields(reader, doc, section, fieldMap)
 	if err != nil {
 		return
 	}
 	return
 }
 
-func (cf *commandFactory) EntityName(docGroup *Library, reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section) string {
-	name := strings.ToLower(text.TrimCaseInsensitiveSuffix(docGroup.SectionName(s), " Command"))
+func (cf *commandFactory) EntityName(library *Library, reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section) string {
+	name := strings.ToLower(text.TrimCaseInsensitiveSuffix(library.SectionName(s), " Command"))
 	return parentheticalExpressionPattern.ReplaceAllString(name, "")
 }
 
-func (cf *commandFactory) Children(docGroup *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) iter.Seq[*asciidoc.Section] {
+func (cf *commandFactory) Children(library *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) iter.Seq[*asciidoc.Section] {
 	return func(yield func(*asciidoc.Section) bool) {
 		parse.SkimFunc(reader, s, reader.Children(s), func(s *asciidoc.Section) bool {
-			if docGroup.SectionType(s) != matter.SectionCommand {
+			if library.SectionType(s) != matter.SectionCommand {
 				return false
 			}
 			return !yield(s)
