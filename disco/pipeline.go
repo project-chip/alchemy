@@ -16,6 +16,7 @@ import (
 func Pipeline(cxt context.Context, parserOptions spec.ParserOptions, docPaths []string, pipelineOptions pipeline.ProcessingOptions, discoOptions DiscoOptions, attributes []asciidoc.AttributeName, renderOptions []render.Option, writer files.Writer[string]) (err error) {
 
 	var docs spec.DocSet
+	var specification *spec.Specification
 
 	if parserOptions.Root == "" {
 		allPaths, e := paths.NewTargeter(docPaths...)(cxt)
@@ -32,18 +33,17 @@ func Pipeline(cxt context.Context, parserOptions spec.ParserOptions, docPaths []
 	if parserOptions.Root == "" {
 		err = fmt.Errorf("disco ball requires spec root")
 		return
+	}
 
-	} else {
-		_, docs, err = spec.Parse(cxt, parserOptions, pipelineOptions, nil, attributes)
+	specification, docs, err = spec.Parse(cxt, parserOptions, pipelineOptions, nil, attributes)
+	if err != nil {
+		return err
+	}
+	if len(docPaths) > 0 {
+		filter := paths.NewIncludeFilter[*asciidoc.Document](parserOptions.Root, docPaths)
+		docs, err = pipeline.Collective(cxt, pipelineOptions, filter, docs)
 		if err != nil {
 			return err
-		}
-		if len(docPaths) > 0 {
-			filter := paths.NewIncludeFilter[*asciidoc.Document](parserOptions.Root, docPaths)
-			docs, err = pipeline.Collective(cxt, pipelineOptions, filter, docs)
-			if err != nil {
-				return err
-			}
 		}
 	}
 
@@ -51,7 +51,7 @@ func Pipeline(cxt context.Context, parserOptions spec.ParserOptions, docPaths []
 		return err
 	}
 
-	baller := NewBaller(discoOptions)
+	baller := NewBaller(specification, discoOptions)
 
 	var balledDocs spec.DocSet
 	balledDocs, err = pipeline.Parallel(cxt, pipelineOptions, baller, docs)
@@ -59,7 +59,7 @@ func Pipeline(cxt context.Context, parserOptions spec.ParserOptions, docPaths []
 		return err
 	}
 
-	anchorNormalizer := newAnchorNormalizer(discoOptions)
+	anchorNormalizer := newAnchorNormalizer(specification, discoOptions)
 	var normalizedDocs pipeline.Map[string, *pipeline.Data[*asciidoc.Document]]
 	normalizedDocs, err = pipeline.Collective(cxt, pipelineOptions, anchorNormalizer, balledDocs)
 	if err != nil {

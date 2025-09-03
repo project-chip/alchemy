@@ -3,8 +3,6 @@ package db
 import (
 	"context"
 
-	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -67,42 +65,4 @@ func (h *Host) indexClusterRevisionsModel(cluster *matter.Cluster, parent *secti
 		bi := &sectionInfo{id: h.nextID(clusterRevisionTable), parent: parent, values: row}
 		parent.children[clusterRevisionTable] = append(parent.children[clusterRevisionTable], bi)
 	}
-}
-
-func (h *Host) indexCluster(cxt context.Context, doc *asciidoc.Document, ds *sectionInfo, top *asciidoc.Section) error {
-	ci := &sectionInfo{id: h.nextID(clusterTable), parent: ds, values: &dbRow{}}
-	for s := range parse.Skim[*asciidoc.Section](doc.Reader(), top, top.Children()) {
-		var err error
-		switch doc.SectionType(s) {
-		case matter.SectionClusterID:
-			err = appendSectionToRow(cxt, doc, s, ci.values)
-		case matter.SectionRevisionHistory:
-			err = h.readTableSection(cxt, doc, ci, s, clusterRevisionTable)
-		case matter.SectionClassification:
-			err = appendSectionToRow(cxt, doc, s, ci.values)
-		case matter.SectionFeatures:
-			err = h.readTableSection(cxt, doc, ci, s, featureTable)
-		case matter.SectionDataTypes:
-			err = h.indexDataTypes(cxt, doc, ci, s)
-		case matter.SectionEvents:
-			err = h.indexEvents(cxt, doc, ci, s)
-		case matter.SectionCommands:
-			err = h.indexCommands(cxt, doc, ci, s)
-		}
-		if err != nil {
-			return err
-		}
-	}
-	for s := range parse.Skim[*asciidoc.Section](doc.Reader(), top, top.Children()) {
-		var err error
-		switch doc.SectionType(s) {
-		case matter.SectionAttributes:
-			err = h.readTableSection(cxt, doc, ci, s, attributeTable)
-		}
-		if err != nil {
-			return err
-		}
-	}
-	ds.children[clusterTable] = append(ds.children[clusterTable], ci)
-	return nil
 }

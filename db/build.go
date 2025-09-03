@@ -10,7 +10,7 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func (h *Host) Build(sc *sql.Context, spec *spec.Specification, docs []*asciidoc.Document, raw bool) error {
+func (h *Host) Build(sc *sql.Context, spec *spec.Specification, docs []*asciidoc.Document) error {
 
 	pro := memory.NewDBProvider(h.db)
 	session := memory.NewSession(sql.NewBaseSession(), pro)
@@ -20,7 +20,7 @@ func (h *Host) Build(sc *sql.Context, spec *spec.Specification, docs []*asciidoc
 	var sis []*sectionInfo
 	for _, d := range docs {
 		slog.InfoContext(sc, "Indexing", "path", d.Path)
-		si, err := h.indexDoc(sc, d, raw)
+		si, err := h.indexDoc(sc, spec, d)
 		if err != nil {
 			slog.WarnContext(sc, "Error building", "path", d.Path, "error", err)
 			continue

@@ -33,10 +33,10 @@ func getExistingDataTypes(cxt *discoContext) {
 		return
 	}
 
-	for ss := range parse.FindAll[*asciidoc.Section](asciidoc.RawReader, cxt.parsed.dataTypes.section) {
-		name := matter.StripDataTypeSuffixes(cxt.doc.SectionName(ss))
+	for ss := range parse.FindAll[*asciidoc.Section](cxt.doc, asciidoc.RawReader, cxt.parsed.dataTypes.section) {
+		name := matter.StripDataTypeSuffixes(cxt.library.SectionName(ss))
 		nameKey := strings.ToLower(name)
-		dataType := spec.GetDataType(cxt.doc, ss)
+		dataType, _ := spec.GetDataType(cxt.library, cxt.library, cxt.doc, ss)
 		if dataType == nil {
 			continue
 		}
@@ -75,7 +75,7 @@ func (b *Baller) getPotentialDataTypesForSection(cxt *discoContext, ss *subSecti
 		slog.Debug("section has no table; skipping attempt to find data type", "sectionName", ss.section.Name)
 		return nil
 	}
-	if cxt.errata.IgnoreSection(cxt.doc.SectionName(ss.section), errata.DiscoPurposeDataTypePromoteInline) {
+	if cxt.errata.IgnoreSection(cxt.library.SectionName(ss.section), errata.DiscoPurposeDataTypePromoteInline) {
 		return nil
 	}
 	sectionDataMap, err := b.getDataTypes(cxt, ss.table.ColumnMap, ss.table.Rows, ss.section)
@@ -107,11 +107,11 @@ func (b *Baller) getDataTypes(cxt *discoContext, columnMap spec.ColumnIndex, row
 		return nil, nil
 	}
 	for _, row := range rows {
-		cv, err := spec.RenderTableCell(row.Cell(nameIndex))
+		cv, err := spec.RenderTableCell(cxt.library, row.Cell(nameIndex))
 		if err != nil {
 			continue
 		}
-		dtv, err := spec.RenderTableCell(row.Cell(typeIndex))
+		dtv, err := spec.RenderTableCell(cxt.library, row.Cell(typeIndex))
 		if err != nil {
 			continue
 		}
@@ -138,7 +138,7 @@ func (b *Baller) getDataTypes(cxt *discoContext, columnMap spec.ColumnIndex, row
 	}
 	for _, el := range section.Children() {
 		if s, ok := el.(*asciidoc.Section); ok {
-			name := strings.TrimSpace(matter.StripReferenceSuffixes(cxt.doc.SectionName(s)))
+			name := strings.TrimSpace(matter.StripReferenceSuffixes(cxt.library.SectionName(s)))
 
 			dataType, ok := sectionDataMap[strings.ToLower(name)]
 			if !ok {
@@ -150,7 +150,7 @@ func (b *Baller) getDataTypes(cxt *discoContext, columnMap spec.ColumnIndex, row
 			}
 			ti, err := spec.ReadTable(cxt.doc, asciidoc.RawReader, table)
 			if err != nil {
-				return nil, fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", cxt.doc.SectionName(s), err)
+				return nil, fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", cxt.library.SectionName(s), err)
 			}
 			dataType.indexColumn = getIndexColumnType(dataType.dataTypeCategory)
 
@@ -256,7 +256,7 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *asciidoc.Section, suffi
 		var ti *spec.TableInfo
 		ti, err = spec.ReadTable(cxt.doc, asciidoc.RawReader, table)
 		if err != nil {
-			err = fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", cxt.doc.SectionName(dt.section), err)
+			err = fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", cxt.library.SectionName(dt.section), err)
 			return
 		}
 		if valueIndex, ok := ti.ColumnMap[firstColumnType]; !ok || valueIndex > 0 {
@@ -285,7 +285,7 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *asciidoc.Section, suffi
 					return
 				}
 			} else {
-				summaryIndex, err = b.appendColumn(ti, matter.TableColumnSummary, entityType)
+				summaryIndex, err = b.appendColumn(cxt, ti, matter.TableColumnSummary, entityType)
 				if err != nil {
 					return
 				}
@@ -294,11 +294,11 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *asciidoc.Section, suffi
 		_, hasNameColumn := ti.ColumnMap[matter.TableColumnName]
 		if !hasNameColumn {
 			var nameIndex int
-			nameIndex, err = b.appendColumn(ti, matter.TableColumnName, entityType)
+			nameIndex, err = b.appendColumn(cxt, ti, matter.TableColumnName, entityType)
 			if err != nil {
 				return
 			}
-			err = copyCells(ti.Rows, ti.HeaderRowIndex, summaryIndex, nameIndex, matter.Case)
+			err = copyCells(cxt, ti.Rows, ti.HeaderRowIndex, summaryIndex, nameIndex, matter.Case)
 			if err != nil {
 				return
 			}
@@ -309,7 +309,7 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *asciidoc.Section, suffi
 		title := asciidoc.NewString(dataTypeName + " Type")
 
 		if dataTypesSection == nil {
-			dataTypesSection, err = ensureDataTypesSection(cxt.doc, top)
+			dataTypesSection, err = ensureDataTypesSection(cxt, cxt.doc, top)
 			if err != nil {
 				return
 			}
@@ -357,9 +357,9 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *asciidoc.Section, suffi
 		dataTypesSection.Append(dataTypeSection)
 		switch dt.dataTypeCategory {
 		case matter.DataTypeCategoryBitmap:
-			cxt.doc.SetSectionType(dataTypeSection, matter.SectionDataTypeBitmap)
+			cxt.library.SetSectionType(dataTypeSection, matter.SectionDataTypeBitmap)
 		case matter.DataTypeCategoryEnum:
-			cxt.doc.SetSectionType(dataTypeSection, matter.SectionDataTypeEnum)
+			cxt.library.SetSectionType(dataTypeSection, matter.SectionDataTypeEnum)
 		}
 
 		table.DeleteAttribute(asciidoc.AttributeNameID)
@@ -372,8 +372,8 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *asciidoc.Section, suffi
 	return
 }
 
-func ensureDataTypesSection(doc *asciidoc.Document, top *asciidoc.Section) (*asciidoc.Section, error) {
-	dataTypesSection := spec.FindSectionByType(doc, top, matter.SectionDataTypes)
+func ensureDataTypesSection(cxt *discoContext, doc *asciidoc.Document, top *asciidoc.Section) (*asciidoc.Section, error) {
+	dataTypesSection := cxt.library.FindSectionByType(cxt.library, doc, top, matter.SectionDataTypes)
 	if dataTypesSection != nil {
 		return dataTypesSection, nil
 	}
@@ -382,7 +382,7 @@ func ensureDataTypesSection(doc *asciidoc.Document, top *asciidoc.Section) (*asc
 	dataTypesSection = asciidoc.NewSection(asciidoc.Elements{title}, top.Level+1)
 	dataTypesSection.Append(asciidoc.NewEmptyLine(""))
 	top.Append(dataTypesSection)
-	doc.SetSectionType(dataTypesSection, matter.SectionDataTypes)
+	cxt.library.SetSectionType(dataTypesSection, matter.SectionDataTypes)
 	return dataTypesSection, nil
 }
 
@@ -433,7 +433,7 @@ func disambiguateDataTypes(infos []*DataTypeEntry) error {
 }
 
 func (b *Baller) canonicalizeDataTypeSectionName(cxt *discoContext, s *asciidoc.Section, dataTypeName string) {
-	name := cxt.doc.SectionName(s)
+	name := cxt.library.SectionName(s)
 
 	if cxt.errata.IgnoreSection(name, errata.DiscoPurposeDataTypeRename) {
 		return
@@ -453,20 +453,20 @@ func (b *Baller) canonicalizeDataTypeSectionName(cxt *discoContext, s *asciidoc.
 	if name == newName {
 		return
 	}
-	setSectionTitle(cxt.doc, s, newName)
+	setSectionTitle(cxt, cxt.doc, s, newName)
 	oldName := text.TrimCaseInsensitiveSuffix(name, " type")
 	newName = text.TrimCaseInsensitiveSuffix(newName, " type")
 	if oldName == newName {
 		return
 	}
-	renameDataType(cxt.parsed.attributes, oldName, newName)
-	renameDataType(cxt.parsed.commands, oldName, newName)
-	renameDataType(cxt.parsed.events, oldName, newName)
+	renameDataType(cxt, cxt.parsed.attributes, oldName, newName)
+	renameDataType(cxt, cxt.parsed.commands, oldName, newName)
+	renameDataType(cxt, cxt.parsed.events, oldName, newName)
 }
 
-func renameDataType(subSections []*subSection, oldName string, newName string) {
+func renameDataType(cxt *discoContext, subSections []*subSection, oldName string, newName string) {
 	for _, ss := range subSections {
-		renameDataType(ss.children, oldName, newName)
+		renameDataType(cxt, ss.children, oldName, newName)
 		if ss.table == nil || ss.table.Element == nil {
 			continue
 		}
@@ -479,7 +479,7 @@ func renameDataType(subSections []*subSection, oldName string, newName string) {
 				continue
 			}
 			typeCell := row.Cell(typeIndex)
-			vc, e := spec.RenderTableCell(typeCell)
+			vc, e := spec.RenderTableCell(cxt.library, typeCell)
 			if e != nil {
 				continue
 			}
@@ -491,7 +491,7 @@ func renameDataType(subSections []*subSection, oldName string, newName string) {
 	}
 }
 
-func (b *Baller) removeMandatoryFallbacks(ti *spec.TableInfo) {
+func (b *Baller) removeMandatoryFallbacks(cxt *discoContext, ti *spec.TableInfo) {
 	if !b.options.RemoveMandatoryFallbacks {
 		return
 	}
@@ -501,12 +501,12 @@ func (b *Baller) removeMandatoryFallbacks(ti *spec.TableInfo) {
 		return
 	}
 	for row := range ti.Body() {
-		conf := ti.ReadConformance(row, matter.TableColumnConformance)
+		conf := ti.ReadConformance(cxt.library, row, matter.TableColumnConformance)
 		if !conformance.IsRequired(conf) {
 			continue
 		}
 		fallbackCell := row.Cell(fallbackIndex)
-		def, err := ti.Doc.GetHeaderCellString(asciidoc.RawReader, fallbackCell)
+		def, err := cxt.library.GetHeaderCellString(asciidoc.RawReader, fallbackCell)
 		if err != nil {
 			continue
 		}

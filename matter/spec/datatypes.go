@@ -62,7 +62,7 @@ func (library *Library) toDataTypes(spec *Specification, reader asciidoc.Reader,
 			}
 		case matter.SectionDataTypeConstant:
 			id, _ := library.getAnchorElements(doc, s, nil)
-			switch library.anchorId(reader, s, s, id) {
+			switch library.elementIdentifier(reader, s, s, id) {
 			case "ref_RespMaxConstant":
 				c := matter.NewConstant(s)
 				c.Name = "RESP_MAX"
@@ -256,7 +256,7 @@ func (sp *Builder) getCustomDataType(library *Library, dataType *types.DataType,
 
 func (sp *Builder) getCustomDataTypeFromFieldReference(library *Library, cluster *matter.Cluster, reference *asciidoc.CrossReference, finder entityFinder) (e types.Entity) {
 
-	referenceID := library.anchorId(library, reference, reference, reference.ID)
+	referenceID := library.elementIdentifier(library, reference, reference, reference.ID)
 	var label string
 	if len(reference.Elements) > 0 {
 		var s strings.Builder

@@ -13,25 +13,23 @@ import (
 type referenceIndex struct {
 	sync.RWMutex
 
-	anchorsParsed  bool
 	anchors        map[string][]*Anchor
 	identifiers    map[asciidoc.Element]string
 	anchorsByLabel map[string][]*Anchor
 
-	crossReferencesParsed bool
-	crossReferences       map[string][]*CrossReference
+	crossReferencesByID  map[string][]*CrossReference
+	crossReferencesByDoc map[*asciidoc.Document]map[string][]*CrossReference
 }
 
 func newReferenceIndex() referenceIndex {
 	return referenceIndex{
-		anchors:         make(map[string][]*Anchor),
-		identifiers:     make(map[asciidoc.Element]string),
-		anchorsByLabel:  make(map[string][]*Anchor),
-		crossReferences: make(map[string][]*CrossReference),
+		identifiers:          make(map[asciidoc.Element]string),
+		crossReferencesByID:  make(map[string][]*CrossReference),
+		crossReferencesByDoc: make(map[*asciidoc.Document]map[string][]*CrossReference),
 	}
 }
 
-func (ri *referenceIndex) anchorId(reader asciidoc.Reader, parent asciidoc.Parent, element asciidoc.Element, id asciidoc.Elements) string {
+func (ri *referenceIndex) elementIdentifier(reader asciidoc.Reader, parent asciidoc.Parent, element asciidoc.Element, id asciidoc.Elements) string {
 	if existing, ok := ri.identifiers[element]; ok {
 		return existing
 	}
@@ -54,7 +52,7 @@ func (ri *referenceIndex) anchorId(reader asciidoc.Reader, parent asciidoc.Paren
 }
 
 func (ri *referenceIndex) changeAnchor(reader asciidoc.Reader, anchor *Anchor, parent asciidoc.Parent, id asciidoc.Elements) {
-	anchorID := ri.anchorId(reader, parent, anchor.Element, anchor.ID)
+	anchorID := ri.elementIdentifier(reader, parent, anchor.Element, anchor.ID)
 
 	anchors, ok := ri.anchors[anchorID]
 	if ok {
@@ -68,26 +66,26 @@ func (ri *referenceIndex) changeAnchor(reader asciidoc.Reader, anchor *Anchor, p
 			}
 		}
 	}
-	anchorID = ri.anchorId(reader, anchor.Parent, anchor.Element, id)
+	anchorID = ri.elementIdentifier(reader, anchor.Parent, anchor.Element, id)
 	ri.anchors[anchorID] = append(ri.anchors[anchorID], anchor)
 }
 
 func (ri *referenceIndex) changeCrossReference(reader asciidoc.Reader, reference *CrossReference, id asciidoc.Elements) {
-	referenceID := ri.anchorId(reader, reference.Reference, reference.Reference, reference.Reference.ID)
-	refs, ok := ri.crossReferences[referenceID]
+	referenceID := ri.elementIdentifier(reader, reference.Reference, reference.Reference, reference.Reference.ID)
+	refs, ok := ri.crossReferencesByID[referenceID]
 	if ok {
 		i := slices.IndexFunc(refs, func(cr *CrossReference) bool { return cr == reference })
 		if i >= 0 {
 			refs = append(refs[:i], refs[i+1:]...)
 			if len(refs) > 0 {
-				ri.crossReferences[referenceID] = refs
+				ri.crossReferencesByID[referenceID] = refs
 			} else {
-				delete(ri.crossReferences, referenceID)
+				delete(ri.crossReferencesByID, referenceID)
 			}
 		}
 	}
-	referenceID = ri.anchorId(reader, reference.Reference, reference.Reference, id)
-	ri.crossReferences[referenceID] = append(ri.crossReferences[referenceID], reference)
+	referenceID = ri.elementIdentifier(reader, reference.Reference, reference.Reference, id)
+	ri.crossReferencesByID[referenceID] = append(ri.crossReferencesByID[referenceID], reference)
 }
 
 func (ri *referenceIndex) findAnchor(source log.Source, id string) *Anchor {

@@ -66,7 +66,16 @@ func NewLibrary(root *asciidoc.Document, cache *DocCache) *Library {
 }
 
 func (library *Library) CrossReferences(id string) []*CrossReference {
-	return library.crossReferences[id]
+	return library.crossReferencesByID[id]
+}
+
+func (library *Library) CrossReferencesForDoc(doc *asciidoc.Document) map[string][]*CrossReference {
+	return library.crossReferencesByDoc[doc]
+}
+
+func (library *Library) EntitiesForElement(element asciidoc.Attributable) (entities []types.Entity, ok bool) {
+	entities, ok = library.entitiesByElement[element]
+	return
 }
 
 func (library *Library) Parents(doc *asciidoc.Document) []*asciidoc.Document {
@@ -84,8 +93,15 @@ func (library *Library) indexAnchors() (err error) {
 
 func (library *Library) indexCrossReferences() {
 	parse.Traverse(library.Root, library, library.Root, library.Children(library.Root), func(doc *asciidoc.Document, cr *asciidoc.CrossReference, parent asciidoc.ParentElement, offset int) parse.SearchShould {
-		referenceID := library.anchorId(library, cr, cr, cr.ID)
-		library.crossReferences[referenceID] = append(library.crossReferences[referenceID], &CrossReference{Document: doc, Reference: cr, Parent: parent, Source: NewSource(doc, cr)})
+		referenceID := library.elementIdentifier(library, cr, cr, cr.ID)
+		c := &CrossReference{Document: doc, Reference: cr, Parent: parent, Source: NewSource(doc, cr)}
+		library.crossReferencesByID[referenceID] = append(library.crossReferencesByID[referenceID], c)
+		docReferences, ok := library.crossReferencesByDoc[doc]
+		if !ok {
+			docReferences = make(map[string][]*CrossReference, 0)
+			library.crossReferencesByDoc[doc] = docReferences
+		}
+		docReferences[referenceID] = append(docReferences[referenceID], c)
 		return parse.SearchShouldContinue
 	})
 }

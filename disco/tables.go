@@ -18,7 +18,7 @@ func (b *Baller) ensureTableOptions(doc *asciidoc.Document, root asciidoc.Parent
 	if !b.options.NormalizeTableOptions {
 		return
 	}
-	parse.Search(asciidoc.RawReader, root, root.Children(), func(t *asciidoc.Table, parent asciidoc.Parent, index int) parse.SearchShould {
+	parse.Search(doc, asciidoc.RawReader, root, root.Children(), func(doc *asciidoc.Document, t *asciidoc.Table, parent asciidoc.ParentElement, index int) parse.SearchShould {
 		var excludedIndexes []int
 		for i, attr := range t.Attributes() {
 			na, ok := attr.(*asciidoc.NamedAttribute)
@@ -45,7 +45,7 @@ func (b *Baller) addMissingColumns(cxt *discoContext, section *asciidoc.Section,
 	if !b.options.AddMissingColumns {
 		return
 	}
-	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section), errata.DiscoPurposeTableAddMissingColumns) {
+	if cxt.errata.IgnoreSection(cxt.library.SectionName(section), errata.DiscoPurposeTableAddMissingColumns) {
 		return
 	}
 	ti.Element.DeleteAttribute(asciidoc.AttributeNameColumns)
@@ -57,7 +57,7 @@ func (b *Baller) addMissingColumns(cxt *discoContext, section *asciidoc.Section,
 	}
 	for _, column := range order {
 		if _, ok := ti.ColumnMap[column]; !ok {
-			_, err = b.appendColumn(ti, column, entityType)
+			_, err = b.appendColumn(cxt, ti, column, entityType)
 			if err != nil {
 				return
 			}
@@ -67,7 +67,7 @@ func (b *Baller) addMissingColumns(cxt *discoContext, section *asciidoc.Section,
 	return
 }
 
-func (b *Baller) appendColumn(ti *spec.TableInfo, column matter.TableColumn, entityType types.EntityType) (appendedIndex int, err error) {
+func (b *Baller) appendColumn(cxt *discoContext, ti *spec.TableInfo, column matter.TableColumn, entityType types.EntityType) (appendedIndex int, err error) {
 	rows := ti.Rows
 	if len(rows) == 0 {
 		appendedIndex = -1
@@ -105,7 +105,7 @@ func (b *Baller) appendColumn(ti *spec.TableInfo, column matter.TableColumn, ent
 		} else {
 			cell.Blank = last.Blank
 			if !cell.Blank {
-				setCellString(cell, b.getDefaultColumnValue(ti, row, column, entityType))
+				setCellString(cell, b.getDefaultColumnValue(cxt, ti, row, column, entityType))
 			}
 		}
 		row.Append(cell)
@@ -114,7 +114,7 @@ func (b *Baller) appendColumn(ti *spec.TableInfo, column matter.TableColumn, ent
 	return
 }
 
-func (b *Baller) getDefaultColumnValue(ti *spec.TableInfo, row *asciidoc.TableRow, column matter.TableColumn, entityType types.EntityType) string {
+func (b *Baller) getDefaultColumnValue(cxt *discoContext, ti *spec.TableInfo, row *asciidoc.TableRow, column matter.TableColumn, entityType types.EntityType) string {
 	switch column {
 	case matter.TableColumnConformance:
 		switch entityType {
@@ -124,7 +124,7 @@ func (b *Baller) getDefaultColumnValue(ti *spec.TableInfo, row *asciidoc.TableRo
 	case matter.TableColumnName:
 		switch entityType {
 		case types.EntityTypeBitmapValue, types.EntityTypeEnumValue:
-			val, _ := ti.ReadValue(row, matter.TableColumnSummary, matter.TableColumnDescription)
+			val, _ := ti.ReadValue(cxt.library, row, matter.TableColumnSummary, matter.TableColumnDescription)
 			if val != "" {
 				return matter.Case(val)
 			}
@@ -132,7 +132,7 @@ func (b *Baller) getDefaultColumnValue(ti *spec.TableInfo, row *asciidoc.TableRo
 	case matter.TableColumnSummary:
 		switch entityType {
 		case types.EntityTypeBitmapValue, types.EntityTypeEnumValue:
-			val, _ := ti.ReadValue(row, matter.TableColumnName)
+			val, _ := ti.ReadValue(cxt.library, row, matter.TableColumnName)
 			if val != "" {
 				return matter.Uncase(val)
 			}
@@ -153,7 +153,7 @@ func (b *Baller) reorderColumns(cxt *discoContext, section *asciidoc.Section, ti
 	if !b.options.ReorderColumns {
 		return
 	}
-	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section), errata.DiscoPurposeTableReorderColumns) {
+	if cxt.errata.IgnoreSection(cxt.library.SectionName(section), errata.DiscoPurposeTableReorderColumns) {
 		return
 	}
 	rows := ti.Rows
@@ -277,14 +277,14 @@ func setCellString(cell *asciidoc.TableCell, v string) {
 	cell.SetChildren(asciidoc.Elements{se})
 }
 
-func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toIndex int, transformer func(s string) string) (err error) {
+func copyCells(cxt *discoContext, rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toIndex int, transformer func(s string) string) (err error) {
 	for i, row := range rows {
 		if i == headerRowIndex {
 			continue
 		}
 		tableCells := row.TableCells()
 		var value string
-		value, err = spec.RenderTableCell(tableCells[fromIndex])
+		value, err = spec.RenderTableCell(cxt.library, tableCells[fromIndex])
 		if err != nil {
 			return
 		}
@@ -300,7 +300,7 @@ func (b *Baller) renameTableHeaderCells(cxt *discoContext, section *asciidoc.Sec
 	if !b.options.RenameTableHeaders {
 		return
 	}
-	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section), errata.DiscoPurposeTableRenameHeaders) {
+	if cxt.errata.IgnoreSection(cxt.library.SectionName(section), errata.DiscoPurposeTableRenameHeaders) {
 		return
 	}
 	if table.HeaderRowIndex == -1 {

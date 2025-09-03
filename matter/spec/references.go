@@ -16,12 +16,12 @@ type CrossReference struct {
 	Source    matter.Source
 }
 
-/*func (dg *Library) SyncToDoc(reader asciidoc.Reader, cr *CrossReference, id asciidoc.Elements) {
+func (library *Library) SyncCrossReference(cr *CrossReference, id asciidoc.Elements) {
 	if !id.Equals(cr.Reference.ID) {
-		dg.changeCrossReference(reader, cr, id)
+		library.changeCrossReference(library, cr, id)
 		cr.Reference.ID = id
 	}
-}*/
+}
 
 /*
 func (doc *Library) CrossReferences(reader asciidoc.Reader) map[string][]*CrossReference {

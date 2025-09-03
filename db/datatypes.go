@@ -4,9 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/parse"
-	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -97,61 +94,4 @@ func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string,
 	}
 	sv := &sectionInfo{id: h.nextID(tableName), parent: parent, values: sr}
 	parent.children[tableName] = append(parent.children[tableName], sv)
-}
-
-func (h *Host) indexDataTypes(cxt context.Context, doc *asciidoc.Document, ds *sectionInfo, dts *asciidoc.Section) (err error) {
-	if ds.children == nil {
-		ds.children = make(map[string][]*sectionInfo)
-	}
-	for s := range parse.Skim[*asciidoc.Section](doc.Reader(), dts, dts.Children()) {
-		sectionType := doc.SectionType(s)
-		sectionName := doc.SectionName(s)
-		switch sectionType {
-		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct, matter.SectionDataTypeDef:
-			var t string
-			switch sectionType {
-			case matter.SectionDataTypeBitmap:
-				t = "bitmap"
-			case matter.SectionDataTypeEnum:
-				t = "enum"
-			case matter.SectionDataTypeStruct:
-				t = "struct"
-			case matter.SectionDataTypeDef:
-				t = "typedef"
-			}
-			name := text.TrimCaseInsensitiveSuffix(sectionName, " Type")
-			name = matter.StripDataTypeSuffixes(name)
-			ci := &sectionInfo{
-				parent: ds,
-				values: &dbRow{
-					values: map[matter.TableColumn]any{
-						matter.TableColumnClass: t,
-						matter.TableColumnName:  name,
-					},
-				},
-				children: make(map[string][]*sectionInfo),
-			}
-			switch sectionType {
-			case matter.SectionDataTypeBitmap:
-				ci.id = h.nextID(bitmapTable)
-				err = h.readTableSection(cxt, doc, ci, s, bitmapValue)
-				ds.children[bitmapTable] = append(ds.children[bitmapTable], ci)
-			case matter.SectionDataTypeEnum:
-				ci.id = h.nextID(enumTable)
-				err = h.readTableSection(cxt, doc, ci, s, enumValue)
-				ds.children[enumTable] = append(ds.children[enumTable], ci)
-			case matter.SectionDataTypeStruct:
-				ci.id = h.nextID(structTable)
-				err = h.readTableSection(cxt, doc, ci, s, structField)
-				ds.children[structTable] = append(ds.children[structTable], ci)
-			case matter.SectionDataTypeDef:
-				ci.id = h.nextID(typedefTable)
-				ds.children[typedefTable] = append(ds.children[typedefTable], ci)
-			}
-			if err != nil {
-				return
-			}
-		}
-	}
-	return nil
 }

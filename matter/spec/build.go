@@ -82,7 +82,6 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 			AssignSectionTypes(l, l, l, l.Root, top)
 			break
 		}
-		dumpLibrary(l)
 		if slog.Default().Enabled(cxt, slog.LevelDebug) {
 			dumpLibrary(l)
 		}
