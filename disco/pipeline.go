@@ -60,7 +60,7 @@ func Pipeline(cxt context.Context, parserOptions spec.ParserOptions, docPaths []
 	}
 
 	anchorNormalizer := newAnchorNormalizer(discoOptions)
-	var normalizedDocs pipeline.Map[string, *pipeline.Data[render.InputDocument]]
+	var normalizedDocs pipeline.Map[string, *pipeline.Data[*asciidoc.Document]]
 	normalizedDocs, err = pipeline.Collective(cxt, pipelineOptions, anchorNormalizer, balledDocs)
 	if err != nil {
 		return err

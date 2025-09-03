@@ -76,16 +76,6 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*a
 			continue
 		}
 
-		/*input.Content.Domain = getDocDomain(input.Content)
-
-		if input.Content.Domain == matter.DomainUnknown {
-			if errata.Domain != matter.DomainUnknown {
-				input.Content.Domain = errata.Domain
-			} else {
-				input.Content.Domain = matter.DomainGeneral
-			}
-		}*/
-
 		var configurator *zap.Configurator
 		configurator, err = zap.NewConfigurator(tg.spec, []*asciidoc.Document{d}, entities, newPath, errata, false)
 		if err != nil {
@@ -182,18 +172,3 @@ func SplitZAPDocs(cxt context.Context, spec *spec.Specification, inputs spec.Doc
 	})
 	return
 }
-
-/*
-func getDocDomain(doc *asciidoc.Document) matter.Domain {
-	if doc.Domain != matter.DomainUnknown {
-		return doc.Domain
-	}
-	for _, p := range doc.Parents() {
-		d := getDocDomain(p)
-		if d != matter.DomainUnknown {
-			return d
-		}
-	}
-	return matter.DomainUnknown
-}
-*/
