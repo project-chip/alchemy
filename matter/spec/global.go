@@ -59,20 +59,6 @@ func (library *Library) toGlobalElements(spec *Specification, reader asciidoc.Re
 	// The definition of global commands is frequently elsewhere, so let's scan the doc for other commmand sections
 	parse.Search(d, reader, d, reader.Children(d), func(doc *asciidoc.Document, sec *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
 		switch library.SectionType(sec) {
-		/*case matter.SectionDataTypeEnum:
-			var e *matter.Enum
-			e, err = library.toEnum(library, d, sec, nil)
-			if err != nil {
-				return parse.SearchShouldStop
-			}
-			entities = append(entities, e)
-		case matter.SectionDataTypeStruct:
-			var s *matter.Struct
-			s, err = library.toStruct(spec, library, d, sec, nil)
-			if err != nil {
-				return parse.SearchShouldStop
-			}
-			entities = append(entities, s)*/
 		case matter.SectionCommand:
 			commandName := text.TrimCaseInsensitiveSuffix(library.SectionName(sec), " Command")
 			command, ok := commandMap[commandName]

@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/overlay"
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/internal/log"
@@ -230,8 +231,84 @@ func renderPreParsedDoc(els asciidoc.Elements) (string, error) {
 	return sb.String(), nil
 }
 
+type overlayContext struct {
+	specRoot string
+	library  *Library
+}
+
+func (o *overlayContext) AddDocument(doc *asciidoc.Document) {
+	o.library.Docs = append(o.library.Docs, doc)
+}
+
+// IncludeFile implements overlay.OverlayContext.
+func (o *overlayContext) IncludeFile(path asciidoc.Path, parent asciidoc.Parent) (doc *asciidoc.Document, err error) {
+	return o.library.cache.include(path, parent)
+}
+
+// IncludePath implements overlay.OverlayContext.
+func (o *overlayContext) ResolvePath(root string, path string) (asciidoc.Path, error) {
+	linkPath := filepath.Join(root, path)
+	return NewSpecPath(linkPath, o.specRoot)
+}
+
+// MakeSectionName implements overlay.OverlayContext.
+func (o *overlayContext) MakeSectionName(reader asciidoc.Reader, section *asciidoc.Section, variables overlay.Variables) (string, error) {
+	var title strings.Builder
+	err := buildSectionTitle(variables, section, reader, &title, section.Title...)
+	if err != nil {
+		return "", err
+	}
+	return title.String(), nil
+}
+
+// SectionLevel implements overlay.OverlayContext.
+func (o *overlayContext) SectionLevel(section *asciidoc.Section) int {
+	return o.library.SectionLevel(section)
+}
+
+// SectionName implements overlay.OverlayContext.
+func (o *overlayContext) SectionName(section *asciidoc.Section) string {
+	return o.library.SectionName(section)
+}
+
+// SetParent implements overlay.OverlayContext.
+func (o *overlayContext) SetParent(parent *asciidoc.Document, child *asciidoc.Document) {
+	o.library.parents[child] = append(o.library.parents[child], parent)
+	o.library.children[parent] = append(o.library.children[parent], child)
+
+}
+
+// SetSectionLevel implements overlay.OverlayContext.
+func (o *overlayContext) SetSectionLevel(section *asciidoc.Section, level int) {
+	o.library.SetSectionLevel(section, level)
+}
+
+// SetSectionName implements overlay.OverlayContext.
+func (o *overlayContext) SetSectionName(section *asciidoc.Section, name string) {
+	o.library.SetSectionName(section, name)
+}
+
+// ShouldIncludeFile implements overlay.OverlayContext.
+func (o *overlayContext) ShouldIncludeFile(path asciidoc.Path) bool {
+	switch path.Relative {
+	case "templates/DiscoBallCluster.adoc",
+		"templates/DiscoBallDeviceType.adoc":
+		return false
+	default:
+		return true
+	}
+}
+
+var _ overlay.OverlayContext = &overlayContext{}
+
 func (library *Library) Preparse(specRoot string, attributes []asciidoc.AttributeName) (err error) {
-	pps := &preparseState{
+	cxt := &overlayContext{
+		specRoot: specRoot,
+		library:  library,
+	}
+	library.Reader, err = overlay.Build(cxt, library.Root, specRoot, attributes)
+	dumpLibrary(library)
+	/*pps := &preparseState{
 		attributes: make(map[string]any),
 		counters:   map[string]*asciidoc.CounterState{},
 		overlays:   map[asciidoc.Element]*elementOverlay{},
@@ -251,7 +328,8 @@ func (library *Library) Preparse(specRoot string, attributes []asciidoc.Attribut
 		return
 	}
 	library.buildDoc(ppfs, library.Root)
-	library.Reader = &PreParseReader{overlays: pps.overlays}
+	library.Reader = &PreParseReader{overlays: pps.overlays}*/
+
 	return
 }
 
@@ -491,13 +569,7 @@ func (library *Library) preparseFile(pps *preparseFileState, d *asciidoc.Documen
 			pps.state.overlays.remove(el)
 		} else if replace {
 			pps.state.overlays.replace(el, replaceElements)
-		} /* else {
-			if pps.state.lastSection != nil {
-				pps.state.overlays.appendChild(pps.state.lastSection, el)
-			} else {
-				pps.state.overlays.appendChild(library.Root, el)
-			}
-		}*/
+		}
 		return parse.SearchShouldContinue
 	})
 	return
@@ -581,7 +653,7 @@ func NewLibraryParser(specRoot string, attributes []asciidoc.AttributeName) (*Li
 }
 
 func (r LibraryParser) Name() string {
-	return "Pre-parsing library docs"
+	return "Building library overlay"
 }
 
 func (r LibraryParser) Process(cxt context.Context, input *pipeline.Data[*Library], index int32, total int32) (outputs []*pipeline.Data[*asciidoc.Document], extras []*pipeline.Data[*Library], err error) {

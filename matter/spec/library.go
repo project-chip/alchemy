@@ -136,7 +136,7 @@ func (library *Library) SectionName(s *asciidoc.Section) (name string) {
 	name, _ = library.sectionNames.Load(s)
 	if name == "" {
 		var title strings.Builder
-		buildSectionTitle(&variableStore{}, s, library, &title, s.Title...)
+		buildSectionTitle(&emptyVariableStore{}, s, library, &title, s.Title...)
 		name = title.String()
 		library.sectionNames.Store(s, name)
 	}

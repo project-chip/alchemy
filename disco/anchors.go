@@ -20,8 +20,8 @@ import (
 var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z0-9]+[a-z0-9]*(?:[A-Z]+[a-z]*)*([A-Z0-9]+[a-z0-9]*(?:[A-Z0-9]+[a-z0-9]*)*)*$`)
 var improperAnchorCharactersPattern = regexp.MustCompile(`[^A-Za-z0-9]+`)
 
-type anchorGroup struct {
-	group            *asciidoc.DocumentGroup
+type anchorLibrary struct {
+	group            *spec.Library
 	updatedAnchors   map[string][]*spec.Anchor
 	rewrittenAnchors map[string][]*spec.Anchor
 }
@@ -40,7 +40,7 @@ func (r AnchorNormalizer) Name() string {
 }
 
 func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*asciidoc.Document]) (outputs []*pipeline.Data[render.InputDocument], err error) {
-	var anchorGroups map[*asciidoc.DocumentGroup]*anchorGroup
+	var anchorGroups map[*spec.Library]*anchorLibrary
 	anchorGroups, err = p.normalizeAnchors(inputs)
 	if err != nil {
 		return
@@ -122,8 +122,8 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 	return
 }
 
-func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*asciidoc.Document]) (anchorGroups map[*asciidoc.DocumentGroup]*anchorGroup, err error) {
-	anchorGroups = make(map[*asciidoc.DocumentGroup]*anchorGroup)
+func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*asciidoc.Document]) (anchorGroups map[*asciidoc.DocumentGroup]*anchorLibrary, err error) {
+	anchorGroups = make(map[*spec.Library]*anchorLibrary)
 	unaffiliatedDocs := spec.NewLibrary(nil)
 	for _, input := range inputs {
 		doc := input.Content
@@ -134,7 +134,7 @@ func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*asciidoc.Do
 		}
 		ag, ok := anchorGroups[group]
 		if !ok {
-			ag = &anchorGroup{
+			ag = &anchorLibrary{
 				group:            group,
 				updatedAnchors:   make(map[string][]*spec.Anchor),
 				rewrittenAnchors: make(map[string][]*spec.Anchor),
@@ -278,7 +278,7 @@ func normalizeAnchorLabel(name string, element any) (label asciidoc.Elements) {
 	return
 }
 
-func disambiguateAnchorSet(conflictedAnchors []*spec.Anchor, newID string, ag *anchorGroup) (newIDs []string, err error) {
+func disambiguateAnchorSet(conflictedAnchors []*spec.Anchor, newID string, ag *anchorLibrary) (newIDs []string, err error) {
 	parents := make([]any, len(conflictedAnchors))
 	newIDs = make([]string, len(conflictedAnchors))
 	for i, info := range conflictedAnchors {

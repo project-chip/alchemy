@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/overlay"
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
@@ -21,9 +22,7 @@ type SectionInfoCache interface {
 	SetSectionType(section *asciidoc.Section, sectionType matter.Section)
 }
 
-func buildSectionTitle(variableStore interface {
-	Get(string) any
-}, section *asciidoc.Section, reader asciidoc.Reader, title *strings.Builder, els ...asciidoc.Element) (err error) {
+func buildSectionTitle(variables overlay.Variables, section *asciidoc.Section, reader asciidoc.Reader, title *strings.Builder, els ...asciidoc.Element) (err error) {
 	for e := range reader.Iterate(section, els) {
 		switch e := e.(type) {
 		case *asciidoc.String:
@@ -32,13 +31,13 @@ func buildSectionTitle(variableStore interface {
 			title.WriteString(e.Character)
 		case *asciidoc.UserAttributeReference:
 
-			val := variableStore.Get(string(e.Name()))
+			val := variables.Get(string(e.Name()))
 			if val != nil {
 				switch val := val.(type) {
 				case asciidoc.Elements:
-					err = buildSectionTitle(variableStore, section, reader, title, val...)
+					err = buildSectionTitle(variables, section, reader, title, val...)
 				case asciidoc.Element:
-					err = buildSectionTitle(variableStore, section, reader, title, val)
+					err = buildSectionTitle(variables, section, reader, title, val)
 				default:
 					err = newGenericParseError(e, "unexpected section title attribute value type: %T", val)
 					return
@@ -52,7 +51,7 @@ func buildSectionTitle(variableStore interface {
 			}
 		case *asciidoc.Link, *asciidoc.LinkMacro:
 		case *asciidoc.Bold:
-			err = buildSectionTitle(variableStore, section, reader, title, e.Children()...)
+			err = buildSectionTitle(variables, section, reader, title, reader.Children(e)...)
 		default:
 			err = newGenericParseError(section, "unknown section title component type: %T", e)
 		}
@@ -60,7 +59,7 @@ func buildSectionTitle(variableStore interface {
 			return
 		}
 		if he, ok := e.(asciidoc.ParentElement); ok {
-			err = buildSectionTitle(variableStore, section, reader, title, he.Children()...)
+			err = buildSectionTitle(variables, section, reader, title, reader.Children(he)...)
 		}
 		if err != nil {
 			return
@@ -69,15 +68,21 @@ func buildSectionTitle(variableStore interface {
 	return
 }
 
-type variableStore struct {
+type emptyVariableStore struct {
 }
 
-func (variableStore) Get(string) any {
+func (emptyVariableStore) Get(string) any {
 	return nil
 }
 
+func (emptyVariableStore) IsSet(name string) bool {
+	return false
+}
+func (emptyVariableStore) Set(name string, value any) {}
+func (emptyVariableStore) Unset(name string)          {}
+
 func AssignSectionNames(sectionInfoCache SectionInfoCache, reader asciidoc.Reader, doc *asciidoc.Document) error {
-	vs := &variableStore{}
+	vs := &emptyVariableStore{}
 	parse.Search(doc, reader, doc, reader.Children(doc), func(doc *asciidoc.Document, section *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
 		var sb strings.Builder
 		buildSectionTitle(vs, section, reader, &sb, section.Title...)
@@ -143,50 +148,6 @@ func AssignSectionTypes(sectionInfoCache SectionInfoCache, docInfoCache Document
 		return parse.SearchShouldContinue
 	})
 	return
-	/*existing := sectionInfoCache.SectionType(top)
-	if existing != matter.SectionUnknown {
-		return nil
-	}
-	docType, err := docInfoCache.DocType(doc)
-	if err != nil {
-		return err
-	}
-	var secType matter.Section
-	switch docType {
-	case matter.DocTypeCluster:
-		secType = matter.SectionCluster
-	case matter.DocTypeDeviceType:
-		secType = matter.SectionDeviceType
-	case matter.DocTypeNamespace:
-		secType = matter.SectionNamespace
-	default:
-		secType = matter.SectionTop
-		if strings.HasSuffix(sectionInfoCache.SectionName(top), " Cluster") {
-			secType = matter.SectionCluster
-		}
-	}
-	assignSectionType(sectionInfoCache, doc, top, secType)
-
-	parse.Search(doc, reader, top, reader.Children(top), func(doc *asciidoc.Document, el any, parent asciidoc.ParentElement, index int) parse.SearchShould {
-		section, ok := el.(*asciidoc.Section)
-		if !ok {
-			return parse.SearchShouldContinue
-		}
-		ps, ok := parent.(*asciidoc.Section)
-		if !ok {
-			return parse.SearchShouldContinue
-		}
-
-		assignSectionType(sectionInfoCache, doc, section, getSectionType(sectionInfoCache, reader, doc, ps, section))
-		switch sectionInfoCache.SectionType(section) {
-		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct, matter.SectionDataTypeDef:
-			if section.Level > 2 {
-				slog.Debug("Unusual depth for section type", slog.String("name", sectionInfoCache.SectionName(section)), slog.String("type", sectionInfoCache.SectionType(section).String()), slog.String("path", doc.Path.String()))
-			}
-		}
-		return parse.SearchShouldContinue
-	})
-	return nil*/
 }
 
 func assignSectionType(sectionInfoCache SectionInfoCache, doc *asciidoc.Document, s *asciidoc.Section, sectionType matter.Section) {
@@ -467,34 +428,6 @@ func guessDataTypeFromTable(reader asciidoc.Reader, doc *asciidoc.Document, sect
 	}
 	return
 }
-
-/*func (library *Library) toEntities(reader asciidoc.Reader, spec *Specification, d *asciidoc.Document, s *asciidoc.Section) (err error) {
-	switch library.SectionType(s) {
-	case matter.SectionCluster:
-		err = library.toClusters(spec, reader, d, s)
-		if err != nil {
-			return
-		}
-	case matter.SectionDeviceType:
-		err = library.toDeviceTypes(spec, reader, d, s)
-		if err != nil {
-			return
-		}
-	case matter.SectionNamespace:
-		err = library.toNamespace(spec, reader, d, s)
-		if err != nil {
-			return
-		}
-	default:
-		_, err = library.findLooseEntities(spec, reader, d, s, nil)
-		if err != nil {
-			err = newGenericParseError(s, "error reading section \"%s\": %w", library.SectionName(s), err)
-			return
-		}
-
-	}
-	return
-}*/
 
 var dataTypeDefinitionPattern = regexp.MustCompile(`(?:(?:This\s+data\s+type\s+SHALL\s+be\s+a)|(?:is\s+derived\s+from))\s+(?:<<enum-def\s*,\s*)?(enum8|enum16|enum32|map8|map16|map32|map64|uint8|uint16|uint24|uint32|uint40|uint48|uint56|uint64|int8|int16|int24|int32|int40|int48|int56|int64|string)(?:\s*>>)?`)
 
