@@ -2,11 +2,7 @@ package db
 
 import (
 	"context"
-	"log/slog"
 
-	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/parse"
-	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -38,50 +34,6 @@ func (h *Host) indexCommandModels(cxt context.Context, parent *sectionInfo, clus
 		parent.children[commandTable] = append(parent.children[commandTable], ci)
 		for _, ef := range c.Fields {
 			h.readField(ef, ci, commandFieldTable, types.EntityTypeCommandField)
-		}
-	}
-	return nil
-}
-
-func (h *Host) indexCommands(cxt context.Context, doc *asciidoc.Document, ci *sectionInfo, es *asciidoc.Section) error {
-	if ci.children == nil {
-		ci.children = make(map[string][]*sectionInfo)
-	}
-	err := h.readTableSection(cxt, doc, ci, es, commandTable)
-	if err != nil {
-		return err
-	}
-	commands := ci.children[commandTable]
-	if len(commands) == 0 {
-		return nil
-	}
-	em := make(map[string]*sectionInfo)
-	for _, si := range commands {
-		name, ok := si.values.values[matter.TableColumnName]
-		if ok {
-			if ns, ok := name.(string); ok {
-				em[ns] = si
-			}
-		}
-	}
-	for s := range parse.Skim[*asciidoc.Section](doc.Reader(), es, es.Children()) {
-		sectionType := doc.SectionType(s)
-		sectionName := doc.SectionName(s)
-		switch sectionType {
-		case matter.SectionCommand:
-			name := text.TrimCaseInsensitiveSuffix(sectionName, " Command")
-			p, ok := em[name]
-			if !ok {
-				slog.Debug("no matching command", "name", s.Name)
-				continue
-			}
-			if p.children == nil {
-				p.children = make(map[string][]*sectionInfo)
-			}
-			err = h.readTableSection(cxt, doc, p, s, commandFieldTable)
-			if err != nil {
-				return err
-			}
 		}
 	}
 	return nil

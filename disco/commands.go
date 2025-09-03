@@ -28,7 +28,7 @@ func (b *Baller) organizeCommandsSection(cxt *discoContext) (err error) {
 		}
 		err = b.renameTableHeaderCells(cxt, commands.section, commands.table, matter.Tables[matter.TableTypeCommands].ColumnRenames)
 		if err != nil {
-			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.doc.SectionName(commands.section), cxt.doc.Path, err)
+			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.library.SectionName(commands.section), cxt.doc.Path, err)
 		}
 		err = b.fixAccessCells(cxt, commands, types.EntityTypeCommand)
 		if err != nil {
@@ -60,14 +60,14 @@ func (b *Baller) organizeCommandsSection(cxt *discoContext) (err error) {
 			}
 			err = b.fixConstraintCells(cxt, command.section, command.table)
 			if err != nil {
-				return fmt.Errorf("error fixing command constraint cells in %s in %s: %w", cxt.doc.SectionName(command.section), cxt.doc.Path, err)
+				return fmt.Errorf("error fixing command constraint cells in %s in %s: %w", cxt.library.SectionName(command.section), cxt.doc.Path, err)
 			}
 			err = b.fixConformanceCells(cxt, command, command.table.Rows, command.table.ColumnMap)
 			if err != nil {
-				return fmt.Errorf("error fixing command conformance cells in %s in %s: %w", cxt.doc.SectionName(command.section), cxt.doc.Path, err)
+				return fmt.Errorf("error fixing command conformance cells in %s in %s: %w", cxt.library.SectionName(command.section), cxt.doc.Path, err)
 			}
 			b.appendSubsectionTypes(cxt, command.section, command.table.ColumnMap, command.table.Rows)
-			b.removeMandatoryFallbacks(command.table)
+			b.removeMandatoryFallbacks(cxt, command.table)
 
 			err = b.linkIndexTables(cxt, command)
 			if err != nil {
@@ -82,7 +82,7 @@ func (b *Baller) fixCommandDirection(cxt *discoContext, section *asciidoc.Sectio
 	if len(rows) < 2 {
 		return
 	}
-	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section), errata.DiscoPurposeDataTypeCommandFixDirection) {
+	if cxt.errata.IgnoreSection(cxt.library.SectionName(section), errata.DiscoPurposeDataTypeCommandFixDirection) {
 		return
 	}
 	accessIndex, ok := columnMap[matter.TableColumnDirection]
@@ -92,7 +92,7 @@ func (b *Baller) fixCommandDirection(cxt *discoContext, section *asciidoc.Sectio
 	for _, row := range rows[1:] {
 		cell := row.Cell(accessIndex)
 
-		vc, e := spec.RenderTableCell(cell)
+		vc, e := spec.RenderTableCell(cxt.library, cell)
 		if e != nil {
 			continue
 		}

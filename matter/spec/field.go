@@ -262,7 +262,7 @@ func (library *Library) findAnonymousBitmap(reader asciidoc.Reader, doc *asciido
 func (library *Library) findTagNamespace(reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section, field *matter.Field) error {
 	var found bool
 	parse.Search(doc, reader, s, s.Elements, func(doc *asciidoc.Document, ref *asciidoc.CrossReference, parent asciidoc.ParentElement, index int) parse.SearchShould {
-		if library.anchorId(reader, ref, ref, ref.ID) == "ref_StandardNamespaces" {
+		if library.elementIdentifier(reader, ref, ref, ref.ID) == "ref_StandardNamespaces" {
 			label := buildReferenceName(reader, ref, ref.Elements)
 			name := strings.TrimSpace(text.TrimCaseInsensitiveSuffix(label, " Namespace"))
 			if len(name) > 0 {

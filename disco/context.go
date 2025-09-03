@@ -5,14 +5,16 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 type discoContext struct {
 	context.Context
 
-	doc    *asciidoc.Document
-	errata *errata.Disco
-	parsed *docParse
+	doc     *asciidoc.Document
+	library *spec.Library
+	errata  *errata.Disco
+	parsed  *docParse
 
 	potentialDataTypes map[string][]*DataTypeEntry
 }
