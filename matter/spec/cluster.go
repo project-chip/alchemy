@@ -201,7 +201,7 @@ func readClusterIDs(doc *Doc, section *asciidoc.Section) ([]*matter.Cluster, err
 			return nil, err
 		}
 		var name string
-		name, err = ti.ReadValue(row, matter.TableColumnName)
+		name, err = ti.ReadValue(row, matter.TableColumnClusterName, matter.TableColumnName)
 		if err != nil {
 			return nil, err
 		}

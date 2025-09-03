@@ -46,6 +46,7 @@ const (
 	TableColumnResponse
 	TableColumnSummary
 	TableColumnCluster
+	TableColumnClusterName
 	TableColumnElement
 	TableColumnClientServer
 	TableColumnCondition
@@ -92,6 +93,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnResponse:     "Response",
 	TableColumnSummary:      "Summary",
 	TableColumnCluster:      "Cluster",
+	TableColumnClusterName:  "Cluster Name",
 	TableColumnElement:      "Element",
 	TableColumnClientServer: "Client/Server",
 	TableColumnCondition:    "Condition",
