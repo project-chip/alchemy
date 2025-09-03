@@ -1,96 +1,111 @@
 package spec
 
-import "github.com/project-chip/alchemy/asciidoc"
+import (
+	"context"
+	"path/filepath"
+	"strings"
 
-type overlayAction uint8
-
-const (
-	overlayActionNone   overlayAction = iota
-	overlayActionRemove               = (1 << iota)
-	overlayActionReplace
-	overlayActionOverrideParent
-	overlayActionOverrideChildren
-	overlayActionAppendElements
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/overlay"
+	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
-func (ppa overlayAction) Remove() bool {
-	return ppa&overlayActionRemove != 0
+type overlayContext struct {
+	specRoot string
+	library  *Library
 }
 
-func (ppa overlayAction) Replace() bool {
-	return ppa&overlayActionReplace != 0
+func (o *overlayContext) AddDocument(doc *asciidoc.Document) {
+	o.library.Docs = append(o.library.Docs, doc)
 }
 
-func (ppa overlayAction) OverrideChildren() bool {
-	return ppa&overlayActionOverrideChildren != 0
+// IncludeFile implements overlay.OverlayContext.
+func (o *overlayContext) IncludeFile(path asciidoc.Path, parent asciidoc.Parent) (doc *asciidoc.Document, err error) {
+	return o.library.cache.include(path, parent)
 }
 
-func (ppa overlayAction) OverrideParent() bool {
-	return ppa&overlayActionOverrideParent != 0
+// IncludePath implements overlay.OverlayContext.
+func (o *overlayContext) ResolvePath(root string, path string) (asciidoc.Path, error) {
+	linkPath := filepath.Join(root, path)
+	return NewSpecPath(linkPath, o.specRoot)
 }
 
-func (ppa overlayAction) Append() bool {
-	return ppa&overlayActionAppendElements != 0
+// MakeSectionName implements overlay.OverlayContext.
+func (o *overlayContext) MakeSectionName(reader asciidoc.Reader, section *asciidoc.Section, variables overlay.Variables) (string, error) {
+	var title strings.Builder
+	err := buildSectionTitle(variables, section, reader, &title, section.Title...)
+	if err != nil {
+		return "", err
+	}
+	return title.String(), nil
 }
 
-type elementOverlay struct {
-	action   overlayAction
-	replace  asciidoc.Elements
-	parent   asciidoc.Element
-	children asciidoc.Elements
-	append   asciidoc.Elements
+// SectionLevel implements overlay.OverlayContext.
+func (o *overlayContext) SectionLevel(section *asciidoc.Section) int {
+	return o.library.SectionLevel(section)
 }
 
-type elementOverlays map[asciidoc.Element]*elementOverlay
+// SectionName implements overlay.OverlayContext.
+func (o *overlayContext) SectionName(section *asciidoc.Section) string {
+	return o.library.SectionName(section)
+}
 
-func (eo elementOverlays) remove(el asciidoc.Element) {
-	if existing, ok := eo[el]; ok {
-		existing.action |= overlayActionRemove
-	} else {
-		eo[el] = &elementOverlay{action: overlayActionRemove}
+// SetParent implements overlay.OverlayContext.
+func (o *overlayContext) SetParent(parent *asciidoc.Document, child *asciidoc.Document) {
+	o.library.parents[child] = append(o.library.parents[child], parent)
+	o.library.children[parent] = append(o.library.children[parent], child)
+
+}
+
+// SetSectionLevel implements overlay.OverlayContext.
+func (o *overlayContext) SetSectionLevel(section *asciidoc.Section, level int) {
+	o.library.SetSectionLevel(section, level)
+}
+
+// SetSectionName implements overlay.OverlayContext.
+func (o *overlayContext) SetSectionName(section *asciidoc.Section, name string) {
+	o.library.SetSectionName(section, name)
+}
+
+// ShouldIncludeFile implements overlay.OverlayContext.
+func (o *overlayContext) ShouldIncludeFile(path asciidoc.Path) bool {
+	switch path.Relative {
+	case "templates/DiscoBallCluster.adoc",
+		"templates/DiscoBallDeviceType.adoc":
+		return false
+	default:
+		return true
 	}
 }
 
-func (eo elementOverlays) replace(el asciidoc.Element, replacement asciidoc.Elements) {
-	existing, ok := eo[el]
-	if !ok {
-		existing = &elementOverlay{action: overlayActionReplace}
-		eo[el] = existing
-	} else {
-		existing.action |= overlayActionReplace
+var _ overlay.OverlayContext = &overlayContext{}
+
+func (library *Library) Preparse(specRoot string, attributes []asciidoc.AttributeName) (err error) {
+	cxt := &overlayContext{
+		specRoot: specRoot,
+		library:  library,
 	}
-	existing.replace = replacement
+	library.Reader, err = overlay.Build(cxt, library.Root, specRoot, attributes)
+
+	return
 }
 
-func (eo elementOverlays) append(parent asciidoc.Element, children ...asciidoc.Element) {
-	existing, ok := eo[parent]
-	if !ok {
-		existing = &elementOverlay{action: overlayActionAppendElements}
-		eo[parent] = existing
-	} else {
-		existing.action |= overlayActionAppendElements
-	}
-	existing.append = append(existing.append, children...)
+type LibraryParser struct {
+	specRoot string
+
+	attributes []asciidoc.AttributeName
 }
 
-func (eo elementOverlays) appendChild(parent asciidoc.Element, child asciidoc.Element) {
-	existing, ok := eo[parent]
-	if !ok {
-		existing = &elementOverlay{action: overlayActionOverrideChildren}
-		eo[parent] = existing
-	} else {
-		existing.action |= overlayActionOverrideChildren
-	}
-	existing.children = append(existing.children, child)
+func NewLibraryParser(specRoot string, attributes []asciidoc.AttributeName) (*LibraryParser, error) {
+
+	return &LibraryParser{specRoot: specRoot, attributes: attributes}, nil
 }
 
-func (eo elementOverlays) setParent(child asciidoc.Element, parent asciidoc.Element) {
-	existing, ok := eo[child]
-	if !ok {
-		existing = &elementOverlay{action: overlayActionOverrideParent}
-		eo[child] = existing
-	} else {
-		existing.action |= overlayActionOverrideParent
-	}
-	existing.parent = parent
+func (r LibraryParser) Name() string {
+	return "Building library overlay"
+}
+
+func (r LibraryParser) Process(cxt context.Context, input *pipeline.Data[*Library], index int32, total int32) (outputs []*pipeline.Data[*asciidoc.Document], extras []*pipeline.Data[*Library], err error) {
+	err = input.Content.Preparse(r.specRoot, r.attributes)
+	return
 }
