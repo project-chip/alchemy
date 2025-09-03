@@ -133,7 +133,7 @@ func toDeviceTypeRequirements(d *Doc, s *asciidoc.Section, deviceType *matter.De
 		}
 		dtr.DeviceTypeID = matter.ParseNumber(deviceId)
 
-		dtr.DeviceTypeName, _, err = ti.ReadName(row, matter.TableColumnName)
+		dtr.DeviceTypeName, _, err = ti.ReadName(row, matter.TableColumnDeviceName, matter.TableColumnName)
 		if err != nil {
 			return
 		}
