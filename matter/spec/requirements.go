@@ -38,7 +38,7 @@ func toClusterRequirement(deviceType *matter.DeviceType, ti *TableInfo, row *asc
 	if err != nil {
 		return
 	}
-	cr.ClusterName, err = ti.ReadValue(row, matter.TableColumnCluster)
+	cr.ClusterName, err = ti.ReadValue(row, matter.TableColumnClusterName, matter.TableColumnCluster)
 	if err != nil {
 		return
 	}
@@ -270,7 +270,7 @@ func toElementRequirement(d *Doc, ti *TableInfo, row *asciidoc.TableRow, deviceT
 	if err != nil {
 		return
 	}
-	cr.ClusterName, _, err = ti.ReadName(row, matter.TableColumnCluster)
+	cr.ClusterName, _, err = ti.ReadName(row, matter.TableColumnClusterName, matter.TableColumnCluster)
 	if err != nil {
 		return
 	}
