@@ -14,15 +14,21 @@ import (
 )
 
 func (an AnchorNormalizer) rewriteCrossReferences(doc *asciidoc.Document) {
-	for id, xrefs := range doc.CrossReferences(asciidoc.RawReader) {
+
+	library, ok := an.spec.LibraryForDocument(doc)
+	if !ok {
+		return
+	}
+
+	for id, xrefs := range library.CrossReferencesForDoc(doc) {
 		if len(xrefs) == 0 {
 			continue
 		}
 
-		anchor := doc.FindAnchor(id, xrefs[0].Reference)
+		anchor := library.FindAnchor(id, xrefs[0].Reference)
 		if anchor == nil {
 
-			anchors := doc.FindAnchors(id)
+			anchors := library.FindAnchors(id)
 			allAnchorsSkippable := true
 			for _, a := range anchors {
 				if !allAnchorsSkippable || !skipAnchor(a) {
@@ -51,17 +57,17 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *asciidoc.Document) {
 		if anchorLabel == "" {
 			section, isSection := anchor.Element.(*asciidoc.Section)
 			if isSection {
-				anchorLabel = doc.SectionName(section)
+				anchorLabel = library.SectionName(section)
 			}
 		}
 		// We're going to be modifying the underlying array, so we need to make a copy of the slice
 		xrefsToChange := make([]*spec.CrossReference, len(xrefs))
 		copy(xrefsToChange, xrefs)
 		for _, xref := range xrefsToChange {
-			existingAnchorID := anchor.Identifier(asciidoc.RawReader)
-			existingXrefID := xref.Identifier(asciidoc.RawReader)
+			existingAnchorID := library.Identifier(anchor.Parent, anchor.Element, anchor.ID)
+			existingXrefID := library.Identifier(xref.Reference, xref.Reference, xref.Reference.Elements)
 			if existingAnchorID != existingXrefID {
-				xref.SyncToDoc(anchor.ID)
+				library.SyncToDoc(anchor, anchor.ID)
 			}
 			if len(xref.Reference.Elements) > 0 {
 				// If the cross reference has a label that's the same as the one we generated for the anchor, remove it
@@ -73,14 +79,14 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *asciidoc.Document) {
 		}
 	}
 	if an.options.NormalizeAnchors {
-		parse.Search(asciidoc.RawReader, nil, doc.Base.Children(), func(el asciidoc.Element, parent asciidoc.Parent, index int) parse.SearchShould {
+		parse.Search(doc, asciidoc.RawReader, nil, doc.Children(), func(doc *asciidoc.Document, el asciidoc.Element, parent asciidoc.ParentElement, index int) parse.SearchShould {
 			switch el := el.(type) {
 			case *asciidoc.CrossReference:
-				normalizeCrossReference(doc, el)
-				removeCrossReferenceStutter(doc, el, parent, index)
+				normalizeCrossReference(library, doc, el)
+				removeCrossReferenceStutter(library, doc, el, parent, index)
 				return parse.SearchShouldContinue
 			case *asciidoc.Table:
-				an.normalizeTypeCrossReferencesInTable(doc, el)
+				an.normalizeTypeCrossReferencesInTable(library, doc, el)
 				return parse.SearchShouldSkip
 			default:
 				return parse.SearchShouldContinue
@@ -89,11 +95,11 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *asciidoc.Document) {
 	}
 }
 
-func removeCrossReferenceStutter(doc *asciidoc.Document, icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) {
+func removeCrossReferenceStutter(library *spec.Library, doc *asciidoc.Document, icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) {
 	if len(icr.Elements) > 0 {
 		return
 	}
-	anchor := doc.FindAnchorByID(icr.ID, icr, icr)
+	anchor := library.FindAnchorByID(icr.ID, icr, icr)
 	if anchor == nil {
 		return
 	}
@@ -123,20 +129,20 @@ func removeCrossReferenceStutter(doc *asciidoc.Document, icr *asciidoc.CrossRefe
 	nextString.Value = replacement
 }
 
-func (an AnchorNormalizer) normalizeTypeCrossReferencesInTable(doc *asciidoc.Document, table *asciidoc.Table) {
-	parse.Search(asciidoc.RawReader, table, table.Elements, func(icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) parse.SearchShould {
-		normalizeCrossReference(doc, icr)
+func (an AnchorNormalizer) normalizeTypeCrossReferencesInTable(library *spec.Library, doc *asciidoc.Document, table *asciidoc.Table) {
+	parse.Search(doc, asciidoc.RawReader, table, table.Elements, func(doc *asciidoc.Document, icr *asciidoc.CrossReference, parent asciidoc.ParentElement, index int) parse.SearchShould {
+		normalizeCrossReference(library, doc, icr)
 		return parse.SearchShouldContinue
 	})
 
 }
 
-func normalizeCrossReference(doc *asciidoc.Document, icr *asciidoc.CrossReference) {
+func normalizeCrossReference(library *spec.Library, doc *asciidoc.Document, icr *asciidoc.CrossReference) {
 	if len(icr.Elements) > 0 {
 		// Don't touch existing labels
 		return
 	}
-	anchor := doc.FindAnchorByID(icr.ID, icr, icr)
+	anchor := library.FindAnchorByID(icr.ID, icr, icr)
 	if anchor == nil {
 		return
 	}
@@ -144,7 +150,7 @@ func normalizeCrossReference(doc *asciidoc.Document, icr *asciidoc.CrossReferenc
 	if !isSection {
 		return
 	}
-	entities, ok := anchor.Document.EntitiesForSection(section)
+	entities, ok := library.EntitiesForElement(section)
 	if !ok {
 		return
 	}

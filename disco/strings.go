@@ -13,8 +13,8 @@ var multipleSpacesPattern = regexp.MustCompile(`([\w.?!,\(\)\-":]) {2,}([\w.?!,\
 var lowercaseHexPattern = regexp.MustCompile(`(\b0x[0-9a-f]*[a-f][0-9a-f]*\b)`)
 var lowercasePattern = regexp.MustCompile(`[a-f]+`)
 
-func precleanStrings(doc asciidoc.ParentElement) {
-	parse.Search(asciidoc.RawReader, doc, doc.Children(), func(el any, parent asciidoc.Parent, index int) parse.SearchShould {
+func precleanStrings(doc *asciidoc.Document) {
+	parse.Search(doc, asciidoc.RawReader, doc, doc.Children(), func(doc *asciidoc.Document, el asciidoc.Element, parent asciidoc.ParentElement, index int) parse.SearchShould {
 		switch el := el.(type) {
 		case *asciidoc.Monospace, *asciidoc.DoubleMonospace, *asciidoc.FencedBlock:
 			return parse.SearchShouldSkip
@@ -26,7 +26,7 @@ func precleanStrings(doc asciidoc.ParentElement) {
 }
 
 func (b *Baller) postCleanUpStrings(doc *asciidoc.Document, root asciidoc.ParentElement) {
-	parse.Search(asciidoc.RawReader, root, root.Children(), func(el any, parent asciidoc.Parent, index int) parse.SearchShould {
+	parse.Search(doc, asciidoc.RawReader, root, root.Children(), func(doc *asciidoc.Document, el any, parent asciidoc.ParentElement, index int) parse.SearchShould {
 		switch el := el.(type) {
 		case *asciidoc.Monospace, *asciidoc.DoubleMonospace, *asciidoc.FencedBlock:
 			return parse.SearchShouldSkip
@@ -39,7 +39,7 @@ func (b *Baller) postCleanUpStrings(doc *asciidoc.Document, root asciidoc.Parent
 		}
 		return parse.SearchShouldContinue
 	})
-	parse.Search(asciidoc.RawReader, root, root.Children(), func(t *asciidoc.String, parent asciidoc.Parent, index int) parse.SearchShould {
+	parse.Search(doc, asciidoc.RawReader, root, root.Children(), func(doc *asciidoc.Document, t *asciidoc.String, parent asciidoc.ParentElement, index int) parse.SearchShould {
 		if b.options.RemoveExtraSpaces {
 			t.Value = multipleSpacesPattern.ReplaceAllString(t.Value, "$1 $2")
 		}

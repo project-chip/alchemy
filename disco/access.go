@@ -13,7 +13,7 @@ func (b *Baller) fixAccessCells(cxt *discoContext, subSection *subSection, entit
 	if !b.options.FormatAccess {
 		return nil
 	}
-	if cxt.errata.IgnoreSection(cxt.doc.SectionName(subSection.section), errata.DiscoPurposeTableAccess) {
+	if cxt.errata.IgnoreSection(cxt.library.SectionName(subSection.section), errata.DiscoPurposeTableAccess) {
 		return nil
 	}
 	table := subSection.table
@@ -34,7 +34,7 @@ func (b *Baller) fixAccessCells(cxt *discoContext, subSection *subSection, entit
 	}
 	for _, row := range table.Rows[1:] {
 		accessCell := row.Cell(accessIndex)
-		vc, e := spec.RenderTableCell(accessCell)
+		vc, e := spec.RenderTableCell(cxt.library, accessCell)
 		if e != nil {
 			continue
 		}
@@ -48,7 +48,7 @@ func (b *Baller) fixAccessCells(cxt *discoContext, subSection *subSection, entit
 		} else {
 			c := getSubsectionCluster(cxt.parsed, subSection.section)
 			if c != nil && c.classification != nil {
-				ci := getClassificationInfo(c.classification.table)
+				ci := getClassificationInfo(cxt, c.classification.table)
 				if ci.hierarchy != "Base" {
 					continue
 				}
@@ -57,7 +57,7 @@ func (b *Baller) fixAccessCells(cxt *discoContext, subSection *subSection, entit
 		}
 		if directionIndex >= 0 {
 			directionCell := row.Cell(directionIndex)
-			rc, e := spec.RenderTableCell(directionCell)
+			rc, e := spec.RenderTableCell(cxt.library, directionCell)
 			if e != nil {
 				continue
 			}

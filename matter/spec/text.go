@@ -71,7 +71,7 @@ func (library *Library) readDescription(reader asciidoc.Reader, doc *asciidoc.Do
 				if anchor != nil {
 					val = matter.StripTypeSuffixes(ReferenceName(reader, anchor.Element))
 				} else {
-					val = library.anchorId(reader, el, el, el.ID)
+					val = library.elementIdentifier(reader, el, el, el.ID)
 					val = strings.TrimPrefix(val, "_")
 					val = strings.TrimPrefix(val, "ref_") // Trim, and hope someone else has it defined
 				}

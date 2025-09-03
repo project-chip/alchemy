@@ -2,62 +2,46 @@ package db
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func (h *Host) indexDoc(ctx context.Context, doc *asciidoc.Document, raw bool) (*sectionInfo, error) {
+func (h *Host) indexDoc(ctx context.Context, spec *spec.Specification, doc *asciidoc.Document) (*sectionInfo, error) {
+	library, ok := spec.LibraryForDocument(doc)
+	if !ok {
+		return nil, fmt.Errorf("unable to find library for document %s", doc.Path.Relative)
+	}
 	ds := &sectionInfo{id: h.nextID(documentTable), values: &dbRow{}, children: make(map[string][]*sectionInfo)}
-	dt, _ := doc.DocType()
+	dt, _ := library.DocType(doc)
 	dts := matter.DocTypeNames[dt]
 	ds.values.values = map[matter.TableColumn]any{matter.TableColumnName: doc.Path.Base(), matter.TableColumnType: dts}
 	ds.values.extras = map[string]any{"path": doc.Path.Absolute}
-	if raw {
-		for top := range parse.Skim[*asciidoc.Section](doc.Reader(), doc, doc.Children()) {
-			err := spec.AssignSectionTypes(doc, top)
-			if err != nil {
-				return nil, err
-			}
-			for s := range parse.Skim[*asciidoc.Section](doc.Reader(), top, top.Children()) {
-				var err error
-				switch doc.SectionType(s) {
-				case matter.SectionClusterID:
-					err = h.indexCluster(ctx, doc, ds, top)
-				}
+
+	entities := library.Spec.EntitiesForDocument(doc)
+	for _, m := range entities {
+		var err error
+		switch v := m.(type) {
+		case *matter.ClusterGroup:
+			for _, c := range v.Clusters {
+				err = h.indexClusterModel(ctx, ds, c)
 				if err != nil {
-					return nil, err
+					break
 				}
 			}
+		case *matter.Cluster:
+			err = h.indexClusterModel(ctx, ds, v)
+		case *matter.DeviceType:
+			err = h.indexDeviceTypeModel(ctx, ds, v)
+		case *matter.Namespace:
+			err = h.indexNamepsace(ctx, ds, v)
 		}
-	} else {
-		entities, err := doc.Entities()
 		if err != nil {
 			return nil, err
 		}
-		for _, m := range entities {
-			switch v := m.(type) {
-			case *matter.ClusterGroup:
-				for _, c := range v.Clusters {
-					err = h.indexClusterModel(ctx, ds, c)
-					if err != nil {
-						break
-					}
-				}
-			case *matter.Cluster:
-				err = h.indexClusterModel(ctx, ds, v)
-			case *matter.DeviceType:
-				err = h.indexDeviceTypeModel(ctx, ds, v)
-			case *matter.Namespace:
-				err = h.indexNamepsace(ctx, ds, v)
-			}
-			if err != nil {
-				return nil, err
-			}
-		}
-
 	}
+
 	return ds, nil
 }

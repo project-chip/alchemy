@@ -471,7 +471,7 @@ var asteriskPattern = regexp.MustCompile(`\^[0-9]+\^\s*$`)
 
 func (library *Library) crossReferenceToDataType(doc *asciidoc.Document, cr *asciidoc.CrossReference, isArray bool) *types.DataType {
 	var dt *types.DataType
-	id := library.anchorId(library, cr, cr, cr.ID)
+	id := library.elementIdentifier(library, cr, cr, cr.ID)
 	if len(cr.Elements) > 0 {
 		var label strings.Builder
 		for el := range library.Iterate(cr, library.Children(cr)) {
@@ -633,9 +633,7 @@ func listDataTypePattern(library *Library, doc *asciidoc.Document, row *asciidoc
 }
 
 func (ti *TableInfo) ReadDataType(library *Library, reader asciidoc.Reader, row *asciidoc.TableRow, column matter.TableColumn) (*types.DataType, error) {
-	if !library.anchorsParsed {
-		library.findAnchors(reader)
-	}
+
 	i, ok := ti.ColumnMap[column]
 	if !ok {
 		return nil, newGenericParseError(row, "missing %s column for data type", column)

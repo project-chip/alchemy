@@ -22,7 +22,7 @@ type Command struct {
 
 	Address string `default:"localhost" help:"the address to host the database server on"`
 	Port    int    `default:"3306" help:"the port to run the database server on"`
-	Raw     bool   `default:"false" help:"parse the sections directly, bypassing entity building"`
+	Raw     bool   `default:"false" hidden:"" help:"parse the sections directly, bypassing entity building"`
 }
 
 func (cmd *Command) Run(cc *cli.Context) (err error) {
@@ -44,7 +44,7 @@ func (cmd *Command) Run(cc *cli.Context) (err error) {
 	sc.SetCurrentDatabase("matter")
 
 	h := db.New()
-	err = h.Build(sc, specification, docs, cmd.Raw)
+	err = h.Build(sc, specification, docs)
 	if err != nil {
 		return fmt.Errorf("error building DB: %w", err)
 	}
