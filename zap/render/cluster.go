@@ -25,7 +25,7 @@ func (cr *configuratorRenderer) renderClusters(ce *etree.Element) (err error) {
 		if ok {
 			clusterID := matter.ParseNumber(code)
 			if !clusterID.Valid() {
-				slog.Warn("invalid code ID in cluster", slog.String("path", configurator.OutPath), slog.String("id", clusterID.Text()))
+				slog.Warn("invalid code ID in cluster, attempting to match by name", slog.String("path", configurator.OutPath), slog.String("code", clusterID.Text()))
 			} else {
 				for c, handled := range configurator.Clusters {
 					if c.ID.Equals(clusterID) {
@@ -60,6 +60,8 @@ func (cr *configuratorRenderer) renderClusters(ce *etree.Element) (err error) {
 				// We don't have this cluster in the spec; leave it here for now
 				slog.Warn("unknown name in cluster", slog.String("path", configurator.OutPath), slog.String("name", name))
 				continue
+			} else {
+				slog.Warn("matched cluster by name; please allocate an ID for this cluster", slog.String("clusterName", cluster.Name))
 			}
 		}
 
