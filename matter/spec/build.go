@@ -101,7 +101,7 @@ func (sp *Builder) buildSpec(docGroups []*DocGroup) (referencedDocs []*Doc, err 
 			var entities []types.Entity
 			entities, err = d.Entities()
 			if err != nil {
-				slog.Warn("error building entities", "doc", d.Path, "error", err)
+				slog.Error("error building entities", "doc", d.Path, "error", err)
 				if pe, isParseError := err.(Error); isParseError {
 					spec.addError(pe)
 				} else {
@@ -137,7 +137,7 @@ func (sp *Builder) buildSpec(docGroups []*DocGroup) (referencedDocs []*Doc, err 
 					}
 					existing, ok := spec.DeviceTypesByName[m.Name]
 					if ok {
-						slog.Warn("Duplicate Device Type Name", slog.String("deviceTypeId", m.ID.HexString()), slog.String("deviceTypeName", m.Name), slog.String("existingDeviceTypeId", existing.ID.HexString()))
+						slog.Error("Duplicate Device Type Name", slog.String("deviceTypeId", m.ID.HexString()), slog.String("deviceTypeName", m.Name), slog.String("existingDeviceTypeId", existing.ID.HexString()))
 						spec.addError(&DuplicateEntityNameError{Entity: m, Previous: existing})
 					}
 					spec.DeviceTypesByName[m.Name] = m
@@ -272,7 +272,7 @@ func (sp *Builder) addCluster(doc *Doc, cluster *matter.Cluster) {
 	if cluster.ID.Valid() {
 		existing, ok := sp.Spec.ClustersByID[cluster.ID.Value()]
 		if ok {
-			slog.Warn("Duplicate cluster ID", slog.String("clusterId", cluster.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("existingClusterName", existing.Name))
+			slog.Error("Duplicate cluster ID", slog.String("clusterId", cluster.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("existingClusterName", existing.Name))
 			sp.Spec.addError(&DuplicateEntityIDError{Entity: cluster, Previous: existing})
 		}
 		sp.Spec.ClustersByID[cluster.ID.Value()] = cluster
@@ -289,7 +289,7 @@ func (sp *Builder) addCluster(doc *Doc, cluster *matter.Cluster) {
 	}
 	existing, ok := sp.Spec.ClustersByName[cluster.Name]
 	if ok {
-		slog.Warn("Duplicate cluster Name", slog.String("clusterId", cluster.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("existingClusterId", existing.ID.HexString()))
+		slog.Error("Duplicate cluster Name", slog.String("clusterId", cluster.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("existingClusterId", existing.ID.HexString()))
 		sp.Spec.addError(&DuplicateEntityNameError{Entity: cluster, Previous: existing})
 
 	}
