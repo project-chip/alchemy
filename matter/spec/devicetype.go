@@ -408,7 +408,7 @@ func findDeviceTypeRequirementCluster(spec *Specification, id *matter.Number, na
 	var ok bool
 	if cluster, ok = spec.ClustersByID[id.Value()]; ok {
 		if name != cluster.Name {
-			slog.Warn("Mismatch between cluster requirement ID and cluster name", slog.String("clusterId", id.HexString()), slog.String("clusterName", cluster.Name), slog.String("requirementName", name), log.Path("source", entity))
+			slog.Error("Mismatch between cluster requirement ID and cluster name", slog.String("clusterId", id.HexString()), slog.String("clusterName", cluster.Name), slog.String("requirementName", name), log.Path("source", entity))
 			spec.addError(&ClusterReferenceNameMismatch{Cluster: cluster, Name: name, Source: entity})
 		}
 		return
@@ -428,7 +428,7 @@ func findDeviceTypeRequirementDeviceType(spec *Specification, id *matter.Number,
 	var ok bool
 	if deviceType, ok = spec.DeviceTypesByID[id.Value()]; ok {
 		if name != deviceType.Name {
-			slog.Warn("Mismatch between device type ID and device type name", slog.String("deviceTypeId", id.HexString()), slog.String("deviceTypeName", deviceType.Name), slog.String("requirementName", name), log.Path("source", entity))
+			slog.Error("Mismatch between device type ID and device type name", slog.String("deviceTypeId", id.HexString()), slog.String("deviceTypeName", deviceType.Name), slog.String("requirementName", name), log.Path("source", entity))
 			spec.addError(&DeviceTypeReferenceNameMismatch{DeviceType: deviceType, Name: name, Source: entity})
 		}
 		return
