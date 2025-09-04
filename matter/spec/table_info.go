@@ -378,16 +378,16 @@ func (ti *TableInfo) ReadLocation(row *asciidoc.TableRow, columns ...matter.Tabl
 	switch rs {
 	case "":
 		relation = matter.DeviceTypeRequirementLocationUnknown
-	case "DeviceEndpoint":
+	case "Self":
 		relation = matter.DeviceTypeRequirementLocationDeviceEndpoint
-	case "ChildEndpoint":
+	case "Child":
 		relation = matter.DeviceTypeRequirementLocationChildEndpoint
-	case "RootEndpoint":
+	case "Root":
 		relation = matter.DeviceTypeRequirementLocationRootEndpoint
-	case "DescendantEndpoint":
+	case "Descendant":
 		relation = matter.DeviceTypeRequirementLocationDescendantEndpoint
 	default:
-		err = newGenericParseError(row, "unknown relation: %s", rs)
+		err = newGenericParseError(row, "unknown location: %s", rs)
 	}
 	return
 }

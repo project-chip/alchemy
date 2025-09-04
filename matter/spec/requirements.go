@@ -210,6 +210,10 @@ func toConditionRequirements(d *Doc, s *asciidoc.Section, deviceType *matter.Dev
 			return
 		}
 		cr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
+		cr.Location, err = ti.ReadLocation(row, matter.TableColumnLocation)
+		if err != nil {
+			return
+		}
 		conditionRequirements = append(conditionRequirements, cr)
 	}
 	return

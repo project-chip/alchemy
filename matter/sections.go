@@ -71,7 +71,7 @@ var TopLevelSectionOrders = map[DocType][]Section{
 	},
 }
 
-var DataTypeSectionOrder = []Section{SectionPrefix, SectionDataTypeConstant, SectionDataTypeBitmap, SectionDataTypeEnum, SectionDataTypeStruct, SectionDataTypeDef}
+var DataTypeSectionOrder = []Section{SectionPrefix, SectionDataTypeConstant, SectionDataTypeDef, SectionDataTypeBitmap, SectionDataTypeEnum, SectionDataTypeStruct, SectionDataTypeDef}
 var DeviceRequirementsSectionOrder = []Section{SectionClusterRestrictions,
 	SectionElementRequirements,
 	SectionEndpointComposition,
