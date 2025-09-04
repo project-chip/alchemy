@@ -128,6 +128,13 @@ func (b *Baller) discoBallTopLevelSection(doc *spec.Doc, top *asciidoc.Section, 
 				return fmt.Errorf("error reordering data types section in %s: %w", doc.Path, err)
 			}
 		}
+		deviceRequirementsSection := spec.FindSectionByType(doc, top, matter.SectionDeviceTypeRequirements)
+		if deviceRequirementsSection != nil {
+			err := reorderSection(doc, deviceRequirementsSection, matter.DeviceRequirementsSectionOrder)
+			if err != nil {
+				return fmt.Errorf("error reordering device requirements section in %s: %w", doc.Path, err)
+			}
+		}
 	}
 	b.ensureTableOptions(doc, top)
 	b.postCleanUpStrings(doc, top)

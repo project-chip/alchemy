@@ -24,6 +24,12 @@ func (b *Baller) organizeSubSections(dc *discoContext) (err error) {
 		b.organizeStructSections,
 		b.organizeCommandsSection,
 		b.organizeEventsSection,
+		b.organizeDeviceIDSection,
+		b.organizeClusterRequirementsSection,
+		b.organizeElementRequirementsSection,
+		b.organizeComposedDeviceClusterRequirementsSection,
+		b.organizeComposedDeviceElementRequirementsSection,
+		b.organizeConditionRequirementsSection,
 	}
 	for _, organizer := range organizers {
 		err = organizer(dc)
