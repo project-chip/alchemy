@@ -37,7 +37,7 @@ var DefaultOptions = DiscoOptions{
 	AddSpaceAfterPunctuation:      true,
 	RemoveExtraSpaces:             true,
 	NormalizeFeatureNames:         true,
-	DisambiguateConformanceChoice: false,
+	DisambiguateConformanceChoice: true,
 	NormalizeAnchors:              false,
-	RemoveMandatoryFallbacks:      false,
+	RemoveMandatoryFallbacks:      true,
 }
