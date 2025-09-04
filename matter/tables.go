@@ -87,7 +87,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnCommandID:    "Command ID",
 	TableColumnDevice:       "Device",
 	TableColumnDeviceID:     "Device Type ID",
-	TableColumnDeviceName:   "Device Name",
+	TableColumnDeviceName:   "Device Type Name",
 	TableColumnSupersetOf:   "Superset Of",
 	TableColumnClass:        "Class",
 	TableColumnDirection:    "Direction",
@@ -216,7 +216,7 @@ var Tables = map[TableType]Table{
 	TableTypeClusterID: {
 		ColumnOrder: []TableColumn{
 			TableColumnClusterID,
-			TableColumnName,
+			TableColumnClusterName,
 			TableColumnConformance,
 		},
 		RequiredColumns: []TableColumn{
@@ -225,35 +225,30 @@ var Tables = map[TableType]Table{
 			TableColumnConformance,
 		},
 		ColumnRenames: map[TableColumn]TableColumn{
-			TableColumnID: TableColumnClusterID,
+			TableColumnID:   TableColumnClusterID,
+			TableColumnName: TableColumnClusterName,
 		},
 	},
 	TableTypeCommands: {
 		ColumnOrder: []TableColumn{
-			TableColumnCommandID,
+			TableColumnID,
 			TableColumnName,
 			TableColumnDirection,
 			TableColumnResponse,
 			TableColumnAccess,
 			TableColumnQuality,
 			TableColumnConformance,
-		},
-		ColumnRenames: map[TableColumn]TableColumn{
-			TableColumnID: TableColumnCommandID,
 		},
 	},
 	TableTypeCommandFields: {
 		ColumnOrder: []TableColumn{
-			TableColumnFieldID,
+			TableColumnID,
 			TableColumnName,
 			TableColumnDirection,
 			TableColumnResponse,
 			TableColumnAccess,
 			TableColumnQuality,
 			TableColumnConformance,
-		},
-		ColumnRenames: map[TableColumn]TableColumn{
-			TableColumnID: TableColumnFieldID,
 		},
 	},
 	TableTypeStruct: {
@@ -291,29 +286,23 @@ var Tables = map[TableType]Table{
 	},
 	TableTypeEvents: {
 		ColumnOrder: []TableColumn{
-			TableColumnEventID,
+			TableColumnID,
 			TableColumnName,
 			TableColumnPriority,
 			TableColumnQuality,
 			TableColumnAccess,
 			TableColumnConformance,
 		},
-		ColumnRenames: map[TableColumn]TableColumn{
-			TableColumnID: TableColumnEventID,
-		},
 	},
 	TableTypeEventFields: {
 		ColumnOrder: []TableColumn{
-			TableColumnFieldID,
+			TableColumnID,
 			TableColumnName,
 			TableColumnType,
 			TableColumnConstraint,
 			TableColumnQuality,
 			TableColumnFallback,
 			TableColumnConformance,
-		},
-		ColumnRenames: map[TableColumn]TableColumn{
-			TableColumnID: TableColumnFieldID,
 		},
 	},
 	TableTypeFeatures: {
@@ -331,10 +320,123 @@ var Tables = map[TableType]Table{
 	TableTypeDeviceTypeRequirements: {
 		ColumnOrder: []TableColumn{
 			TableColumnDeviceID,
-			TableColumnName,
+			TableColumnDeviceName,
 			TableColumnConstraint,
 			TableColumnConformance,
 			TableColumnLocation,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnID:   TableColumnDeviceID,
+			TableColumnName: TableColumnDeviceName,
+		},
+	},
+	TableTypeDeviceID: {
+		ColumnOrder: []TableColumn{
+			TableColumnDeviceID,
+			TableColumnDeviceName,
+			TableColumnSupersetOf,
+			TableColumnClass,
+			TableColumnScope,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnID:   TableColumnDeviceID,
+			TableColumnName: TableColumnDeviceName,
+		},
+	},
+	TableTypeClusterRequirements: {
+		ColumnOrder: []TableColumn{
+			TableColumnClusterID,
+			TableColumnClusterName,
+			TableColumnClientServer,
+			TableColumnQuality,
+			TableColumnConformance,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnID:      TableColumnClusterID,
+			TableColumnName:    TableColumnCluster,
+			TableColumnCluster: TableColumnClusterName,
+		},
+	},
+	TableTypeElementRequirements: {
+		ColumnOrder: []TableColumn{
+			TableColumnClusterID,
+			TableColumnClusterName,
+			TableColumnElement,
+			TableColumnName,
+			TableColumnClientServer,
+			TableColumnConformance,
+			TableColumnField,
+			TableColumnQuality,
+			TableColumnConstraint,
+			TableColumnAccess,
+			TableColumnConformance,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnID:      TableColumnClusterID,
+			TableColumnCluster: TableColumnClusterName,
+		},
+	},
+	TableTypeComposedDeviceTypeClusterRequirements: {
+		ColumnOrder: []TableColumn{
+			TableColumnDeviceID,
+			TableColumnDeviceName,
+			TableColumnDevice,
+			TableColumnClusterID,
+			TableColumnClusterName,
+			TableColumnCluster,
+			TableColumnClientServer,
+			TableColumnConformance,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnCluster: TableColumnClusterName,
+			TableColumnDevice:  TableColumnDeviceName,
+		},
+	},
+	TableTypeComposedDeviceTypeElementRequirements: {
+		ColumnOrder: []TableColumn{
+			TableColumnDeviceID,
+			TableColumnDeviceName,
+			TableColumnClusterID,
+			TableColumnClusterName,
+			TableColumnElement,
+			TableColumnName,
+			TableColumnClientServer,
+			TableColumnConformance,
+			TableColumnField,
+			TableColumnQuality,
+			TableColumnConstraint,
+			TableColumnAccess,
+			TableColumnConformance,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnCluster: TableColumnClusterName,
+			TableColumnDevice:  TableColumnDeviceName,
+		},
+	},
+	TableTypeConditionRequirements: {
+		ColumnOrder: []TableColumn{
+			TableColumnDeviceID,
+			TableColumnDeviceName,
+			TableColumnCondition,
+			TableColumnConformance,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnDevice: TableColumnDeviceName,
+		},
+	},
+	TableTypeTagRequirements: {
+		ColumnOrder: []TableColumn{
+			TableColumnDeviceID,
+			TableColumnDeviceName,
+			TableColumnNamespaceID,
+			TableColumnNamespace,
+			TableColumnTagID,
+			TableColumnTag,
+			TableColumnConstraint,
+			TableColumnConformance,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnDevice: TableColumnDeviceName,
 		},
 	},
 }

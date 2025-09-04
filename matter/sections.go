@@ -72,6 +72,13 @@ var TopLevelSectionOrders = map[DocType][]Section{
 }
 
 var DataTypeSectionOrder = []Section{SectionPrefix, SectionDataTypeConstant, SectionDataTypeBitmap, SectionDataTypeEnum, SectionDataTypeStruct, SectionDataTypeDef}
+var DeviceRequirementsSectionOrder = []Section{SectionClusterRestrictions,
+	SectionElementRequirements,
+	SectionEndpointComposition,
+	SectionComposedDeviceTypeConditionRequirements,
+	SectionComposedDeviceTypeClusterRequirements,
+	SectionComposedDeviceTypeElementRequirements,
+	SectionSemanticTagRequirements}
 
 var sectionTypeStrings = map[Section]string{
 	SectionPrefix:                 "Prefix",
