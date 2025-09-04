@@ -32,6 +32,14 @@ type docParse struct {
 	commands []*subSection
 	events   []*subSection
 
+	deviceIDs                   []*subSection
+	clusterRequirements         []*subSection
+	elementRequirements         []*subSection
+	deviceRequirements          []*subSection
+	composedElementRequirements []*subSection
+	composedClusterRequirements []*subSection
+	conditionRequirements       []*subSection
+
 	tableCache       map[*asciidoc.Table]*spec.TableInfo
 	conformanceCache map[asciidoc.Element]conformance.Set
 }
@@ -98,13 +106,22 @@ func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection
 				dp.commands = append(dp.commands, commands)
 			}
 		case matter.SectionClassification:
-			var classification *subSection
-			classification, err = newSubSection(dp, section)
-			if err == nil {
-				dp.classification = append(dp.classification, classification)
-				ci := getSubsectionCluster(dp, section)
-				if ci != nil {
-					ci.classification = classification
+			switch docType {
+			case matter.DocTypeDeviceType, matter.DocTypeBaseDeviceType:
+				var deviceIDs *subSection
+				deviceIDs, err = newSubSection(dp, section)
+				if err == nil {
+					dp.deviceIDs = append(dp.deviceIDs, deviceIDs)
+				}
+			default:
+				var classification *subSection
+				classification, err = newSubSection(dp, section)
+				if err == nil {
+					dp.classification = append(dp.classification, classification)
+					ci := getSubsectionCluster(dp, section)
+					if ci != nil {
+						ci.classification = classification
+					}
 				}
 			}
 		case matter.SectionClusterID:
@@ -141,6 +158,36 @@ func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection
 			events, err = newParentSubSection(dp, section, newSubSectionChildPattern(" Event", matter.TableColumnName), newSubSectionChildPattern(" Field", matter.TableColumnName))
 			if err == nil {
 				dp.events = append(dp.events, events)
+			}
+		case matter.SectionComposedDeviceTypeConditionRequirements:
+			var conditionRequirements *subSection
+			conditionRequirements, err = newSubSection(dp, section)
+			if err == nil {
+				dp.conditionRequirements = append(dp.conditionRequirements, conditionRequirements)
+			}
+		case matter.SectionClusterRequirements:
+			var clusterRequirements *subSection
+			clusterRequirements, err = newSubSection(dp, section)
+			if err == nil {
+				dp.clusterRequirements = append(dp.clusterRequirements, clusterRequirements)
+			}
+		case matter.SectionElementRequirements:
+			var elementRequirements *subSection
+			elementRequirements, err = newSubSection(dp, section)
+			if err == nil {
+				dp.elementRequirements = append(dp.elementRequirements, elementRequirements)
+			}
+		case matter.SectionComposedDeviceTypeClusterRequirements:
+			var composedClusterRequirements *subSection
+			composedClusterRequirements, err = newSubSection(dp, section)
+			if err == nil {
+				dp.composedClusterRequirements = append(dp.composedClusterRequirements, composedClusterRequirements)
+			}
+		case matter.SectionComposedDeviceTypeElementRequirements:
+			var composedElementRequirements *subSection
+			composedElementRequirements, err = newSubSection(dp, section)
+			if err == nil {
+				dp.composedElementRequirements = append(dp.composedElementRequirements, composedElementRequirements)
 			}
 		}
 		if err != nil {
@@ -244,6 +291,26 @@ func getSubsectionCluster(docParse *docParse, section *asciidoc.Section) *cluste
 	if ok {
 		for parent != nil {
 			if docParse.doc.SectionType(parent) == matter.SectionCluster {
+				ci, ok := docParse.clusters[parent]
+				if !ok {
+					ci = &clusterInfo{}
+					docParse.clusters[parent] = ci
+				}
+				return ci
+			}
+			if parent, ok = parent.Parent().(*asciidoc.Section); !ok {
+				break
+			}
+		}
+	}
+	return nil
+}
+
+func getSubsectionDeviceType(docParse *docParse, section *asciidoc.Section) *clusterInfo {
+	parent, ok := section.Parent().(*asciidoc.Section)
+	if ok {
+		for parent != nil {
+			if docParse.doc.SectionType(parent) == matter.SectionDeviceType {
 				ci, ok := docParse.clusters[parent]
 				if !ok {
 					ci = &clusterInfo{}
