@@ -53,6 +53,9 @@ const (
 	TableColumnConditionID
 	TableColumnModeTagValue
 	TableColumnNamespace
+	TableColumnNamespaceID
+	TableColumnTag
+	TableColumnTagID
 	TableColumnLocation
 	TableColumnField
 )
@@ -100,6 +103,9 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnConditionID:  "Condition ID",
 	TableColumnModeTagValue: "Mode Tag Value",
 	TableColumnNamespace:    "Namespace",
+	TableColumnNamespaceID:  "Namespace ID",
+	TableColumnTag:          "Tag",
+	TableColumnTagID:        "Tag ID",
 	TableColumnLocation:     "Location",
 	TableColumnField:        "Field",
 	TableColumnFieldID:      "Field ID",
@@ -149,7 +155,14 @@ const (
 	TableTypeEvents
 	TableTypeEventFields
 	TableTypeFeatures
+	TableTypeDeviceID
 	TableTypeDeviceTypeRequirements
+	TableTypeClusterRequirements
+	TableTypeElementRequirements
+	TableTypeComposedDeviceTypeClusterRequirements
+	TableTypeComposedDeviceTypeElementRequirements
+	TableTypeConditionRequirements
+	TableTypeTagRequirements
 )
 
 type Table struct {
