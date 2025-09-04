@@ -31,6 +31,8 @@ type DeviceType struct {
 	DeviceTypeRequirements                []*DeviceTypeRequirement        `json:"deviceTypeRequirements,omitempty"`
 	ComposedDeviceTypeClusterRequirements []*DeviceTypeClusterRequirement `json:"composedDeviceTypeClusterRequirements,omitempty"`
 	ComposedDeviceTypeElementRequirements []*DeviceTypeElementRequirement `json:"composedDeviceTypeElementRequirements,omitempty"`
+
+	TagRequirements []*DeviceTypeTagRequirement `json:"semanticTagRequirements,omitempty"`
 }
 
 func NewDeviceType(source asciidoc.Element) *DeviceType {
@@ -131,10 +133,6 @@ func (er *ElementRequirement) Clone() *ElementRequirement {
 	return cer
 }
 
-func NewDeviceTypeRequirement(parent *DeviceType, source asciidoc.Element) *DeviceTypeRequirement {
-	return &DeviceTypeRequirement{entity: entity{parent: parent, source: source}}
-}
-
 type DeviceTypeRequirementLocation uint8
 
 const (
@@ -194,4 +192,8 @@ func (dtr *DeviceTypeRequirement) Clone() *DeviceTypeRequirement {
 		cdtr.Conformance = dtr.Conformance.CloneSet()
 	}
 	return cdtr
+}
+
+func NewDeviceTypeRequirement(parent *DeviceType, source asciidoc.Element) *DeviceTypeRequirement {
+	return &DeviceTypeRequirement{entity: entity{parent: parent, source: source}}
 }

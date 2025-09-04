@@ -181,6 +181,8 @@ func getSectionType(doc *Doc, parent *asciidoc.Section, section *asciidoc.Sectio
 		return matter.SectionComposedDeviceTypeConditionRequirements
 	case "element requirements on composing device types":
 		return matter.SectionComposedDeviceTypeElementRequirements
+	case "semantic tag requirements on composing device types":
+		return matter.SectionSemanticTagRequirements
 	}
 	switch doc.SectionType(parent) {
 	case matter.SectionTop, matter.SectionCluster, matter.SectionDeviceType:

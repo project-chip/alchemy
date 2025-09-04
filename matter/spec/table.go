@@ -208,6 +208,12 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnConditionID
 	case "namespace":
 		return matter.TableColumnNamespace
+	case "namespace id":
+		return matter.TableColumnNamespaceID
+	case "tag":
+		return matter.TableColumnTag
+	case "tag id":
+		return matter.TableColumnTagID
 	case "mode tag value":
 		return matter.TableColumnModeTagValue
 	case "status code", "status code value":

@@ -222,7 +222,7 @@ func toComposedDeviceTypeElementRequirements(d *Doc, s *asciidoc.Section, device
 		if err == ErrNoTableFound {
 			err = nil
 		} else {
-			err = newGenericParseError(s, "error reading element requirements table: %w", err)
+			err = newGenericParseError(s, "error reading composed device element requirements table: %w", err)
 		}
 		return
 	}
@@ -326,5 +326,58 @@ func toElementRequirement(d *Doc, ti *TableInfo, row *asciidoc.TableRow, deviceT
 	}
 	cr.Access, _ = ParseAccess(a, types.EntityTypeElementRequirement)
 	cr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
+	return
+}
+
+func toDeviceTypeTagRequirements(d *Doc, s *asciidoc.Section, deviceType *matter.DeviceType) (deviceTypeTagRequirements []*matter.DeviceTypeTagRequirement, err error) {
+	var ti *TableInfo
+	ti, err = parseFirstTable(d, s)
+	if err != nil {
+		if err == ErrNoTableFound {
+			err = nil
+		} else {
+			err = newGenericParseError(s, "error reading device type tag requirements table: %w", err)
+		}
+		return
+	}
+	for row := range ti.ContentRows() {
+		dttr := matter.NewDeviceTypeTagRequirement(deviceType, row)
+		dttr.DeviceTypeID, err = ti.ReadID(row, matter.TableColumnDeviceID)
+		if err != nil {
+			return
+		}
+		dttr.DeviceTypeName, _, err = ti.ReadName(row, matter.TableColumnDeviceName, matter.TableColumnDevice)
+		if err != nil {
+			return
+		}
+		dttr.NamespaceID, err = ti.ReadID(row, matter.TableColumnNamespaceID)
+		if err != nil {
+			return
+		}
+		dttr.NamespaceName, _, err = ti.ReadName(row, matter.TableColumnNamespace)
+		if err != nil {
+			return
+		}
+		dttr.SemanticTagID, err = ti.ReadID(row, matter.TableColumnTagID)
+		if err != nil {
+			return
+		}
+		dttr.SemanticTagName, _, err = ti.ReadName(row, matter.TableColumnTag)
+		if err != nil {
+			return
+		}
+
+		if ti.ColumnMap.HasAny(matter.TableColumnConstraint) {
+			dttr.Constraint = ti.ReadConstraint(row, matter.TableColumnConstraint)
+		}
+		if ti.ColumnMap.HasAny(matter.TableColumnConformance) {
+			dttr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
+		}
+		dttr.Location, err = ti.ReadLocation(row, matter.TableColumnLocation)
+		if err != nil {
+			return
+		}
+		deviceTypeTagRequirements = append(deviceTypeTagRequirements, dttr)
+	}
 	return
 }

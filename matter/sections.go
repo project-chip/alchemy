@@ -35,6 +35,7 @@ const (
 	SectionComposedDeviceTypeClusterRequirements
 	SectionComposedDeviceTypeConditionRequirements
 	SectionComposedDeviceTypeElementRequirements
+	SectionSemanticTagRequirements
 	SectionEndpointComposition
 	SectionField
 	SectionValue
@@ -65,11 +66,8 @@ var TopLevelSectionOrders = map[DocType][]Section{
 		SectionRevisionHistory,
 		SectionClassification,
 		SectionConditions,
-		SectionDeviceTypeRequirements,
 		SectionClusterRequirements,
-		SectionClusterRestrictions,
-		SectionElementRequirements,
-		SectionEndpointComposition,
+		SectionDeviceTypeRequirements,
 	},
 }
 

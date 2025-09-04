@@ -35,8 +35,14 @@ const (
 	ErrorTypeConditionRequirementUnknownDeviceType
 	ErrorTypeConditionRequirementUnreferencedDeviceType
 	ErrorTypeConditionRequirementUnknownCondition
+	ErrorTypeTagRequirementUnreferencedDeviceType
+	ErrorTypeTagRequirementUnknownNamespace
+	ErrorTypeTagRequirementNamespaceNameMismatch
+	ErrorTypeTagRequirementUnknownTag
+	ErrorTypeTagRequirementTagNameMismatch
 	ErrorTypeClusterReferenceNameMismatch
 	ErrorTypeDeviceTypeReferenceNameMismatch
+	ErrorTypeNamespaceNameMismatch
 	ErrorTypeUnknownBaseCluster
 	ErrorTypeUnknownConformanceIdentifier
 	ErrorTypeUnknownConformanceReference
@@ -416,6 +422,88 @@ func (ddt UnreferencedComposingDeviceTypeElementRequirementDeviceTypeError) Orig
 
 func (ddt UnreferencedComposingDeviceTypeElementRequirementDeviceTypeError) Error() string {
 	return fmt.Sprintf("unreferenced composing device element requirement device type: %s", ddt.Requirement.DeviceTypeName)
+}
+
+type UnreferencedTagRequirementDeviceTypeError struct {
+	Requirement *matter.DeviceTypeTagRequirement
+}
+
+func (ddt UnreferencedTagRequirementDeviceTypeError) Type() ErrorType {
+	return ErrorTypeTagRequirementUnreferencedDeviceType
+}
+
+func (ddt UnreferencedTagRequirementDeviceTypeError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt UnreferencedTagRequirementDeviceTypeError) Error() string {
+	return fmt.Sprintf("unreferenced composing device cluster requirement device type: %s", ddt.Requirement.DeviceTypeName)
+}
+
+type UnknownNamespaceTagRequirementDeviceTypeError struct {
+	Requirement *matter.DeviceTypeTagRequirement
+}
+
+func (ddt UnknownNamespaceTagRequirementDeviceTypeError) Type() ErrorType {
+	return ErrorTypeTagRequirementUnknownNamespace
+}
+
+func (ddt UnknownNamespaceTagRequirementDeviceTypeError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt UnknownNamespaceTagRequirementDeviceTypeError) Error() string {
+	return fmt.Sprintf("unrecognized namespace in device type tag requirement: %s", ddt.Requirement.NamespaceName)
+}
+
+type NamespaceNameMismatchTagRequirementDeviceTypeError struct {
+	Requirement *matter.DeviceTypeTagRequirement
+	Namespace   *matter.Namespace
+}
+
+func (ddt NamespaceNameMismatchTagRequirementDeviceTypeError) Type() ErrorType {
+	return ErrorTypeTagRequirementNamespaceNameMismatch
+}
+
+func (ddt NamespaceNameMismatchTagRequirementDeviceTypeError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt NamespaceNameMismatchTagRequirementDeviceTypeError) Error() string {
+	return fmt.Sprintf("mismatched namespace name in device type tag requirement: %s vs. %s", ddt.Requirement.NamespaceName, ddt.Namespace.Name)
+}
+
+type UnknownTagRequirementDeviceTypeError struct {
+	Requirement *matter.DeviceTypeTagRequirement
+}
+
+func (ddt UnknownTagRequirementDeviceTypeError) Type() ErrorType {
+	return ErrorTypeTagRequirementUnknownTag
+}
+
+func (ddt UnknownTagRequirementDeviceTypeError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt UnknownTagRequirementDeviceTypeError) Error() string {
+	return fmt.Sprintf("unrecognized tag in device type tag requirement: %s", ddt.Requirement.SemanticTagName)
+}
+
+type TagNameMismatchTagRequirementDeviceTypeError struct {
+	Requirement *matter.DeviceTypeTagRequirement
+	SemanticTag *matter.SemanticTag
+}
+
+func (ddt TagNameMismatchTagRequirementDeviceTypeError) Type() ErrorType {
+	return ErrorTypeTagRequirementTagNameMismatch
+}
+
+func (ddt TagNameMismatchTagRequirementDeviceTypeError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt TagNameMismatchTagRequirementDeviceTypeError) Error() string {
+	return fmt.Sprintf("mismatched tag name in device type tag requirement: %s vs. %s", ddt.Requirement.SemanticTagName, ddt.SemanticTag.Name)
 }
 
 type UnknownBaseClusterError struct {
