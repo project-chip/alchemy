@@ -20,7 +20,7 @@ func (cf *eventFactory) New(spec *Specification, d *Doc, s *asciidoc.Section, ti
 
 	e = matter.NewEvent(s, parent)
 	e.Name = matter.StripTypeSuffixes(name)
-	e.ID, err = ti.ReadID(row, matter.TableColumnID)
+	e.ID, err = ti.ReadID(row, matter.TableColumnEventID, matter.TableColumnID)
 	if err != nil {
 		return
 	}

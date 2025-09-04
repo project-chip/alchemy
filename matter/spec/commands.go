@@ -23,7 +23,7 @@ type commandFactory struct{}
 func (cf *commandFactory) New(spec *Specification, d *Doc, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (*matter.Command, error) {
 	cmd := matter.NewCommand(s, parent)
 	var err error
-	cmd.ID, err = ti.ReadID(row, matter.TableColumnID)
+	cmd.ID, err = ti.ReadID(row, matter.TableColumnCommandID, matter.TableColumnID)
 	if err != nil {
 		return nil, err
 	}
