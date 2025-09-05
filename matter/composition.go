@@ -5,7 +5,6 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -15,6 +14,7 @@ type DeviceTypeComposition struct {
 
 	ClusterRequirements []*DeviceTypeClusterRequirement
 	ElementRequirements []*DeviceTypeElementRequirement
+	TagRequirements     []*DeviceTypeTagRequirement
 
 	ComposedDeviceTypes map[DeviceTypeRequirementLocation][]*DeviceTypeComposition
 }
@@ -129,11 +129,13 @@ func (dc *DeviceTypeComposition) Clone() *DeviceTypeComposition {
 		DeviceTypeRequirements: make([]*DeviceTypeRequirement, len(dc.DeviceTypeRequirements)),
 		ClusterRequirements:    make([]*DeviceTypeClusterRequirement, len(dc.ClusterRequirements)),
 		ElementRequirements:    make([]*DeviceTypeElementRequirement, len(dc.ElementRequirements)),
+		TagRequirements:        make([]*DeviceTypeTagRequirement, len(dc.TagRequirements)),
 		ComposedDeviceTypes:    make(map[DeviceTypeRequirementLocation][]*DeviceTypeComposition, len(dc.ComposedDeviceTypes)),
 	}
 	copy(clone.DeviceTypeRequirements, dc.DeviceTypeRequirements)
 	copy(clone.ClusterRequirements, dc.ClusterRequirements)
 	copy(clone.ElementRequirements, dc.ElementRequirements)
+	copy(clone.TagRequirements, dc.TagRequirements)
 	for location, composedDeviceTypes := range dc.ComposedDeviceTypes {
 		ccdt := make([]*DeviceTypeComposition, len(composedDeviceTypes))
 		copy(ccdt, composedDeviceTypes)
@@ -144,36 +146,21 @@ func (dc *DeviceTypeComposition) Clone() *DeviceTypeComposition {
 
 type DeviceTypeTagRequirement struct {
 	entity
-	DeviceTypeID   *Number                       `json:"deviceTypeId,omitempty"`
-	DeviceTypeName string                        `json:"deviceTypeName,omitempty"`
-	Constraint     constraint.Constraint         `json:"constraint,omitempty"`
-	Conformance    conformance.Set               `json:"conformance,omitempty"`
-	Location       DeviceTypeRequirementLocation `json:"location,omitempty"`
+	TagRequirement *TagRequirement
 
-	NamespaceID   *Number `json:"namespaceId,omitempty"`
-	NamespaceName string  `json:"namespaceName,omitempty"`
-
-	SemanticTagID   *Number `json:"semanticTagId,omitempty"`
-	SemanticTagName string  `json:"semanticTagName,omitempty"`
+	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
+	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
 
 	DeviceType            *DeviceType `json:"deviceType,omitempty"`
 	DeviceTypeRequirement *DeviceTypeRequirement
-	Namespace             *Namespace   `json:"namespace,omitempty"`
-	SemanticTag           *SemanticTag `json:"semanticTag,omitempty"`
 }
 
 func (dtcr *DeviceTypeTagRequirement) Clone() *DeviceTypeTagRequirement {
 	return &DeviceTypeTagRequirement{
-		DeviceTypeID:    dtcr.DeviceTypeID,
-		DeviceTypeName:  dtcr.DeviceTypeName,
-		DeviceType:      dtcr.DeviceType,
-		Location:        dtcr.Location,
-		NamespaceID:     dtcr.NamespaceID,
-		NamespaceName:   dtcr.NamespaceName,
-		SemanticTagID:   dtcr.SemanticTagID,
-		SemanticTagName: dtcr.SemanticTagName,
-		Namespace:       dtcr.Namespace,
-		SemanticTag:     dtcr.SemanticTag,
+		DeviceTypeID:   dtcr.DeviceTypeID,
+		DeviceTypeName: dtcr.DeviceTypeName,
+		DeviceType:     dtcr.DeviceType,
+		TagRequirement: dtcr.TagRequirement,
 	}
 }
 

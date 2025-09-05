@@ -333,6 +333,60 @@ func toElementRequirement(d *Doc, ti *TableInfo, row *asciidoc.TableRow, deviceT
 	return
 }
 
+func toTagRequirements(d *Doc, s *asciidoc.Section, deviceType *matter.DeviceType) (tagRequirements []*matter.TagRequirement, err error) {
+	var ti *TableInfo
+	ti, err = parseFirstTable(d, s)
+	if err != nil {
+		if err == ErrNoTableFound {
+			err = nil
+		} else {
+			err = newGenericParseError(s, "error reading device type tag requirements table: %w", err)
+		}
+		return
+	}
+	for row := range ti.ContentRows() {
+		var tr *matter.TagRequirement
+		tr, err = toTagRequirement(d, s, deviceType, ti, row)
+		if err != nil {
+			return
+		}
+		tagRequirements = append(tagRequirements, tr)
+	}
+	return
+}
+
+func toTagRequirement(d *Doc, s *asciidoc.Section, deviceType *matter.DeviceType, ti *TableInfo, row *asciidoc.TableRow) (tr *matter.TagRequirement, err error) {
+	tr = matter.NewTagRequirement(deviceType, row)
+
+	tr.NamespaceID, err = ti.ReadID(row, matter.TableColumnNamespaceID)
+	if err != nil {
+		return
+	}
+	tr.NamespaceName, _, err = ti.ReadName(row, matter.TableColumnNamespace)
+	if err != nil {
+		return
+	}
+	tr.SemanticTagID, err = ti.ReadID(row, matter.TableColumnTagID)
+	if err != nil {
+		return
+	}
+	tr.SemanticTagName, _, err = ti.ReadName(row, matter.TableColumnTag)
+	if err != nil {
+		return
+	}
+
+	if ti.ColumnMap.HasAny(matter.TableColumnConstraint) {
+		tr.Constraint = ti.ReadConstraint(row, matter.TableColumnConstraint)
+	}
+	if ti.ColumnMap.HasAny(matter.TableColumnConformance) {
+		tr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
+	}
+	if err != nil {
+		return
+	}
+	return
+}
+
 func toDeviceTypeTagRequirements(d *Doc, s *asciidoc.Section, deviceType *matter.DeviceType) (deviceTypeTagRequirements []*matter.DeviceTypeTagRequirement, err error) {
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
@@ -354,33 +408,7 @@ func toDeviceTypeTagRequirements(d *Doc, s *asciidoc.Section, deviceType *matter
 		if err != nil {
 			return
 		}
-		dttr.NamespaceID, err = ti.ReadID(row, matter.TableColumnNamespaceID)
-		if err != nil {
-			return
-		}
-		dttr.NamespaceName, _, err = ti.ReadName(row, matter.TableColumnNamespace)
-		if err != nil {
-			return
-		}
-		dttr.SemanticTagID, err = ti.ReadID(row, matter.TableColumnTagID)
-		if err != nil {
-			return
-		}
-		dttr.SemanticTagName, _, err = ti.ReadName(row, matter.TableColumnTag)
-		if err != nil {
-			return
-		}
-
-		if ti.ColumnMap.HasAny(matter.TableColumnConstraint) {
-			dttr.Constraint = ti.ReadConstraint(row, matter.TableColumnConstraint)
-		}
-		if ti.ColumnMap.HasAny(matter.TableColumnConformance) {
-			dttr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
-		}
-		dttr.Location, err = ti.ReadLocation(row, matter.TableColumnLocation)
-		if err != nil {
-			return
-		}
+		dttr.TagRequirement, err = toTagRequirement(d, s, deviceType, ti, row)
 		deviceTypeTagRequirements = append(deviceTypeTagRequirements, dttr)
 	}
 	return

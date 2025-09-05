@@ -27,12 +27,13 @@ type DeviceType struct {
 	ClusterRequirements   []*ClusterRequirement   `json:"clusterRequirements,omitempty"`
 	ElementRequirements   []*ElementRequirement   `json:"elementRequirements,omitempty"`
 	ConditionRequirements []*ConditionRequirement `json:"conditionRequirements,omitempty"`
+	TagRequirements       []*TagRequirement       `json:"tagRequirements,omitempty"`
 
 	DeviceTypeRequirements                []*DeviceTypeRequirement        `json:"deviceTypeRequirements,omitempty"`
 	ComposedDeviceTypeClusterRequirements []*DeviceTypeClusterRequirement `json:"composedDeviceTypeClusterRequirements,omitempty"`
 	ComposedDeviceTypeElementRequirements []*DeviceTypeElementRequirement `json:"composedDeviceTypeElementRequirements,omitempty"`
 
-	TagRequirements []*DeviceTypeTagRequirement `json:"semanticTagRequirements,omitempty"`
+	ComposedDeviceTagRequirements []*DeviceTypeTagRequirement `json:"composedDeviceSemanticTagRequirements,omitempty"`
 }
 
 func NewDeviceType(source asciidoc.Element) *DeviceType {
@@ -131,6 +132,36 @@ func (er *ElementRequirement) Clone() *ElementRequirement {
 		cer.Conformance = er.Conformance.CloneSet()
 	}
 	return cer
+}
+
+type TagRequirement struct {
+	entity
+	Constraint  constraint.Constraint `json:"constraint,omitempty"`
+	Conformance conformance.Set       `json:"conformance,omitempty"`
+
+	NamespaceID   *Number `json:"namespaceId,omitempty"`
+	NamespaceName string  `json:"namespaceName,omitempty"`
+
+	SemanticTagID   *Number `json:"semanticTagId,omitempty"`
+	SemanticTagName string  `json:"semanticTagName,omitempty"`
+
+	Namespace   *Namespace   `json:"namespace,omitempty"`
+	SemanticTag *SemanticTag `json:"semanticTag,omitempty"`
+}
+
+func (dtcr *TagRequirement) Clone() *TagRequirement {
+	return &TagRequirement{
+		NamespaceID:     dtcr.NamespaceID,
+		NamespaceName:   dtcr.NamespaceName,
+		SemanticTagID:   dtcr.SemanticTagID,
+		SemanticTagName: dtcr.SemanticTagName,
+		Namespace:       dtcr.Namespace,
+		SemanticTag:     dtcr.SemanticTag,
+	}
+}
+
+func NewTagRequirement(parent *DeviceType, source asciidoc.Element) *TagRequirement {
+	return &TagRequirement{entity: entity{parent: parent, source: source}}
 }
 
 type DeviceTypeRequirementLocation uint8

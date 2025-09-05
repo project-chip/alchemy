@@ -415,6 +415,7 @@ var Tables = map[TableType]Table{
 	},
 	TableTypeConditionRequirements: {
 		ColumnOrder: []TableColumn{
+			TableColumnLocation,
 			TableColumnDeviceID,
 			TableColumnDeviceName,
 			TableColumnCondition,

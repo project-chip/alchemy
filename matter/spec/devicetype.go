@@ -50,6 +50,12 @@ func toDeviceTypes(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseCo
 				var extraClusterRequirements []*matter.ClusterRequirement
 				dt.ElementRequirements, extraClusterRequirements, err = toElementRequirements(d, s, dt)
 				dt.ClusterRequirements = append(dt.ClusterRequirements, extraClusterRequirements...)
+			case matter.SectionConditions:
+				dt.Conditions, err = toConditions(d, s, dt)
+			case matter.SectionSemanticTagRequirements:
+				dt.TagRequirements, err = toTagRequirements(d, s, dt)
+			case matter.SectionDeviceTypeRequirements:
+				dt.DeviceTypeRequirements, err = toDeviceTypeRequirements(d, s, dt)
 			case matter.SectionComposedDeviceTypeClusterRequirements:
 				dt.ComposedDeviceTypeClusterRequirements, err = toComposedDeviceTypeClusterRequirements(d, s, dt)
 			case matter.SectionComposedDeviceTypeElementRequirements:
@@ -58,12 +64,8 @@ func toDeviceTypes(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseCo
 				dt.ComposedDeviceTypeClusterRequirements = append(dt.ComposedDeviceTypeClusterRequirements, extraComposedDeviceClusterRequirements...)
 			case matter.SectionComposedDeviceTypeConditionRequirements:
 				dt.ConditionRequirements, err = toConditionRequirements(d, s, dt)
-			case matter.SectionSemanticTagRequirements:
-				dt.TagRequirements, err = toDeviceTypeTagRequirements(d, s, dt)
-			case matter.SectionConditions:
-				dt.Conditions, err = toConditions(d, s, dt)
-			case matter.SectionDeviceTypeRequirements:
-				dt.DeviceTypeRequirements, err = toDeviceTypeRequirements(d, s, dt)
+			case matter.SectionComposedDeviceTypeSemanticTagRequirements:
+				dt.ComposedDeviceTagRequirements, err = toDeviceTypeTagRequirements(d, s, dt)
 			case matter.SectionRevisionHistory:
 				dt.Revisions, err = readRevisionHistory(d, s)
 			default:
@@ -286,7 +288,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 			cr.DeviceType = findDeviceTypeRequirementDeviceType(spec, cr.DeviceTypeID, cr.DeviceTypeName, cr)
 		}
 		if cr.DeviceType == nil {
-			slog.Error("unknown device type ID for condition requirement on composing device type",
+			slog.Error("unknown device type ID for condition requirement on device type",
 				slog.String("deviceTypeId", cr.DeviceTypeID.HexString()),
 				slog.String("deviceTypeName", cr.DeviceTypeName),
 				slog.String("deviceType", dt.Name),
@@ -295,7 +297,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 			continue
 		} else {
 			if _, ok := deviceTypes[cr.DeviceType]; !ok && cr.DeviceType != spec.RootNodeDeviceType {
-				slog.Error("Condition requirement on composing device type refers to unincluded device type",
+				slog.Error("Condition requirement on device type refers to unincluded device type",
 					slog.String("deviceTypeId", cr.DeviceTypeID.HexString()),
 					slog.String("deviceTypeName", cr.DeviceTypeName),
 					slog.String("deviceType", dt.Name),
@@ -312,7 +314,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 				}
 			}
 			if cr.Condition == nil {
-				slog.Error("unknown condition for condition requirement on composing device type",
+				slog.Error("unknown condition for condition requirement on device type",
 					slog.String("deviceTypeId", cr.DeviceTypeID.HexString()),
 					slog.String("deviceTypeName", cr.DeviceTypeName),
 					slog.String("deviceType", dt.Name),
@@ -320,6 +322,25 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 					log.Path("source", cr))
 				spec.addError(&UnknownConditionRequirementConditionError{Requirement: cr})
 				continue
+			}
+		}
+	}
+	for _, tr := range dt.TagRequirements {
+		tr.Namespace = findTagRequirementNamespace(spec, tr.NamespaceID, tr.NamespaceName, tr)
+		if tr.Namespace == nil {
+			slog.Error("unknown namespace for tag requirement on device type",
+				slog.String("namespaceId", tr.NamespaceID.HexString()),
+				slog.String("namespaceName", tr.NamespaceName),
+				log.Path("source", tr))
+			spec.addError(&UnknownNamespaceTagRequirementError{Requirement: tr})
+		} else if tr.SemanticTag == nil {
+			tr.SemanticTag = findTagRequirementTag(spec, tr.Namespace, tr.SemanticTagID, tr.SemanticTagName, tr)
+			if tr.SemanticTag == nil {
+				slog.Error("unknown semantic tag for tag requirement on device type",
+					slog.String("semanticTagId", tr.SemanticTagID.HexString()),
+					slog.String("semanticTagName", tr.SemanticTagName),
+					log.Path("source", tr))
+				spec.addError(&UnknownTagRequirementError{Requirement: tr})
 			}
 		}
 	}
@@ -403,7 +424,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 			return
 		}
 	}
-	for _, tr := range dt.TagRequirements {
+	for _, tr := range dt.ComposedDeviceTagRequirements {
 
 		if tr.DeviceType == nil {
 			referencedDeviceType := findDeviceTypeRequirementDeviceType(spec, tr.DeviceTypeID, tr.DeviceTypeName, dt)
@@ -413,7 +434,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 					slog.String("deviceTypeName", tr.DeviceTypeName),
 					slog.String("deviceType", dt.Name),
 					log.Path("source", tr))
-				spec.addError(&UnknownTagRequirementDeviceTypeError{Requirement: tr})
+				spec.addError(&UnknownComposingDeviceTypeTagRequirementDeviceTypeError{Requirement: tr})
 			} else {
 				if dtr, ok := deviceTypes[referencedDeviceType]; !ok && referencedDeviceType != spec.RootNodeDeviceType {
 					slog.Error("Element requirement on composing device type refers to unincluded device type",
@@ -428,71 +449,21 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 				}
 			}
 		}
-		if tr.Namespace == nil {
-			if tr.NamespaceID.Valid() {
-				for _, ns := range spec.Namespaces {
-					if ns.ID.Equals(tr.NamespaceID) {
-						tr.Namespace = ns
-						break
-					}
-				}
-
-			}
-			if tr.Namespace == nil {
-				for _, ns := range spec.Namespaces {
-					if ns.Name == tr.NamespaceName {
-						tr.Namespace = ns
-						break
-					}
-				}
-			}
-			if tr.Namespace == nil {
-				slog.Error("unknown namespace for tag requirement on composing device type",
-					slog.String("namespaceId", tr.NamespaceID.HexString()),
-					slog.String("namespace", tr.NamespaceName),
-					slog.String("deviceType", dt.Name),
+		tr.TagRequirement.Namespace = findTagRequirementNamespace(spec, tr.TagRequirement.NamespaceID, tr.TagRequirement.NamespaceName, tr.TagRequirement)
+		if tr.TagRequirement.Namespace == nil {
+			slog.Error("unknown namespace for tag requirement on composing device type",
+				slog.String("namespaceId", tr.TagRequirement.NamespaceID.HexString()),
+				slog.String("namespaceName", tr.TagRequirement.NamespaceName),
+				log.Path("source", tr))
+			spec.addError(&UnknownNamespaceTagRequirementError{Requirement: tr.TagRequirement})
+		} else if tr.TagRequirement.SemanticTag == nil {
+			tr.TagRequirement.SemanticTag = findTagRequirementTag(spec, tr.TagRequirement.Namespace, tr.TagRequirement.SemanticTagID, tr.TagRequirement.SemanticTagName, tr.TagRequirement)
+			if tr.TagRequirement.SemanticTag == nil {
+				slog.Error("unknown semantic tag for tag requirement on composing device type",
+					slog.String("semanticTagId", tr.TagRequirement.SemanticTagID.HexString()),
+					slog.String("semanticTagName", tr.TagRequirement.SemanticTagName),
 					log.Path("source", tr))
-
-				spec.addError(&UnknownNamespaceTagRequirementDeviceTypeError{Requirement: tr})
-			} else {
-				if tr.NamespaceName != tr.Namespace.Name {
-					slog.Error("Mismatch between namespace ID and namespace name", slog.String("namespaceId", tr.Namespace.ID.HexString()), slog.String("namespaceName", tr.Namespace.Name), slog.String("requirementName", tr.NamespaceName), log.Path("source", tr))
-					spec.addError(&NamespaceNameMismatchTagRequirementDeviceTypeError{Namespace: tr.Namespace, Requirement: tr})
-				}
-				if tr.SemanticTag == nil {
-					if tr.SemanticTagID.Valid() {
-						for _, tag := range tr.Namespace.SemanticTags {
-							if tag.ID.Equals(tr.SemanticTagID) {
-								tr.SemanticTag = tag
-								break
-							}
-						}
-					}
-				}
-				if tr.SemanticTag == nil {
-					for _, tag := range tr.Namespace.SemanticTags {
-						if tag.Name == tr.SemanticTagName {
-							tr.SemanticTag = tag
-							break
-						}
-					}
-				}
-				if tr.SemanticTag == nil {
-					slog.Error("unknown tag for tag requirement on composing device type",
-						slog.String("namespaceId", tr.NamespaceID.HexString()),
-						slog.String("namespace", tr.NamespaceName),
-						slog.String("tagId", tr.SemanticTagID.HexString()),
-						slog.String("tag", tr.SemanticTagName),
-						slog.String("deviceType", dt.Name),
-						log.Path("source", tr))
-
-					spec.addError(&UnknownTagRequirementDeviceTypeError{Requirement: tr})
-				} else {
-					if tr.SemanticTagName != tr.SemanticTag.Name {
-						slog.Error("Mismatch between tag ID and tag name", slog.String("tagId", tr.SemanticTag.ID.HexString()), slog.String("tagName", tr.SemanticTag.Name), slog.String("requirementName", tr.SemanticTagName), log.Path("source", tr))
-						spec.addError(&TagNameMismatchTagRequirementDeviceTypeError{SemanticTag: tr.SemanticTag, Requirement: tr})
-					}
-				}
+				spec.addError(&UnknownTagRequirementError{Requirement: tr.TagRequirement})
 			}
 		}
 	}
