@@ -185,7 +185,7 @@ func getSectionType(doc *Doc, parent *asciidoc.Section, section *asciidoc.Sectio
 		return matter.SectionGlobalElements
 	case "device type requirements":
 		return matter.SectionDeviceTypeRequirements
-	case "cluster requirements on composing device types":
+	case "cluster requirements on composing device types", "cluster requirements on component device types":
 		// This is for backwards compatibility; we should have named this
 		// section "Element Requirements on Composing Device Types", so
 		// we check if it has an Element field in the table, and if it does,
@@ -199,9 +199,9 @@ func getSectionType(doc *Doc, parent *asciidoc.Section, section *asciidoc.Sectio
 		return matter.SectionSemanticTagRequirements
 	case "condition requirements":
 		return matter.SectionComposedDeviceTypeConditionRequirements
-	case "element requirements on composing device types":
+	case "element requirements on composing device types", "element requirements on component device types":
 		return matter.SectionComposedDeviceTypeElementRequirements
-	case "semantic tag requirements on composing device types":
+	case "semantic tag requirements on composing device types", "semantic tag requirements on component device types":
 		return matter.SectionComposedDeviceTypeSemanticTagRequirements
 	}
 	switch doc.SectionType(parent) {
