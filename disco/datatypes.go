@@ -377,7 +377,7 @@ func ensureDataTypesSection(doc *spec.Doc, top *asciidoc.Section) (*asciidoc.Sec
 	if dataTypesSection != nil {
 		return dataTypesSection, nil
 	}
-	title := asciidoc.NewString(matter.SectionTypeName(matter.SectionDataTypes))
+	title := asciidoc.NewString(matter.CanonicalSectionTypeName(matter.SectionDataTypes))
 
 	dataTypesSection = asciidoc.NewSection(asciidoc.Elements{title}, top.Level+1)
 	dataTypesSection.Append(asciidoc.NewEmptyLine(""))

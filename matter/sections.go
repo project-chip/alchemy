@@ -172,8 +172,30 @@ var sectionTypeNames = map[Section]string{
 	SectionModeTags:                                "Mode Tags",
 }
 
-func SectionTypeName(st Section) string {
-	if s, ok := sectionTypeNames[st]; ok {
+var canonicalSectionTypeNames = map[Section]string{
+	SectionIntroduction:                            "Introduction",
+	SectionRevisionHistory:                         "Revision History",
+	SectionClassification:                          "Classification",
+	SectionFeatures:                                "Features",
+	SectionDependencies:                            "Dependencies",
+	SectionDataTypes:                               "Data Types",
+	SectionAttributes:                              "Attributes",
+	SectionCommands:                                "Commands",
+	SectionEvents:                                  "Events",
+	SectionDeviceTypeRequirements:                  "Device Type Requirements",
+	SectionClusterRequirements:                     "Cluster Requirements",
+	SectionClusterRestrictions:                     "Cluster Restrictions",
+	SectionElementRequirements:                     "Element Requirements",
+	SectionComposedDeviceTypeClusterRequirements:   "Cluster Requirements on Component Device Types",
+	SectionComposedDeviceTypeConditionRequirements: "Condition Requirements",
+	SectionComposedDeviceTypeElementRequirements:   "Element Requirements on Component Device Types",
+	SectionEndpointComposition:                     "Endpoint Composition",
+	SectionDerivedClusterNamespace:                 "Derived Cluster Namespace",
+	SectionModeTags:                                "Mode Tags",
+}
+
+func CanonicalSectionTypeName(st Section) string {
+	if s, ok := canonicalSectionTypeNames[st]; ok {
 		return s
 	}
 	return ""

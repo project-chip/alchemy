@@ -74,7 +74,9 @@ func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection
 		tableCache:       make(map[*asciidoc.Table]*spec.TableInfo),
 	}
 	for section := range parse.FindAll[*asciidoc.Section](asciidoc.RawReader, topLevelSection) {
-		switch doc.SectionType(section) {
+		sectionType := doc.SectionType(section)
+
+		switch sectionType {
 		case matter.SectionCluster:
 			dp.clusters[section] = &clusterInfo{}
 		case matter.SectionAttributes:
@@ -194,7 +196,9 @@ func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection
 			err = fmt.Errorf("error organizing subsections of section %s in %s: %w", doc.SectionName(section), doc.Path, err)
 			return
 		}
+
 	}
+
 	return
 }
 
