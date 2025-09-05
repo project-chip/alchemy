@@ -67,8 +67,9 @@ var TopLevelSectionOrders = map[DocType][]Section{
 		SectionRevisionHistory,
 		SectionClassification,
 		SectionConditions,
-		SectionClusterRequirements,
 		SectionDeviceTypeRequirements,
+		SectionClusterRequirements,
+		SectionElementRequirements,
 	},
 }
 
@@ -162,9 +163,9 @@ var sectionTypeNames = map[Section]string{
 	SectionClusterRequirements:                   "Cluster Requirements",
 	SectionClusterRestrictions:                   "Cluster Restrictions",
 	SectionElementRequirements:                   "Element Requirements",
-	SectionComposedDeviceTypeClusterRequirements: "Cluster Requirements on Composing Device Types",
-	SectionComposedDeviceTypeConditionRequirements: "Condition Requirements on Composing Device Types",
-	SectionComposedDeviceTypeElementRequirements:   "Element Requirements on Composing Device Types",
+	SectionComposedDeviceTypeClusterRequirements: "Cluster Requirements on Component Device Types",
+	SectionComposedDeviceTypeConditionRequirements: "Condition Requirements on Component Device Types",
+	SectionComposedDeviceTypeElementRequirements:   "Element Requirements on Component Device Types",
 	SectionEndpointComposition:                     "Endpoint Composition",
 	SectionField:                                   "Field",
 	SectionDerivedClusterNamespace:                 "Derived Cluster Namespace",
