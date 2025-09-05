@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"strings"
 	"unicode"
 	"unicode/utf8"
 
@@ -131,6 +132,12 @@ func (doc *Doc) SectionName(s *asciidoc.Section) (name string) {
 	name, ok = doc.sectionName(s)
 	if !ok && doc.group != nil {
 		name, _ = doc.group.sectionName(s)
+	}
+	if name == "" {
+		var title strings.Builder
+		buildSectionTitle(&variableStore{}, s, doc.Reader(), &title, s.Title...)
+		name = title.String()
+		doc.setSectionName(s, name)
 	}
 	return
 }

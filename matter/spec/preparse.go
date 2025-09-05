@@ -398,17 +398,17 @@ func preparseFile(pps *preparseFileState, docGroup *DocGroup, doc *Doc, parent a
 				return
 			}
 		case *asciidoc.Section:
+			iterator := &PreParseReader{elements: pps.state.actions}
+			var title strings.Builder
+			err = buildSectionTitle(pps, el, iterator, &title, el.Title...)
+			if err != nil {
+				should = parse.SearchShouldStop
+				return
+			}
+			doc.SetSectionName(el, title.String())
+
 			if suppress {
 				remove = true
-			} else {
-				iterator := &PreParseReader{elements: pps.state.actions}
-				var title strings.Builder
-				err = buildSectionTitle(pps, el, iterator, &title, el.Title...)
-				if err != nil {
-					should = parse.SearchShouldStop
-					return
-				}
-				doc.SetSectionName(el, title.String())
 			}
 		default:
 			if suppress {

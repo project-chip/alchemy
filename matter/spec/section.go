@@ -14,7 +14,9 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func buildSectionTitle(pps *preparseFileState, section *asciidoc.Section, reader asciidoc.Reader, title *strings.Builder, els ...asciidoc.Element) (err error) {
+func buildSectionTitle(variableStore interface {
+	Get(string) any
+}, section *asciidoc.Section, reader asciidoc.Reader, title *strings.Builder, els ...asciidoc.Element) (err error) {
 	for e := range reader.Iterate(section, els) {
 		switch e := e.(type) {
 		case *asciidoc.String:
@@ -23,13 +25,13 @@ func buildSectionTitle(pps *preparseFileState, section *asciidoc.Section, reader
 			title.WriteString(e.Character)
 		case *asciidoc.UserAttributeReference:
 
-			val := pps.Get(string(e.Name()))
+			val := variableStore.Get(string(e.Name()))
 			if val != nil {
 				switch val := val.(type) {
 				case asciidoc.Elements:
-					err = buildSectionTitle(pps, section, reader, title, val...)
+					err = buildSectionTitle(variableStore, section, reader, title, val...)
 				case asciidoc.Element:
-					err = buildSectionTitle(pps, section, reader, title, val)
+					err = buildSectionTitle(variableStore, section, reader, title, val)
 				default:
 					err = newGenericParseError(e, "unexpected section title attribute value type: %T", val)
 					return
@@ -43,7 +45,7 @@ func buildSectionTitle(pps *preparseFileState, section *asciidoc.Section, reader
 			}
 		case *asciidoc.Link, *asciidoc.LinkMacro:
 		case *asciidoc.Bold:
-			err = buildSectionTitle(pps, section, reader, title, e.Children()...)
+			err = buildSectionTitle(variableStore, section, reader, title, e.Children()...)
 		default:
 			err = newGenericParseError(section, "unknown section title component type: %T", e)
 		}
@@ -51,13 +53,32 @@ func buildSectionTitle(pps *preparseFileState, section *asciidoc.Section, reader
 			return
 		}
 		if he, ok := e.(asciidoc.ParentElement); ok {
-			err = buildSectionTitle(pps, section, reader, title, he.Children()...)
+			err = buildSectionTitle(variableStore, section, reader, title, he.Children()...)
 		}
 		if err != nil {
 			return
 		}
 	}
 	return
+}
+
+type variableStore struct {
+}
+
+func (variableStore) Get(string) any {
+	return nil
+}
+
+func AssignSectionNames(doc *Doc) error {
+	vs := &variableStore{}
+	parse.Search(asciidoc.RawReader, doc, doc.Children(), func(section *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
+		var sb strings.Builder
+		buildSectionTitle(vs, section, asciidoc.RawReader, &sb, section.Title...)
+		slog.Info("assigning name", "name", sb.String())
+		doc.SetSectionName(section, sb.String())
+		return parse.SearchShouldContinue
+	})
+	return nil
 }
 
 func AssignSectionTypes(doc *Doc, top *asciidoc.Section) error {
@@ -84,11 +105,8 @@ func AssignSectionTypes(doc *Doc, top *asciidoc.Section) error {
 	}
 	assignSectionType(doc, top, secType)
 
-	parse.Search(doc.Reader(), top, top.Children(), func(el any, parent asciidoc.Parent, index int) parse.SearchShould {
-		section, ok := el.(*asciidoc.Section)
-		if !ok {
-			return parse.SearchShouldContinue
-		}
+	parse.Search(doc.Reader(), top, top.Children(), func(section *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
+
 		ps, ok := parent.(*asciidoc.Section)
 		if !ok {
 			return parse.SearchShouldContinue

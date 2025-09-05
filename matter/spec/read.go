@@ -75,6 +75,7 @@ func (r Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], ind
 	if err != nil {
 		return
 	}
+	AssignSectionNames(doc)
 	outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
 	return
 }
