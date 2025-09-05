@@ -133,3 +133,61 @@ func (tf *tagFinder) suggestIdentifiers(identifier string, suggestions map[types
 	}
 	return
 }
+
+func findTagRequirementNamespace(spec *Specification, id *matter.Number, name string, requirement *matter.TagRequirement) (namespace *matter.Namespace) {
+	if id.Valid() {
+		for _, ns := range spec.Namespaces {
+			if ns.ID.Equals(id) {
+				namespace = ns
+				break
+			}
+		}
+		if namespace != nil {
+			if namespace.Name != name {
+				spec.addError(&NamespaceNameMismatchTagRequirementError{Namespace: namespace, Requirement: requirement})
+			}
+			return
+		}
+	}
+	for _, ns := range spec.Namespaces {
+		if ns.Name == name {
+			namespace = ns
+			break
+		}
+		slog.Warn("linking tag requirement namespace by name since namespace ID was not recognized",
+			slog.String("namespaceId", id.HexString()),
+			slog.String("namespaceName", name),
+			log.Path("source", requirement))
+	}
+
+	return
+}
+
+func findTagRequirementTag(spec *Specification, namespace *matter.Namespace, id *matter.Number, name string, requirement *matter.TagRequirement) (tag *matter.SemanticTag) {
+	if id.Valid() {
+		for _, t := range namespace.SemanticTags {
+			if t.ID.Equals(id) {
+				tag = t
+				break
+			}
+		}
+		if tag != nil {
+			if tag.Name != name {
+				spec.addError(&TagNameMismatchTagRequirementError{SemanticTag: tag, Requirement: requirement})
+			}
+			return
+		}
+	}
+	for _, t := range namespace.SemanticTags {
+		if t.Name == name {
+			tag = t
+			break
+		}
+		slog.Warn("linking tag requirement tag by name since tag ID was not recognized",
+			slog.String("tagId", id.HexString()),
+			slog.String("tagName", name),
+			log.Path("source", requirement))
+	}
+
+	return
+}

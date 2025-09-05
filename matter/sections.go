@@ -32,10 +32,11 @@ const (
 	SectionClusterRequirements
 	SectionClusterRestrictions
 	SectionElementRequirements
+	SectionSemanticTagRequirements
 	SectionComposedDeviceTypeClusterRequirements
 	SectionComposedDeviceTypeConditionRequirements
 	SectionComposedDeviceTypeElementRequirements
-	SectionSemanticTagRequirements
+	SectionComposedDeviceTypeSemanticTagRequirements
 	SectionEndpointComposition
 	SectionField
 	SectionValue

@@ -177,12 +177,14 @@ func getSectionType(doc *Doc, parent *asciidoc.Section, section *asciidoc.Sectio
 			return st
 		}
 		return matter.SectionComposedDeviceTypeClusterRequirements
+	case "semantic tag requirements":
+		return matter.SectionSemanticTagRequirements
 	case "condition requirements":
 		return matter.SectionComposedDeviceTypeConditionRequirements
 	case "element requirements on composing device types":
 		return matter.SectionComposedDeviceTypeElementRequirements
 	case "semantic tag requirements on composing device types":
-		return matter.SectionSemanticTagRequirements
+		return matter.SectionComposedDeviceTypeSemanticTagRequirements
 	}
 	switch doc.SectionType(parent) {
 	case matter.SectionTop, matter.SectionCluster, matter.SectionDeviceType:
@@ -279,22 +281,22 @@ func deriveSectionType(doc *Doc, section *asciidoc.Section, parent *asciidoc.Sec
 
 	// Ugh, some heuristics now
 	name := strings.TrimSpace(doc.SectionName(section))
-	if strings.HasSuffix(name, "Bitmap Type") || strings.HasSuffix(name, "Bitmap") {
+	if text.HasCaseInsensitiveSuffix(name, "Bitmap Type") || text.HasCaseInsensitiveSuffix(name, "Bitmap") {
 		return matter.SectionDataTypeBitmap
 	}
-	if strings.HasSuffix(name, "Enum Type") || strings.HasSuffix(name, "Enum") {
+	if text.HasCaseInsensitiveSuffix(name, "Enum Type") || text.HasCaseInsensitiveSuffix(name, "Enum") {
 		return matter.SectionDataTypeEnum
 	}
-	if strings.HasSuffix(name, " Command") {
+	if text.HasCaseInsensitiveSuffix(name, " Command") {
 		return matter.SectionCommand
 	}
-	if strings.HasSuffix(name, "Struct Type") || strings.HasSuffix(name, "Struct") {
+	if text.HasCaseInsensitiveSuffix(name, "Struct Type") || text.HasCaseInsensitiveSuffix(name, "Struct") {
 		return matter.SectionDataTypeStruct
 	}
 	if text.HasCaseInsensitiveSuffix(name, " Constant Type") {
 		return matter.SectionDataTypeConstant
 	}
-	if strings.HasSuffix(name, " Conditions") {
+	if text.HasCaseInsensitiveSuffix(name, " Conditions") {
 		return matter.SectionConditions
 	}
 	if parent != nil {
@@ -305,15 +307,15 @@ func deriveSectionType(doc *Doc, section *asciidoc.Section, parent *asciidoc.Sec
 				return guessedType
 			}
 		case matter.SectionDataTypeBitmap:
-			if strings.HasSuffix(name, " Bit") || strings.HasSuffix(name, " Bits") {
+			if text.HasCaseInsensitiveSuffix(name, " Bit") || text.HasCaseInsensitiveSuffix(name, " Bits") {
 				return matter.SectionBit
 			}
 		case matter.SectionDataTypeEnum:
-			if strings.HasSuffix(name, " Value") {
+			if text.HasCaseInsensitiveSuffix(name, " Value") {
 				return matter.SectionValue
 			}
 		case matter.SectionDataTypeStruct, matter.SectionCommand, matter.SectionEvent:
-			if strings.HasSuffix(name, " Field") {
+			if text.HasCaseInsensitiveSuffix(name, " Field") {
 				return matter.SectionField
 			}
 		}
