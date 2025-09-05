@@ -82,14 +82,18 @@ func divyUpSection(doc *spec.Doc, sec *asciidoc.Section, validSectionTypes map[m
 	return sections
 }
 
-func setSectionTitle(doc *spec.Doc, sec *asciidoc.Section, title string) {
-	for i, e := range sec.Title {
-		switch e.(type) {
-		case *asciidoc.String:
-			sec.Title[i] = asciidoc.NewString(title)
-			doc.SetSectionName(sec, title)
-		}
+func setSectionTitle(doc *spec.Doc, sec *asciidoc.Section, title string) bool {
+	// We only override a section
+	if len(sec.Title) != 1 {
+		return false
 	}
+	switch sec.Title[0].(type) {
+	case *asciidoc.String:
+		sec.Title[0] = asciidoc.NewString(title)
+		doc.SetSectionName(sec, title)
+		return true
+	}
+	return false
 }
 
 func (b *Baller) appendSubsectionTypes(cxt *discoContext, section *asciidoc.Section, columnMap spec.ColumnIndex, rows []*asciidoc.TableRow) {

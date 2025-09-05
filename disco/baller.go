@@ -7,6 +7,7 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -105,6 +106,26 @@ func (b *Baller) disco(cxt context.Context, doc *spec.Doc) error {
 		if err != nil {
 			return fmt.Errorf("error disambiguating conformance in %s: %w", doc.Path, err)
 		}
+	}
+
+	if b.options.ReorderSections {
+		//	slog.Info("Renaming sections!")
+		parse.Search(asciidoc.RawReader, topLevelSection, topLevelSection.Children(), func(section *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
+			sectionType := doc.SectionType(section)
+			if sectionType != matter.SectionUnknown {
+				canonicalSectionName := matter.CanonicalSectionTypeName(sectionType)
+				//	slog.Info("Renaming section!", "from", doc.SectionName(section), "to", canonicalSectionName)
+				if canonicalSectionName != "" && canonicalSectionName != doc.SectionName(section) {
+					slog.Info("Renaming section!", "new name", canonicalSectionName, log.Path("source", section))
+					if setSectionTitle(doc, section, canonicalSectionName) {
+						slog.Info("Renamed section!", "new name", canonicalSectionName)
+
+					}
+				}
+			}
+			return parse.SearchShouldContinue
+		})
+
 	}
 	return nil
 }

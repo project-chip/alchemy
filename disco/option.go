@@ -20,6 +20,7 @@ type DiscoOptions struct {
 	DisambiguateConformanceChoice bool `default:"true" aliases:"disambiguateConformanceChoice" help:"ensure conformance choices are only used once per document" group:"Discoballing:"`
 	NormalizeAnchors              bool `default:"false" aliases:"normalizeAnchors" help:"rewrite anchors and references without labels" group:"Discoballing:"`
 	RemoveMandatoryFallbacks      bool `default:"true" aliases:"removeMandatoryFallbacks" help:"remove fallback values for mandatory fields" group:"Discoballing:"`
+	RenameSections                bool `default:"false" help:"rename sections to disco-ball standard names" group:"Discoballing:"`
 }
 
 var DefaultOptions = DiscoOptions{
@@ -40,4 +41,5 @@ var DefaultOptions = DiscoOptions{
 	DisambiguateConformanceChoice: true,
 	NormalizeAnchors:              false,
 	RemoveMandatoryFallbacks:      true,
+	RenameSections:                false,
 }
