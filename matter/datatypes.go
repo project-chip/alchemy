@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -49,7 +50,7 @@ var typeSuffixes = []string{" Attribute", " Device Type", " Type", " Field", " C
 
 func StripTypeSuffixes(dataType string) string {
 	for _, suffix := range typeSuffixes {
-		if strings.HasSuffix(dataType, suffix) {
+		if text.HasCaseInsensitiveSuffix(dataType, suffix) {
 			dataType = dataType[0 : len(dataType)-len(suffix)]
 			break
 		}
