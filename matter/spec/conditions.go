@@ -34,7 +34,7 @@ func toConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceType) (condition
 				}
 			}
 			if featureIndex == -1 {
-				err = newGenericParseError(ti.Element, "failed to find tag column in section %s", s.Name)
+				err = newGenericParseError(ti.Element, "failed to find tag column in section %s", d.SectionName(s))
 				return
 			}
 		}
@@ -74,14 +74,19 @@ func toBaseDeviceTypeConditions(d *Doc, s *asciidoc.Section, dt *matter.DeviceTy
 	ti, err = parseTable(d, s, t)
 	if err == nil {
 		tagOffset := -1
-		for _, col := range ti.ExtraColumns {
-			if text.HasCaseInsensitiveSuffix(col.Name, "Tag") {
-				tagOffset = col.Offset
-				break
+		if ti.ColumnMap.HasAll(matter.TableColumnTag) {
+			tagOffset = ti.ColumnMap[matter.TableColumnTag]
+		} else {
+			for _, col := range ti.ExtraColumns {
+				if text.HasCaseInsensitiveSuffix(col.Name, "Tag") {
+					tagOffset = col.Offset
+					break
+				}
 			}
-		}
-		if tagOffset == -1 {
-			return
+			if tagOffset == -1 {
+				return
+			}
+
 		}
 		_, hasId := ti.ColumnMap[matter.TableColumnConditionID]
 		for row := range ti.ContentRows() {
