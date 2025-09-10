@@ -36,6 +36,7 @@ func (ie *IdentifierExpression) Description() string {
 
 func (ie *IdentifierExpression) Eval(context Context) (ExpressionResult, error) {
 	if context.Values != nil {
+		// First, check if we have a context value for this identifier, e.g. "Simple", "Matter", or "Client"
 		v, ok := context.Values[ie.ID]
 		if ok {
 			switch v := v.(type) {
@@ -49,34 +50,48 @@ func (ie *IdentifierExpression) Eval(context Context) (ExpressionResult, error) 
 		}
 	}
 	if ie.Entity == nil {
+		// If we don't have a context value, and we weren't able to match up an entity, then this is a orphan identifier
 		return &expressionResult{value: ie.Not, confidence: ConfidenceImpossible}, nil
 	}
 	if context.VisitedReferences == nil {
 		context.VisitedReferences = make(map[string]struct{})
 	} else if _, ok := context.VisitedReferences[ie.ID]; ok {
+		// We've already visited this identifier during evaluation, so we're in a recursive conformance
 		return &expressionResult{value: false, confidence: ConfidenceImpossible}, nil
 	}
-	context.VisitedReferences[ie.ID] = struct{}{}
+	var err error
+	er := &expressionResult{value: !ie.Not, confidence: ConfidencePossible}
+	// If this entity has its own conformance, see if it's possible given the context
 	if ref, ok := ie.Entity.(HasConformance); ok {
 		conf := ref.GetConformance()
 		if conf != nil {
-			cs, err := conf.Eval(context)
-			if err != nil {
-				return nil, err
-			}
-			switch cs.State {
-			case StateMandatory:
-				return &expressionResult{value: !ie.Not, confidence: cs.Confidence}, nil
-			case StateOptional, StateProvisional, StateDeprecated:
-				return &expressionResult{value: !ie.Not, confidence: ConfidencePossible}, nil
-			case StateDisallowed:
-				return &expressionResult{value: ie.Not, confidence: cs.Confidence}, nil
-			default:
-				return nil, fmt.Errorf("unexpected conformance state evaluating identifier conformance: %s", cs.State.String())
+			context.VisitedReferences[ie.ID] = struct{}{}
+			var cs ConformanceState
+			cs, err = conf.Eval(context)
+			if err == nil {
+				switch cs.State {
+				case StateMandatory:
+					er.value = !ie.Not
+					er.confidence = cs.Confidence
+				case StateOptional, StateProvisional, StateDeprecated:
+					// If this identifier points to something optional, return "possible" even if it's definite
+					er.value = !ie.Not
+					er.confidence = ConfidencePossible
+				case StateDisallowed:
+					er.value = ie.Not
+					er.confidence = cs.Confidence
+				default:
+					err = fmt.Errorf("unexpected conformance state evaluating identifier conformance: %s", cs.State.String())
+				}
+				// Remove from our visited references so we don't interfere with sibling conformances that reference the same identifier but aren't recursive
+				delete(context.VisitedReferences, ie.ID)
 			}
 		}
 	}
-	return &expressionResult{value: !ie.Not, confidence: ConfidencePossible}, nil
+	if err != nil {
+		return nil, err
+	}
+	return er, nil
 }
 
 func (ie *IdentifierExpression) Equal(e Expression) bool {

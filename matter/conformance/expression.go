@@ -73,6 +73,8 @@ func coalesceConfidences(et Confidence, oets ...Confidence) (out Confidence) {
 		switch oet {
 		case ConfidenceDefinite:
 		case ConfidenceImpossible:
+			out = ConfidenceImpossible
+			return
 		case ConfidencePossible:
 			out = ConfidencePossible
 		}

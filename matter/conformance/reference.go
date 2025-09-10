@@ -45,35 +45,46 @@ func (re *ReferenceExpression) Description() string {
 func (re *ReferenceExpression) Eval(context Context) (ExpressionResult, error) {
 
 	if re.Entity == nil {
+		// If we were unable to resolve this reference, then we can't evaluate its conformance
 		return &expressionResult{confidence: ConfidenceImpossible}, nil
 	}
 	if context.VisitedReferences == nil {
 		context.VisitedReferences = make(map[string]struct{})
 	} else if _, ok := context.VisitedReferences[re.Reference]; ok {
+		// We've already visited this reference in this evaluation chain, so it's recursive
 		return &expressionResult{confidence: ConfidenceImpossible}, nil
 	}
-	context.VisitedReferences[re.Reference] = struct{}{}
+	var err error
+	er := &expressionResult{value: !re.Not, confidence: ConfidencePossible}
 	if ref, ok := re.Entity.(HasConformance); ok {
 		conf := ref.GetConformance()
 		if conf != nil {
-			cs, err := conf.Eval(context)
-			if err != nil {
-				return nil, err
+			context.VisitedReferences[re.Reference] = struct{}{}
+			var cs ConformanceState
+			cs, err = conf.Eval(context)
+			if err == nil {
+				switch cs.State {
+				case StateMandatory:
+					er.value = !re.Not
+					er.confidence = cs.Confidence
+				case StateOptional, StateProvisional, StateDeprecated:
+					// Even if it's definitely optional, provisional or deprecated, we should return possible, since the server could choose not to implement
+					er.value = !re.Not
+					er.confidence = ConfidencePossible
+				case StateDisallowed:
+					er.value = re.Not
+					er.confidence = cs.Confidence
+				default:
+					err = fmt.Errorf("unexpected conformance state evaluating identifier conformance: %s", cs.State.String())
+				}
 			}
-			switch cs.State {
-			case StateMandatory:
-				return &expressionResult{value: !re.Not, confidence: cs.Confidence}, nil
-			case StateOptional, StateProvisional, StateDeprecated:
-				return &expressionResult{value: !re.Not, confidence: cs.Confidence}, nil
-			case StateDisallowed:
-				return &expressionResult{value: re.Not, confidence: cs.Confidence}, nil
-			default:
-				return nil, fmt.Errorf("unexpected conformance state evaluating identifier conformance: %s", cs.State.String())
-
-			}
+			delete(context.VisitedReferences, re.Reference)
 		}
 	}
-	return &expressionResult{value: !re.Not, confidence: ConfidencePossible}, nil
+	if err != nil {
+		return nil, err
+	}
+	return er, nil
 }
 
 func (re *ReferenceExpression) Equal(e Expression) bool {

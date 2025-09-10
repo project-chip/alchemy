@@ -58,6 +58,7 @@ func (cs Set) Description() string {
 }
 
 func (cs Set) Eval(context Context) (ConformanceState, error) {
+	var state ConformanceState
 	for _, c := range cs {
 		cs, err := c.Eval(context)
 		if err != nil {
@@ -66,7 +67,37 @@ func (cs Set) Eval(context Context) (ConformanceState, error) {
 		if cs.State == StateUnknown {
 			continue
 		}
-		return cs, nil
+		switch state.State {
+		case StateUnknown:
+			// We don't have state yet, so use this state
+			state = cs
+		case StateMandatory:
+			switch cs.State {
+			case StateMandatory:
+				// If the existing state is mandatory, override only if the confidence is higher
+				if cs.Confidence > state.Confidence {
+					state.Confidence = cs.Confidence
+				}
+			}
+		case StateOptional:
+			switch cs.State {
+			case StateOptional:
+				// If the existing state is optional, override only if the confidence is higher
+				if cs.Confidence > state.Confidence {
+					state.Confidence = cs.Confidence
+					state.State = cs.State
+				}
+			}
+		case StateDisallowed:
+		default:
+			if cs.Confidence > state.Confidence {
+				state.Confidence = cs.Confidence
+				state.State = cs.State
+			}
+		}
+	}
+	if state.State != StateUnknown {
+		return state, nil
 	}
 	return ConformanceState{State: StateDisallowed, Confidence: ConfidenceDefinite}, nil
 }
