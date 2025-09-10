@@ -201,6 +201,15 @@ func dumpElements(doc *spec.Doc, parent asciidoc.Parent, els asciidoc.Elements, 
 			fmt.Printf("{quote delimiter:\"%d\"}:\n", el.Delimiter.Type)
 			dumpAttributes(doc, el.Attributes(), indent+1)
 			dumpElements(doc, el, el.Children(), indent+1)
+		case *asciidoc.FencedBlock:
+			fmt.Printf("{fenced delimiter:\"%d\"}:\n", el.Delimiter.Type)
+			dumpAttributes(doc, el.Attributes(), indent+1)
+			if len(el.Delimiter.Language) > 0 {
+				fmt.Print(strings.Repeat("\t", indent+1))
+				fmt.Print("label:\n")
+				dumpElements(doc, el, el.Delimiter.Language, indent+1)
+			}
+			dumpElements(doc, el, el.Children(), indent+1)
 		case *asciidoc.UserAttributeReference:
 			fmt.Printf("{user attribute ref:\"%s\"}:\n", el.Value)
 		default:

@@ -20308,9 +20308,6 @@ var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument
 										&asciidoc.EmptyLine{
 											Text: "",
 										},
-										&asciidoc.EmptyLine{
-											Text: "",
-										},
 										&asciidoc.Section{
 											AttributeList: nil,
 											Elements:      nil,
@@ -20424,9 +20421,6 @@ var tablesTestShouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCel
 										&asciidoc.EmptyLine{
 											Text: "",
 										},
-										&asciidoc.EmptyLine{
-											Text: "",
-										},
 										&asciidoc.Section{
 											AttributeList: nil,
 											Elements:      nil,
@@ -20523,9 +20517,6 @@ var tablesTestShouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDo
 									},
 									Elements: asciidoc.Elements{
 										&asciidoc.NewLine{},
-										&asciidoc.EmptyLine{
-											Text: "",
-										},
 										&asciidoc.EmptyLine{
 											Text: "",
 										},

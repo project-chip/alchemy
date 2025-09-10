@@ -27,7 +27,7 @@ func parseTable(doc *Doc, section *asciidoc.Section, t *asciidoc.Table) (ti *Tab
 
 	ti, err = ReadTable(doc, doc.Reader(), t)
 	if err != nil {
-		err = newGenericParseError(t, "failed mapping table columns for first table in section \"%s\": %w", section.Name, err)
+		err = newGenericParseError(t, "failed mapping table columns for first table in section \"%s\": %w", doc.SectionName(section), err)
 		return
 	}
 	if len(ti.Rows) < ti.HeaderRowIndex+2 {

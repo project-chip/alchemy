@@ -137,6 +137,8 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 			err = renderDelimitedLines(cxt, el, el.Delimiter)
 		case *asciidoc.OpenBlock:
 			err = renderDelimitedElements(cxt, el, el.Delimiter)
+		case *asciidoc.FencedBlock:
+			err = renderFencedBlock(cxt, el)
 		case *asciidoc.FileInclude:
 			err = renderFileInclude(cxt, el)
 		case *asciidoc.Anchor:
