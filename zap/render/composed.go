@@ -35,7 +35,7 @@ func (he *contextBoolean) Confidence() conformance.Confidence {
 	return he.confidence
 }
 
-func (he *contextBoolean) Value() any {
+func (he *contextBoolean) Result() any {
 	return he.value
 }
 
@@ -69,7 +69,7 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 		Values: map[string]any{
 			"Matter":            &contextBoolean{value: true, confidence: conformance.ConfidenceDefinite},
 			"Zigbee":            &contextBoolean{value: false, confidence: conformance.ConfidenceImpossible},
-			dc.DeviceType.Class: true,
+			dc.DeviceType.Class: &contextBoolean{value: true, confidence: conformance.ConfidenceDefinite},
 		},
 	}
 
@@ -126,7 +126,7 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 		Values: map[string]any{
 			"Matter":            &contextBoolean{value: true, confidence: conformance.ConfidenceDefinite},
 			"Zigbee":            &contextBoolean{value: false, confidence: conformance.ConfidenceImpossible},
-			dc.DeviceType.Class: true,
+			dc.DeviceType.Class: &contextBoolean{value: true, confidence: conformance.ConfidenceDefinite},
 			"Client":            &hasClient,
 			"Server":            &hasServer,
 		},
