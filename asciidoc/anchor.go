@@ -8,6 +8,7 @@ import (
 
 type AnchorAttribute struct {
 	attribute
+	child
 
 	ID    Elements `json:"id"`
 	Label Elements
@@ -65,12 +66,16 @@ func (aa *AnchorAttribute) AsciiDocString() string {
 	return sb.String()
 }
 
-func (aa *AnchorAttribute) Traverse(parent Parent) iter.Seq2[Parent, Parent] {
-	return func(yield func(Parent, Parent) bool) {
-		if !yield(parent, &aa.Label) {
-			return
-		}
-	}
+func (aa *AnchorAttribute) Append(el ...Element) {
+	aa.Label.Append(el...)
+}
+
+func (aa *AnchorAttribute) Children() Elements {
+	return aa.ID
+}
+
+func (aa *AnchorAttribute) Clone() Attribute {
+	return &AnchorAttribute{attribute: aa.attribute, ID: aa.ID.Clone(), Label: aa.Label.Clone()}
 }
 
 type Anchor struct {
@@ -103,6 +108,18 @@ func (a *Anchor) Equals(o Element) bool {
 	return a.Elements.Equals(oa.Elements)
 }
 
+func (a *Anchor) Clone() Element {
+	return &Anchor{position: a.position, ID: a.ID, Elements: a.Elements.Clone()}
+}
+
 func NewAnchor(id Elements, label Elements) *Anchor {
 	return &Anchor{ID: id, Elements: label}
+}
+
+func (aa *Anchor) Traverse(parent Parent) iter.Seq2[Parent, Parent] {
+	return func(yield func(Parent, Parent) bool) {
+		if !yield(parent, &aa.ID) {
+			return
+		}
+	}
 }

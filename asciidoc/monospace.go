@@ -22,15 +22,19 @@ func (Monospace) TextFormat() TextFormat {
 	return TextFormatMonospace
 }
 
-func (b *Monospace) Equals(e Element) bool {
+func (ms *Monospace) Equals(e Element) bool {
 	ob, ok := e.(*Monospace)
 	if !ok {
 		return false
 	}
-	if !b.AttributeList.Equals(ob.AttributeList) {
+	if !ms.AttributeList.Equals(ob.AttributeList) {
 		return false
 	}
-	return b.Elements.Equals(ob.Elements)
+	return ms.Elements.Equals(ob.Elements)
+}
+
+func (ms *Monospace) Clone() Element {
+	return &Monospace{position: ms.position, raw: ms.raw, AttributeList: ms.AttributeList.Clone(), Elements: ms.Elements.Clone()}
 }
 
 type DoubleMonospace struct {
@@ -55,13 +59,17 @@ func (DoubleMonospace) TextFormat() TextFormat {
 	return TextFormatMonospace
 }
 
-func (b *DoubleMonospace) Equals(e Element) bool {
+func (dm *DoubleMonospace) Equals(e Element) bool {
 	ob, ok := e.(*DoubleMonospace)
 	if !ok {
 		return false
 	}
-	if !b.AttributeList.Equals(ob.AttributeList) {
+	if !dm.AttributeList.Equals(ob.AttributeList) {
 		return false
 	}
-	return b.Elements.Equals(ob.Elements)
+	return dm.Elements.Equals(ob.Elements)
+}
+
+func (dm *DoubleMonospace) Clone() Element {
+	return &DoubleMonospace{position: dm.position, raw: dm.raw, AttributeList: dm.AttributeList.Clone(), Elements: dm.Elements.Clone()}
 }

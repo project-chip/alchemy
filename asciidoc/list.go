@@ -42,18 +42,29 @@ func (OrderedListItem) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *OrderedListItem) Equals(o Element) bool {
+func (oli *OrderedListItem) Equals(o Element) bool {
 	oa, ok := o.(*OrderedListItem)
 	if !ok {
 		return false
 	}
-	if a.Marker != oa.Marker {
+	if oli.Marker != oa.Marker {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !oli.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return oli.Elements.Equals(oa.Elements)
+}
+
+func (oli *OrderedListItem) Clone() Element {
+	return &OrderedListItem{
+		position:      oli.position,
+		raw:           oli.raw,
+		Elements:      oli.Elements.Clone(),
+		AttributeList: oli.AttributeList.Clone(),
+		Indent:        oli.Indent,
+		Marker:        oli.Marker,
+	}
 }
 
 type UnorderedListItem struct {
@@ -80,18 +91,30 @@ func (UnorderedListItem) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *UnorderedListItem) Equals(o Element) bool {
+func (uoli *UnorderedListItem) Equals(o Element) bool {
 	oa, ok := o.(*UnorderedListItem)
 	if !ok {
 		return false
 	}
-	if a.Marker != oa.Marker || a.Checklist != oa.Checklist {
+	if uoli.Marker != oa.Marker || uoli.Checklist != oa.Checklist {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !uoli.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return uoli.Elements.Equals(oa.Elements)
+}
+
+func (uoli *UnorderedListItem) Clone() Element {
+	return &UnorderedListItem{
+		position:      uoli.position,
+		raw:           uoli.raw,
+		Elements:      uoli.Elements.Clone(),
+		AttributeList: uoli.AttributeList.Clone(),
+		Indent:        uoli.Indent,
+		Marker:        uoli.Marker,
+		Checklist:     uoli.Checklist,
+	}
 }
 
 type DescriptionListItem struct {
@@ -116,18 +139,29 @@ func (DescriptionListItem) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *DescriptionListItem) Equals(o Element) bool {
+func (dli *DescriptionListItem) Equals(o Element) bool {
 	oa, ok := o.(*DescriptionListItem)
 	if !ok {
 		return false
 	}
-	if a.Marker != oa.Marker || !a.Term.Equals(oa.Term) {
+	if dli.Marker != oa.Marker || !dli.Term.Equals(oa.Term) {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !dli.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return dli.Elements.Equals(oa.Elements)
+}
+
+func (dli *DescriptionListItem) Clone() Element {
+	return &DescriptionListItem{
+		position:      dli.position,
+		raw:           dli.raw,
+		Elements:      dli.Elements.Clone(),
+		AttributeList: dli.AttributeList.Clone(),
+		Marker:        dli.Marker,
+		Term:          dli.Term.Clone(),
+	}
 }
 
 type ListContinuation struct {
@@ -142,8 +176,8 @@ func (ListContinuation) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (s *ListContinuation) Child() Element {
-	return s.ChildElement
+func (lc *ListContinuation) Child() Element {
+	return lc.ChildElement
 }
 
 func NewListContinuation(child Element, newLineCount int) *ListContinuation {
@@ -153,10 +187,19 @@ func NewListContinuation(child Element, newLineCount int) *ListContinuation {
 	}
 }
 
-func (a *ListContinuation) Equals(o Element) bool {
+func (lc *ListContinuation) Equals(o Element) bool {
 	oa, ok := o.(*ListContinuation)
 	if !ok {
 		return false
 	}
-	return a.ChildElement.Equals(oa.ChildElement)
+	return lc.ChildElement.Equals(oa.ChildElement)
+}
+
+func (lc *ListContinuation) Clone() Element {
+	return &ListContinuation{
+		position:     lc.position,
+		raw:          lc.raw,
+		ChildElement: lc.ChildElement.Clone(),
+		NewLineCount: lc.NewLineCount,
+	}
 }

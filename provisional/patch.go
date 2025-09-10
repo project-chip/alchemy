@@ -28,7 +28,7 @@ func patchProvisional(cxt context.Context, pipelineOptions pipeline.ProcessingOp
 		return err
 	}
 
-	docReader, err := spec.NewReader("Reading docs", s.Root)
+	docReader, err := spec.NewReader(spec.ParserOptions{Root: s.Root})
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func patchProvisional(cxt context.Context, pipelineOptions pipeline.ProcessingOp
 		}
 	}
 
-	renderDocs := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[render.InputDocument]](docs.Size())
+	renderDocs := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[*asciidoc.Document]](docs.Size())
 	pipeline.Cast(docs, renderDocs)
 
 	renderer := render.NewRenderer()
@@ -65,7 +65,7 @@ func patchProvisional(cxt context.Context, pipelineOptions pipeline.ProcessingOp
 	return
 }
 
-func patchViolation(doc *spec.Doc, v Violation) (err error) {
+func patchViolation(doc *asciidoc.Document, v Violation) (err error) {
 	switch e := v.Entity.(type) {
 	case *matter.EnumValue:
 		source := e.Source()
@@ -76,15 +76,15 @@ func patchViolation(doc *spec.Doc, v Violation) (err error) {
 	return
 }
 
-func addProvisionalConformance(doc *spec.Doc, e types.Entity, source asciidoc.Element) (err error) {
+func addProvisionalConformance(doc *asciidoc.Document, e types.Entity, source asciidoc.Element) (err error) {
 	switch source := source.(type) {
 	case *asciidoc.TableRow:
 		var table *spec.TableInfo
-		table, err = spec.ReadTable(doc, doc.Reader(), source.Parent)
+		table, err = spec.ReadTable(doc, asciidoc.RawReader, source.Parent)
 		if err != nil {
 			return
 		}
-		conf := table.ReadConformance(source, matter.TableColumnConformance)
+		conf := table.ReadConformance(asciidoc.RawReader, source, matter.TableColumnConformance)
 		if conformance.IsProvisional(conf) {
 			slog.Error("Already provisional!")
 			return

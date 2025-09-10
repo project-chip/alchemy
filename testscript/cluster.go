@@ -7,6 +7,7 @@ import (
 	"slices"
 
 	"github.com/iancoleman/strcase"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -16,7 +17,7 @@ import (
 	"github.com/project-chip/alchemy/testplan/pics"
 )
 
-func (*TestScriptGenerator) buildClusterTest(doc *spec.Doc, cluster *matter.Cluster) (t *Test, err error) {
+func (*TestScriptGenerator) buildClusterTest(doc *asciidoc.Document, cluster *matter.Cluster) (t *Test, err error) {
 	id := cluster.PICS
 
 	if id == "" {

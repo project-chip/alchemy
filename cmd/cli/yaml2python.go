@@ -110,5 +110,6 @@ func (c *Yaml2Python) Run(cc *Context) (err error) {
 
 	writer := files.NewWriter[string]("Writing test scripts", c.OutputOptions)
 	err = writer.Write(cc, scripts, c.ProcessingOptions)
+
 	return
 }

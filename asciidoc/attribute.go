@@ -32,6 +32,10 @@ func (uar *AttributeEntry) Equals(e Element) bool {
 	return uar.Elements.Equals(ouar.Elements)
 }
 
+func (uar *AttributeEntry) Clone() Element {
+	return &AttributeEntry{position: uar.position, raw: uar.raw, Name: uar.Name, Elements: uar.Elements.Clone()}
+}
+
 type AttributeReset struct {
 	position
 	raw
@@ -55,6 +59,10 @@ func (uar *AttributeReset) Equals(e Element) bool {
 	return uar.Name == ouar.Name
 }
 
+func (uar *AttributeReset) Clone() Element {
+	return &AttributeReset{position: uar.position, raw: uar.raw, Name: uar.Name}
+}
+
 type Attribute interface {
 	HasPosition
 	Value() any
@@ -63,6 +71,7 @@ type Attribute interface {
 	Equals(o Attribute) bool
 	AttributeType() AttributeType
 	QuoteType() AttributeQuoteType
+	Clone() Attribute
 }
 
 type attribute struct {
@@ -118,6 +127,10 @@ func (na *NamedAttribute) QuoteType() AttributeQuoteType {
 
 func (na *NamedAttribute) AsciiDocString() string {
 	return AttributeAsciiDocString(na.Val)
+}
+
+func (na *NamedAttribute) Clone() Attribute {
+	return &NamedAttribute{attribute: na.attribute, Name: na.Name, Val: na.Val.Clone(), Quote: na.Quote}
 }
 
 func (na *NamedAttribute) Equals(oa Attribute) bool {
@@ -193,6 +206,10 @@ func (pa *PositionalAttribute) AsciiDocString() string {
 	return AttributeAsciiDocString(pa.Val)
 }
 
+func (pa *PositionalAttribute) Clone() Attribute {
+	return &PositionalAttribute{attribute: pa.attribute, Offset: pa.Offset, ImpliedName: pa.ImpliedName, Val: pa.Val.Clone()}
+}
+
 type TitleAttribute struct {
 	attribute
 
@@ -243,6 +260,10 @@ func (ta *TitleAttribute) AsciiDocString() string {
 	return AttributeAsciiDocString(ta.Val)
 }
 
+func (ta *TitleAttribute) Clone() Attribute {
+	return &TitleAttribute{attribute: ta.attribute, Val: ta.Val.Clone()}
+}
+
 type AttributeReference interface {
 	HasPosition
 	Element
@@ -270,6 +291,10 @@ func (uar *UserAttributeReference) Name() string {
 
 func (UserAttributeReference) Type() ElementType {
 	return ElementTypeInline
+}
+
+func (uaf UserAttributeReference) Clone() Element {
+	return &UserAttributeReference{position: uaf.position, raw: uaf.raw, Value: uaf.Value}
 }
 
 func NewAttributeReference(name string) AttributeReference {
@@ -335,24 +360,28 @@ var characterReplacementAttributes = map[string]string{
 
 type CharacterReplacementReference UserAttributeReference
 
-func (uar *CharacterReplacementReference) Name() string {
-	return uar.Value
+func (crr *CharacterReplacementReference) Name() string {
+	return crr.Value
 }
 
 func (CharacterReplacementReference) Type() ElementType {
 	return ElementTypeInline
 }
 
-func (uar *CharacterReplacementReference) Equals(e Element) bool {
+func (crr *CharacterReplacementReference) Equals(e Element) bool {
 	ouar, ok := e.(*CharacterReplacementReference)
 	if !ok {
 		return false
 	}
-	return ouar.Value == uar.Value
+	return ouar.Value == crr.Value
 }
 
-func (uar CharacterReplacementReference) ReplacementValue() string {
-	return characterReplacementAttributes[uar.Value]
+func (crr CharacterReplacementReference) ReplacementValue() string {
+	return characterReplacementAttributes[crr.Value]
+}
+
+func (crr CharacterReplacementReference) Clone() Element {
+	return &CharacterReplacementReference{position: crr.position, raw: crr.raw, Value: crr.Value}
 }
 
 func isCharacterReplacement(s string) bool {

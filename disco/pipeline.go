@@ -16,6 +16,7 @@ import (
 func Pipeline(cxt context.Context, parserOptions spec.ParserOptions, docPaths []string, pipelineOptions pipeline.ProcessingOptions, discoOptions DiscoOptions, attributes []asciidoc.AttributeName, renderOptions []render.Option, writer files.Writer[string]) (err error) {
 
 	var docs spec.DocSet
+	var specification *spec.Specification
 
 	if parserOptions.Root == "" {
 		allPaths, e := paths.NewTargeter(docPaths...)(cxt)
@@ -29,44 +30,28 @@ func Pipeline(cxt context.Context, parserOptions spec.ParserOptions, docPaths []
 		return
 	}
 
-	if parserOptions.Root != "" {
-
-		_, docs, err = spec.Parse(cxt, parserOptions, pipelineOptions, nil, attributes)
-		if err != nil {
-			return err
-		}
-		if len(docPaths) > 0 {
-			filter := paths.NewIncludeFilter[*spec.Doc](parserOptions.Root, docPaths)
-			docs, err = pipeline.Collective(cxt, pipelineOptions, filter, docs)
-			if err != nil {
-				return err
-			}
-		}
-	} else if len(docPaths) > 0 {
-		var inputs pipeline.Paths
-		inputs, err = pipeline.Start(cxt, paths.NewTargeter(docPaths...))
-		if err != nil {
-			return err
-		}
-
-		docReader, err := spec.NewReader("Reading docs", parserOptions.Root)
-		if err != nil {
-			return err
-		}
-		docs, err = pipeline.Parallel(cxt, pipelineOptions, docReader, inputs)
-		if err != nil {
-			return err
-		}
-	} else {
-		err = fmt.Errorf("disco ball requires spec root or document paths")
+	if parserOptions.Root == "" {
+		err = fmt.Errorf("disco ball requires spec root")
 		return
+	}
+
+	specification, docs, err = spec.Parse(cxt, parserOptions, pipelineOptions, nil, attributes)
+	if err != nil {
+		return err
+	}
+	if len(docPaths) > 0 {
+		filter := paths.NewIncludeFilter[*asciidoc.Document](parserOptions.Root, docPaths)
+		docs, err = pipeline.Collective(cxt, pipelineOptions, filter, docs)
+		if err != nil {
+			return err
+		}
 	}
 
 	if err != nil {
 		return err
 	}
 
-	baller := NewBaller(discoOptions)
+	baller := NewBaller(specification, discoOptions)
 
 	var balledDocs spec.DocSet
 	balledDocs, err = pipeline.Parallel(cxt, pipelineOptions, baller, docs)
@@ -74,8 +59,8 @@ func Pipeline(cxt context.Context, parserOptions spec.ParserOptions, docPaths []
 		return err
 	}
 
-	anchorNormalizer := newAnchorNormalizer(discoOptions)
-	var normalizedDocs pipeline.Map[string, *pipeline.Data[render.InputDocument]]
+	anchorNormalizer := newAnchorNormalizer(specification, discoOptions)
+	var normalizedDocs pipeline.Map[string, *pipeline.Data[*asciidoc.Document]]
 	normalizedDocs, err = pipeline.Collective(cxt, pipelineOptions, anchorNormalizer, balledDocs)
 	if err != nil {
 		return err

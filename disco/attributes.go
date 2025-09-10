@@ -32,7 +32,7 @@ func (b *Baller) organizeAttributesSection(cxt *discoContext) (err error) {
 
 		err = b.renameTableHeaderCells(cxt, attributes.section, attributesTable, matter.Tables[matter.TableTypeAttributes].ColumnRenames)
 		if err != nil {
-			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.doc.SectionName(attributes.section), cxt.doc.Path, err)
+			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.library.SectionName(attributes.section), cxt.doc.Path, err)
 		}
 
 		err = b.fixAccessCells(cxt, attributes, types.EntityTypeAttribute)
@@ -60,7 +60,7 @@ func (b *Baller) organizeAttributesSection(cxt *discoContext) (err error) {
 			return err
 		}
 
-		b.removeMandatoryFallbacks(attributesTable)
+		b.removeMandatoryFallbacks(cxt, attributesTable)
 	}
 	return nil
 }
@@ -69,7 +69,7 @@ func (b *Baller) linkIndexTables(cxt *discoContext, section *subSection) error {
 	if !b.options.LinkIndexTables {
 		return nil
 	}
-	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section.section), errata.DiscoPurposeTableLinkIndexes) {
+	if cxt.errata.IgnoreSection(cxt.library.SectionName(section.section), errata.DiscoPurposeTableLinkIndexes) {
 		return nil
 	}
 	if section.table == nil || section.table.Element == nil {
@@ -83,7 +83,7 @@ func (b *Baller) linkIndexTables(cxt *discoContext, section *subSection) error {
 
 	for _, row := range section.table.Rows {
 		cell := row.Cell(nameIndex)
-		cv, err := spec.RenderTableCell(cell)
+		cv, err := spec.RenderTableCell(cxt.library, cell)
 		if err != nil {
 			continue
 		}
@@ -97,7 +97,7 @@ func (b *Baller) linkIndexTables(cxt *discoContext, section *subSection) error {
 	}
 	for _, ss := range section.children {
 		s := ss.section
-		attributeName := matter.StripReferenceSuffixes(cxt.doc.SectionName(s))
+		attributeName := matter.StripReferenceSuffixes(cxt.library.SectionName(s))
 		name := strings.TrimSpace(attributeName)
 
 		cell, ok := attributeCells[strings.ToLower(name)]
@@ -112,7 +112,7 @@ func (b *Baller) linkIndexTables(cxt *discoContext, section *subSection) error {
 		if !ok {
 			label := normalizeAnchorLabel(name, nil)
 			id = asciidoc.NewStringElements(normalizeAnchorID(name, nil))
-			spec.NewAnchor(cxt.doc, id, s, section.section, label...).SyncToDoc(id)
+			cxt.library.SyncToDoc(spec.NewAnchor(cxt.doc, id, s, section.section, label...), id)
 		}
 		icr := asciidoc.NewCrossReference(id, asciidoc.CrossReferenceFormatNatural)
 		cell.SetChildren(asciidoc.Elements{icr})

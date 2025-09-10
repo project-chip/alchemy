@@ -175,7 +175,7 @@ func (sp *Builder) resolveEntityConformanceReferences(cluster *matter.Cluster, f
 	case *conformance.Generic:
 		if !conformance.IsBlank(con) {
 			slog.Warn("Can not resolve entities on generic conformance", slog.String("conformance", con.RawText()), log.Path("source", source))
-
+			sp.Spec.addError(&InvalidConformanceError{Source: source, Conformance: con.RawText()})
 		}
 	default:
 		slog.Warn("Unexpected field conformance type", log.Type("type", con))

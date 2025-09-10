@@ -15,7 +15,7 @@ func (b *Baller) fixConstraintCells(cxt *discoContext, section *asciidoc.Section
 	if len(ti.Rows) < 2 {
 		return
 	}
-	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section), errata.DiscoPurposeTableConstraint) {
+	if cxt.errata.IgnoreSection(cxt.library.SectionName(section), errata.DiscoPurposeTableConstraint) {
 		return
 	}
 	constraintIndex, ok := ti.ColumnIndex(matter.TableColumnConstraint)
@@ -25,12 +25,12 @@ func (b *Baller) fixConstraintCells(cxt *discoContext, section *asciidoc.Section
 	qualityIndex, hasQuality := ti.ColumnIndex(matter.TableColumnQuality)
 	for _, row := range ti.Rows[1:] {
 		cell := row.Cell(constraintIndex)
-		vc, e := spec.RenderTableCell(cell)
+		vc, e := spec.RenderTableCell(cxt.library, cell)
 		if e != nil {
 			continue
 		}
 
-		dataType, e := ti.ReadDataType(asciidoc.RawReader, row, matter.TableColumnType)
+		dataType, e := ti.ReadDataType(cxt.library, asciidoc.RawReader, row, matter.TableColumnType)
 		if e != nil {
 			slog.Debug("error reading data type for constraint", slog.String("path", cxt.doc.Path.String()), slog.Any("error", e))
 			continue
@@ -46,7 +46,7 @@ func (b *Baller) fixConstraintCells(cxt *discoContext, section *asciidoc.Section
 		var quality matter.Quality
 		if hasQuality {
 			cell := row.Cell(qualityIndex)
-			vc, e := spec.RenderTableCell(cell)
+			vc, e := spec.RenderTableCell(cxt.library, cell)
 			if e != nil {
 				continue
 			}

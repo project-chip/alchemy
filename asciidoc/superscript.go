@@ -26,3 +26,7 @@ func (a *Superscript) Equals(o Element) bool {
 	}
 	return a.Elements.Equals(oa.Elements)
 }
+
+func (a *Superscript) Clone() Element {
+	return &Superscript{position: a.position, raw: a.raw, AttributeList: a.AttributeList.Clone(), Elements: a.Elements.Clone()}
+}

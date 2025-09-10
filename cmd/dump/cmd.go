@@ -1,7 +1,6 @@
 package dump
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -9,7 +8,6 @@ import (
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/common"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/matter/spec"
 )
@@ -28,56 +26,57 @@ func (d *Command) Run(cc *cli.Context) (err error) {
 	if err != nil {
 		return fmt.Errorf("error building paths: %w", err)
 	}
-	for i, f := range files {
-		if len(files) > 0 {
-			fmt.Fprintf(os.Stderr, "Dumping %s (%d of %d)...\n", f, (i + 1), len(files))
-		}
-		if d.Ascii {
-			doc, err := spec.ReadFile(f, ".")
-			if err != nil {
-				return fmt.Errorf("error opening doc %s: %w", f, err)
-			}
-
-			for top := range parse.Skim[*asciidoc.Section](doc.Reader(), doc, doc.Children()) {
-				err := spec.AssignSectionTypes(doc, top)
-				if err != nil {
-					return err
-				}
-			}
-			dumpElements(doc, doc, doc.Children(), 0)
-		} else if d.Json {
-			err = errata.LoadErrataConfig(d.Root)
-			if err != nil {
-				return
-			}
-			path, err := asciidoc.NewPath(f, d.Root)
-			if err != nil {
-				return fmt.Errorf("error resolving doc path %s: %w", f, err)
-			}
-
-			doc, err := spec.ParseFile(path, d.Root, d.ASCIIDocAttributes.ToList()...)
-			if err != nil {
-				return fmt.Errorf("error opening doc %s: %w", f, err)
-			}
-			entities, err := doc.Entities()
-			if err != nil {
-				return fmt.Errorf("error parsing entities %s: %w", f, err)
-			}
-			globalObjects, err := doc.GlobalObjects()
-			if err != nil {
-				return fmt.Errorf("error parsing global objects %s: %w", f, err)
-			}
-			entities = append(entities, globalObjects...)
+	if d.Json {
+		/*s, _, err := spec.Parse(cc, d.ParserOptions, pipeline.ProcessingOptions{}, nil, d.ASCIIDocAttributes.ToList())
+		for i, f := range files {
 			encoder := json.NewEncoder(os.Stdout)
-			//encoder.SetIndent("", "\t")
 			return encoder.Encode(entities)
-		} else {
-			doc, err := spec.ReadFile(f, ".")
-			if err != nil {
-				return fmt.Errorf("error opening doc %s: %w", f, err)
+		}*/
+		/*doc, _, err := spec.ParseFile(path, d.Root, d.ASCIIDocAttributes.ToList()...)
+		if err != nil {
+			return fmt.Errorf("error opening doc %s: %w", f, err)
+		}
+		entities, err := doc.Entities()
+		if err != nil {
+			return fmt.Errorf("error parsing entities %s: %w", f, err)
+		}
+		globalObjects, err := doc.GlobalObjects()
+		if err != nil {
+			return fmt.Errorf("error parsing global objects %s: %w", f, err)
+		}
+		entities = append(entities, globalObjects...)*/
+		//encoder.SetIndent("", "\t")
+
+	} else {
+		for i, f := range files {
+			if len(files) > 0 {
+				fmt.Fprintf(os.Stderr, "Dumping %s (%d of %d)...\n", f, (i + 1), len(files))
 			}
-			dumpElements(doc, doc.Base, doc.Base.Children(), 0)
+			if d.Ascii {
+				doc, err := spec.ReadFile(f, ".")
+				if err != nil {
+					return fmt.Errorf("error opening doc %s: %w", f, err)
+				}
+
+				sic := newDumpInfoCache(asciidoc.RawReader)
+
+				spec.AssignDocType(sic, sic, asciidoc.RawReader, doc)
+				for top := range parse.Skim[*asciidoc.Section](asciidoc.RawReader, doc, doc.Children()) {
+					err := spec.AssignSectionTypes(sic, sic, sic, doc, top)
+					if err != nil {
+						return err
+					}
+				}
+				dumpElements(sic, doc, doc.Children(), 0)
+			} else {
+				doc, err := spec.ReadFile(f, ".")
+				if err != nil {
+					return fmt.Errorf("error opening doc %s: %w", f, err)
+				}
+				dumpElements(newDumpInfoCache(asciidoc.RawReader), doc, doc.Children(), 0)
+			}
 		}
 	}
+
 	return nil
 }

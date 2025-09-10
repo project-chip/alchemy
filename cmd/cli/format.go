@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/paths"
@@ -25,7 +26,7 @@ func (f *Format) Run(cc *Context) (err error) {
 		return err
 	}
 
-	docReader, err := spec.NewReader("Reading docs", "")
+	docReader, err := spec.NewReader(spec.ParserOptions{Root: "."})
 	if err != nil {
 		return err
 	}
@@ -34,7 +35,7 @@ func (f *Format) Run(cc *Context) (err error) {
 		return err
 	}
 
-	ids := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[render.InputDocument]](docs.Size())
+	ids := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[*asciidoc.Document]](docs.Size())
 	err = pipeline.Cast(docs, ids)
 	if err != nil {
 		return err

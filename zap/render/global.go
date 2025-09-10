@@ -7,6 +7,7 @@ import (
 	"slices"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/find"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -38,12 +39,11 @@ func (p GlobalObjectsRenderer) Name() string {
 	return "Renering ZAP global objects"
 }
 
-func (p GlobalObjectsRenderer) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[string], err error) {
+func (p GlobalObjectsRenderer) Process(cxt context.Context, inputs []*pipeline.Data[*asciidoc.Document]) (outputs []*pipeline.Data[string], err error) {
 
 	globalEntities := make(map[types.EntityType][]types.Entity)
 	for _, input := range inputs {
-		var entities []types.Entity
-		entities, err = input.Content.Entities()
+		entities := p.spec.EntitiesForDocument(input.Content)
 		if err != nil {
 			return
 		}
@@ -64,7 +64,7 @@ func (p GlobalObjectsRenderer) Process(cxt context.Context, inputs []*pipeline.D
 			return
 		}
 		allEntities := slices.Collect(find.Filter(find.Keys(p.spec.GlobalObjects), func(e types.Entity) bool { return e.EntityType() == entityType }))
-		docs := make(map[*spec.Doc]struct{})
+		docs := make(map[*asciidoc.Document]struct{})
 		for _, e := range allEntities {
 			doc, ok := p.spec.DocRefs[e]
 			if !ok {
