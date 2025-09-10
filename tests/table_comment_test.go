@@ -448,20 +448,26 @@ var tableComment = &asciidoc.Document{
 									Value: "The ",
 								},
 								&asciidoc.CrossReference{
-									Elements: nil,
+									AttributeList: nil,
+									Elements:      nil,
 									ID: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "ref_DataTypes",
 										},
 									},
+									Format: 0,
 								},
 								&asciidoc.String{
 									Value: " of the data field is ",
 								},
 								&asciidoc.CrossReference{
+									AttributeList: nil,
 									Elements: asciidoc.Elements{
 										&asciidoc.String{
-											Value: " nullable",
+											Value: " ",
+										},
+										&asciidoc.String{
+											Value: "nullable",
 										},
 									},
 									ID: asciidoc.Elements{
@@ -469,6 +475,7 @@ var tableComment = &asciidoc.Document{
 											Value: "ref_Nullable",
 										},
 									},
+									Format: 0,
 								},
 							},
 							Blank: false,

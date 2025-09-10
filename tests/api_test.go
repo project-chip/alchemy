@@ -2972,18 +2972,26 @@ var apiTestShouldSetLinenumsOptionIfLinenumsEnabledOnFencedCodeBlock = &asciidoc
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.String{
-			Value: "```ruby,linenums",
+		&asciidoc.FencedBlock{
+			Delimiter: asciidoc.FencedDelimiter{
+				Delimiter: asciidoc.Delimiter{
+					Type:   4,
+					Length: 3,
+				},
+				Language: asciidoc.Elements{
+					&asciidoc.String{
+						Value: "ruby,linenums",
+					},
+				},
+			},
+			AttributeList: nil,
+			Elements: asciidoc.Elements{
+				&asciidoc.String{
+					Value: "puts \"Hello, World!\"",
+				},
+				&asciidoc.NewLine{},
+			},
 		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "puts \"Hello, World!\"",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "```",
-		},
-		&asciidoc.NewLine{},
 	},
 }
 
@@ -3041,18 +3049,26 @@ var apiTestShouldNotSetLinenumsAttributeIfLinenumsOptionIsEnabledOnFencedCodeBlo
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.String{
-			Value: "```ruby",
+		&asciidoc.FencedBlock{
+			Delimiter: asciidoc.FencedDelimiter{
+				Delimiter: asciidoc.Delimiter{
+					Type:   4,
+					Length: 3,
+				},
+				Language: asciidoc.Elements{
+					&asciidoc.String{
+						Value: "ruby",
+					},
+				},
+			},
+			AttributeList: nil,
+			Elements: asciidoc.Elements{
+				&asciidoc.String{
+					Value: "puts \"Hello, World!\"",
+				},
+				&asciidoc.NewLine{},
+			},
 		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "puts \"Hello, World!\"",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "```",
-		},
-		&asciidoc.NewLine{},
 	},
 }
 

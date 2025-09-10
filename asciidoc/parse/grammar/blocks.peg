@@ -38,6 +38,7 @@ AttributableBlocks = attributes:(BlockElementAttributes)? element:(
     Sidebar /
     Quote /
     Literal /
+    Fenced / 
     Stem /
     Section / 
     ThematicBreak /
