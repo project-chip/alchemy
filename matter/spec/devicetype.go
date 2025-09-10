@@ -20,7 +20,7 @@ func (library *Library) toDeviceTypes(reader asciidoc.Reader, d *asciidoc.Docume
 	for s := range parse.Skim[*asciidoc.Section](reader, s, reader.Children(s)) {
 		switch library.SectionType(s) {
 		case matter.SectionClassification:
-			deviceTypes, err = readDeviceTypeIDs(reader, d, s)
+			deviceTypes, err = library.readDeviceTypeIDs(reader, d, s)
 		}
 		if err != nil {
 			return
@@ -66,7 +66,7 @@ func (library *Library) toDeviceTypes(reader asciidoc.Reader, d *asciidoc.Docume
 			case matter.SectionComposedDeviceTypeConditionRequirements:
 				dt.ConditionRequirements, err = library.toConditionRequirements(reader, d, s, dt)
 			case matter.SectionRevisionHistory:
-				dt.Revisions, err = readRevisionHistory(reader, d, s)
+				dt.Revisions, err = library.readRevisionHistory(reader, d, s)
 			default:
 			}
 			if err != nil {
@@ -80,8 +80,8 @@ func (library *Library) toDeviceTypes(reader asciidoc.Reader, d *asciidoc.Docume
 	return
 }
 
-func readDeviceTypeIDs(reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section) ([]*matter.DeviceType, error) {
-	ti, err := parseFirstTable(reader, doc, s)
+func (library *Library) readDeviceTypeIDs(reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section) ([]*matter.DeviceType, error) {
+	ti, err := library.parseFirstTable(reader, doc, s)
 	if err != nil {
 		return nil, newGenericParseError(s, "failed reading device type ID: %w", err)
 	}
@@ -156,7 +156,7 @@ func (library *Library) toBaseDeviceType(reader asciidoc.Reader, section *asciid
 
 			baseDeviceType.Conditions = append(baseDeviceType.Conditions, conditions...)
 		case matter.SectionRevisionHistory:
-			baseDeviceType.Revisions, err = readRevisionHistory(reader, doc, sec)
+			baseDeviceType.Revisions, err = library.readRevisionHistory(reader, doc, sec)
 		}
 		if err != nil {
 			return parse.SearchShouldStop
@@ -165,12 +165,6 @@ func (library *Library) toBaseDeviceType(reader asciidoc.Reader, section *asciid
 	})
 
 	return
-	/*
-	   for top := range parse.Skim[*asciidoc.Section](reader, section, reader.Children(section)) {
-
-	   }
-	   return nil, fmt.Errorf("failed to find base device type")
-	*/
 }
 
 func (spec *Specification) associateDeviceTypeRequirements() (err error) {

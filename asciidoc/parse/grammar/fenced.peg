@@ -3,11 +3,12 @@ Fenced =
     start:(FencedStart)
     lines:(!FencedDelimiter Element)*
     FencedEnd {
-        return compose(c, asciidoc.NewFencedBlock(start.(asciidoc.Delimiter)), setElements[*asciidoc.FencedBlock](join(lines.([]any))))
+        
+        return compose(c, asciidoc.NewFencedBlock(start.(asciidoc.FencedDelimiter)), setElements[*asciidoc.FencedBlock](join(lines.([]any))))
     }
 
 FencedStart = delimiter:FencedDelimiter EndOfLine &{
-        c.pushDelimitedLevel(asciidoc.DelimitedBlockTypeFenced, delimiter.(asciidoc.Delimiter).Length)
+        c.pushDelimitedLevel(asciidoc.DelimitedBlockTypeFenced, delimiter.(asciidoc.FencedDelimiter).Length)
         return true, nil
     } {
         debugPosition(c, "matched fenced start: %s\n", string(c.text))
@@ -17,7 +18,7 @@ FencedStart = delimiter:FencedDelimiter EndOfLine &{
 FencedEnd = delimiter:FencedDelimiter &EndOfLine &{
     debugPosition(c, "matched fenced end: %s\n", string(c.text))
     previous := c.peekDelimitedLevel(asciidoc.DelimitedBlockTypeFenced)
-    if previous == delimiter.(asciidoc.Delimiter).Length {
+    if previous == delimiter.(asciidoc.FencedDelimiter).Length {
         c.popDelimitedLevel(asciidoc.DelimitedBlockTypeFenced)
         return true, nil
     }
@@ -25,19 +26,24 @@ FencedEnd = delimiter:FencedDelimiter &EndOfLine &{
     return false, nil
     } 
 
-FencedBackticks = backticks:("```" "="*) &{
-        return delimitedLength(backticks) >= 4, nil
+FencedBackticks = backticks:("```" !"`") &{
+        return delimitedLength(backticks) >= 3, nil
     } 
     { 
     debugPosition(c, "matched fenced backticks: %s\n", string(c.text))
         return delimitedLength(backticks), nil
     }
 
-FencedDelimiter = hyphens:(FencedBackticks) 
+FencedDelimiter = hyphens:(FencedBackticks) language:(InlineElements)?
     AnySpaces  
     {
-    debugPosition(c, "matched Fenced delimiter: %s\n", string(c.text))
-        return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeFenced, Length:hyphens.(int)}, nil
+    
+        debugPosition(c, "matched Fenced delimiter: %s\n", string(c.text))
+        var lang asciidoc.Elements
+        if language != nil {
+            lang = join(language.(asciidoc.Elements))
+        }
+        return asciidoc.NewFencedDelimiter(hyphens.(int), lang), nil
     }
 
 FencedLine = (!FencedDelimiter NotEndOfFile line:AnyText EndOfLine) {

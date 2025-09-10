@@ -13,7 +13,7 @@ import (
 func (library *Library) toStruct(spec *Specification, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, parent types.Entity) (ms *matter.Struct, err error) {
 	name := text.TrimCaseInsensitiveSuffix(library.SectionName(s), " Type")
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, d, s)
+	ti, err = library.parseFirstTable(reader, d, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading struct \"%s\": %w", name, err)
 	}

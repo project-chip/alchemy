@@ -48,12 +48,24 @@ func (er *expressionResult) Result() any {
 
 type Confidence uint8
 
+// The order here is important; impossible overrides definite, which overrides possible
 const (
 	ConfidenceUnknown Confidence = iota
+	ConfidencePossible
 	ConfidenceDefinite
 	ConfidenceImpossible
-	ConfidencePossible
 )
+
+var ConfidenceNames = map[Confidence]string{
+	ConfidenceUnknown:    "Unknown",
+	ConfidenceDefinite:   "Definite",
+	ConfidenceImpossible: "Impossible",
+	ConfidencePossible:   "Possible",
+}
+
+func (c Confidence) String() string {
+	return ConfidenceNames[c]
+}
 
 func coalesceConfidences(et Confidence, oets ...Confidence) (out Confidence) {
 	out = et
@@ -61,6 +73,8 @@ func coalesceConfidences(et Confidence, oets ...Confidence) (out Confidence) {
 		switch oet {
 		case ConfidenceDefinite:
 		case ConfidenceImpossible:
+			out = ConfidenceImpossible
+			return
 		case ConfidencePossible:
 			out = ConfidencePossible
 		}

@@ -148,6 +148,9 @@ func compareValues(ar any, br any, op ComparisonOperator) (bool, error) {
 			default:
 				return false, fmt.Errorf("invalid op on comparison: %s", op.String())
 			}
+		default:
+			return false, fmt.Errorf("can't compare int64 with %T", br)
+
 		}
 	}
 	aUI64, aIsUI64 := toUint64(ar)
@@ -166,6 +169,8 @@ func compareValues(ar any, br any, op ComparisonOperator) (bool, error) {
 			default:
 				return false, fmt.Errorf("invalid op on comparison: %s", op.String())
 			}
+		default:
+			return false, fmt.Errorf("can't compare uint64 with %T", br)
 		}
 	}
 	switch ar := ar.(type) {
@@ -202,7 +207,7 @@ func compareValues(ar any, br any, op ComparisonOperator) (bool, error) {
 			return false, fmt.Errorf("invalid type on comparison with bool: %T", br)
 		}
 	default:
-		return false, fmt.Errorf("invalid type on comparison: %T", ar)
+		return false, fmt.Errorf("invalid type on comparison: %T vs. %T", ar, br)
 	}
 }
 
@@ -227,6 +232,13 @@ func compareNumbers[T int | int8 | int16 | int32 | int64 | uint | uint8 | uint16
 
 func toInt64(i any) (int64, bool) {
 	switch i := i.(type) {
+	case *IntValue:
+		return i.Int, true
+	case *HexValue:
+		if i.Hex <= math.MaxInt64 {
+			return int64(i.Hex), true
+		}
+		return 0, false
 	case int64:
 		return i, true
 	case int32:
@@ -257,6 +269,12 @@ func toInt64(i any) (int64, bool) {
 
 func toUint64(i any) (uint64, bool) {
 	switch i := i.(type) {
+	case *IntValue:
+		if i.Int >= 0 {
+			return uint64(i.Int), true
+		}
+	case *HexValue:
+		return i.Hex, true
 	case int64:
 		if i >= 0 {
 			return uint64(i), true

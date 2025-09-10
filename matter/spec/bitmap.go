@@ -31,7 +31,7 @@ func (library *Library) toBitmap(reader asciidoc.Reader, d *asciidoc.Document, s
 	bm.Name = name
 	bm.Type = dt
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, d, section)
+	ti, err = library.parseFirstTable(reader, d, section)
 
 	if err != nil {
 		if err == ErrNoTableFound {

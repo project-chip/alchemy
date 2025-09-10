@@ -10,7 +10,7 @@ import (
 
 func (library *Library) toAttributes(spec *Specification, reader asciidoc.Reader, d *asciidoc.Document, section *asciidoc.Section, cluster *matter.Cluster) (attributes matter.FieldSet, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, d, section)
+	ti, err = library.parseFirstTable(reader, d, section)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil

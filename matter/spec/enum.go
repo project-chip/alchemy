@@ -72,7 +72,7 @@ func (library *Library) findEnumValues(reader asciidoc.Reader, doc *asciidoc.Doc
 		return nil, newGenericParseError(e, "no enum field tables found")
 	}
 	for _, t := range tables {
-		ti, err := parseTable(reader, doc, s, t)
+		ti, err := library.parseTable(reader, doc, s, t)
 		if err != nil {
 			return nil, err
 		}
@@ -132,7 +132,7 @@ func (library *Library) findEnumValues(reader asciidoc.Reader, doc *asciidoc.Doc
 
 func (library *Library) toModeTags(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, parent types.Entity) (e *matter.Enum, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, d, s)
+	ti, err = library.parseFirstTable(reader, d, s)
 	if err != nil {
 		return nil, newGenericParseError(s, "failed reading mode tags: %w", err)
 	}

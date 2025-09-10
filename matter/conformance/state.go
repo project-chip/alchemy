@@ -4,11 +4,11 @@ type State uint8
 
 const (
 	StateUnknown State = iota
-	StateMandatory
 	StateOptional
 	StateProvisional
 	StateDeprecated
 	StateDisallowed
+	StateMandatory
 )
 
 var StateNames = map[State]string{

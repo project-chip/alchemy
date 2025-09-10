@@ -23,7 +23,7 @@ func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, 
 	for _, s := range sections {
 		switch library.SectionType(s) {
 		case matter.SectionClusterID:
-			clusters, err = readClusterIDs(reader, d, s, domain)
+			clusters, err = library.readClusterIDs(reader, d, s, domain)
 		}
 		if err != nil {
 			return
@@ -86,7 +86,7 @@ func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, 
 		for _, section := range sections {
 			switch library.SectionType(section) {
 			case matter.SectionClassification:
-				err = readClusterClassification(reader, d, clusterGroup.Name, &clusterGroup.ClusterClassification, section)
+				err = library.readClusterClassification(reader, d, clusterGroup.Name, &clusterGroup.ClusterClassification, section)
 			}
 			if err != nil {
 				return
@@ -109,7 +109,7 @@ func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, 
 		for _, s := range sections {
 			switch library.SectionType(s) {
 			case matter.SectionClassification:
-				err = readClusterClassification(reader, d, c.Name, &c.ClusterClassification, s)
+				err = library.readClusterClassification(reader, d, c.Name, &c.ClusterClassification, s)
 			}
 			if err != nil {
 				return
@@ -128,7 +128,7 @@ func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, 
 			case matter.SectionCommands:
 				c.Commands, err = library.toCommands(spec, reader, d, s, parentEntity)
 			case matter.SectionRevisionHistory:
-				c.Revisions, err = readRevisionHistory(reader, d, s)
+				c.Revisions, err = library.readRevisionHistory(reader, d, s)
 			case matter.SectionDerivedClusterNamespace:
 				err = library.parseDerivedCluster(reader, d, s, c)
 			case matter.SectionClusterID:
@@ -165,9 +165,9 @@ func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, 
 	return
 }
 
-func readRevisionHistory(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section) (revisions []*matter.Revision, err error) {
+func (library *Library) readRevisionHistory(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section) (revisions []*matter.Revision, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, doc, section)
+	ti, err = library.parseFirstTable(reader, doc, section)
 	if err != nil {
 		err = newGenericParseError(section, "failed reading revision history: %w", err)
 		return
@@ -190,8 +190,8 @@ func readRevisionHistory(reader asciidoc.Reader, doc *asciidoc.Document, section
 	return
 }
 
-func readClusterIDs(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, domain matter.Domain) ([]*matter.Cluster, error) {
-	ti, err := parseFirstTable(reader, doc, section)
+func (library *Library) readClusterIDs(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, domain matter.Domain) ([]*matter.Cluster, error) {
+	ti, err := library.parseFirstTable(reader, doc, section)
 	if err != nil {
 		return nil, newGenericParseError(section, "failed reading cluster ID: %w", err)
 	}
@@ -235,8 +235,8 @@ func clusterNamesEquivalent(name1 string, name2 string) bool {
 	return strings.EqualFold(name1, name2)
 }
 
-func readClusterClassification(reader asciidoc.Reader, doc *asciidoc.Document, name string, classification *matter.ClusterClassification, s *asciidoc.Section) error {
-	ti, err := parseFirstTable(reader, doc, s)
+func (library *Library) readClusterClassification(reader asciidoc.Reader, doc *asciidoc.Document, name string, classification *matter.ClusterClassification, s *asciidoc.Section) error {
+	ti, err := library.parseFirstTable(reader, doc, s)
 	if err != nil {
 		return newGenericParseError(s, "failed reading classification: %w", err)
 	}

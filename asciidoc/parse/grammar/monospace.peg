@@ -13,7 +13,7 @@ SingleMonospaceTextValue = !_ value:(!_ value:(SingleMonospaceTextElement)+ { re
 
 SingleMonospaceTextElement = !("`" !"`") FormattedTextElement
 
-DoubleMonospaceText =!DoubleEscape "``" value:(DoubleMonospaceTextValue) "``"  {
+DoubleMonospaceText =!DoubleEscape "``" &(!"`") value:(DoubleMonospaceTextValue) "``" &(!"`"){
     debugPosition(c, "match double Monospace text %s\n", string(c.text))
     return value, nil
 }

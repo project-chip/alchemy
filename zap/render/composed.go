@@ -35,7 +35,7 @@ func (he *contextBoolean) Confidence() conformance.Confidence {
 	return he.confidence
 }
 
-func (he *contextBoolean) Value() any {
+func (he *contextBoolean) Result() any {
 	return he.value
 }
 
@@ -69,7 +69,7 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 		Values: map[string]any{
 			"Matter":            &contextBoolean{value: true, confidence: conformance.ConfidenceDefinite},
 			"Zigbee":            &contextBoolean{value: false, confidence: conformance.ConfidenceImpossible},
-			dc.DeviceType.Class: true,
+			dc.DeviceType.Class: &contextBoolean{value: true, confidence: conformance.ConfidenceDefinite},
 		},
 	}
 
@@ -126,7 +126,7 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 		Values: map[string]any{
 			"Matter":            &contextBoolean{value: true, confidence: conformance.ConfidenceDefinite},
 			"Zigbee":            &contextBoolean{value: false, confidence: conformance.ConfidenceImpossible},
-			dc.DeviceType.Class: true,
+			dc.DeviceType.Class: &contextBoolean{value: true, confidence: conformance.ConfidenceDefinite},
 			"Client":            &hasClient,
 			"Server":            &hasServer,
 		},
@@ -203,8 +203,7 @@ func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.
 
 	switch req.Origin {
 	case matter.RequirementOriginBaseDeviceType, matter.RequirementOriginSubsetDeviceType:
-		// Normally, we do not include clusters from the Base Device Type...
-		// ... unless there are element requirement for this cluster that are NOT from the base device type
+		// Normally, we do not include clusters from the Base Device Type or subset device types...
 
 		var hasElements bool
 		ers := elementRequirements[req.ClusterRequirement.Cluster]
@@ -217,17 +216,16 @@ func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.
 			hasElements = true
 			break
 		}
+		// ... unless there are element requirements for this cluster that are NOT from the base device type or subset device type
 		if hasElements {
 			break
 		}
-		// ...or unless the base device requirement is not mandatory, but it evaluates as mandatory in this context
-
-		if (conformance.IsMandatory(req.ClusterRequirement.Conformance) || state.State != conformance.StateMandatory) && !hasElements {
-			state.State = conformance.StateUnknown
-			state.Confidence = conformance.ConfidenceDefinite
-			return
+		// ...or unless the base device/subset requirement is not mandatory, but it evaluates as mandatory in this context
+		if !conformance.IsMandatory(req.ClusterRequirement.Conformance) && state.State == conformance.StateMandatory {
+			break
 		}
-
+		state.State = conformance.StateUnknown
+		state.Confidence = conformance.ConfidenceDefinite
 		return
 	}
 

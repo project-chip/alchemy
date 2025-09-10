@@ -1536,7 +1536,6 @@ var linksTestShouldUseDoctitleOfRootDocumentAsFallbackLinkTextForInterDocumentXr
 											},
 											Format: 1,
 										},
-										&asciidoc.NewLine{},
 									},
 									Blank: false,
 								},

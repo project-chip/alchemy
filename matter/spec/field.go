@@ -158,7 +158,7 @@ func (library *Library) findAnonymousType(reader asciidoc.Reader, doc *asciidoc.
 
 func (library *Library) findAnonymousEnum(reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section, field *matter.Field) error {
 	slog.Debug("possible anonymous enum", "name", field.Name, "type", field.Type)
-	ti, err := parseFirstTable(reader, doc, s)
+	ti, err := library.parseFirstTable(reader, doc, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			return nil
@@ -205,7 +205,7 @@ func (library *Library) findAnonymousEnum(reader asciidoc.Reader, doc *asciidoc.
 
 func (library *Library) findAnonymousBitmap(reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section, field *matter.Field) error {
 	slog.Debug("possible anonymous enum", "name", field.Name, "type", field.Type)
-	ti, err := parseFirstTable(reader, doc, s)
+	ti, err := library.parseFirstTable(reader, doc, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			return nil

@@ -13,7 +13,7 @@ import (
 
 func (library *Library) toConditions(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, dt *matter.DeviceType) (conditions []*matter.Condition, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, d, s)
+	ti, err = library.parseFirstTable(reader, d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -71,7 +71,7 @@ func (library *Library) toBaseDeviceTypeConditions(reader asciidoc.Reader, d *as
 	if t == nil {
 		return
 	}
-	ti, err = parseTable(reader, d, s, t)
+	ti, err = library.parseTable(reader, d, s, t)
 	if err == nil {
 		tagOffset := -1
 		if ti.ColumnMap.HasAll(matter.TableColumnTag) {

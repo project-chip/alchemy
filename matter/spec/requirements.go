@@ -12,7 +12,7 @@ import (
 
 func (library *Library) toClusterRequirements(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, deviceType *matter.DeviceType) (clusterRequirements []*matter.ClusterRequirement, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, d, s)
+	ti, err = library.parseFirstTable(reader, d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -75,7 +75,7 @@ func (library *Library) toClusterRequirement(reader asciidoc.Reader, deviceType 
 
 func (library *Library) toElementRequirements(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, deviceType *matter.DeviceType) (elementRequirements []*matter.ElementRequirement, clusterRequirements []*matter.ClusterRequirement, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, d, s)
+	ti, err = library.parseFirstTable(reader, d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -111,7 +111,7 @@ func (library *Library) toElementRequirements(reader asciidoc.Reader, d *asciido
 
 func (library *Library) toDeviceTypeRequirements(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, deviceType *matter.DeviceType) (deviceTypeRequirements []*matter.DeviceTypeRequirement, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, d, s)
+	ti, err = library.parseFirstTable(reader, d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -154,7 +154,7 @@ func (library *Library) toDeviceTypeRequirements(reader asciidoc.Reader, d *asci
 
 func (library *Library) toComposedDeviceTypeClusterRequirements(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, deviceType *matter.DeviceType) (composedClusterRequirements []*matter.DeviceTypeClusterRequirement, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, d, s)
+	ti, err = library.parseFirstTable(reader, d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -186,7 +186,7 @@ func (library *Library) toComposedDeviceTypeClusterRequirements(reader asciidoc.
 
 func (library *Library) toConditionRequirements(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, deviceType *matter.DeviceType) (conditionRequirements []*matter.ConditionRequirement, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, d, s)
+	ti, err = library.parseFirstTable(reader, d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -221,7 +221,7 @@ func (library *Library) toConditionRequirements(reader asciidoc.Reader, d *ascii
 
 func (library *Library) toComposedDeviceTypeElementRequirements(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, deviceType *matter.DeviceType) (composedElementRequirements []*matter.DeviceTypeElementRequirement, composedClusterRequirements []*matter.DeviceTypeClusterRequirement, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, d, s)
+	ti, err = library.parseFirstTable(reader, d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -335,7 +335,7 @@ func (library *Library) toElementRequirement(reader asciidoc.Reader, d *asciidoc
 
 func (library *Library) toTagRequirements(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, deviceType *matter.DeviceType) (tagRequirements []*matter.TagRequirement, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, d, s)
+	ti, err = library.parseFirstTable(reader, d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -389,7 +389,7 @@ func (library *Library) toTagRequirement(reader asciidoc.Reader, d *asciidoc.Doc
 
 func (library *Library) toDeviceTypeTagRequirements(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, deviceType *matter.DeviceType) (deviceTypeTagRequirements []*matter.DeviceTypeTagRequirement, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, d, s)
+	ti, err = library.parseFirstTable(reader, d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil

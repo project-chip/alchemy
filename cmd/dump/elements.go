@@ -199,7 +199,16 @@ func dumpElements(reader Reader, parent asciidoc.Parent, els asciidoc.Elements, 
 		case *asciidoc.QuoteBlock:
 			fmt.Printf("{quote delimiter:\"%d\"}:\n", el.Delimiter.Type)
 			dumpAttributes(reader, el.Attributes(), indent+1)
-			dumpElements(reader, el, reader.Children(el), indent+1)
+			dumpElements(reader, el, el.Children(), indent+1)
+		case *asciidoc.FencedBlock:
+			fmt.Printf("{fenced delimiter:\"%d\"}:\n", el.Delimiter.Type)
+			dumpAttributes(reader, el.Attributes(), indent+1)
+			if len(el.Delimiter.Language) > 0 {
+				fmt.Print(strings.Repeat("\t", indent+1))
+				fmt.Print("label:\n")
+				dumpElements(reader, el, el.Delimiter.Language, indent+1)
+			}
+			dumpElements(reader, el, el.Children(), indent+1)
 		case *asciidoc.UserAttributeReference:
 			fmt.Printf("{user attribute ref:\"%s\"}:\n", el.Value)
 		default:

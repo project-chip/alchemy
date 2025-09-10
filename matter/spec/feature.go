@@ -16,7 +16,7 @@ import (
 
 func (library *Library) toFeatures(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) (features *matter.Features, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, d, s)
+	ti, err = library.parseFirstTable(reader, d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil

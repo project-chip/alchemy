@@ -69,7 +69,7 @@ func readCommand(spec *Specification, library *Library, reader asciidoc.Reader, 
 		return
 	}
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, doc, section)
+	ti, err = library.parseFirstTable(reader, doc, section)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil

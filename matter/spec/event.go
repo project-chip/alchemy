@@ -46,7 +46,7 @@ func (cf *eventFactory) New(spec *Specification, library *Library, reader asciid
 func (cf *eventFactory) Details(spec *Specification, library *Library, reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, e *matter.Event) (err error) {
 	e.Description = library.getDescription(reader, doc, e, section, reader.Children(section))
 	var ti *TableInfo
-	ti, err = parseFirstTable(reader, doc, section)
+	ti, err = library.parseFirstTable(reader, doc, section)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil

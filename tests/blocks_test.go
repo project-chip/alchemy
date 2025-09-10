@@ -7796,18 +7796,22 @@ var blocksTestRestrictsAccessToAncestorDirectoriesWhenSafeModeLevelIsAtLeastSafe
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.String{
-			Value: "```",
+		&asciidoc.FencedBlock{
+			Delimiter: asciidoc.FencedDelimiter{
+				Delimiter: asciidoc.Delimiter{
+					Type:   4,
+					Length: 3,
+				},
+				Language: nil,
+			},
+			AttributeList: nil,
+			Elements: asciidoc.Elements{
+				&asciidoc.String{
+					Value: "puts \"Hello, World!\"",
+				},
+				&asciidoc.NewLine{},
+			},
 		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "puts \"Hello, World!\"",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "```",
-		},
-		&asciidoc.NewLine{},
 	},
 }
 
@@ -7851,33 +7855,49 @@ var blocksTestShouldSupportFencedCodeBlocksWithLanguages = &asciidoc.Document{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.String{
-			Value: "```ruby",
+		&asciidoc.FencedBlock{
+			Delimiter: asciidoc.FencedDelimiter{
+				Delimiter: asciidoc.Delimiter{
+					Type:   4,
+					Length: 3,
+				},
+				Language: asciidoc.Elements{
+					&asciidoc.String{
+						Value: "ruby",
+					},
+				},
+			},
+			AttributeList: nil,
+			Elements: asciidoc.Elements{
+				&asciidoc.String{
+					Value: "puts \"Hello, World!\"",
+				},
+				&asciidoc.NewLine{},
+			},
 		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "puts \"Hello, World!\"",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "```",
-		},
-		&asciidoc.NewLine{},
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.String{
-			Value: "``` javascript",
+		&asciidoc.FencedBlock{
+			Delimiter: asciidoc.FencedDelimiter{
+				Delimiter: asciidoc.Delimiter{
+					Type:   4,
+					Length: 3,
+				},
+				Language: asciidoc.Elements{
+					&asciidoc.String{
+						Value: " javascript",
+					},
+				},
+			},
+			AttributeList: nil,
+			Elements: asciidoc.Elements{
+				&asciidoc.String{
+					Value: "alert(\"Hello, World!\")",
+				},
+				&asciidoc.NewLine{},
+			},
 		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "alert(\"Hello, World!\")",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "```",
-		},
-		&asciidoc.NewLine{},
 	},
 }
 
@@ -7886,33 +7906,49 @@ var blocksTestShouldSupportFencedCodeBlocksWithLanguagesAndNumbering = &asciidoc
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.String{
-			Value: "```ruby,numbered",
+		&asciidoc.FencedBlock{
+			Delimiter: asciidoc.FencedDelimiter{
+				Delimiter: asciidoc.Delimiter{
+					Type:   4,
+					Length: 3,
+				},
+				Language: asciidoc.Elements{
+					&asciidoc.String{
+						Value: "ruby,numbered",
+					},
+				},
+			},
+			AttributeList: nil,
+			Elements: asciidoc.Elements{
+				&asciidoc.String{
+					Value: "puts \"Hello, World!\"",
+				},
+				&asciidoc.NewLine{},
+			},
 		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "puts \"Hello, World!\"",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "```",
-		},
-		&asciidoc.NewLine{},
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.String{
-			Value: "``` javascript, numbered",
+		&asciidoc.FencedBlock{
+			Delimiter: asciidoc.FencedDelimiter{
+				Delimiter: asciidoc.Delimiter{
+					Type:   4,
+					Length: 3,
+				},
+				Language: asciidoc.Elements{
+					&asciidoc.String{
+						Value: " javascript, numbered",
+					},
+				},
+			},
+			AttributeList: nil,
+			Elements: asciidoc.Elements{
+				&asciidoc.String{
+					Value: "alert(\"Hello, World!\")",
+				},
+				&asciidoc.NewLine{},
+			},
 		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "alert(\"Hello, World!\")",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "```",
-		},
-		&asciidoc.NewLine{},
 	},
 }
 

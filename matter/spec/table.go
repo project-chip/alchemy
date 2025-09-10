@@ -14,20 +14,20 @@ import (
 var ErrNoTableFound = fmt.Errorf("no table found")
 var ErrNotEnoughRowsInTable = fmt.Errorf("not enough value rows in table")
 
-func parseFirstTable(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section) (ti *TableInfo, err error) {
+func (library *Library) parseFirstTable(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section) (ti *TableInfo, err error) {
 	t := FindFirstTable(reader, section)
 	if t == nil {
 		err = ErrNoTableFound
 		return
 	}
-	return parseTable(reader, doc, section, t)
+	return library.parseTable(reader, doc, section, t)
 }
 
-func parseTable(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, t *asciidoc.Table) (ti *TableInfo, err error) {
+func (library *Library) parseTable(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, t *asciidoc.Table) (ti *TableInfo, err error) {
 
 	ti, err = ReadTable(doc, reader, t)
 	if err != nil {
-		err = newGenericParseError(t, "failed mapping table columns for first table in section \"%s\": %w", section.Name, err)
+		err = newGenericParseError(t, "failed mapping table columns for first table in section \"%s\": %w", library.SectionName(section), err)
 		return
 	}
 	if len(ti.Rows) < ti.HeaderRowIndex+2 {
