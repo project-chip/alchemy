@@ -107,7 +107,7 @@ func removeCrossReferenceStutter(library *spec.Library, doc *asciidoc.Document, 
 	if !isSection {
 		return
 	}
-	sectionName := section.Name()
+	sectionName := library.SectionName(section)
 	elements := parent.Children()
 	if index >= len(elements)-1 {
 		return
@@ -161,8 +161,9 @@ func normalizeCrossReference(library *spec.Library, doc *asciidoc.Document, icr 
 	if !types.IsDataTypeEntity(entity.EntityType()) {
 		return
 	}
-	normalizedLabel := normalizeAnchorLabel(section.Name(), section)
-	if labelText(normalizedLabel) != section.Name() {
+	sectionName := library.SectionName(section)
+	normalizedLabel := normalizeAnchorLabel(sectionName, section)
+	if labelText(normalizedLabel) != sectionName {
 		icr.Elements = normalizedLabel
 		slog.Debug("Added label to type xref in table", matter.LogEntity("type", entity), "label", labelText(icr.Elements))
 	}

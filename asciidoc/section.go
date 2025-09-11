@@ -2,7 +2,6 @@ package asciidoc
 
 import (
 	"iter"
-	"strings"
 )
 
 type Section struct {
@@ -62,17 +61,6 @@ func (s *Section) Clone() Element {
 		Title:         s.Title.Clone(),
 		Level:         s.Level,
 	}
-}
-
-func (s Section) Name() string {
-	var sb strings.Builder
-	for _, t := range s.Title {
-		switch t := t.(type) {
-		case *String:
-			sb.WriteString(t.Value)
-		}
-	}
-	return sb.String()
 }
 
 func (s *Section) Traverse(parent ParentElement) iter.Seq2[ParentElement, Parent] {

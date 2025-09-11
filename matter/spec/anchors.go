@@ -12,6 +12,7 @@ import (
 )
 
 type Anchor struct {
+	Library       *Library
 	Document      *asciidoc.Document
 	Source        matter.Source
 	ID            asciidoc.Elements
@@ -20,8 +21,9 @@ type Anchor struct {
 	Parent        asciidoc.Parent
 }
 
-func NewAnchor(doc *asciidoc.Document, id asciidoc.Elements, element asciidoc.Element, parent asciidoc.Parent, label ...asciidoc.Element) *Anchor {
+func NewAnchor(library *Library, doc *asciidoc.Document, id asciidoc.Elements, element asciidoc.Element, parent asciidoc.Parent, label ...asciidoc.Element) *Anchor {
 	return &Anchor{
+		Library:       library,
 		Document:      doc,
 		Source:        NewSource(doc, element),
 		ID:            id,
@@ -121,7 +123,7 @@ func (library *Library) findAnchors(reader asciidoc.Reader) (anchors map[string]
 		var label string
 		switch el := el.(type) {
 		case *asciidoc.Anchor:
-			anchor = NewAnchor(doc, el.ID, el, parent, el.Elements...)
+			anchor = NewAnchor(library, doc, el.ID, el, parent, el.Elements...)
 		case *asciidoc.Section:
 			anchor = library.makeAnchor(doc, parent, el, crossReferences)
 			if anchor != nil {
@@ -158,7 +160,7 @@ func (library *Library) makeAnchor(doc *asciidoc.Document, parent asciidoc.Paren
 	}
 	//anchorId := library.anchorId(library, parent, element, id)
 	//slog.Info("Creating anchor for section with cross reference", slog.String("path", doc.Path.Relative), log.Address("elementAddress", element))
-	a := NewAnchor(doc, id, element, parent, labelSet...)
+	a := NewAnchor(library, doc, id, element, parent, labelSet...)
 	return a
 }
 

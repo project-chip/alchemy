@@ -72,7 +72,7 @@ func (b *Baller) getPotentialDataTypes(dc *discoContext) (err error) {
 
 func (b *Baller) getPotentialDataTypesForSection(cxt *discoContext, ss *subSection) error {
 	if ss.table == nil || ss.table.Element == nil {
-		slog.Debug("section has no table; skipping attempt to find data type", "sectionName", ss.section.Name)
+		slog.Debug("section has no table; skipping attempt to find data type", "sectionName", cxt.library.SectionName(ss.section))
 		return nil
 	}
 	if cxt.errata.IgnoreSection(cxt.library.SectionName(ss.section), errata.DiscoPurposeDataTypePromoteInline) {

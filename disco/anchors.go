@@ -224,7 +224,7 @@ func skipAnchor(info *spec.Anchor) bool {
 	if !ok {
 		return false
 	}
-	if errata.GetDisco(info.Document.Path.Relative).IgnoreSection(section.Name(), errata.DiscoPurposeNormalizeAnchor) {
+	if errata.GetDisco(info.Document.Path.Relative).IgnoreSection(info.Library.SectionName(section), errata.DiscoPurposeNormalizeAnchor) {
 		return true
 	}
 	return false
