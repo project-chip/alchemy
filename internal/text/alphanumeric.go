@@ -35,3 +35,15 @@ func ParseRelativeNumber(s string) (number int, relative bool, err error) {
 	}
 	return
 }
+
+func IsRepeatedCharacter(s string, r rune) bool {
+	if len(s) == 0 {
+		return false
+	}
+	for _, c := range s {
+		if c != r {
+			return false
+		}
+	}
+	return true
+}

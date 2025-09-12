@@ -157,11 +157,14 @@ func (sp *Builder) readEntities(spec *Specification, libraries []*Library) (basi
 		}
 		for doc, result := range library.parseEntities(spec) {
 			if e, ok := result.(error); ok {
-				if pe, isParseError := e.(Error); isParseError {
-					slog.Error("parse error parsing entities", "err", e, log.Path("source", pe))
-					spec.addError(pe)
-				} else {
-					slog.Error("error parsing entities", "err", e)
+				switch e := e.(type) {
+				case Error:
+					slog.Error("parse error parsing entities", "err", e, log.Path("source", e))
+					spec.addError(e)
+				case log.Source:
+					slog.Error("parse error parsing entities", "err", e, log.Path("source", e))
+				default:
+					slog.Error("error parsing entities", "err", e, "source", doc.Path.Relative)
 				}
 				continue
 			}

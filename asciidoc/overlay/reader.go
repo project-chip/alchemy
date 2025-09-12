@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/internal/text"
 )
 
 type Reader struct {
@@ -89,6 +91,20 @@ func renderSimpleElements(els asciidoc.Elements) (string, error) {
 		case *asciidoc.FileInclude:
 			sb.WriteString(el.Raw())
 			sb.WriteRune('\n')
+		case *asciidoc.Superscript:
+			superscriptText, err := renderSimpleElements(el.Elements)
+			if err != nil {
+				return "", err
+			}
+			if text.IsRepeatedCharacter(superscriptText, '*') {
+				continue
+			}
+			sb.WriteString(superscriptText)
+		case log.Source:
+			return "", &OverlayError{
+				error:  fmt.Errorf("unexpected type rendering simple elements: %T", el),
+				Source: el,
+			}
 		default:
 			return "", fmt.Errorf("unexpected type rendering simple elements: %T", el)
 		}
