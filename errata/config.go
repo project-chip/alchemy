@@ -16,7 +16,7 @@ import (
 //go:embed default.yaml
 var defaultErrata []byte
 
-func LoadErrataConfig(specRoot string) error {
+func LoadErrataConfig(specRoot string) (*Collection, error) {
 	b := loadConfig(specRoot)
 	if b == nil {
 		b = defaultErrata
@@ -25,11 +25,11 @@ func LoadErrataConfig(specRoot string) error {
 	err := yaml.Unmarshal(b, &errataOverlay)
 	if err != nil {
 		slog.Warn("error parsing errata file", slog.Any("error", err))
-		return nil
+		return nil, err
 	}
 	err = checkMinimumVersion(errataOverlay)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	// TODO: once alchemy has migrated to using sdk: instead of zap: in errata.yaml, we can drop this indirection
 	// This is only here because YAML can't have two tags aliasing the same value
@@ -52,11 +52,10 @@ func LoadErrataConfig(specRoot string) error {
 		}
 		overlayErrata[path] = &e
 	}
-	if len(overlayErrata) > 0 {
-		Erratas = overlayErrata
-	}
+	c := &Collection{errata: overlayErrata}
+
 	var docRoots []string
-	for p, e := range Erratas {
+	for p, e := range c.errata {
 		path := filepath.Join(specRoot, p)
 		exists, err := files.Exists(path)
 		if err != nil {
@@ -70,9 +69,9 @@ func LoadErrataConfig(specRoot string) error {
 		}
 	}
 	if len(docRoots) > 0 {
-		DocRoots = docRoots
+		c.docRoots = docRoots
 	}
-	return nil
+	return c, nil
 }
 
 type errataOverlay struct {
@@ -110,9 +109,9 @@ func loadConfig(specRoot string) []byte {
 	return b
 }
 
-func dumpConfig(errataPath string) {
+func dumpConfig(c *Collection, errataPath string) {
 	errataOverlay := errataOverlay{Errata: make(map[string]*overlayErrata)}
-	for path, oe := range Erratas {
+	for path, oe := range c.errata {
 		errataOverlay.Errata[path] = &overlayErrata{Disco: &oe.Disco, Spec: &oe.Spec, TestPlan: &oe.TestPlan, SDK: &oe.SDK}
 	}
 	d, err := yaml.Marshal(&errataOverlay)

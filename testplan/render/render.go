@@ -49,9 +49,16 @@ func (sp *Renderer) Process(cxt context.Context, input *pipeline.Data[*asciidoc.
 	doc := input.Content
 	path := doc.Path
 
+	library, ok := sp.spec.LibraryForDocument(doc)
+	if !ok {
+		err = fmt.Errorf("unable to find library for doc %s", doc.Path.Relative)
+		return
+	}
+	errata := library.ErrataForPath(doc.Path.Relative).TestPlan
+
 	entities := sp.spec.EntitiesForDocument(doc)
 
-	destinations := buildDestinations(sp.options.TestRoot, entities, errata.GetErrata(doc.Path.Relative).TestPlan)
+	destinations := buildDestinations(sp.options.TestRoot, entities, errata)
 
 	var t *raymond.Template
 	t, err = sp.loadTemplate()

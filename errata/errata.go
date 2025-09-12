@@ -1,9 +1,5 @@
 package errata
 
-import (
-	"path/filepath"
-)
-
 type Errata struct {
 	Disco    Disco    `yaml:"disco,omitempty"`
 	Spec     Spec     `yaml:"spec,omitempty"`
@@ -13,20 +9,27 @@ type Errata struct {
 
 var DefaultErrata = &Errata{}
 
-func GetErrata(path string) *Errata {
-	path = filepath.ToSlash(path)
-	errata, ok := Erratas[path]
+type Collection struct {
+	errata   map[string]*Errata
+	docRoots []string
+}
+
+func (c *Collection) Get(path string) *Errata {
+	errata, ok := c.errata[path]
 	if ok {
 		return errata
 	}
 	return DefaultErrata
 }
 
-var Erratas = map[string]*Errata{}
-
-var DocRoots = []string{
-	"src/main.adoc",
+var defaultDocRoots = []string{"src/main.adoc",
 	"src/appclusters.adoc",
 	"src/device_library.adoc",
-	"src/standard_namespaces.adoc",
+	"src/standard_namespaces.adoc"}
+
+func (c *Collection) DocRoots() []string {
+	if len(c.docRoots) == 0 {
+		return defaultDocRoots
+	}
+	return c.docRoots
 }

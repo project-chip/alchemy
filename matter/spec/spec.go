@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/matter"
@@ -12,7 +13,8 @@ import (
 )
 
 type Specification struct {
-	Root string
+	Root   string
+	Errata *errata.Collection
 
 	Clusters       map[*matter.Cluster]struct{}
 	ClustersByID   map[uint64]*matter.Cluster
@@ -47,9 +49,10 @@ type Specification struct {
 	libraryIndex map[*asciidoc.Document]*Library
 }
 
-func newSpec(specRoot string) *Specification {
+func newSpec(specRoot string, errata *errata.Collection) *Specification {
 	return &Specification{
-		Root: specRoot,
+		Root:   specRoot,
+		Errata: errata,
 
 		Clusters:          make(map[*matter.Cluster]struct{}),
 		ClustersByID:      make(map[uint64]*matter.Cluster),

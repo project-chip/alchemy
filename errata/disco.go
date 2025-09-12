@@ -23,11 +23,6 @@ func (d *Disco) IgnoreSection(sectionName string, purpose DiscoPurpose) bool {
 	return false
 }
 
-func GetDisco(path string) *Disco {
-	e := GetErrata(path)
-	return &e.Disco
-}
-
 type DiscoPurpose uint64
 
 const (

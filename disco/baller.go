@@ -47,13 +47,14 @@ func (r Baller) Process(cxt context.Context, input *pipeline.Data[*asciidoc.Docu
 
 func (b *Baller) disco(cxt context.Context, doc *asciidoc.Document) error {
 
-	dc := newContext(cxt, doc)
-
 	var ok bool
-	dc.library, ok = b.spec.LibraryForDocument(doc)
+	var library *spec.Library
+	library, ok = b.spec.LibraryForDocument(doc)
 	if !ok {
 		return fmt.Errorf("unable to find library for doc %s", doc.Path.Relative)
 	}
+
+	dc := newContext(cxt, library, doc)
 
 	precleanStrings(doc)
 

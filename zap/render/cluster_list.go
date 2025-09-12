@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
@@ -51,8 +50,14 @@ func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	var names []string
 	for _, input := range inputs {
 		doc := input.Content
+
+		library, ok := p.spec.LibraryForDocument(input.Content)
+		if !ok {
+			err = fmt.Errorf("unable to find library for doc %s", doc.Path)
+			return
+		}
 		entities := p.spec.EntitiesForDocument(input.Content)
-		errata := errata.GetErrata(doc.Path.Relative)
+		errata := library.ErrataForPath(doc.Path.Relative)
 		for _, e := range entities {
 			switch e := e.(type) {
 			case *matter.Cluster:

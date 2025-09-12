@@ -9,6 +9,7 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
@@ -18,7 +19,8 @@ import (
 type Builder struct {
 	specRoot string
 
-	Spec *Specification
+	Spec   *Specification
+	errata *errata.Collection
 
 	ignoreHierarchy bool
 
@@ -26,9 +28,10 @@ type Builder struct {
 	constraintFailures  map[any]referenceFailure
 }
 
-func NewBuilder(specRoot string, options ...BuilderOption) Builder {
+func NewBuilder(specRoot string, errata *errata.Collection, options ...BuilderOption) Builder {
 	b := Builder{
 		specRoot:            specRoot,
+		errata:              errata,
 		conformanceFailures: make(map[any]referenceFailure),
 		constraintFailures:  make(map[any]referenceFailure),
 	}
@@ -57,7 +60,7 @@ func (sp *Builder) Process(cxt context.Context, inputs []*pipeline.Data[*Library
 
 func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referencedDocs []*asciidoc.Document, err error) {
 
-	sp.Spec = newSpec(sp.specRoot)
+	sp.Spec = newSpec(sp.specRoot, sp.errata)
 	spec := sp.Spec
 
 	slices.SortStableFunc(libraries, func(a *Library, b *Library) int {

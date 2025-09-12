@@ -6,8 +6,8 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/render"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/filter"
 	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -25,11 +25,6 @@ func Pipeline(cxt context.Context, parserOptions spec.ParserOptions, docPaths []
 		}
 	}
 
-	err = errata.LoadErrataConfig(parserOptions.Root)
-	if err != nil {
-		return
-	}
-
 	if parserOptions.Root == "" {
 		err = fmt.Errorf("disco ball requires spec root")
 		return
@@ -40,7 +35,7 @@ func Pipeline(cxt context.Context, parserOptions spec.ParserOptions, docPaths []
 		return err
 	}
 	if len(docPaths) > 0 {
-		filter := paths.NewIncludeFilter[*asciidoc.Document](parserOptions.Root, docPaths)
+		filter := filter.NewIncludeFilter[*asciidoc.Document](specification, docPaths)
 		docs, err = pipeline.Collective(cxt, pipelineOptions, filter, docs)
 		if err != nil {
 			return err

@@ -8,6 +8,7 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
@@ -17,6 +18,8 @@ import (
 type Library struct {
 	Root *asciidoc.Document
 	Spec *Specification
+
+	Errata *errata.Collection
 
 	cache *DocCache
 
@@ -47,9 +50,10 @@ type Library struct {
 
 type LibrarySet pipeline.Map[string, *pipeline.Data[*Library]]
 
-func NewLibrary(root *asciidoc.Document, cache *DocCache) *Library {
+func NewLibrary(root *asciidoc.Document, errata *errata.Collection, cache *DocCache) *Library {
 	return &Library{
 		Root:               root,
+		Errata:             errata,
 		referenceIndex:     newReferenceIndex(),
 		crossReferenceDocs: make(map[*asciidoc.CrossReference]*asciidoc.Document),
 		index:              map[string]*asciidoc.Document{},
@@ -80,6 +84,10 @@ func (library *Library) EntitiesForElement(element asciidoc.Attributable) (entit
 
 func (library *Library) Parents(doc *asciidoc.Document) []*asciidoc.Document {
 	return library.parents[doc]
+}
+
+func (library *Library) ErrataForPath(docPath string) *errata.Errata {
+	return library.Errata.Get(docPath)
 }
 
 func (library *Library) indexAnchors() (err error) {

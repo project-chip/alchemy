@@ -11,11 +11,13 @@ import (
 
 type LibraryBuilder struct {
 	specRoot string
+	errata   *errata.Collection
 }
 
-func NewLibraryBuilder(specRoot string) *LibraryBuilder {
+func NewLibraryBuilder(specRoot string, errata *errata.Collection) *LibraryBuilder {
 	b := &LibraryBuilder{
 		specRoot: specRoot,
+		errata:   errata,
 	}
 	return b
 }
@@ -28,13 +30,13 @@ func (lb *LibraryBuilder) Process(cxt context.Context, inputs []*pipeline.Data[*
 
 	docCache := cacheFromPipeline(lb.specRoot, inputs)
 
-	for _, docRoot := range errata.DocRoots {
+	for _, docRoot := range lb.errata.DocRoots() {
 		root, ok := docCache.cache.Load(docRoot)
 		if !ok {
 			slog.Warn("doc root not found", "root", docRoot)
 			continue
 		}
-		outputs = append(outputs, pipeline.NewData(root.Path.Relative, NewLibrary(root, docCache)))
+		outputs = append(outputs, pipeline.NewData(root.Path.Relative, NewLibrary(root, lb.errata, docCache)))
 	}
 	return
 }

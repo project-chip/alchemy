@@ -63,7 +63,7 @@ func readCommand(spec *Specification, library *Library, reader asciidoc.Reader, 
 
 	command.Name = CanonicalName(command.Name)
 
-	de := errata.GetSpec(doc.Path.Relative)
+	de := library.SpecErrata(doc.Path.Relative)
 
 	if de.IgnoreSection(library.SectionName(section), errata.SpecPurposeCommandArguments) {
 		return

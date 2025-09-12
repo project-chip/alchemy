@@ -59,6 +59,10 @@ func (dic *dumpInfoCache) Parents(document *asciidoc.Document) []*asciidoc.Docum
 	return nil
 }
 
+func (dic *dumpInfoCache) ErrataForPath(docPath string) *errata.Errata {
+	return errata.DefaultErrata
+}
+
 func newDumpInfoCache(reader asciidoc.Reader) *dumpInfoCache {
 	return &dumpInfoCache{
 		Reader:   reader,

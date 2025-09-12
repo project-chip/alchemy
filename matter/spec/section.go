@@ -20,6 +20,8 @@ type SectionInfoCache interface {
 	SetSectionName(section *asciidoc.Section, name string)
 	SectionType(section *asciidoc.Section) matter.Section
 	SetSectionType(section *asciidoc.Section, sectionType matter.Section)
+
+	ErrataForPath(docPath string) *errata.Errata
 }
 
 func buildSectionTitle(variables overlay.Variables, section *asciidoc.Section, reader asciidoc.Reader, title *strings.Builder, els ...asciidoc.Element) (err error) {
@@ -152,7 +154,7 @@ func AssignSectionTypes(sectionInfoCache SectionInfoCache, docInfoCache Document
 
 func assignSectionType(sectionInfoCache SectionInfoCache, doc *asciidoc.Document, s *asciidoc.Section, sectionType matter.Section) {
 	name := sectionInfoCache.SectionName(s)
-	docErrata := errata.GetErrata(doc.Path.Relative)
+	docErrata := sectionInfoCache.ErrataForPath(doc.Path.Relative)
 	var ignore bool
 	switch sectionType {
 	case matter.SectionDataTypeBitmap:
@@ -558,7 +560,7 @@ func (library *Library) findLooseEntities(spec *Specification, reader asciidoc.R
 
 func (library *Library) traverseSections(reader asciidoc.Reader, doc *asciidoc.Document, parent asciidoc.ParentElement, purpose errata.SpecPurpose, callback parse.ElementSearchCallback[*asciidoc.Section]) (sections []*asciidoc.Section) {
 	parse.Search(doc, reader, doc, reader.Children(parent), func(doc *asciidoc.Document, s *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
-		de := errata.GetSpec(doc.Path.Relative)
+		de := library.SpecErrata(doc.Path.Relative)
 		if de.IgnoreSection(library.SectionName(s), purpose) {
 			return parse.SearchShouldContinue
 		}

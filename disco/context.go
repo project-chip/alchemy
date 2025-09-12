@@ -19,11 +19,12 @@ type discoContext struct {
 	potentialDataTypes map[string][]*DataTypeEntry
 }
 
-func newContext(parent context.Context, doc *asciidoc.Document) *discoContext {
+func newContext(parent context.Context, library *spec.Library, doc *asciidoc.Document) *discoContext {
 	return &discoContext{
 		Context:            parent,
 		doc:                doc,
-		errata:             errata.GetDisco(doc.Path.Relative),
+		library:            library,
+		errata:             library.DiscoErrata(doc.Path.Relative),
 		potentialDataTypes: make(map[string][]*DataTypeEntry),
 	}
 }

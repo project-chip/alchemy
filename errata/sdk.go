@@ -69,11 +69,6 @@ type SDKType struct {
 	Fallback    string `yaml:"fallback,omitempty"`
 }
 
-func GetSDK(path string) *SDK {
-	e := GetErrata(path)
-	return &e.SDK
-}
-
 type SDKTypeCollection map[string]*SDKType
 
 func (z *SDK) getTypes(entityType types.EntityType) SDKTypeCollection {

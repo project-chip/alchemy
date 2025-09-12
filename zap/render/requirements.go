@@ -1,6 +1,7 @@
 package render
 
 import (
+	"fmt"
 	"log/slog"
 	"strconv"
 	"strings"
@@ -124,7 +125,12 @@ func (p *DeviceTypesPatcher) renderClusterInclude(spec *spec.Specification,
 		return
 	}
 
-	errata := errata.GetSDK(clusterDoc.Path.Relative)
+	library, ok := p.spec.LibraryForDocument(clusterDoc)
+	if !ok {
+		err = fmt.Errorf("unable to find library for device type doc %s", clusterDoc.Path.Relative)
+		return
+	}
+	errata := library.ErrataForPath(clusterDoc.Path.Relative)
 
 	if includeElement == nil {
 		includeElement = etree.NewElement("include")
@@ -147,7 +153,7 @@ func (p *DeviceTypesPatcher) renderClusterInclude(spec *spec.Specification,
 	includeElement.CreateAttr("clientLocked", strconv.FormatBool(clientLocked))
 	includeElement.CreateAttr("serverLocked", strconv.FormatBool(serverLocked))
 
-	err = p.renderClusterElementRequirements(spec, includeElement, deviceType, clusterComposition, errata)
+	err = p.renderClusterElementRequirements(spec, includeElement, deviceType, clusterComposition, &errata.SDK)
 	return
 }
 

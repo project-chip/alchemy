@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/filter"
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 )
@@ -14,7 +14,7 @@ import (
 func filterSpecDocs(cc *Context, specDocs spec.DocSet, s *spec.Specification, filterOptions spec.FilterOptions, processingOptions pipeline.ProcessingOptions) (filteredDocs spec.DocSet, err error) {
 	filteredDocs = specDocs
 	if len(filterOptions.Paths) > 0 { // Filter the spec by whatever extra args were passed
-		filter := paths.NewIncludeFilter[*asciidoc.Document](s.Root, filterOptions.Paths)
+		filter := filter.NewIncludeFilter[*asciidoc.Document](s, filterOptions.Paths)
 		filteredDocs, err = pipeline.Collective(cc, processingOptions, filter, filteredDocs)
 		if err != nil {
 			return
@@ -22,7 +22,7 @@ func filterSpecDocs(cc *Context, specDocs spec.DocSet, s *spec.Specification, fi
 	}
 
 	if len(filterOptions.Exclude) > 0 {
-		filter := paths.NewExcludeFilter[*asciidoc.Document](s.Root, filterOptions.Exclude)
+		filter := filter.NewExcludeFilter[*asciidoc.Document](s, filterOptions.Exclude)
 		filteredDocs, err = pipeline.Collective(cc, processingOptions, filter, filteredDocs)
 		if err != nil {
 			return
@@ -47,7 +47,7 @@ func filterSpecErrors[T comparable](cc *Context, input pipeline.Map[string, *pip
 			slog.Warn("Ignoring errored file", slog.String("file", path))
 			errorPaths = append(errorPaths, path)
 		}
-		filter := paths.NewExcludeFilter[T](s.Root, errorPaths)
+		filter := filter.NewExcludeFilter[T](s, errorPaths)
 		output, err = pipeline.Collective(cc, processingOptions, filter, output)
 		return
 	}

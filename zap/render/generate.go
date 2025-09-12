@@ -9,7 +9,6 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/vcs"
 	"github.com/project-chip/alchemy/matter"
@@ -57,13 +56,18 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*a
 	d := input.Content
 	entities := tg.spec.EntitiesForDocument(d)
 
-	errata := errata.GetSDK(d.Path.Relative)
+	library, ok := tg.spec.LibraryForDocument(input.Content)
+	if !ok {
+		err = fmt.Errorf("unable to find library for doc %s", d.Path.Relative)
+		return
+	}
+	errata := library.ErrataForPath(d.Path.Relative)
 
-	if errata.SkipFile {
+	if errata.SDK.SkipFile {
 		return
 	}
 
-	destinations := ZAPTemplateDestinations(tg.sdkRoot, d.Path.Relative, entities, errata)
+	destinations := ZAPTemplateDestinations(tg.sdkRoot, d.Path.Relative, entities, &errata.SDK)
 
 	dependencies := pipeline.NewConcurrentMap[string, bool]()
 
@@ -77,7 +81,7 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*a
 		}
 
 		var configurator *zap.Configurator
-		configurator, err = zap.NewConfigurator(tg.spec, []*asciidoc.Document{d}, entities, newPath, errata, false)
+		configurator, err = zap.NewConfigurator(tg.spec, []*asciidoc.Document{d}, entities, newPath, &errata.SDK, false)
 		if err != nil {
 			return
 		}

@@ -10,7 +10,6 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
@@ -140,8 +139,15 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 				err = fmt.Errorf("missing device type doc for %s", deviceTypeToUpdate.Name)
 				return
 			}
+			library, ok := p.spec.LibraryForDocument(doc)
+			if !ok {
+				err = fmt.Errorf("unable to find library for device type doc %s", doc.Path)
+				return
+			}
+			errata := library.ErrataForPath(doc.Path.Relative)
+
 			if !matter.NonGlobalIDInvalidForEntity(deviceTypeToUpdate.ID, types.EntityTypeDeviceType) {
-				err = p.applyDeviceTypeToElement(p.spec, deviceTypeToUpdate, deviceTypeElement, errata.GetSDK(doc.Path.Relative))
+				err = p.applyDeviceTypeToElement(p.spec, deviceTypeToUpdate, deviceTypeElement, &errata.SDK)
 				if err != nil {
 					return
 				}
@@ -159,6 +165,12 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 			err = fmt.Errorf("missing device type doc for %s", dt.Name)
 			return
 		}
+		library, ok := p.spec.LibraryForDocument(doc)
+		if !ok {
+			err = fmt.Errorf("unable to find library for device type doc %s", doc.Path)
+			return
+		}
+		errata := library.ErrataForPath(doc.Path.Relative)
 		if matter.NonGlobalIDInvalidForEntity(dt.ID, types.EntityTypeDeviceType) {
 			continue
 		}
@@ -182,7 +194,7 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 			}
 			return deviceTypeID.Compare(dt.ID) > 0
 		})
-		err = p.applyDeviceTypeToElement(p.spec, dt, dte, errata.GetSDK(doc.Path.Relative))
+		err = p.applyDeviceTypeToElement(p.spec, dt, dte, &errata.SDK)
 		if err != nil {
 			return
 		}
@@ -194,6 +206,13 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 			err = fmt.Errorf("missing device type doc for %s", dt.Name)
 			return
 		}
+		library, ok := p.spec.LibraryForDocument(doc)
+		if !ok {
+			err = fmt.Errorf("unable to find library for device type doc %s", doc.Path)
+			return
+		}
+		errata := library.ErrataForPath(doc.Path.Relative)
+
 		dte := etree.NewElement("deviceType")
 		xml.InsertElement(configurator, dte, func(el *etree.Element) bool {
 			dide := el.SelectElement("deviceId")
@@ -215,7 +234,7 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 			}
 			return strings.Compare(tne.Text(), dt.Name) > 0
 		})
-		err = p.applyDeviceTypeToElement(p.spec, dt, dte, errata.GetSDK(doc.Path.Relative))
+		err = p.applyDeviceTypeToElement(p.spec, dt, dte, &errata.SDK)
 		if err != nil {
 			return
 		}
