@@ -44,7 +44,7 @@ func (cr *configuratorRenderer) generateStructs(structs map[*matter.Struct][]*ma
 		}
 
 		if matchingStruct == nil {
-			slog.Warn("unknown struct name", slog.String("path", cr.configurator.OutPath), slog.String("structName", name))
+			slog.Warn("Removing unrecognized struct from ZAP XML", slog.String("path", cr.configurator.OutPath), slog.String("structName", name))
 			configuratorElement.RemoveChild(se)
 			continue
 		}

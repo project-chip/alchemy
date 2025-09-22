@@ -181,13 +181,12 @@ func findTagRequirementTag(spec *Specification, namespace *matter.Namespace, id 
 	for _, t := range namespace.SemanticTags {
 		if t.Name == name {
 			tag = t
+			slog.Warn("linking tag requirement tag by name since tag ID was not recognized",
+				slog.String("tagId", id.HexString()),
+				slog.String("tagName", name),
+				log.Path("source", requirement))
 			break
 		}
-		slog.Warn("linking tag requirement tag by name since tag ID was not recognized",
-			slog.String("tagId", id.HexString()),
-			slog.String("tagName", name),
-			log.Path("source", requirement))
 	}
-
 	return
 }

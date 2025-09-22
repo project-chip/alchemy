@@ -48,7 +48,7 @@ func (cr *configuratorRenderer) generateBitmaps(bitmaps map[*matter.Bitmap][]*ma
 		}
 
 		if matchingBitmap == nil {
-			slog.Warn("unknown bitmap name", slog.String("path", cr.configurator.OutPath), slog.String("bitmapName", name))
+			slog.Warn("Removing unrecognized bitmap from ZAP XML", slog.String("path", cr.configurator.OutPath), slog.String("bitmapName", name))
 			parent.RemoveChild(eve)
 			continue
 		}

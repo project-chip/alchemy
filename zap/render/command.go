@@ -51,7 +51,7 @@ func (cr *configuratorRenderer) generateCommands(commands map[*matter.Command]st
 		}
 
 		if matchingCommand == nil {
-			slog.Warn("unknown command ID", slog.String("path", cr.configurator.OutPath), slog.String("commandId", commandID.Text()))
+			slog.Warn("Removing unrecognized command from ZAP XML", slog.String("path", cr.configurator.OutPath), slog.String("commandId", commandID.Text()))
 			parent.RemoveChild(cmde)
 			continue
 		}
