@@ -24,7 +24,7 @@ type commandFactory struct {
 func (cf *commandFactory) New(spec *Specification, library *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (*matter.Command, error) {
 	cmd := matter.NewCommand(s, parent)
 	var err error
-	cmd.ID, err = ti.ReadID(reader, row, matter.TableColumnCommandID, matter.TableColumnID)
+	cmd.ID, err = ti.ReadID(reader, row, matter.IDColumns.Command...)
 	if err != nil {
 		return nil, err
 	}

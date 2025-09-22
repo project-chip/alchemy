@@ -2,18 +2,16 @@ package provisional
 
 import (
 	"iter"
+	"log/slog"
 
-	"github.com/project-chip/alchemy/internal"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/matter/types"
 )
 
-func compareClusters(specs specs, violations map[string][]Violation) {
+func compareClusters(specs specs, violations entityViolations) {
 
 	var clusterStates []EntityState[*matter.Cluster]
-	//var headInProgressClusters []*matter.Cluster // Clusters which only appear in the head spec when in-progress is set
-	//var headClusterPairs []EntityState[*matter.Cluster]
 	for cluster := range specs.HeadInProgress.Clusters {
 		state := EntityState[*matter.Cluster]{HeadInProgress: cluster}
 		state.Head = findExistingClusterInSpec(cluster, specs.Head)
@@ -23,100 +21,89 @@ func compareClusters(specs specs, violations map[string][]Violation) {
 	}
 
 	for _, state := range clusterStates {
-		compareStates(specs.HeadInProgress, violations, state)
-		compareClusterEntities(specs.HeadInProgress, violations, state)
+		presence := state.Presence()
+		novelty, err := presence.Novelty()
+		if err != nil {
+			continue
+		}
+		if novelty.IsNew() {
+			violationType := checkProvisionality(specs.HeadInProgress, state.HeadInProgress)
+			if !novelty.IsIfDefd() {
+				violationType |= ViolationTypeNotIfDefd
+			}
+			violations.add(state.HeadInProgress, violationType)
+		} else {
+			compareClusterEntities(specs.HeadInProgress, violations, state)
+		}
 	}
 }
 
-func compareClusterEntities(spec *spec.Specification, violations map[string][]Violation, clusterState EntityState[*matter.Cluster]) {
+func findExistingClusterInSpec(needle *matter.Cluster, haystack *spec.Specification) (existingCluster *matter.Cluster) {
+	var ok bool
+	if needle.ID.Valid() {
+		existingCluster, ok = haystack.ClustersByID[needle.ID.Value()]
+	}
+	if !ok {
+		existingCluster = haystack.ClustersByName[needle.Name]
+	}
+	return
+}
+
+func compareChildEntity[Parent ComparableEntity, Child ComparableEntity](spec *spec.Specification, violations entityViolations, entity Child, parentState EntityState[Parent], childIterator func(parent Parent) iter.Seq[Child]) {
+	entityState := getEntityState(entity, parentState, childIterator)
+	presence := entityState.Presence()
+	novelty, err := presence.Novelty()
+	if err != nil {
+		slog.Error("Invalid presence on entity", matter.LogEntity("entity", entity), slog.String("presence", entityState.Presence().String()), log.Path("source", entity))
+		return
+	}
+	if !novelty.IsNew() {
+		return
+	}
+	violationType := checkProvisionality(spec, entity)
+
+	if !novelty.IsIfDefd() {
+		violationType |= ViolationTypeNotIfDefd
+	}
+	violations.add(entity, violationType)
+}
+
+func compareClusterParentEntity[Parent ComparableEntity, Child ComparableEntity](spec *spec.Specification, violations entityViolations, clusterState EntityState[*matter.Cluster], parentIterator func(c *matter.Cluster) iter.Seq[Parent], childIterator func(parent Parent) iter.Seq[Child]) {
+	for e := range parentIterator(clusterState.HeadInProgress) {
+		entityState := getEntityState(e, clusterState, parentIterator)
+		novelty, err := entityState.Presence().Novelty()
+		if err != nil {
+			slog.Error("Invalid presence on entity", matter.LogEntity("entity", e), slog.String("presence", entityState.Presence().String()), log.Path("source", e))
+			continue
+		}
+		if novelty.IsNew() {
+			violationType := checkProvisionality(spec, clusterState.HeadInProgress)
+			if !novelty.IsIfDefd() {
+				violationType |= ViolationTypeNotIfDefd
+			}
+			violations.add(e, violationType)
+		} else { // We don't need to check the children of new entities
+			for child := range childIterator(e) {
+				compareChildEntity(spec, violations, child, entityState, childIterator)
+			}
+		}
+	}
+}
+
+func compareClusterEntities(spec *spec.Specification, violations entityViolations, clusterState EntityState[*matter.Cluster]) {
 
 	for f := range clusterState.HeadInProgress.Features.FeatureBits() {
-		compareEntity(spec, violations, f, clusterState, func(c *matter.Cluster) iter.Seq[*matter.Feature] {
-			return func(yield func(*matter.Feature) bool) {
-				for f := range c.Features.FeatureBits() {
-					if !yield(f) {
-						return
-					}
-				}
-			}
-		})
+		compareChildEntity(spec, violations, f, clusterState, iterateFeatures)
 	}
-	for _, bm := range clusterState.HeadInProgress.Bitmaps {
-		bitmapState := getEntityState(bm, clusterState, func(c *matter.Cluster) iter.Seq[*matter.Bitmap] {
-			return internal.Iterate(c.Bitmaps)
-		})
-		compareStates(spec, violations, bitmapState)
-		for _, bmb := range bm.Bits {
-			compareEntity(spec, violations, bmb, bitmapState, func(pc *matter.Bitmap) iter.Seq[matter.Bit] {
-				return internal.Iterate(pc.Bits)
-			})
-		}
-	}
-	for _, en := range clusterState.HeadInProgress.Enums {
-		enumState := getEntityState(en, clusterState, func(c *matter.Cluster) iter.Seq[*matter.Enum] {
-			return internal.Iterate(c.Enums)
-		})
-		compareStates(spec, violations, enumState)
-		for _, env := range en.Values {
-			compareEntity(spec, violations, env, enumState, func(pc *matter.Enum) iter.Seq[*matter.EnumValue] {
-				return internal.Iterate(pc.Values)
-			})
-		}
-	}
-	for _, s := range clusterState.HeadInProgress.Structs {
-		structState := getEntityState(s, clusterState, func(c *matter.Cluster) iter.Seq[*matter.Struct] {
-			return internal.Iterate(c.Structs)
-		})
-		compareStates(spec, violations, structState)
-		for _, sf := range s.Fields {
-			compareEntity(spec, violations, sf, structState, func(pc *matter.Struct) iter.Seq[*matter.Field] {
-				return internal.Iterate(pc.Fields)
-			})
-		}
-	}
+	compareClusterParentEntity(spec, violations, clusterState, iterateBitmaps, iterateBits)
+	compareClusterParentEntity(spec, violations, clusterState, iterateEnums, iterateEnumValues)
+	compareClusterParentEntity(spec, violations, clusterState, iterateStructs, iterateStructFields)
+
 	for _, a := range clusterState.HeadInProgress.Attributes {
-		compareEntity(spec, violations, a, clusterState, func(c *matter.Cluster) iter.Seq[*matter.Field] {
-			return internal.Iterate(c.Attributes)
-		})
+		compareChildEntity(spec, violations, a, clusterState, iterateAttributes)
 	}
-	for _, cmd := range clusterState.HeadInProgress.Commands {
-		commandState := getEntityState(cmd, clusterState, func(c *matter.Cluster) iter.Seq[*matter.Command] {
-			return internal.Iterate(c.Commands)
-		})
-		compareStates(spec, violations, commandState)
-		for _, cf := range cmd.Fields {
-			compareEntity(spec, violations, cf, commandState, func(pc *matter.Command) iter.Seq[*matter.Field] {
-				return internal.Iterate(pc.Fields)
-			})
-		}
-	}
-	for _, ev := range clusterState.HeadInProgress.Events {
-		eventState := getEntityState(ev, clusterState, func(c *matter.Cluster) iter.Seq[*matter.Event] {
-			return internal.Iterate(c.Events)
-		})
-		compareStates(spec, violations, eventState)
-		for _, ef := range ev.Fields {
-			compareEntity(spec, violations, ef, eventState, func(pev *matter.Event) iter.Seq[*matter.Field] {
-				return internal.Iterate(pev.Fields)
-			})
-		}
-	}
-}
 
-func compareEntity[T ComparableEntity, Parent types.Entity](spec *spec.Specification, violations map[string][]Violation, e T, parentState EntityState[Parent], iterator func(p Parent) iter.Seq[T]) {
-	compareStates(spec, violations, getEntityState(e, parentState, iterator))
-}
+	compareClusterParentEntity(spec, violations, clusterState, iterateCommands, iterateCommandFields)
+	compareClusterParentEntity(spec, violations, clusterState, iterateEvents, iterateEventFields)
 
-func getEntityState[T ComparableEntity, Parent types.Entity](e T, parentState EntityState[Parent], iterator func(p Parent) iter.Seq[T]) EntityState[T] {
-	state := EntityState[T]{HeadInProgress: e}
-	if !isNil(parentState.Head) {
-		state.Head = findExistingEntity(e, iterator(parentState.Head))
-	}
-	if !isNil(parentState.BaseInProgress) {
-		state.BaseInProgress = findExistingEntity(e, iterator(parentState.BaseInProgress))
-	}
-	if !isNil(parentState.Base) {
-		state.Base = findExistingEntity(e, iterator(parentState.Base))
-	}
-	return state
 }

@@ -1,6 +1,7 @@
 package dump
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -9,11 +10,13 @@ import (
 	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/internal/paths"
+	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
 type Command struct {
-	spec.ParserOptions        `embed:""`
+	spec.ParserOptions `embed:""`
+	pipeline.ProcessingOptions
 	common.ASCIIDocAttributes `embed:""`
 
 	Paths []string `arg:""`
@@ -27,11 +30,33 @@ func (d *Command) Run(cc *cli.Context) (err error) {
 		return fmt.Errorf("error building paths: %w", err)
 	}
 	if d.Json {
-		/*s, _, err := spec.Parse(cc, d.ParserOptions, pipeline.ProcessingOptions{}, nil, d.ASCIIDocAttributes.ToList())
+		encoder := json.NewEncoder(os.Stdout)
+		s, _, err := spec.Parse(cc, d.ParserOptions, d.ProcessingOptions, nil, d.ASCIIDocAttributes.ToList())
+		if err != nil {
+			return err
+		}
+
 		for i, f := range files {
-			encoder := json.NewEncoder(os.Stdout)
-			return encoder.Encode(entities)
-		}*/
+
+			path, err := spec.NewSpecPath(f, s.Root)
+			if err != nil {
+				return fmt.Errorf("error resolving path doc %s: %w", f, err)
+			}
+			doc, ok := s.Docs[path.Relative]
+			if !ok {
+				if len(files) > 0 {
+					fmt.Fprintf(os.Stderr, "Skipping %s (%d of %d)...\n", f, (i + 1), len(files))
+				}
+				continue
+			}
+			if len(files) > 0 {
+				fmt.Fprintf(os.Stderr, "Dumping %s (%d of %d)...\n", f, (i + 1), len(files))
+			}
+			entities := s.EntitiesForDocument(doc)
+			encoder.Encode(entities)
+
+		}
+
 		/*doc, _, err := spec.ParseFile(path, d.Root, d.ASCIIDocAttributes.ToList()...)
 		if err != nil {
 			return fmt.Errorf("error opening doc %s: %w", f, err)

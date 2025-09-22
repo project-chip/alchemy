@@ -134,20 +134,20 @@ func (ti *TableInfo) ReadID(reader asciidoc.Reader, row *asciidoc.TableRow, colu
 	return matter.ParseNumber(id), nil
 }
 
-func (ti *TableInfo) ReadName(library *Library, row *asciidoc.TableRow, columns ...matter.TableColumn) (name string, xref *asciidoc.CrossReference, err error) {
+func (ti *TableInfo) ReadName(reader asciidoc.Reader, row *asciidoc.TableRow, columns ...matter.TableColumn) (name string, xref *asciidoc.CrossReference, err error) {
 	for _, column := range columns {
 		offset, ok := ti.ColumnMap[column]
 		if !ok {
 			continue
 		}
-		return ti.ReadNameAtOffset(library, row, offset)
+		return ti.ReadNameAtOffset(reader, row, offset)
 	}
 	return "", nil, nil
 }
 
-func (ti *TableInfo) ReadNameAtOffset(library *Library, row *asciidoc.TableRow, offset int) (name string, xref *asciidoc.CrossReference, err error) {
+func (ti *TableInfo) ReadNameAtOffset(reader asciidoc.Reader, row *asciidoc.TableRow, offset int) (name string, xref *asciidoc.CrossReference, err error) {
 	cell := row.Cell(offset)
-	for el := range library.Iterate(row, library.Children(cell)) {
+	for el := range reader.Iterate(row, reader.Children(cell)) {
 		switch el := el.(type) {
 		case *asciidoc.CrossReference:
 			xref = el
@@ -157,7 +157,7 @@ func (ti *TableInfo) ReadNameAtOffset(library *Library, row *asciidoc.TableRow, 
 		}
 	}
 	var value strings.Builder
-	err = readRowCellValueElements(library, row, cell, library.Children(cell), &value)
+	err = readRowCellValueElements(reader, row, cell, reader.Children(cell), &value)
 	if err != nil {
 		return "", nil, err
 	}
@@ -657,4 +657,51 @@ func (ti *TableInfo) ReadDataType(library *Library, reader asciidoc.Reader, row 
 
 	slog.Warn("no matching data type patterns", log.Path("source", row))
 	return dt, nil
+}
+
+func (ti *TableInfo) AppendColumn(reader asciidoc.Reader, column matter.TableColumn, entityType types.EntityType) (appendedIndex int, err error) {
+	rows := ti.Rows
+	if len(rows) == 0 {
+		appendedIndex = -1
+		return
+	}
+	ti.Element.ColumnCount += 1
+	var cols *asciidoc.TableColumnsAttribute
+	var ok bool
+	for _, a := range ti.Element.Attributes() {
+		cols, ok = a.(*asciidoc.TableColumnsAttribute)
+		if ok {
+			break
+		}
+	}
+	if cols != nil {
+		cols.Columns = append(cols.Columns, asciidoc.NewTableColumn())
+	}
+	appendedIndex = len(rows[0].Elements)
+	for i, row := range rows {
+		cell := &asciidoc.TableCell{}
+		last := row.Cell(len(row.Elements) - 1)
+		if i == ti.HeaderRowIndex {
+			if last.Format != nil {
+				cell.Format = asciidoc.NewTableCellFormat()
+				cell.Format.HorizontalAlign = last.Format.HorizontalAlign
+				cell.Format.VerticalAlign = last.Format.VerticalAlign
+				cell.Format.Style = last.Format.Style
+			}
+			name, ok := matter.TableColumnNames[column]
+			if !ok {
+				err = fmt.Errorf("unknown column name: %s", column.String())
+				return
+			}
+			cell.SetChildren(asciidoc.NewStringElements(name))
+		} else {
+			cell.Blank = last.Blank
+			if !cell.Blank {
+				cell.SetChildren(asciidoc.NewStringElements(DefaultColumnValue(reader, ti, row, column, entityType)))
+			}
+		}
+		row.Append(cell)
+	}
+	ti.ColumnMap[column] = appendedIndex
+	return
 }

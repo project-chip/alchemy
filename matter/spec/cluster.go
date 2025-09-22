@@ -199,7 +199,7 @@ func readClusterIDs(reader asciidoc.Reader, doc *asciidoc.Document, section *asc
 	for row := range ti.ContentRows() {
 		c := matter.NewCluster(section)
 		c.Domain = domain
-		c.ID, err = ti.ReadID(reader, row, matter.TableColumnClusterID, matter.TableColumnID)
+		c.ID, err = ti.ReadID(reader, row, matter.IDColumns.Cluster...)
 		if err != nil {
 			return nil, err
 		}

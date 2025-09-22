@@ -34,7 +34,7 @@ func (library *Library) toClusterRequirements(reader asciidoc.Reader, d *asciido
 
 func (library *Library) toClusterRequirement(reader asciidoc.Reader, deviceType *matter.DeviceType, ti *TableInfo, row *asciidoc.TableRow) (cr *matter.ClusterRequirement, err error) {
 	cr = matter.NewClusterRequirement(deviceType, row)
-	cr.ClusterID, err = ti.ReadID(reader, row, matter.TableColumnClusterID, matter.TableColumnID)
+	cr.ClusterID, err = ti.ReadID(reader, row, matter.IDColumns.Cluster...)
 	if err != nil {
 		return
 	}
@@ -270,7 +270,7 @@ func (library *Library) toComposedDeviceTypeElementRequirements(reader asciidoc.
 
 func (library *Library) toElementRequirement(reader asciidoc.Reader, d *asciidoc.Document, ti *TableInfo, row *asciidoc.TableRow, deviceType *matter.DeviceType) (cr matter.ElementRequirement, err error) {
 	cr = matter.NewElementRequirement(deviceType, row)
-	cr.ClusterID, err = ti.ReadID(reader, row, matter.TableColumnClusterID, matter.TableColumnID)
+	cr.ClusterID, err = ti.ReadID(reader, row, matter.IDColumns.Cluster...)
 	if err != nil {
 		return
 	}

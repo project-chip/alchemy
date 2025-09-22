@@ -285,7 +285,7 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *asciidoc.Section, suffi
 					return
 				}
 			} else {
-				summaryIndex, err = b.appendColumn(cxt, ti, matter.TableColumnSummary, entityType)
+				summaryIndex, err = ti.AppendColumn(cxt.library, matter.TableColumnSummary, entityType)
 				if err != nil {
 					return
 				}
@@ -294,7 +294,7 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *asciidoc.Section, suffi
 		_, hasNameColumn := ti.ColumnMap[matter.TableColumnName]
 		if !hasNameColumn {
 			var nameIndex int
-			nameIndex, err = b.appendColumn(cxt, ti, matter.TableColumnName, entityType)
+			nameIndex, err = ti.AppendColumn(cxt.library, matter.TableColumnName, entityType)
 			if err != nil {
 				return
 			}

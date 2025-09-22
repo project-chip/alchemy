@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"reflect"
 
-	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -18,22 +18,59 @@ type EntityState[T types.Entity] struct {
 	Base           T
 }
 
-func compare(specs specs) (violations map[string][]Violation) {
-	violations = make(map[string][]Violation)
-	compareClusters(specs, violations)
-	compareGlobals(specs, violations)
+func (es EntityState[T]) Presence() (p Presence) {
+	if !isNil(es.Base) {
+		p |= PresenceBase
+	}
+	if !isNil(es.BaseInProgress) {
+		p |= PresenceBaseInProgress
+	}
+	if !isNil(es.Head) {
+		p |= PresenceHead
+	}
+	if !isNil(es.HeadInProgress) {
+		p |= PresenceHeadInProgress
+	}
 	return
 }
 
-func findExistingClusterInSpec(needle *matter.Cluster, haystack *spec.Specification) (existingCluster *matter.Cluster) {
-	var ok bool
-	if needle.ID.Valid() {
-		existingCluster, ok = haystack.ClustersByID[needle.ID.Value()]
-	}
-	if !ok {
-		existingCluster = haystack.ClustersByName[needle.Name]
+func compare(specs specs) (violationsByPath map[string][]Violation) {
+	violationsByPath = make(map[string][]Violation)
+	violations := make(entityViolations)
+	compareClusters(specs, violations)
+	compareGlobals(specs, violations)
+
+	for entity, violationType := range violations {
+		if violationType == ViolationTypeNone {
+			continue
+		}
+		parent := entity.Parent()
+		for parent != nil {
+			if conformance.IsProvisional(matter.EntityConformance(parent)) {
+				break
+			}
+			parent = parent.Parent()
+		}
+
+		v := Violation{Entity: entity, Type: violationType}
+		v.Path, v.Line = entity.Origin()
+		violationsByPath[v.Path] = append(violationsByPath[v.Path], v)
 	}
 	return
+}
+
+func getEntityState[T ComparableEntity, Parent types.Entity](e T, parentState EntityState[Parent], iterator func(p Parent) iter.Seq[T]) EntityState[T] {
+	state := EntityState[T]{HeadInProgress: e}
+	if !isNil(parentState.Head) {
+		state.Head = findExistingEntity(e, iterator(parentState.Head))
+	}
+	if !isNil(parentState.BaseInProgress) {
+		state.BaseInProgress = findExistingEntity(e, iterator(parentState.BaseInProgress))
+	}
+	if !isNil(parentState.Base) {
+		state.Base = findExistingEntity(e, iterator(parentState.Base))
+	}
+	return state
 }
 
 type ComparableEntity interface {
@@ -60,141 +97,25 @@ func isNil[T any](val T) bool {
 	}
 }
 
-func compareStates[T types.Entity](spec *spec.Specification, violations map[string][]Violation, state EntityState[T]) {
-	//slog.Info(state.HeadInProgress.EntityType().String(), "name", matter.EntityName(state.HeadInProgress), "inHead", state.Head, "inBaseIP", state.BaseInProgress, "inBase", state.Base)
-	if !isNil(state.Head) {
-		//	slog.Info("state.Head is not nil")
-		// This entity is not wrapped in in-progress in HEAD
-		if !isNil(state.BaseInProgress) {
-			//		slog.Info("state.BaseInProgress is not nil")
-			if !isNil(state.Base) {
-				//			slog.Info("state.Base is not nil")
-				// This entity already exists in the main spec, no in-progress ifdefs
-				return
-			} else {
-				//			slog.Info("state.Base is nil")
-				// This entity had in-progress around it, but that's being removed in this PR
-				return
-			}
-		} else {
-			//		slog.Info("state.BaseInProgress is nil")
-			// This is a new entity that's not wrapped in in-progress!
-			checkProvisionality(spec, violations, state.HeadInProgress, false)
-			/*			switch Check(spec, state.HeadInProgress, state.HeadInProgress, false) {
-						case StateAllClustersProvisional,
-							StateAllDataTypeReferencesProvisional,
-							StateExplicitlyProvisional:
-						default:
-						}*/
-			/*if IsProvisional(spec, state.HeadInProgress) {
-				slog.Error("New entity added without ifdef!", matter.LogEntity("entity", state.Head))
-			} else {
-				slog.Error("Non-provisional entity added without ifdef!", matter.LogEntity("entity", state.Head))
-			}*/
-		}
-	} else {
-		//slog.Info("state.Head is nil")
-		// This entity is wrapped in in-progress in HEAD
-		if !isNil(state.BaseInProgress) {
-			//	slog.Info("state.BaseInProgress is not nil")
-			if !isNil(state.Base) {
-				//		slog.Info("state.Base is not nil")
-				// This PR adds in-progress to this entity
-
-			} else {
-				//		slog.Info("state.Base is  nil")
-				// This entity is wrapped in in-progress in the base ref
-			}
-		} else {
-			//	slog.Info("state.BaseInProgress is nil")
-			// This is a new entity that's wrapped in in-progress; check if it's provisional
-			checkProvisionality(spec, violations, state.HeadInProgress, true)
-			/*			if IsProvisional(spec, state.HeadInProgress) {
-							//		slog.Info("entity is provisional")
-							// We're cool; the whole cluster is provisional, so everything included within it will also be provisional
-							return
-						} else {
-							// TODO: Problem! Non-provisional cluster being added
-							slog.Error("Non-provisional entity added!", matter.LogEntity("entity", state.HeadInProgress))
-						}*/
-		}
-	}
-}
-
-func checkProvisionality(spec *spec.Specification, violations map[string][]Violation, e types.Entity, ifDefd bool) {
-	var violationType ViolationType
-	state := Check(spec, e, e)
+func checkProvisionality(spec *spec.Specification, e types.Entity) (violationType ViolationType) {
 	switch e.(type) {
 	case *matter.Cluster,
+		*matter.DeviceType,
 		*matter.Feature,
 		*matter.Command,
-		*matter.Field:
-		switch state {
-		case StateAllClustersProvisional,
-			StateExplicitlyProvisional:
-		case StateAllClustersNonProvisional, StateSomeClustersProvisional:
-			violationType |= ViolationTypeNonProvisional
-		default:
-			slog.Warn("Unexpected provisional state for entity", matter.LogEntity("entity", e), slog.String("state", state.String()))
+		*matter.Event,
+		*matter.Field,
+		*matter.EnumValue,
+		matter.Bit:
+		// All these are types that can be marked explicitly provisional
+		if !conformance.IsProvisional(matter.EntityConformance(e)) {
+			violationType = ViolationTypeNonProvisional
 		}
 	case *matter.Bitmap, *matter.Enum, *matter.Struct:
-		switch state {
-		case StateAllClustersProvisional,
-			StateAllDataTypeReferencesProvisional:
-		case StateAllClustersNonProvisional,
-			StateSomeClustersProvisional,
-			StateSomeDataTypeReferencesProvisional,
-			StateAllDataTypeReferencesNonProvisional:
-			violationType |= ViolationTypeNonProvisional
-		case StateUnreferenced:
-			if !ifDefd {
-				violationType |= ViolationTypeNotIfDefd
-			}
-		default:
-			slog.Warn("Unexpected provisional state for entity", matter.LogEntity("entity", e), slog.String("state", state.String()))
-
-		}
-	case *matter.EnumValue, matter.Bit:
-		switch state {
-		case StateAllClustersProvisional,
-			StateAllDataTypeReferencesProvisional,
-			StateExplicitlyProvisional:
-		case StateAllClustersNonProvisional,
-			StateSomeClustersProvisional,
-			StateSomeDataTypeReferencesProvisional,
-			StateAllDataTypeReferencesNonProvisional:
-			violationType |= ViolationTypeNonProvisional
-		case StateUnreferenced:
-			if !ifDefd {
-				violationType |= ViolationTypeNotIfDefd
-			}
-		default:
-			slog.Warn("Unexpected provisional state for entity", matter.LogEntity("entity", e), slog.String("state", state.String()))
-		}
+		// These types can't be marked provsional, so we'll rely on ifdefs
 	default:
 		slog.Error("Unexpected provisionality entity", matter.LogEntity("entity", e))
+	}
 
-	}
-	if violationType != ViolationTypeNone {
-		if !ifDefd {
-			violationType |= ViolationTypeNotIfDefd
-		}
-		v := Violation{Entity: e, Type: violationType}
-		source, ok := e.(log.Source)
-		if ok {
-			v.Path, v.Line = source.Origin()
-		}
-		violations[v.Path] = append(violations[v.Path], v)
-	}
+	return
 }
-
-/*
-	StateExplicitlyProvisional
-	StateAllDataTypeReferencesProvisional
-	StateAllDataTypeReferencesNonProvisional
-	StateSomeDataTypeReferencesProvisional
-	StateAllClustersProvisional
-	StateAllClustersNonProvisional
-	StateSomeClustersProvisional
-	StateUnreferenced
-*/

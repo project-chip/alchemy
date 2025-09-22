@@ -21,9 +21,9 @@ func (library *Library) readFields(spec *Specification, reader asciidoc.Reader, 
 	var idColumns []matter.TableColumn
 	switch entityType {
 	case types.EntityTypeAttribute:
-		idColumns = []matter.TableColumn{matter.TableColumnAttributeID, matter.TableColumnID}
+		idColumns = matter.IDColumns.Attribute
 	default:
-		idColumns = []matter.TableColumn{matter.TableColumnFieldID, matter.TableColumnID}
+		idColumns = matter.IDColumns.Field
 	}
 
 	fieldMap = make(map[string]*matter.Field)
@@ -139,7 +139,7 @@ func (library *Library) mapFields(reader asciidoc.Reader, d *asciidoc.Document, 
 				return err
 			}
 		}
-		checkNullText(d, s, a)
+		checkNullText(library, d, s, a)
 		library.addEntity(s, a)
 	}
 	return nil
@@ -351,12 +351,12 @@ func validateFields(spec *Specification, parent types.Entity, fields matter.Fiel
 
 var nullIndicationPattern = regexp.MustCompile(`(?i)(?:\A|\s|\b)(null)(?:\b|\s|\z)`)
 
-func checkNullText(doc *Doc, section *asciidoc.Section, field *matter.Field) {
+func checkNullText(library *Library, doc *asciidoc.Document, section *asciidoc.Section, field *matter.Field) {
 	if !field.Quality.Has(matter.QualityNullable) {
 		return
 	}
 	var hasNullDefinition bool
-	parse.Search(doc.Reader(), section, section.Children(), func(s *asciidoc.String, parent asciidoc.Parent, index int) parse.SearchShould {
+	parse.Search(doc, library, section, section.Children(), func(d *asciidoc.Document, s *asciidoc.String, parent asciidoc.ParentElement, index int) parse.SearchShould {
 		if nullIndicationPattern.MatchString(s.Value) {
 			hasNullDefinition = true
 			return parse.SearchShouldStop

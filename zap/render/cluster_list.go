@@ -56,8 +56,8 @@ func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 			err = fmt.Errorf("unable to find library for doc %s", doc.Path)
 			return
 		}
-		entities := p.spec.EntitiesForDocument(input.Content)
 		errata := library.ErrataForPath(doc.Path.Relative)
+		entities := p.spec.EntitiesForDocument(input.Content)
 		for _, e := range entities {
 			switch e := e.(type) {
 			case *matter.Cluster:

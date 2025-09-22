@@ -41,8 +41,9 @@ type Specification struct {
 
 	entities map[string]map[types.Entity]map[*matter.Cluster]struct{}
 
-	Docs      map[string]*asciidoc.Document
-	Libraries []*Library
+	Docs       map[string]*asciidoc.Document
+	UnusedDocs []*asciidoc.Document
+	Libraries  []*Library
 
 	Errors []Error
 

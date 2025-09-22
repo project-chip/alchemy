@@ -24,7 +24,7 @@ require (
 	github.com/shopspring/decimal v1.4.0
 	github.com/tidwall/pretty v1.2.1
 	github.com/walle/targz v0.0.0-20140417120357-57fe4206da5a
-	golang.org/x/sync v0.10.0
+	golang.org/x/sync v0.17.0
 )
 
 require (
@@ -50,14 +50,15 @@ require (
 	go.opentelemetry.io/otel v1.31.0 // indirect
 	go.opentelemetry.io/otel/trace v1.31.0 // indirect
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
-	golang.org/x/mod v0.21.0 // indirect
-	golang.org/x/sys v0.25.0 // indirect
+	golang.org/x/mod v0.28.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/term v0.22.0 // indirect
 	golang.org/x/text v0.20.0 // indirect
-	golang.org/x/tools v0.25.1 // indirect
+	golang.org/x/tools v0.37.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f // indirect
 	google.golang.org/grpc v1.53.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/src-d/go-errors.v1 v1.0.0 // indirect
+	znkr.io/diff v0.0.0-20250929202033-c511d917d900 // indirect
 )

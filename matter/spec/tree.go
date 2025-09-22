@@ -38,5 +38,6 @@ func (lb *LibraryBuilder) Process(cxt context.Context, inputs []*pipeline.Data[*
 		}
 		outputs = append(outputs, pipeline.NewData(root.Path.Relative, NewLibrary(root, lb.errata, docCache)))
 	}
+
 	return
 }

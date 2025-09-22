@@ -48,6 +48,22 @@ func Build(cxt context.Context, parserOptions ParserOptions, processingOptions p
 		return
 	}
 
+	unusedDocs := make(map[*asciidoc.Document]int)
+	libraries.Range(func(key string, library *pipeline.Data[*Library]) bool {
+		library.Content.cache.cache.Range(func(key string, value *asciidoc.Document) bool {
+			if !library.Content.IsUtilityPath(value.Path) {
+				unusedDocs[value] = unusedDocs[value] + 1
+			}
+			return true
+		})
+		return true
+	})
+	libraryCount := libraries.Size()
+	for doc, unusedCount := range unusedDocs {
+		if unusedCount == libraryCount {
+			specBuilder.Spec.UnusedDocs = append(specBuilder.Spec.UnusedDocs, doc)
+		}
+	}
 	specification = specBuilder.Spec
 	return
 }

@@ -1,8 +1,10 @@
 package cli
 
 import (
+	"fmt"
 	"log/slog"
 	"path/filepath"
+	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/filter"
@@ -19,6 +21,9 @@ func filterSpecDocs(cc *Context, specDocs spec.DocSet, s *spec.Specification, fi
 		if err != nil {
 			return
 		}
+		if filteredDocs.Size() == 0 {
+			err = fmt.Errorf("no documents matched the provided paths: %s", strings.Join(filterOptions.Paths, ", "))
+		}
 	}
 
 	if len(filterOptions.Exclude) > 0 {
@@ -27,7 +32,12 @@ func filterSpecDocs(cc *Context, specDocs spec.DocSet, s *spec.Specification, fi
 		if err != nil {
 			return
 		}
+		if filteredDocs.Size() == 0 {
+			err = fmt.Errorf("no documents matched the provided exclusion paths: %s", strings.Join(filterOptions.Paths, ", "))
+		}
+
 	}
+
 	return
 }
 

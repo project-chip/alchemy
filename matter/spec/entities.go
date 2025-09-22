@@ -15,6 +15,7 @@ func (library *Library) parseEntities(spec *Specification) iter.Seq2[*asciidoc.D
 
 	return func(yield func(*asciidoc.Document, any) bool) {
 		var currentDomain matter.Domain
+		currentDomain = matter.DomainGeneral
 		parse.Search(library.Root, library, library.Root, library.Children(library.Root), func(doc *asciidoc.Document, section *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
 			var err error
 			var skip bool

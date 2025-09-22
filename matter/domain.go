@@ -74,3 +74,20 @@ func (i *Domain) UnmarshalYAML(b []byte) error {
 	return fmt.Errorf("unknown domain name: %s", v)
 
 }
+
+func ParseDomain(name string) Domain {
+	switch name {
+	case "Home Appliances":
+		name = "Appliances"
+	case "Measurement and Sensing":
+		name = "Measurement & Sensing"
+	}
+	var domain Domain
+	for d, dn := range DomainNames {
+		if dn == name {
+			domain = d
+			break
+		}
+	}
+	return domain
+}

@@ -12,6 +12,8 @@ func ParseDomain(name string) matter.Domain {
 		name = "Appliances"
 	case "Measurement and Sensing":
 		name = "Measurement & Sensing"
+	case "WebRTC Transport":
+		name = "Cameras"
 	case "Entry Control":
 		name = "Closures"
 	}

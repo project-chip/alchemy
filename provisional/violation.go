@@ -39,3 +39,11 @@ type Violation struct {
 	Path   string
 	Line   int
 }
+
+type entityViolations map[types.Entity]ViolationType
+
+func (ev entityViolations) add(entity types.Entity, violationType ViolationType) {
+	if violationType != ViolationTypeNone {
+		ev[entity] = violationType
+	}
+}

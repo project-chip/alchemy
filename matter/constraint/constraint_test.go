@@ -183,6 +183,17 @@ type constraintTest struct {
 
 var constraintTests = []constraintTest{
 	{
+		constraint: "LT & 1  to 254",
+		asciiDoc:   "LT & 1 to 254",
+		fields: stitchFieldSet(fieldSet{
+			{Name: "LT", Type: &types.DataType{BaseType: types.BaseDataTypeUInt16}, Constraint: mustParseConstraint("0 to 1")},
+		}),
+		min:    types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
+		max:    types.NewUintDataTypeExtreme(254, types.NumberFormatInt),
+		zapMin: "0",
+		zapMax: "254",
+	},
+	{
 		constraint: "0 to (FragmentDuration/2)",
 		asciiDoc:   "0 to (FragmentDuration / 2)",
 		fields: stitchFieldSet(fieldSet{
@@ -623,7 +634,7 @@ var constraintTests = []constraintTest{
 	},
 }
 
-func TestSuite(t *testing.T) {
+func TestContraints(t *testing.T) {
 	for _, ct := range constraintTests {
 		if ct.invalid {
 			c, err := TryParseString(ct.constraint)
@@ -672,6 +683,7 @@ func TestSuite(t *testing.T) {
 		if max.ZapString(ct.dataType) != ct.zapMax {
 			t.Errorf("incorrect ZAP max value for \"%s\": expected %s, got %s", ct.constraint, ct.zapMax, max.ZapString(ct.dataType))
 		}
+		break
 	}
 
 }

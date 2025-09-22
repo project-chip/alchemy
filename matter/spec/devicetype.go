@@ -133,6 +133,7 @@ func (library *Library) toBaseDeviceType(reader asciidoc.Reader, section *asciid
 
 	baseDeviceType = matter.NewDeviceType(section)
 	baseDeviceType.Name = "Base Device Type"
+	baseDeviceType.ID = matter.InvalidID
 	if baseClusterRequirements != nil {
 		baseDeviceType.ClusterRequirements, err = library.toClusterRequirements(reader, doc, baseClusterRequirements, baseDeviceType)
 		if err != nil {

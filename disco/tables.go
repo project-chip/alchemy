@@ -57,7 +57,7 @@ func (b *Baller) addMissingColumns(cxt *discoContext, section *asciidoc.Section,
 	}
 	for _, column := range order {
 		if _, ok := ti.ColumnMap[column]; !ok {
-			_, err = b.appendColumn(cxt, ti, column, entityType)
+			_, err = ti.AppendColumn(cxt.library, column, entityType)
 			if err != nil {
 				return
 			}
@@ -65,88 +65,6 @@ func (b *Baller) addMissingColumns(cxt *discoContext, section *asciidoc.Section,
 	}
 	err = ti.Rescan(cxt.doc, asciidoc.RawReader)
 	return
-}
-
-func (b *Baller) appendColumn(cxt *discoContext, ti *spec.TableInfo, column matter.TableColumn, entityType types.EntityType) (appendedIndex int, err error) {
-	rows := ti.Rows
-	if len(rows) == 0 {
-		appendedIndex = -1
-		return
-	}
-	ti.Element.ColumnCount += 1
-	var cols *asciidoc.TableColumnsAttribute
-	var ok bool
-	for _, a := range ti.Element.Attributes() {
-		cols, ok = a.(*asciidoc.TableColumnsAttribute)
-		if ok {
-			break
-		}
-	}
-	if cols != nil {
-		cols.Columns = append(cols.Columns, asciidoc.NewTableColumn())
-	}
-	appendedIndex = len(rows[0].Elements)
-	for i, row := range rows {
-		cell := &asciidoc.TableCell{}
-		last := row.Cell(len(row.Elements) - 1)
-		if i == ti.HeaderRowIndex {
-			if last.Format != nil {
-				cell.Format = asciidoc.NewTableCellFormat()
-				cell.Format.HorizontalAlign = last.Format.HorizontalAlign
-				cell.Format.VerticalAlign = last.Format.VerticalAlign
-				cell.Format.Style = last.Format.Style
-			}
-			name, ok := matter.TableColumnNames[column]
-			if !ok {
-				err = fmt.Errorf("unknown column name: %s", column.String())
-				return
-			}
-			setCellString(cell, name)
-		} else {
-			cell.Blank = last.Blank
-			if !cell.Blank {
-				setCellString(cell, b.getDefaultColumnValue(cxt, ti, row, column, entityType))
-			}
-		}
-		row.Append(cell)
-	}
-	ti.ColumnMap[column] = appendedIndex
-	return
-}
-
-func (b *Baller) getDefaultColumnValue(cxt *discoContext, ti *spec.TableInfo, row *asciidoc.TableRow, column matter.TableColumn, entityType types.EntityType) string {
-	switch column {
-	case matter.TableColumnConformance:
-		switch entityType {
-		case types.EntityTypeBitmapValue, types.EntityTypeEnumValue:
-			return "M"
-		}
-	case matter.TableColumnName:
-		switch entityType {
-		case types.EntityTypeBitmapValue, types.EntityTypeEnumValue:
-			val, _ := ti.ReadValue(cxt.library, row, matter.TableColumnSummary, matter.TableColumnDescription)
-			if val != "" {
-				return matter.Case(val)
-			}
-		}
-	case matter.TableColumnSummary:
-		switch entityType {
-		case types.EntityTypeBitmapValue, types.EntityTypeEnumValue:
-			val, _ := ti.ReadValue(cxt.library, row, matter.TableColumnName)
-			if val != "" {
-				return matter.Uncase(val)
-			}
-		}
-	case matter.TableColumnAccess:
-		switch entityType {
-		case types.EntityTypeEvent, types.EntityTypeAttribute:
-			return "R V"
-		case types.EntityTypeStructField:
-			return ""
-		}
-	}
-	slog.Debug("no default value for column", slog.String("column", column.String()), slog.String("entity", entityType.String()))
-	return ""
 }
 
 func (b *Baller) reorderColumns(cxt *discoContext, section *asciidoc.Section, ti *spec.TableInfo, tableType matter.TableType) (err error) {

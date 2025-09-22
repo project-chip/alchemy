@@ -13,7 +13,6 @@ func parserPatch(file *dst.File) (err error) {
 	// This adds a couple extra fields to the "current" struct
 	var currentStruct, parserStruct *dst.StructType
 	var newParser *dst.FuncDecl
-	var parseRuleRefExpr *dst.FuncDecl
 	dstutil.Apply(file, nil, func(c *dstutil.Cursor) bool {
 		ok := true
 		switch node := c.Node().(type) {
@@ -28,10 +27,6 @@ func parserPatch(file *dst.File) (err error) {
 			switch node.Name.Name {
 			case "newParser":
 				newParser = node
-			case "parseRuleRefExpr":
-				parseRuleRefExpr = node
-			default:
-				fmt.Printf("other func: %s\n", node.Name.Name)
 			}
 		case nil:
 		default:
@@ -57,9 +52,6 @@ func parserPatch(file *dst.File) (err error) {
 	patchCurrent(currentStruct)
 	patchParserStruct(parserStruct)
 	patchNewParser(newParser)
-	if parseRuleRefExpr != nil {
-		patchParseRuleRefExpr(parseRuleRefExpr)
-	}
 	return
 }
 
@@ -209,21 +201,6 @@ func patchNewParser(newParser *dst.FuncDecl) {
 					}
 					kv.Decs.After = dst.NewLine
 					val.Elts = append(val.Elts, kv)
-				}
-			}
-		}
-	}
-}
-
-func patchParseRuleRefExpr(parseRuleRefExpr *dst.FuncDecl) {
-	for _, stmt := range parseRuleRefExpr.Body.List {
-		switch stmt := stmt.(type) {
-		case *dst.IfStmt:
-			switch cond := stmt.Cond.(type) {
-			case *dst.SelectorExpr:
-				if cond.Sel.Name == "debug" {
-					// There's a debugging line here that we broke by removing the name cache for performance reasons
-					stmt.Body.List = nil
 				}
 			}
 		}

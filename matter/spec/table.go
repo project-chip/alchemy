@@ -3,12 +3,14 @@ package spec
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 var ErrNoTableFound = fmt.Errorf("no table found")
@@ -27,7 +29,8 @@ func parseTable(reader asciidoc.Reader, doc *asciidoc.Document, section *asciido
 
 	ti, err = ReadTable(doc, reader, t)
 	if err != nil {
-		err = newGenericParseError(t, "failed mapping table columns for first table in section \"%s\": %w", doc.SectionName(section), err)
+		sectionTitle, _ := reader.StringValue(section, section.Title)
+		err = newGenericParseError(t, "failed mapping table columns for first table in section \"%s\": %w", sectionTitle, err)
 		return
 	}
 	if len(ti.Rows) < ti.HeaderRowIndex+2 {
@@ -220,4 +223,39 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnStatusCode
 	}
 	return matter.TableColumnUnknown
+}
+
+func DefaultColumnValue(reader asciidoc.Reader, ti *TableInfo, row *asciidoc.TableRow, column matter.TableColumn, entityType types.EntityType) string {
+	switch column {
+	case matter.TableColumnConformance:
+		switch entityType {
+		case types.EntityTypeBitmapValue, types.EntityTypeEnumValue:
+			return "M"
+		}
+	case matter.TableColumnName:
+		switch entityType {
+		case types.EntityTypeBitmapValue, types.EntityTypeEnumValue:
+			val, _ := ti.ReadValue(reader, row, matter.TableColumnSummary, matter.TableColumnDescription)
+			if val != "" {
+				return matter.Case(val)
+			}
+		}
+	case matter.TableColumnSummary:
+		switch entityType {
+		case types.EntityTypeBitmapValue, types.EntityTypeEnumValue:
+			val, _ := ti.ReadValue(reader, row, matter.TableColumnName)
+			if val != "" {
+				return matter.Uncase(val)
+			}
+		}
+	case matter.TableColumnAccess:
+		switch entityType {
+		case types.EntityTypeEvent, types.EntityTypeAttribute:
+			return "R V"
+		case types.EntityTypeStructField:
+			return ""
+		}
+	}
+	slog.Debug("no default value for column", slog.String("column", column.String()), slog.String("entity", entityType.String()))
+	return ""
 }

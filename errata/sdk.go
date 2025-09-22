@@ -38,6 +38,19 @@ type SDK struct {
 	ExtraTypes *SDKTypes `yaml:"extra-types,omitempty"`
 }
 
+func (s *SDK) HasSpecPatch() bool {
+	if s.ClusterName != "" {
+		return true
+	}
+	if s.Types != nil {
+		return true
+	}
+	if s.ExtraTypes != nil {
+		return true
+	}
+	return false
+}
+
 type SDKTypes struct {
 	Attributes  map[string]*SDKType `yaml:"attributes,omitempty"`
 	Clusters    map[string]*SDKType `yaml:"clusters,omitempty"`

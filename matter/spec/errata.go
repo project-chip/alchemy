@@ -13,3 +13,12 @@ func (library *Library) SpecErrata(path string) *errata.Spec {
 func (library *Library) SdkErrata(path string) *errata.SDK {
 	return &library.Errata.Get(path).SDK
 }
+
+func applyErrata(spec *Specification, library *Library) {
+	for _, doc := range library.Docs {
+		se := library.SdkErrata(doc.Path.Relative)
+		if se == nil {
+			continue
+		}
+	}
+}

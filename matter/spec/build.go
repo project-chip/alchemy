@@ -23,6 +23,7 @@ type Builder struct {
 	errata *errata.Collection
 
 	ignoreHierarchy bool
+	patchForSdk     bool
 
 	conformanceFailures map[any]referenceFailure
 	constraintFailures  map[any]referenceFailure
@@ -122,6 +123,17 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 
 	sp.resolveClusterDataTypeReferences(true)
 	sp.resolveGlobalDataTypeReferences()
+
+	if sp.patchForSdk {
+		err = patchSpecForSdk(spec)
+		if err != nil {
+			return
+		}
+	}
+
+	if sp.patchForSdk {
+		resolveAtomicOperations(spec)
+	}
 	if !sp.ignoreHierarchy {
 		sp.resolveHierarchy()
 	}
@@ -240,12 +252,12 @@ func (sp *Builder) readEntities(spec *Specification, libraries []*Library) (basi
 			case *matter.ClusterGroup:
 				spec.entityRefs[doc] = append(spec.entityRefs[doc], entity)
 				for _, c := range entity.Clusters {
-					spec.DocRefs[c] = doc
+					sp.noteDocRefs(doc, c)
 					spec.LibraryRefs[c] = library
 				}
 			case types.Entity:
 				spec.entityRefs[doc] = append(spec.entityRefs[doc], entity)
-				spec.DocRefs[entity] = doc
+				sp.noteDocRefs(doc, entity)
 				spec.LibraryRefs[entity] = library
 			}
 		}
@@ -304,28 +316,62 @@ func (sp *Builder) addCluster(doc *asciidoc.Document, cluster *matter.Cluster) {
 	sp.noteDocRefs(doc, cluster)
 }
 
-func (sp *Builder) noteDocRefs(doc *asciidoc.Document, cluster *matter.Cluster) {
-	for _, bm := range cluster.Bitmaps {
-		sp.Spec.DocRefs[bm] = doc
+func (sp *Builder) noteDocRefs(doc *asciidoc.Document, entity types.Entity) {
+	sp.Spec.DocRefs[entity] = doc
+	switch entity := entity.(type) {
+	case *matter.Cluster:
+		for _, bm := range entity.Bitmaps {
+			sp.noteDocRefs(doc, bm)
+		}
+		for _, e := range entity.Enums {
+			sp.noteDocRefs(doc, e)
+		}
+		if entity.Features != nil {
+			for _, e := range entity.Features.Bits {
+				sp.noteDocRefs(doc, e)
+			}
+		}
+		for _, s := range entity.Structs {
+			sp.noteDocRefs(doc, s)
+		}
+		for _, td := range entity.TypeDefs {
+			sp.noteDocRefs(doc, td)
+		}
+		for _, a := range entity.Attributes {
+			sp.noteDocRefs(doc, a)
+		}
+		for _, e := range entity.Events {
+			sp.noteDocRefs(doc, e)
+		}
+		for _, cmd := range entity.Commands {
+			sp.noteDocRefs(doc, cmd)
+		}
+	case *matter.Namespace:
+		for _, t := range entity.SemanticTags {
+			sp.noteDocRefs(doc, t)
+		}
+	case *matter.Bitmap:
+		for _, b := range entity.Bits {
+			sp.noteDocRefs(doc, b)
+		}
+	case *matter.Enum:
+		for _, b := range entity.Values {
+			sp.noteDocRefs(doc, b)
+		}
+	case *matter.Command:
+		for _, f := range entity.Fields {
+			sp.noteDocRefs(doc, f)
+		}
+	case *matter.Event:
+		for _, f := range entity.Fields {
+			sp.noteDocRefs(doc, f)
+		}
+	case *matter.Struct:
+		for _, f := range entity.Fields {
+			sp.noteDocRefs(doc, f)
+		}
 	}
-	for _, e := range cluster.Enums {
-		sp.Spec.DocRefs[e] = doc
-	}
-	for _, s := range cluster.Structs {
-		sp.Spec.DocRefs[s] = doc
-	}
-	for _, td := range cluster.TypeDefs {
-		sp.Spec.DocRefs[td] = doc
-	}
-	for _, a := range cluster.Attributes {
-		sp.Spec.DocRefs[a] = doc
-	}
-	for _, e := range cluster.Events {
-		sp.Spec.DocRefs[e] = doc
-	}
-	for _, cmd := range cluster.Commands {
-		sp.Spec.DocRefs[cmd] = doc
-	}
+
 }
 
 func (sp *Builder) getTagNamespace(field *matter.Field) {

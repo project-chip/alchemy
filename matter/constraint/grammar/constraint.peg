@@ -12,8 +12,8 @@ import (
 )
 
 func debug(format string, a ...any) (n int, err error) {
-	return
-	return fmt.Fprintf(os.Stdout, format, a...)
+	//return
+	return fmt.Fprintf(os.Stderr, format, a...)
 }
 
 }

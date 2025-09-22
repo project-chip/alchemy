@@ -28,21 +28,17 @@ func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []
 		return
 	}
 
-	slog.Info("cluster count head", "count", len(specs.Head.Clusters))
-	slog.Info("cluster count head in-progress", "count", len(specs.HeadInProgress.Clusters))
-
 	specs.Base, specs.BaseInProgress, err = loadSpecs(cxt, pipelineOptions, baseRoot)
 	if err != nil {
 		return
 	}
 
-	slog.Info("cluster count base", "count", len(specs.Base.Clusters))
-	slog.Info("cluster count base in-progress", "count", len(specs.BaseInProgress.Clusters))
-
 	violations = compare(specs)
 	for path, vs := range violations {
 		for _, v := range vs {
-			slog.Error("Provisionality violation", slog.String("path", path), matter.LogEntity("entity", v.Entity), slog.String("violationType", v.Type.String()))
+			if v.Type.Has(ViolationTypeNonProvisional) {
+				slog.Error("Provisionality violation", slog.String("path", path), matter.LogEntity("entity", v.Entity), slog.String("violationType", v.Type.String()))
+			}
 		}
 	}
 
@@ -54,11 +50,18 @@ func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []
 
 func loadSpecs(cxt context.Context, pipelineOptions pipeline.ProcessingOptions, specRoot string) (baseSpec *spec.Specification, inProgressSpec *spec.Specification, err error) {
 	parserOptions := spec.ParserOptions{Root: specRoot}
-	baseSpec, _, err = spec.Parse(cxt, parserOptions, pipelineOptions, nil, []asciidoc.AttributeName{})
+
+	var specDocs spec.DocSet
+	specDocs, err = spec.LoadSpecDocs(cxt, parserOptions, pipelineOptions)
+	if err != nil {
+		return
+	}
+
+	baseSpec, _, err = spec.Build(cxt, parserOptions, pipelineOptions, nil, specDocs, []asciidoc.AttributeName{})
 
 	if err != nil {
 		return
 	}
-	inProgressSpec, _, err = spec.Parse(cxt, parserOptions, pipelineOptions, nil, []asciidoc.AttributeName{"in-progress"})
+	inProgressSpec, _, err = spec.Build(cxt, parserOptions, pipelineOptions, nil, specDocs, []asciidoc.AttributeName{"in-progress"})
 	return
 }

@@ -194,6 +194,23 @@ func (library *Library) SetSectionLevel(s *asciidoc.Section, level int) {
 	library.sectionLevels.Store(s, level)
 }
 
+func (library *Library) IsUtilityPath(path asciidoc.Path) bool {
+	if library.ErrataForPath(path.Relative).Spec.UtilityInclude {
+		return true
+	}
+	if path.Relative == library.Root.Path.Relative {
+		return true
+	}
+	switch path.Relative {
+	case "src/cover-main.adoc",
+		"src/cover-appclusters.adoc",
+		"src/cover-device_library.adoc",
+		"src/cover-standard_namespaces.adoc":
+		return true
+	}
+	return false
+}
+
 func dumpLibrary(library *Library) {
 	fmt.Fprintf(os.Stderr, "Library root: %s", library.Root.Path.Relative)
 	for section := range parse.Skim[*asciidoc.Section](library, library.Root, library.Children(library.Root)) {
