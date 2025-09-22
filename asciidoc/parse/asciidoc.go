@@ -823,31 +823,31 @@ var g = &grammar{
 						alternatives: []any{
 							&ruleRefExpr{
 								pos:    position{line: 169, col: 5, offset: 4222},
+								offset: 108,
+							},
+							&ruleRefExpr{
+								pos:    position{line: 170, col: 7, offset: 4234},
 								offset: 332,
 							},
 							&ruleRefExpr{
-								pos:    position{line: 170, col: 7, offset: 4242},
+								pos:    position{line: 171, col: 7, offset: 4254},
 								offset: 338,
 							},
 							&ruleRefExpr{
-								pos:    position{line: 171, col: 7, offset: 4252},
+								pos:    position{line: 172, col: 7, offset: 4264},
 								offset: 309,
 							},
 							&ruleRefExpr{
-								pos:    position{line: 172, col: 7, offset: 4270},
+								pos:    position{line: 173, col: 7, offset: 4282},
 								offset: 310,
 							},
 							&ruleRefExpr{
-								pos:    position{line: 173, col: 7, offset: 4290},
+								pos:    position{line: 174, col: 7, offset: 4302},
 								offset: 95,
 							},
 							&ruleRefExpr{
-								pos:    position{line: 174, col: 7, offset: 4310},
+								pos:    position{line: 175, col: 7, offset: 4322},
 								offset: 283,
-							},
-							&ruleRefExpr{
-								pos:    position{line: 175, col: 7, offset: 4334},
-								offset: 108,
 							},
 							&ruleRefExpr{
 								pos:    position{line: 176, col: 7, offset: 4346},
