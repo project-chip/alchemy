@@ -41,7 +41,7 @@ func (cr *configuratorRenderer) generateEvents(ce *etree.Element, cluster *matte
 		}
 
 		if matchingEvent == nil {
-			slog.Warn("unknown event ID", slog.String("path", cr.configurator.OutPath), slog.String("eventId", eventID.Text()))
+			slog.Warn("Removing unrecognized event from ZAP XML", slog.String("path", cr.configurator.OutPath), slog.String("eventId", eventID.Text()))
 			ce.RemoveChild(eve)
 			continue
 		}

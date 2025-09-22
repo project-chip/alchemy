@@ -47,7 +47,7 @@ func (cr *configuratorRenderer) generateAttributes(cle *etree.Element, cluster *
 			delete(attributes, a)
 		}
 		if attribute == nil {
-			slog.Warn("unrecognized attribute in cluster", slog.String("path", cr.configurator.OutPath), slog.String("clusterName", cluster.Name), slog.String("code", attributeID.Text()))
+			slog.Warn("Removing unrecognized attribute from ZAP XML", slog.String("path", cr.configurator.OutPath), slog.String("clusterName", cluster.Name), slog.String("code", attributeID.Text()))
 			cle.RemoveChild(ae)
 			continue
 		}

@@ -44,7 +44,7 @@ func (cr *configuratorRenderer) generateEnums(enums map[*matter.Enum][]*matter.N
 		}
 
 		if matchingEnum == nil {
-			slog.Warn("ZAP: unknown enum name", slog.String("path", cr.configurator.OutPath), slog.String("enumName", name))
+			slog.Warn("Removing unrecognized enum from ZAP XML", slog.String("path", cr.configurator.OutPath), slog.String("enumName", name))
 			ce.RemoveChild(eve)
 			continue
 		}
