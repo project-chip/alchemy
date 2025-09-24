@@ -456,7 +456,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 				slog.String("namespaceName", tr.TagRequirement.NamespaceName),
 				log.Path("source", tr))
 			spec.addError(&UnknownNamespaceTagRequirementError{Requirement: tr.TagRequirement})
-		} else if tr.TagRequirement.SemanticTag == nil {
+		} else if tr.TagRequirement.SemanticTag == nil && (tr.TagRequirement.SemanticTagID.Valid() || tr.TagRequirement.SemanticTagName != "") {
 			tr.TagRequirement.SemanticTag = findTagRequirementTag(spec, tr.TagRequirement.Namespace, tr.TagRequirement.SemanticTagID, tr.TagRequirement.SemanticTagName, tr.TagRequirement)
 			if tr.TagRequirement.SemanticTag == nil {
 				slog.Error("unknown semantic tag for tag requirement on composing device type",
