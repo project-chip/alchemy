@@ -2,6 +2,7 @@ package spec
 
 import (
 	"log/slog"
+	"regexp"
 	"strings"
 
 	"github.com/iancoleman/strcase"
@@ -137,6 +138,7 @@ func mapFields(d *Doc, section *asciidoc.Section, fieldMap map[string]*matter.Fi
 				return err
 			}
 		}
+		checkNullText(d, s, a)
 		pc.entitiesByElement[s] = append(pc.entitiesByElement[s], a)
 	}
 	return nil
@@ -333,5 +335,25 @@ func validateFields(spec *Specification, parent types.Entity, fields matter.Fiel
 		}
 
 		validateAccess(spec, f, f.Access)
+	}
+}
+
+var nullIndicationPattern = regexp.MustCompile(`(?i)(?:\A|\s|\b)(null)(?:\b|\s|\z)`)
+
+func checkNullText(doc *Doc, section *asciidoc.Section, field *matter.Field) {
+	if !field.Quality.Has(matter.QualityNullable) {
+		return
+	}
+	var hasNullDefinition bool
+	parse.Search(doc.Reader(), section, section.Children(), func(s *asciidoc.String, parent asciidoc.Parent, index int) parse.SearchShould {
+		if nullIndicationPattern.MatchString(s.Value) {
+			hasNullDefinition = true
+			return parse.SearchShouldStop
+		}
+		return parse.SearchShouldContinue
+	})
+
+	if !hasNullDefinition {
+		slog.Warn("Description of nullable field does not appear to have an explanation of the meaning of a null value", matter.LogEntity("entity", field), log.Path("source", section))
 	}
 }
