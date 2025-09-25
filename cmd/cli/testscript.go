@@ -31,6 +31,9 @@ func (cmd *TestScript) Run(cc *Context) (err error) {
 	var specification *spec.Specification
 	var specDocs spec.DocSet
 	specification, _, err = spec.Parse(cc, cmd.ParserOptions, cmd.ProcessingOptions, nil, cmd.ASCIIDocAttributes.ToList())
+	if err != nil {
+		return
+	}
 
 	err = spec.PatchSpecForSdk(specification)
 	if err != nil {

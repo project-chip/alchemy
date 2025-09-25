@@ -21,7 +21,7 @@ import (
 
 func debug(format string, a ...any) (n int, err error) {
 	return
-	return fmt.Fprintf(os.Stdout, format, a...)
+	//return fmt.Fprintf(os.Stdout, format, a...)
 }
 
 var g = &grammar{

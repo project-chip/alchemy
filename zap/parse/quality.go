@@ -66,5 +66,4 @@ func parseQuality(d *xml.Decoder, e xml.StartElement) (q matter.Quality, err err
 			return
 		}
 	}
-	return
 }

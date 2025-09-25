@@ -131,7 +131,6 @@ func (tf *tagFinder) suggestIdentifiers(identifier string, suggestions map[types
 	if tf.inner != nil {
 		tf.inner.suggestIdentifiers(identifier, suggestions)
 	}
-	return
 }
 
 func findTagRequirementNamespace(spec *Specification, id *matter.Number, name string, requirement *matter.TagRequirement) (namespace *matter.Namespace) {

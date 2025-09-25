@@ -4,6 +4,6 @@ type Policy string
 
 const (
 	PolicyNone   Policy = "none"
-	PolicyLoose         = "loose"
-	PolicyStrict        = "strict"
+	PolicyLoose  Policy = "loose"
+	PolicyStrict Policy = "strict"
 )
