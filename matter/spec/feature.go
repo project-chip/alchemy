@@ -123,5 +123,4 @@ func (ff *featureFinder) suggestIdentifiers(identifier string, suggestions map[t
 	if ff.inner != nil {
 		ff.inner.suggestIdentifiers(identifier, suggestions)
 	}
-	return
 }

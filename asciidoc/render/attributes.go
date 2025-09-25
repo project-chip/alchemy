@@ -231,7 +231,7 @@ func renderSelectAttributes(cxt Target, attributes []asciidoc.Attribute, include
 
 func renderAttributeAnchor(cxt Target, anchor *asciidoc.AnchorAttribute, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
 	id := anchor.ID
-	if id != nil && len(id) > 0 && shouldRenderAttributeType(AttributeFilterID, include, exclude) {
+	if len(id) > 0 && shouldRenderAttributeType(AttributeFilterID, include, exclude) {
 		if !inline {
 			cxt.EnsureNewLine()
 		}
