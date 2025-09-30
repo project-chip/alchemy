@@ -417,6 +417,9 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 		}
 	}
 	for _, er := range dt.ComposedDeviceTypeElementRequirements {
+		if er.DeviceType == nil {
+			continue
+		}
 		referencedClusters := make(map[*matter.Cluster]struct{})
 		buildReferencedClusters(er.DeviceType, referencedClusters)
 		err = associateElementRequirement(spec, er.DeviceType, er.ElementRequirement, referencedClusters)
@@ -552,6 +555,9 @@ func validateDeviceTypes(spec *Specification) {
 			validateElementRequirement(spec, dt, er, referencedClusters)
 		}
 		for _, der := range dt.ComposedDeviceTypeElementRequirements {
+			if der.DeviceType == nil {
+				continue
+			}
 			validateAccess(spec, der.ElementRequirement, der.ElementRequirement.Access)
 			validateElementRequirement(spec, der.DeviceType, der.ElementRequirement, referencedClusters)
 		}
