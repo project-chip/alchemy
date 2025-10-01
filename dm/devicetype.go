@@ -33,7 +33,7 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 	c := x.CreateElement("deviceType")
 	c.CreateAttr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
 	c.CreateAttr("xsi:schemaLocation", "types types.xsd devicetype devicetype.xsd")
-	if deviceType.ID != nil {
+	if deviceType.ID != nil && deviceType.ID.Valid() {
 		c.CreateAttr("id", deviceType.ID.HexString())
 	}
 	c.CreateAttr("name", deviceType.Name)
@@ -85,7 +85,9 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 				return dt.Name
 			}) {
 				dte := cre.CreateElement("deviceType")
-				dte.CreateAttr("id", dt.ID.HexString())
+				if dt.ID.Valid() {
+					dte.CreateAttr("id", dt.ID.HexString())
+				}
 				dte.CreateAttr("name", dt.Name)
 				for _, cr := range reqs[dt] {
 					cre := dte.CreateElement("conditionRequirement")
@@ -189,7 +191,9 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 				continue
 			}
 			dte := cx.CreateElement("deviceType")
-			dte.CreateAttr("deviceTypeId", dt.ID.HexString())
+			if dt.ID.Valid() {
+				dte.CreateAttr("deviceTypeId", dt.ID.HexString())
+			}
 			dte.CreateAttr("deviceTypeName", dt.Name)
 			if len(dtr.clusterRequirements) > 0 {
 				crx := dte.CreateElement("clusterRequirements")
