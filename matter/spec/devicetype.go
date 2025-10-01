@@ -139,6 +139,7 @@ func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) 
 
 		baseDeviceType = matter.NewDeviceType(top)
 		baseDeviceType.Name = "Base Device Type"
+		baseDeviceType.ID = matter.InvalidID
 		if baseClusterRequirements != nil {
 			baseDeviceType.ClusterRequirements, err = toClusterRequirements(d, baseClusterRequirements, baseDeviceType)
 			if err != nil {
@@ -296,7 +297,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 			spec.addError(&UnknownConditionRequirementDeviceTypeError{Requirement: cr})
 			continue
 		} else {
-			if _, ok := deviceTypes[cr.DeviceType]; !ok && cr.DeviceType != spec.RootNodeDeviceType {
+			if _, ok := deviceTypes[cr.DeviceType]; !ok && cr.DeviceType != spec.RootNodeDeviceType && cr.DeviceType != spec.BaseDeviceType {
 				slog.Error("Condition requirement on device type refers to unincluded device type",
 					slog.String("deviceTypeId", cr.DeviceTypeID.HexString()),
 					slog.String("deviceTypeName", cr.DeviceTypeName),
@@ -366,7 +367,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 					log.Path("source", cr.ClusterRequirement))
 				spec.addError(&UnknownComposingDeviceTypeClusterRequirementDeviceTypeError{Requirement: cr})
 			} else {
-				if dtr, ok := deviceTypes[referencedDeviceType]; !ok && referencedDeviceType != spec.RootNodeDeviceType {
+				if dtr, ok := deviceTypes[referencedDeviceType]; !ok && referencedDeviceType != spec.RootNodeDeviceType && referencedDeviceType != spec.BaseDeviceType {
 					slog.Error("Cluster requirement on composing device type refers to unincluded device type",
 						slog.String("deviceTypeId", cr.DeviceTypeID.HexString()),
 						slog.String("deviceTypeName", cr.DeviceTypeName),
@@ -402,7 +403,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 					log.Path("source", er.ElementRequirement))
 				spec.addError(&UnknownComposingDeviceTypeElementRequirementDeviceTypeError{Requirement: er})
 			} else {
-				if dtr, ok := deviceTypes[referencedDeviceType]; !ok && referencedDeviceType != spec.RootNodeDeviceType {
+				if dtr, ok := deviceTypes[referencedDeviceType]; !ok && referencedDeviceType != spec.RootNodeDeviceType && referencedDeviceType != spec.BaseDeviceType {
 					slog.Error("Element requirement on composing device type refers to unincluded device type",
 						slog.String("deviceTypeId", er.DeviceTypeID.HexString()),
 						slog.String("deviceTypeName", er.DeviceTypeName),
@@ -439,7 +440,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 					log.Path("source", tr))
 				spec.addError(&UnknownComposingDeviceTypeTagRequirementDeviceTypeError{Requirement: tr})
 			} else {
-				if dtr, ok := deviceTypes[referencedDeviceType]; !ok && referencedDeviceType != spec.RootNodeDeviceType {
+				if dtr, ok := deviceTypes[referencedDeviceType]; !ok && referencedDeviceType != spec.RootNodeDeviceType && referencedDeviceType != spec.BaseDeviceType {
 					slog.Error("Element requirement on composing device type refers to unincluded device type",
 						slog.String("deviceTypeId", tr.DeviceTypeID.HexString()),
 						slog.String("deviceTypeName", tr.DeviceTypeName),
@@ -494,6 +495,10 @@ func findDeviceTypeRequirementCluster(spec *Specification, id *matter.Number, na
 }
 
 func findDeviceTypeRequirementDeviceType(spec *Specification, id *matter.Number, name string, entity types.Entity) (deviceType *matter.DeviceType) {
+	if strings.EqualFold(name, "Base") {
+		deviceType = spec.BaseDeviceType
+		return
+	}
 	var ok bool
 	if deviceType, ok = spec.DeviceTypesByID[id.Value()]; ok {
 		if name != deviceType.Name {
