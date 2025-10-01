@@ -133,7 +133,7 @@ func mapFields(d *Doc, section *asciidoc.Section, fieldMap map[string]*matter.Fi
 			return err
 		}
 		if a.Type != nil && a.Type.BaseType == types.BaseDataTypeTag {
-			err = findTagNamespace(d, s, a)
+			err = findTagNamespace(d, s, a, fieldMap)
 			if err != nil {
 				return err
 			}
@@ -260,8 +260,9 @@ func findAnonymousBitmap(doc *Doc, s *asciidoc.Section, field *matter.Field) err
 	return nil
 }
 
-func findTagNamespace(doc *Doc, s *asciidoc.Section, field *matter.Field) error {
+func findTagNamespace(doc *Doc, s *asciidoc.Section, field *matter.Field, fieldMap map[string]*matter.Field) error {
 	var found bool
+
 	parse.Search(doc.Reader(), s, s.Elements, func(ref *asciidoc.CrossReference, parent asciidoc.Parent, index int) parse.SearchShould {
 		if doc.anchorId(doc.Reader(), ref, ref, ref.ID) == "ref_StandardNamespaces" {
 			label := buildReferenceName(doc.Reader(), ref, ref.Elements)
@@ -274,6 +275,13 @@ func findTagNamespace(doc *Doc, s *asciidoc.Section, field *matter.Field) error 
 		}
 		return parse.SearchShouldContinue
 	})
+	if !found {
+		for _, f := range fieldMap {
+			if f.Type.BaseType == types.BaseDataTypeNamespaceID {
+				found = true
+			}
+		}
+	}
 	if !found {
 		slog.Warn("Tag field does not specify namespace", slog.String("field", field.Name), log.Element("source", doc.Path, field.Source()))
 	}
