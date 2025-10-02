@@ -103,13 +103,13 @@ func IsZigbee(conformance Conformance) bool {
 	}
 	var err error
 	var withZigbee, withoutZigbee ConformanceState
-	cxt := Context{Values: map[string]any{"Zigbee": true}}
-	withZigbee, err = conformance.Eval(cxt)
+	cxt := BasicContext{Values: map[string]any{"Zigbee": true}}
+	withZigbee, err = conformance.Eval(&cxt)
 	if err != nil {
 		return false
 	}
 	delete(cxt.Values, "Zigbee")
-	withoutZigbee, err = conformance.Eval(cxt)
+	withoutZigbee, err = conformance.Eval(&cxt)
 	if err != nil {
 		return false
 	}

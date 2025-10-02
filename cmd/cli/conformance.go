@@ -20,12 +20,12 @@ func (cmd *Conformance) Run(cc *Context) (err error) {
 	c := conformance.ParseConformance(cmd.Conformance)
 	fmt.Fprintf(os.Stdout, "description: %s\n", c.Description())
 	if len(cmd.Params) > 0 {
-		var cxt conformance.Context
+		var cxt conformance.BasicContext
 		cxt.Values = make(map[string]any)
 		for _, arg := range cmd.Params {
 			cxt.Values[arg] = true
 		}
-		crm, err := c.Eval(cxt)
+		crm, err := c.Eval(&cxt)
 		if err != nil {
 			return err
 		}

@@ -65,7 +65,7 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 		elementRequirements[er.ElementRequirement.Cluster] = append(elementRequirements[er.ElementRequirement.Cluster], er)
 	}
 
-	firstContext := conformance.Context{
+	firstContext := &conformance.BasicContext{
 		Values: map[string]any{
 			"Matter":            &contextBoolean{value: true, confidence: conformance.ConfidenceDefinite},
 			"Zigbee":            &contextBoolean{value: false, confidence: conformance.ConfidenceImpossible},
@@ -122,7 +122,7 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 		}
 	}
 
-	cxt := conformance.Context{
+	cxt := &conformance.BasicContext{
 		Values: map[string]any{
 			"Matter":            &contextBoolean{value: true, confidence: conformance.ConfidenceDefinite},
 			"Zigbee":            &contextBoolean{value: false, confidence: conformance.ConfidenceImpossible},
