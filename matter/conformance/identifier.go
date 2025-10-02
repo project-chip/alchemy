@@ -35,29 +35,24 @@ func (ie *IdentifierExpression) Description() string {
 }
 
 func (ie *IdentifierExpression) Eval(context Context) (ExpressionResult, error) {
-	if context.Values != nil {
-		// First, check if we have a context value for this identifier, e.g. "Simple", "Matter", or "Client"
-		v, ok := context.Values[ie.ID]
-		if ok {
-			switch v := v.(type) {
-			case bool:
-				return &expressionResult{value: v != ie.Not, confidence: ConfidenceDefinite}, nil
-			case ExpressionResult:
-				return v, nil
-			default:
-				return nil, fmt.Errorf("unexpected context value type: %T", v)
-			}
+	// First, check if we have a context value for this identifier, e.g. "Simple", "Matter", or "Client"
+	v, ok := context.Value(ie.ID)
+	if ok {
+		switch v := v.(type) {
+		case bool:
+			return &expressionResult{value: v != ie.Not, confidence: ConfidenceDefinite}, nil
+		case Confidence:
+			return &expressionResult{value: true, confidence: v}, nil
+		case ExpressionResult:
+			return v, nil
+		default:
+			return nil, fmt.Errorf("unexpected context value type: %T", v)
 		}
 	}
+
 	if ie.Entity == nil {
 		// If we don't have a context value, and we weren't able to match up an entity, then this is a orphan identifier
 		return &expressionResult{value: ie.Not, confidence: ConfidenceImpossible}, nil
-	}
-	if context.VisitedReferences == nil {
-		context.VisitedReferences = make(map[string]struct{})
-	} else if _, ok := context.VisitedReferences[ie.ID]; ok {
-		// We've already visited this identifier during evaluation, so we're in a recursive conformance
-		return &expressionResult{value: false, confidence: ConfidenceImpossible}, nil
 	}
 	var err error
 	er := &expressionResult{value: !ie.Not, confidence: ConfidencePossible}
@@ -65,7 +60,9 @@ func (ie *IdentifierExpression) Eval(context Context) (ExpressionResult, error) 
 	if ref, ok := ie.Entity.(HasConformance); ok {
 		conf := ref.GetConformance()
 		if conf != nil {
-			context.VisitedReferences[ie.ID] = struct{}{}
+			if !context.MarkVisit(ie.ID) {
+				return &expressionResult{value: false, confidence: ConfidenceImpossible}, nil
+			}
 			var cs ConformanceState
 			cs, err = conf.Eval(context)
 			if err == nil {
@@ -84,7 +81,7 @@ func (ie *IdentifierExpression) Eval(context Context) (ExpressionResult, error) 
 					err = fmt.Errorf("unexpected conformance state evaluating identifier conformance: %s", cs.State.String())
 				}
 				// Remove from our visited references so we don't interfere with sibling conformances that reference the same identifier but aren't recursive
-				delete(context.VisitedReferences, ie.ID)
+				context.UnmarkVisit(ie.ID)
 			}
 		}
 	}
@@ -177,17 +174,14 @@ func (ie *IdentifierValue) Value(context Context) (ExpressionResult, error) {
 }
 
 func identifierValue(context Context, id string) (ExpressionResult, error) {
-	if context.Values != nil {
-		v, ok := context.Values[id]
-		if ok {
-			switch v := v.(type) {
-			case Confidence:
-				return &expressionResult{value: true, confidence: v}, nil
-			default:
-				return &expressionResult{value: v, confidence: ConfidenceDefinite}, nil
-			}
+	v, ok := context.Value(id)
+	if ok {
+		switch v := v.(type) {
+		case Confidence:
+			return &expressionResult{value: true, confidence: v}, nil
+		default:
+			return &expressionResult{value: v, confidence: ConfidenceDefinite}, nil
 		}
-
 	}
 	return nil, fmt.Errorf("unrecognized identifier: %s", id)
 }

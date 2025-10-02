@@ -48,18 +48,15 @@ func (re *ReferenceExpression) Eval(context Context) (ExpressionResult, error) {
 		// If we were unable to resolve this reference, then we can't evaluate its conformance
 		return &expressionResult{confidence: ConfidenceImpossible}, nil
 	}
-	if context.VisitedReferences == nil {
-		context.VisitedReferences = make(map[string]struct{})
-	} else if _, ok := context.VisitedReferences[re.Reference]; ok {
-		// We've already visited this reference in this evaluation chain, so it's recursive
-		return &expressionResult{confidence: ConfidenceImpossible}, nil
-	}
 	var err error
 	er := &expressionResult{value: !re.Not, confidence: ConfidencePossible}
 	if ref, ok := re.Entity.(HasConformance); ok {
 		conf := ref.GetConformance()
 		if conf != nil {
-			context.VisitedReferences[re.Reference] = struct{}{}
+			if !context.MarkVisit(re.Reference) {
+				return &expressionResult{confidence: ConfidenceImpossible}, nil
+
+			}
 			var cs ConformanceState
 			cs, err = conf.Eval(context)
 			if err == nil {
@@ -78,7 +75,7 @@ func (re *ReferenceExpression) Eval(context Context) (ExpressionResult, error) {
 					err = fmt.Errorf("unexpected conformance state evaluating identifier conformance: %s", cs.State.String())
 				}
 			}
-			delete(context.VisitedReferences, re.Reference)
+			context.UnmarkVisit(re.Reference)
 		}
 	}
 	if err != nil {

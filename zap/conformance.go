@@ -13,7 +13,7 @@ func IsDisallowed(entity types.Entity, c conformance.Set) bool {
 	if len(c) == 0 {
 		return false
 	}
-	cxt := conformance.Context{}
+	cxt := &conformance.BasicContext{}
 	conf, err := c.Eval(cxt)
 	if err != nil {
 		slog.Error("failed evaluating conformance", matter.LogEntity("entity", entity), slog.Any("error", err), log.Path("source", entity))
