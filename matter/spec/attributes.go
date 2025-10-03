@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -13,6 +14,9 @@ func toAttributes(spec *Specification, d *Doc, section *asciidoc.Section, cluste
 	ti, err = parseFirstTable(d, section)
 	if err != nil {
 		if err == ErrNoTableFound {
+			if !isBaseOrDerivedCluster(cluster) {
+				slog.Warn("no table found for attributes", slog.String("name", cluster.Name), log.Element("source", d.Path, section))
+			}
 			err = nil
 		}
 		return

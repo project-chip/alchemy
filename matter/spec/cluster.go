@@ -232,6 +232,19 @@ func clusterNamesEquivalent(name1 string, name2 string) bool {
 	return strings.EqualFold(name1, name2)
 }
 
+func isBaseOrDerivedCluster(e types.Entity) bool {
+	switch e := e.(type) {
+	case *matter.Cluster:
+		if text.HasCaseInsensitiveSuffix(e.Name, " Base") {
+			return true
+		}
+		if e.Hierarchy != "Base" {
+			return true
+		}
+	}
+	return false
+}
+
 func readClusterClassification(doc *Doc, name string, classification *matter.ClusterClassification, s *asciidoc.Section) error {
 	ti, err := parseFirstTable(doc, s)
 	if err != nil {

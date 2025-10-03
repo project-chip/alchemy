@@ -31,7 +31,9 @@ func toBitmap(d *Doc, section *asciidoc.Section, pc *parseContext, parent types.
 
 	if err != nil {
 		if err == ErrNoTableFound {
-			slog.Warn("no table found for bitmap", log.Element("source", d.Path, section), slog.String("name", bm.Name))
+			if !isBaseOrDerivedCluster(parent) {
+				slog.Warn("no table found for bitmap", log.Element("source", d.Path, section), slog.String("name", bm.Name))
+			}
 			err = nil
 		} else {
 			return nil, newGenericParseError(section, "failed reading bitmap %s: %w", name, err)
