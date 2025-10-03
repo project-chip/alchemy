@@ -362,6 +362,6 @@ func checkNullText(doc *Doc, section *asciidoc.Section, field *matter.Field) {
 	})
 
 	if !hasNullDefinition {
-		slog.Warn("Description of nullable field does not appear to have an explanation of the meaning of a null value", matter.LogEntity("entity", field), log.Path("source", section))
+		slog.Debug("Description of nullable field does not appear to have an explanation of the meaning of a null value", matter.LogEntity("entity", field), log.Path("source", section))
 	}
 }
