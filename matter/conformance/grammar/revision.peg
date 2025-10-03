@@ -1,0 +1,40 @@
+
+CurrentRevision <- "Rev"i {
+    return CurrentRevsion, nil
+}
+
+Revision <- "v"i version:Digits {
+    v := version.(int64)
+    if v <= 0 {
+        return nil, fmt.Errorf("invalid revision value: %s", string(c.text))
+    }
+    return Revision(version.(int64)), nil
+}
+
+RevisionValue <- (Revision / CurrentRevision)
+
+RevisionSimpleExpression <- _ left:RevisionValue _ op:ComparisonOperator _ right:RevisionValue _ {
+    leftVal := left.(Revision)
+    rightVal := right.(Revision)
+    re := &RevisionExpression{Left:leftVal, Right:rightVal, Op:op.(ComparisonOperator)}
+    err := checkRevision(re, string(c.text))
+    if err != nil {
+        return nil, err
+    }
+    return re, nil
+}
+
+RevisionRangeExpression <- _ left:Revision _ leftOp:ComparisonOperator _ CurrentRevision _ rightOp:ComparisonOperator _ right:Revision _ {
+    leftVal := left.(Revision)
+    rightVal := right.(Revision)
+    lo := leftOp.(ComparisonOperator)
+    ro := rightOp.(ComparisonOperator)
+    rre := &RevisionRangeExpression{LeftOp: lo, Left:leftVal, RightOp: ro, Right:rightVal}
+    err := checkRevisionRange(rre, string(c.text))
+    if err != nil {
+        return nil, err
+    }
+    return rre, nil
+}
+
+RevisionExpression <- (RevisionRangeExpression / RevisionSimpleExpression )

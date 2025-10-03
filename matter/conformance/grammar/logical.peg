@@ -69,6 +69,8 @@ LogicalTerm <- not:'!'? '(' _  eq:Expression _ ')' {
         }
     }
     return eq, nil
-} / ComparisonExpression
+} 
+  / RevisionExpression
+  / ComparisonExpression
   / ReferenceOp  
   / IdentifierOp 

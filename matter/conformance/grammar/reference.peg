@@ -13,7 +13,10 @@ IdentifierOp <- not:'!'? identifier:Identifier  field:(ReferenceField)?  {
     return ic, nil
 }
 
-IdentifierValue <- identifier:Identifier  field:(ReferenceField)? { 
+IdentifierValue <- identifier:Identifier  field:(ReferenceField)? &{
+    return !strings.EqualFold(identifier.(string), "Rev") , nil
+    }
+    { 
     iv := &IdentifierValue{ID:identifier.(string)}
     if field != nil {
         iv.Field = field.(ComparisonValue)

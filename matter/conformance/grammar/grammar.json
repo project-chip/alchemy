@@ -9,6 +9,7 @@
         "number.peg",
         "comparison.peg",
         "reference.peg",
+        "revision.peg",
         "choice.peg",
         "status.peg",
         "text.peg"

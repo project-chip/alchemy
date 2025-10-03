@@ -170,23 +170,12 @@ func renderConformanceExpression(exp conformance.Expression, parent *etree.Eleme
 		renderConformanceEntity(parent, e.Entity, e.Reference, e.Field, parentEntity)
 
 	case *conformance.ComparisonExpression:
-		switch e.Op {
-		case conformance.ComparisonOperatorEqual:
-			parent = parent.CreateElement("equalTerm")
-		case conformance.ComparisonOperatorNotEqual:
-			parent = parent.CreateElement("notEqualTerm")
-		case conformance.ComparisonOperatorGreaterThan:
-			parent = parent.CreateElement("greaterTerm")
-		case conformance.ComparisonOperatorGreaterThanOrEqual:
-			parent = parent.CreateElement("greaterOrEqualTerm")
-		case conformance.ComparisonOperatorLessThan:
-			parent = parent.CreateElement("lessTerm")
-		case conformance.ComparisonOperatorLessThanOrEqual:
-			parent = parent.CreateElement("lessOrEqualTerm")
-		default:
-			return fmt.Errorf("unexpected comparison expression operator: %s", e.Op.String())
+		var err error
+		parent, err = renderComparisonOperator(parent, e.Op)
+		if err != nil {
+			return err
 		}
-		err := renderComparisonValue(e.Left, parent, parentEntity)
+		err = renderComparisonValue(e.Left, parent, parentEntity)
 		if err != nil {
 			return err
 		}
@@ -194,6 +183,28 @@ func renderConformanceExpression(exp conformance.Expression, parent *etree.Eleme
 		if err != nil {
 			return err
 		}
+	case *conformance.RevisionExpression:
+		var err error
+		parent, err = renderComparisonOperator(parent, e.Op)
+		if err != nil {
+			return err
+		}
+		renderRevisionValue(parent, e.Left)
+		renderRevisionValue(parent, e.Right)
+	case *conformance.RevisionRangeExpression:
+		parent = parent.CreateElement("andTerm")
+		leftParent, err := renderComparisonOperator(parent, e.LeftOp)
+		if err != nil {
+			return err
+		}
+		renderRevisionValue(leftParent, e.Left)
+		renderRevisionValue(leftParent, conformance.CurrentRevsion)
+		rightParent, err := renderComparisonOperator(parent, e.RightOp)
+		if err != nil {
+			return err
+		}
+		renderRevisionValue(rightParent, conformance.CurrentRevsion)
+		renderRevisionValue(rightParent, e.Right)
 	default:
 		return fmt.Errorf("unimplemented conformance expression type: %T", exp)
 	}
@@ -337,4 +348,34 @@ func renderConformanceEqualityExpression(exp *conformance.EqualityExpression, pa
 	}
 	err = renderConformanceExpression(exp.Right, e, parentEntity)
 	return
+}
+
+func renderComparisonOperator(parent *etree.Element, op conformance.ComparisonOperator) (*etree.Element, error) {
+	switch op {
+	case conformance.ComparisonOperatorEqual:
+		parent = parent.CreateElement("equalTerm")
+	case conformance.ComparisonOperatorNotEqual:
+		parent = parent.CreateElement("notEqualTerm")
+	case conformance.ComparisonOperatorGreaterThan:
+		parent = parent.CreateElement("greaterTerm")
+	case conformance.ComparisonOperatorGreaterThanOrEqual:
+		parent = parent.CreateElement("greaterOrEqualTerm")
+	case conformance.ComparisonOperatorLessThan:
+		parent = parent.CreateElement("lessTerm")
+	case conformance.ComparisonOperatorLessThanOrEqual:
+		parent = parent.CreateElement("lessOrEqualTerm")
+	default:
+		return nil, fmt.Errorf("unexpected comparison expression operator: %s", op.String())
+	}
+	return parent, nil
+}
+
+func renderRevisionValue(parent *etree.Element, revision conformance.Revision) {
+	rev := parent.CreateElement("revision")
+	if revision == conformance.CurrentRevsion {
+		rev.CreateAttr("value", "current")
+	} else {
+		rev.CreateAttr("value", strconv.FormatInt(int64(revision), 10))
+	}
+
 }
