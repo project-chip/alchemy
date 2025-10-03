@@ -272,9 +272,35 @@ func buildPythonConformanceExpression(cluster *matter.Cluster, e conformance.Exp
 		default:
 			return fmt.Errorf("unexpected entity type when converting identifier expression to Python: %T", ie)
 		}
+	case *conformance.RevisionExpression:
+		buildRevisionExpression(builder, e.Left, e.Op, e.Right)
+		return nil
+	case *conformance.RevisionRangeExpression:
+		builder.WriteString("(")
+		buildRevisionExpression(builder, e.Left, e.LeftOp, conformance.CurrentRevsion)
+		builder.WriteString(") and (")
+		buildRevisionExpression(builder, conformance.CurrentRevsion, e.RightOp, e.Right)
+		builder.WriteString(")")
+		return nil
 	default:
 		return fmt.Errorf("unimplemented conformance expression converting to Python: %T", e)
 
+	}
+}
+
+func buildRevisionExpression(builder *strings.Builder, left conformance.Revision, op conformance.ComparisonOperator, right conformance.Revision) {
+	if left == conformance.CurrentRevsion {
+		builder.WriteString("(await self.read_single_attribute_expect_error(endpoint=endpoint, cluster=cluster, attribute=cluster.Attributes.ClusterRevision))")
+	} else {
+		builder.WriteString(strconv.FormatInt(int64(left), 10))
+	}
+	builder.WriteString(" ")
+	builder.WriteString(op.String())
+	builder.WriteString(" ")
+	if right == conformance.CurrentRevsion {
+		builder.WriteString("(await self.read_single_attribute_expect_error(endpoint=endpoint, cluster=cluster, attribute=cluster.Attributes.ClusterRevision))")
+	} else {
+		builder.WriteString(strconv.FormatInt(int64(right), 10))
 	}
 }
 

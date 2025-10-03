@@ -29,6 +29,9 @@ func (cts *conformanceTestSuite) run(t *testing.T) {
 		t.Errorf("failed parsing conformance %s: %v", cts.Conformance, err)
 		return
 	}
+	if cts.InvalidConformance {
+		t.Errorf("parsed conformance that should have been invalid %s: %v", cts.Conformance, err)
+	}
 	//t.Logf("\tconformance set: %d", len(conformance))
 	/*for _, c := range conformance {
 		t.Logf("\ttesting %s: %T %v", cts.Conformance, c, c)
@@ -81,6 +84,116 @@ func makeTestContext(args ...any) *conformanceTestContext {
 }
 
 var conformanceTests = []conformanceTestSuite{
+	{
+		Conformance: "[v2 < Rev]",
+		Tests: []conformanceTest{
+			{Context: makeTestContext("Revision", Revision(1)), Expected: ConformanceState{State: StateDisallowed, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(2)), Expected: ConformanceState{State: StateDisallowed, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(3)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Matter", true), Expected: ConformanceState{State: StateOptional, Confidence: ConfidencePossible}},
+		},
+	},
+
+	{
+		Conformance: "v1 <= Rev",
+		Tests: []conformanceTest{
+			{Context: makeTestContext("Revision", Revision(1)), Expected: ConformanceState{State: StateMandatory, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(2)), Expected: ConformanceState{State: StateMandatory, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(3)), Expected: ConformanceState{State: StateMandatory, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Matter", true), Expected: ConformanceState{State: StateMandatory, Confidence: ConfidencePossible}},
+		},
+	},
+	{
+		Conformance: "[v1 <= Rev]",
+		Tests: []conformanceTest{
+			{Context: makeTestContext("Revision", Revision(1)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(2)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(3)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Matter", true), Expected: ConformanceState{State: StateOptional, Confidence: ConfidencePossible}},
+		},
+	},
+	{
+		Conformance: "[Rev >= v1]",
+		Tests: []conformanceTest{
+			{Context: makeTestContext("Revision", Revision(1)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(2)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(3)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Matter", true), Expected: ConformanceState{State: StateOptional, Confidence: ConfidencePossible}},
+		},
+	},
+	{
+		Conformance: "[v2 < Rev < v4]",
+		Tests: []conformanceTest{
+			{Context: makeTestContext("Revision", Revision(1)), Expected: ConformanceState{State: StateDisallowed, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(2)), Expected: ConformanceState{State: StateDisallowed, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(3)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(4)), Expected: ConformanceState{State: StateDisallowed, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Matter", true), Expected: ConformanceState{State: StateOptional, Confidence: ConfidencePossible}},
+		},
+	},
+	{
+		Conformance: "[v2 <= Rev < v4]",
+		Tests: []conformanceTest{
+			{Context: makeTestContext("Revision", Revision(1)), Expected: ConformanceState{State: StateDisallowed, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(2)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(3)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(4)), Expected: ConformanceState{State: StateDisallowed, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Matter", true), Expected: ConformanceState{State: StateOptional, Confidence: ConfidencePossible}},
+		},
+	},
+	{
+		Conformance: "[v4 >= Rev > v2]",
+		Tests: []conformanceTest{
+			{Context: makeTestContext("Revision", Revision(1)), Expected: ConformanceState{State: StateDisallowed, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(2)), Expected: ConformanceState{State: StateDisallowed, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(3)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(4)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Matter", true), Expected: ConformanceState{State: StateOptional, Confidence: ConfidencePossible}},
+		},
+	},
+	{
+		Conformance: "Rev > v4, [Rev >= v2], D",
+		Tests: []conformanceTest{
+			{Context: makeTestContext("Revision", Revision(1)), Expected: ConformanceState{State: StateDeprecated, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(2)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(3)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(4)), Expected: ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(5)), Expected: ConformanceState{State: StateMandatory, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Matter", true), Expected: ConformanceState{State: StateMandatory, Confidence: ConfidencePossible}},
+		},
+	},
+	{
+		Conformance:        "v2 > v3",
+		InvalidConformance: true,
+	},
+	{
+		Conformance:        "Rev > Rev",
+		InvalidConformance: true,
+	},
+	{
+		Conformance:        "Rev > v0",
+		InvalidConformance: true,
+	},
+	{
+		Conformance:        "Rev > 0",
+		InvalidConformance: true,
+	},
+	{
+		Conformance:        "v2 > v3 > v5",
+		InvalidConformance: true,
+	},
+	{
+		Conformance:        "v2 > Rev > v5",
+		InvalidConformance: true,
+	},
+	{
+		Conformance:        "v2 < Rev == v5",
+		InvalidConformance: true,
+	},
+	{
+		Conformance:        "v2 < Rev != v5",
+		InvalidConformance: true,
+	},
 	{
 		Conformance: "[AB & CM].a2",
 		Tests: []conformanceTest{

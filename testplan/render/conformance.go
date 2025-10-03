@@ -109,6 +109,24 @@ func renderExpression(b *strings.Builder, cluster *matter.Cluster, exp conforman
 		b.WriteString(" ")
 		b.WriteString(exp.Right.ASCIIDocString())
 		b.WriteRune(')')
+	case *conformance.RevisionExpression:
+		b.WriteRune('(')
+		b.WriteString(exp.Left.String())
+		b.WriteString(" ")
+		b.WriteString(exp.Op.String())
+		b.WriteString(" ")
+		b.WriteString(exp.Right.String())
+		b.WriteRune(')')
+	case *conformance.RevisionRangeExpression:
+		b.WriteRune('(')
+		b.WriteString(exp.Left.String())
+		b.WriteString(" ")
+		b.WriteString(exp.LeftOp.String())
+		b.WriteString(" Rev ")
+		b.WriteString(exp.RightOp.String())
+		b.WriteString(" ")
+		b.WriteString(exp.Right.String())
+		b.WriteRune(')')
 	default:
 		b.WriteString(fmt.Sprintf("ERROR: unknown expression type: %T", exp))
 	}
