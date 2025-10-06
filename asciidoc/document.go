@@ -10,7 +10,7 @@ func (Document) Type() ElementType {
 }
 
 func (doc *Document) Clone() Element {
-	return &Document{Elements: doc.Elements.Clone()}
+	return &Document{Path: doc.Path, Elements: doc.Elements.Clone()}
 }
 
 func (doc *Document) Equals(o Element) bool {

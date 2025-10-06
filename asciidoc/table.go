@@ -343,7 +343,7 @@ func (tr *TableRow) Clone() Element {
 			ctr.Elements = append(ctr.Elements, e.Clone())
 		}
 	}
-	return tr
+	return ctr
 }
 
 func (tr *TableRow) TableCells() []*TableCell {
