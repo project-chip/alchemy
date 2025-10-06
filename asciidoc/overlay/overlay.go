@@ -98,7 +98,6 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 					} else {
 						pps.sectionLevelOffset = leveloffset
 					}
-					//	slog.Info("SECTION OFFSET", "now", pps.sectionLevelOffset)
 				}
 			}
 			remove = true
@@ -124,19 +123,16 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 			}
 			remove = true
 		case *asciidoc.IfDef:
-			//slog.Info("pushing ifdef", log.Path("source", el), "index", index)
 			suppressStack.Push(&conditionalBlock{suppress: suppress, open: el})
 			suppress = suppress || !el.Eval(pps)
 			remove = true
 			addToCell = el.Inline
 		case *asciidoc.IfNDef:
-			//slog.Info("pushing ifmdef", log.Path("source", el), "index", index)
 			suppressStack.Push(&conditionalBlock{suppress: suppress, open: el})
 			suppress = suppress || !el.Eval(pps)
 			remove = true
 			addToCell = el.Inline
 		case *asciidoc.IfEval:
-			//slog.Info("pushing ifeval", log.Path("source", el), "index", index)
 			suppressStack.Push(&conditionalBlock{suppress: suppress, open: el})
 			if !suppress {
 				var include bool
@@ -156,7 +152,6 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 		case *asciidoc.EndIf:
 			var ok bool
 			var cb *conditionalBlock
-			//slog.Info("popping endif", log.Path("source", el))
 			cb, ok = suppressStack.Pop()
 			if !ok {
 				err = &OverlayError{
@@ -187,7 +182,8 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 			remove = true
 		case *asciidoc.InlineIfNDef:
 			if el.Eval(pps) {
-				pps.state.overlays[el] = &elementOverlay{replace: el.Elements}
+				replace = true
+				replaceElements = el.Elements
 				err = preparseFile(cxt, pps, doc, el, el.Elements)
 				if err != nil {
 					should = parse.SearchShouldStop
@@ -241,7 +237,6 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 						} else {
 							sectionLevelOffset = leveloffset
 						}
-						//slog.Info("SECTION OFFSET", "include", sectionLevelOffset)
 					}
 				}
 			}
@@ -252,8 +247,6 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 			}
 
 			var includedDoc *asciidoc.Document
-			//slog.Info("including file", "lib", library.Root.Path.Relative, "from", el.Document().Path.Dir(), "path", path.Relative, log.Path("source", el))
-
 			includedDoc, err = cxt.IncludeFile(path, parent)
 			if err != nil {
 				should = parse.SearchShouldStop
