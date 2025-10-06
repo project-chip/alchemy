@@ -66,12 +66,15 @@ func (aa *AnchorAttribute) AsciiDocString() string {
 	return sb.String()
 }
 
-func (aa *AnchorAttribute) Append(el ...Element) {
-	aa.Label.Append(el...)
-}
-
-func (aa *AnchorAttribute) Children() Elements {
-	return aa.ID
+func (aa *AnchorAttribute) Traverse(parent Parent) iter.Seq2[Parent, Parent] {
+	return func(yield func(Parent, Parent) bool) {
+		if !yield(parent, &aa.ID) {
+			return
+		}
+		if !yield(parent, &aa.Label) {
+			return
+		}
+	}
 }
 
 func (aa *AnchorAttribute) Clone() Attribute {
