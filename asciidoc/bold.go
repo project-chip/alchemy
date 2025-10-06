@@ -88,7 +88,7 @@ func (db *DoubleBold) Traverse(parent ParentElement) iter.Seq2[ParentElement, Pa
 }
 
 func (db *DoubleBold) Clone() Element {
-	return &Bold{position: db.position, raw: db.raw, AttributeList: db.AttributeList.Clone(), Elements: db.Elements.Clone()}
+	return &DoubleBold{position: db.position, raw: db.raw, AttributeList: db.AttributeList.Clone(), Elements: db.Elements.Clone()}
 }
 
 var _ ParentElement = &DoubleBold{}
