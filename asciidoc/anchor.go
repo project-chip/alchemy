@@ -112,7 +112,7 @@ func (a *Anchor) Equals(o Element) bool {
 }
 
 func (a *Anchor) Clone() Element {
-	return &Anchor{position: a.position, ID: a.ID, Elements: a.Elements.Clone()}
+	return &Anchor{position: a.position, ID: a.ID.Clone(), Elements: a.Elements.Clone()}
 }
 
 func NewAnchor(id Elements, label Elements) *Anchor {
