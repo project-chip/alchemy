@@ -163,8 +163,6 @@ type EndIf struct {
 
 	Attributes AttributeNames
 	Union      ConditionalUnion
-
-	Open Element
 }
 
 func NewEndIf(attributes []AttributeName, union ConditionalUnion) *EndIf {
@@ -184,7 +182,7 @@ func (ei *EndIf) Equals(o Element) bool {
 }
 
 func (ei *EndIf) Clone() Element {
-	return &EndIf{position: ei.position, raw: ei.raw, Attributes: ei.Attributes.Clone(), Union: ei.Union, Open: ei.Open}
+	return &EndIf{position: ei.position, raw: ei.raw, Attributes: ei.Attributes.Clone(), Union: ei.Union}
 
 }
 

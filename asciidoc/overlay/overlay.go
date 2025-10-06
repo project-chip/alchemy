@@ -162,7 +162,6 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 				return
 			}
 			suppress = cb.suppress
-			el.Open = cb.open
 			remove = true
 			addToCell = false
 		case *asciidoc.InlineIfDef:

@@ -1673,7 +1673,6 @@ var sectionsTestShouldPreprocessSecondLineOfSetextSectionTitle = &asciidoc.Docum
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -2879,7 +2878,6 @@ var sectionsTestShouldPreprocessSecondLineOfSetextDiscreteHeading = &asciidoc.Do
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
