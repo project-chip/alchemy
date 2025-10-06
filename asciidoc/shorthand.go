@@ -162,13 +162,20 @@ func (sa *ShorthandAttribute) Equals(oa Attribute) bool {
 }
 
 func (sa *ShorthandAttribute) Clone() Attribute {
-	return &ShorthandAttribute{
+	csa := &ShorthandAttribute{
 		attribute: sa.attribute,
 		Style:     sa.Style.Clone().(*ShorthandStyle),
 		ID:        sa.ID.Clone().(*ShorthandID),
 		Roles:     make([]*ShorthandRole, len(sa.Roles)),
 		Options:   make([]*ShorthandOption, len(sa.Options)),
 	}
+	for i, r := range sa.Roles {
+		csa.Roles[i] = r.Clone().(*ShorthandRole)
+	}
+	for i, o := range sa.Options {
+		csa.Options[i] = o.Clone().(*ShorthandOption)
+	}
+	return csa
 }
 
 func (sa *ShorthandAttribute) SetValue(v any) error {
