@@ -1148,7 +1148,6 @@ var paragraphsTestNoteMultilineSyntax = &asciidoc.Document{
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }

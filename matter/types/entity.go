@@ -92,6 +92,16 @@ func IsDataTypeEntity(entityType EntityType) bool {
 	return false
 }
 
+func Filter[T Entity](list []Entity) (out []T) {
+	for _, e := range list {
+		t, ok := e.(T)
+		if ok {
+			out = append(out, t)
+		}
+	}
+	return
+}
+
 type EntitySet[S any] map[Entity]S
 
 func FilterSet[T Entity, S any](set EntitySet[S]) (out []T) {

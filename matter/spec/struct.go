@@ -10,10 +10,10 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func toStruct(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) (ms *matter.Struct, err error) {
-	name := text.TrimCaseInsensitiveSuffix(d.SectionName(s), " Type")
+func (library *Library) toStruct(spec *Specification, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, parent types.Entity) (ms *matter.Struct, err error) {
+	name := text.TrimCaseInsensitiveSuffix(library.SectionName(s), " Type")
 	var ti *TableInfo
-	ti, err = parseFirstTable(d, s)
+	ti, err = parseFirstTable(reader, d, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading struct \"%s\": %w", name, err)
 	}
@@ -24,7 +24,7 @@ func toStruct(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext
 		firstRow := ti.Rows[0]
 		tableCells := firstRow.TableCells()
 		if len(tableCells) > 0 {
-			cv, rowErr := RenderTableCell(tableCells[0])
+			cv, rowErr := RenderTableCell(reader, tableCells[0])
 			if rowErr == nil {
 				cv = strings.ToLower(cv)
 				if strings.Contains(cv, "fabric scoped") || strings.Contains(cv, "fabric-scoped") {
@@ -34,13 +34,12 @@ func toStruct(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext
 		}
 	}
 	var fieldMap map[string]*matter.Field
-	ms.Fields, fieldMap, err = d.readFields(spec, ti, types.EntityTypeStructField, ms)
+	ms.Fields, fieldMap, err = library.readFields(spec, reader, ti, types.EntityTypeStructField, ms)
 	if err != nil {
 		return
 	}
-	pc.orderedEntities = append(pc.orderedEntities, ms)
-	pc.entitiesByElement[s] = append(pc.entitiesByElement[s], ms)
-	err = mapFields(d, s, fieldMap, pc)
+	library.addEntity(s, ms)
+	err = library.mapFields(reader, d, s, fieldMap)
 	if err != nil {
 		return
 	}

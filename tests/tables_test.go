@@ -19926,30 +19926,31 @@ var tablesTestShouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Documen
 												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
-													Elements:      nil,
+													Elements: asciidoc.Elements{
+														&asciidoc.EmptyLine{
+															Text: "",
+														},
+														&asciidoc.String{
+															Value: "doctype=",
+														},
+														&asciidoc.UserAttributeReference{
+															Value: "doctype",
+														},
+														&asciidoc.NewLine{},
+														&asciidoc.UserAttributeReference{
+															Value: "backend-html5-doctype-article",
+														},
+														&asciidoc.NewLine{},
+														&asciidoc.UserAttributeReference{
+															Value: "backend-html5-doctype-book",
+														},
+													},
 													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "AsciiDoc Table Cell",
 														},
 													},
 													Level: 0,
-												},
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
-												&asciidoc.String{
-													Value: "doctype=",
-												},
-												&asciidoc.UserAttributeReference{
-													Value: "doctype",
-												},
-												&asciidoc.NewLine{},
-												&asciidoc.UserAttributeReference{
-													Value: "backend-html5-doctype-article",
-												},
-												&asciidoc.NewLine{},
-												&asciidoc.UserAttributeReference{
-													Value: "backend-html5-doctype-book",
 												},
 											},
 											Blank: false,
@@ -19977,12 +19978,12 @@ var tablesTestShouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Documen
 	},
 }
 
-var tablesTestShouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctypeIsSet = &asciidoc.Document{
+var tablesTestShouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctypeIsSet = &asciidoc.Document{ // p0
 	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{
+		&asciidoc.Section{ // p1
 			AttributeList: nil,
 			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
@@ -20002,11 +20003,11 @@ var tablesTestShouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctype
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
-						&asciidoc.Table{
+						&asciidoc.Table{ // p2
 							AttributeList: nil,
 							ColumnCount:   1,
 							Elements: asciidoc.Elements{
-								&asciidoc.TableRow{
+								&asciidoc.TableRow{ // p3
 									Elements: asciidoc.Elements{
 										&asciidoc.TableCell{
 											Format: &asciidoc.TableCellFormat{
@@ -20037,42 +20038,43 @@ var tablesTestShouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctype
 													IsSet: true,
 												},
 											},
-											Elements: asciidoc.Elements{
+											Elements: asciidoc.Elements{ // p4
 												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
-													Elements:      nil,
+													Elements: asciidoc.Elements{
+														&asciidoc.AttributeEntry{
+															Name: "doctype",
+															Elements: asciidoc.Elements{
+																&asciidoc.String{
+																	Value: "book",
+																},
+															},
+														},
+														&asciidoc.EmptyLine{
+															Text: "",
+														},
+														&asciidoc.String{
+															Value: "doctype=",
+														},
+														&asciidoc.UserAttributeReference{
+															Value: "doctype",
+														},
+														&asciidoc.NewLine{},
+														&asciidoc.UserAttributeReference{
+															Value: "backend-html5-doctype-book",
+														},
+														&asciidoc.NewLine{},
+														&asciidoc.UserAttributeReference{
+															Value: "backend-html5-doctype-article",
+														},
+													},
 													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "AsciiDoc Table Cell",
 														},
 													},
 													Level: 0,
-												},
-												&asciidoc.AttributeEntry{
-													Name: "doctype",
-													Elements: asciidoc.Elements{
-														&asciidoc.String{
-															Value: "book",
-														},
-													},
-												},
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
-												&asciidoc.String{
-													Value: "doctype=",
-												},
-												&asciidoc.UserAttributeReference{
-													Value: "doctype",
-												},
-												&asciidoc.NewLine{},
-												&asciidoc.UserAttributeReference{
-													Value: "backend-html5-doctype-book",
-												},
-												&asciidoc.NewLine{},
-												&asciidoc.UserAttributeReference{
-													Value: "backend-html5-doctype-article",
 												},
 											},
 											Blank: false,
@@ -20240,7 +20242,7 @@ var tablesTestShouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardU
 	},
 }
 
-var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument = &asciidoc.Document{
+var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument = &asciidoc.Document{ // p0
 	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -20260,7 +20262,7 @@ var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
-				&asciidoc.Table{
+				&asciidoc.Table{ // p1
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.TitleAttribute{
 							Val: asciidoc.Elements{
@@ -20272,7 +20274,7 @@ var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument
 					},
 					ColumnCount: 1,
 					Elements: asciidoc.Elements{
-						&asciidoc.TableRow{
+						&asciidoc.TableRow{ // p2
 							Elements: asciidoc.Elements{
 								&asciidoc.TableCell{
 									Format: &asciidoc.TableCellFormat{
@@ -20303,48 +20305,49 @@ var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument
 											IsSet: true,
 										},
 									},
-									Elements: asciidoc.Elements{
+									Elements: asciidoc.Elements{ // p3
 										&asciidoc.NewLine{},
 										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.Section{
 											AttributeList: nil,
-											Elements:      nil,
+											Elements: asciidoc.Elements{
+												&asciidoc.EmptyLine{
+													Text: "",
+												},
+												&asciidoc.Paragraph{
+													AttributeList: asciidoc.AttributeList{
+														&asciidoc.TitleAttribute{
+															Val: asciidoc.Elements{
+																&asciidoc.String{
+																	Value: "Inner Table",
+																},
+															},
+														},
+													},
+													Elements: asciidoc.Elements{
+														&asciidoc.String{
+															Value: "!===",
+														},
+														&asciidoc.NewLine{},
+														&asciidoc.String{
+															Value: "! table cell",
+														},
+														&asciidoc.NewLine{},
+														&asciidoc.String{
+															Value: "!===",
+														},
+													},
+													Admonition: 0,
+												},
+											},
 											Title: asciidoc.Elements{
 												&asciidoc.String{
 													Value: "Inner Heading",
 												},
 											},
 											Level: 1,
-										},
-										&asciidoc.EmptyLine{
-											Text: "",
-										},
-										&asciidoc.Paragraph{
-											AttributeList: asciidoc.AttributeList{
-												&asciidoc.TitleAttribute{
-													Val: asciidoc.Elements{
-														&asciidoc.String{
-															Value: "Inner Table",
-														},
-													},
-												},
-											},
-											Elements: asciidoc.Elements{
-												&asciidoc.String{
-													Value: "!===",
-												},
-												&asciidoc.NewLine{},
-												&asciidoc.String{
-													Value: "! table cell",
-												},
-												&asciidoc.NewLine{},
-												&asciidoc.String{
-													Value: "!===",
-												},
-											},
-											Admonition: 0,
 										},
 									},
 									Blank: false,
@@ -20364,7 +20367,7 @@ var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument
 	},
 }
 
-var tablesTestShouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &asciidoc.Document{
+var tablesTestShouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &asciidoc.Document{ // p0
 	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -20381,11 +20384,11 @@ var tablesTestShouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCel
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
-				&asciidoc.Table{
+				&asciidoc.Table{ // p1
 					AttributeList: nil,
 					ColumnCount:   1,
 					Elements: asciidoc.Elements{
-						&asciidoc.TableRow{
+						&asciidoc.TableRow{ // p2
 							Elements: asciidoc.Elements{
 								&asciidoc.TableCell{
 									Format: &asciidoc.TableCellFormat{
@@ -20416,30 +20419,31 @@ var tablesTestShouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCel
 											IsSet: true,
 										},
 									},
-									Elements: asciidoc.Elements{
+									Elements: asciidoc.Elements{ // p3
 										&asciidoc.NewLine{},
 										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.Section{
 											AttributeList: nil,
-											Elements:      nil,
+											Elements: asciidoc.Elements{
+												&asciidoc.EmptyLine{
+													Text: "",
+												},
+												&asciidoc.AttributeEntry{
+													Name:     "sectids",
+													Elements: nil,
+												},
+												&asciidoc.EmptyLine{
+													Text: "",
+												},
+											},
 											Title: asciidoc.Elements{
 												&asciidoc.String{
 													Value: "No ID",
 												},
 											},
 											Level: 1,
-										},
-										&asciidoc.EmptyLine{
-											Text: "",
-										},
-										&asciidoc.AttributeEntry{
-											Name:     "sectids",
-											Elements: nil,
-										},
-										&asciidoc.EmptyLine{
-											Text: "",
 										},
 										&asciidoc.Section{
 											AttributeList: nil,
@@ -20469,7 +20473,7 @@ var tablesTestShouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCel
 	},
 }
 
-var tablesTestShouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &asciidoc.Document{
+var tablesTestShouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &asciidoc.Document{ // p0
 	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -20480,11 +20484,11 @@ var tablesTestShouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDo
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
-				&asciidoc.Table{
+				&asciidoc.Table{ // p1
 					AttributeList: nil,
 					ColumnCount:   1,
 					Elements: asciidoc.Elements{
-						&asciidoc.TableRow{
+						&asciidoc.TableRow{ // p2
 							Elements: asciidoc.Elements{
 								&asciidoc.TableCell{
 									Format: &asciidoc.TableCellFormat{
@@ -20515,30 +20519,31 @@ var tablesTestShouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDo
 											IsSet: true,
 										},
 									},
-									Elements: asciidoc.Elements{
+									Elements: asciidoc.Elements{ // p3
 										&asciidoc.NewLine{},
 										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.Section{
 											AttributeList: nil,
-											Elements:      nil,
+											Elements: asciidoc.Elements{
+												&asciidoc.EmptyLine{
+													Text: "",
+												},
+												&asciidoc.AttributeEntry{
+													Name:     "sectids",
+													Elements: nil,
+												},
+												&asciidoc.EmptyLine{
+													Text: "",
+												},
+											},
 											Title: asciidoc.Elements{
 												&asciidoc.String{
 													Value: "No ID",
 												},
 											},
 											Level: 1,
-										},
-										&asciidoc.EmptyLine{
-											Text: "",
-										},
-										&asciidoc.AttributeEntry{
-											Name:     "sectids",
-											Elements: nil,
-										},
-										&asciidoc.EmptyLine{
-											Text: "",
 										},
 										&asciidoc.Section{
 											AttributeList: nil,
@@ -23412,12 +23417,12 @@ var tablesTestAsciiDocTableCellShouldInheritToDirOptionFromParentDocument = &asc
 	},
 }
 
-var tablesTestAsciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &asciidoc.Document{
+var tablesTestAsciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &asciidoc.Document{ // p0
 	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{
+		&asciidoc.Section{ // p1
 			AttributeList: nil,
 			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
@@ -23433,11 +23438,11 @@ var tablesTestAsciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &a
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
-						&asciidoc.Table{
+						&asciidoc.Table{ // p2
 							AttributeList: nil,
 							ColumnCount:   1,
 							Elements: asciidoc.Elements{
-								&asciidoc.TableRow{
+								&asciidoc.TableRow{ // p3
 									Elements: asciidoc.Elements{
 										&asciidoc.TableCell{
 											Format: &asciidoc.TableCellFormat{
@@ -23468,23 +23473,24 @@ var tablesTestAsciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &a
 													IsSet: true,
 												},
 											},
-											Elements: asciidoc.Elements{
+											Elements: asciidoc.Elements{ // p4
 												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
-													Elements:      nil,
+													Elements: asciidoc.Elements{
+														&asciidoc.EmptyLine{
+															Text: "",
+														},
+														&asciidoc.String{
+															Value: "content",
+														},
+													},
 													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "Section in Nested Document",
 														},
 													},
 													Level: 1,
-												},
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
-												&asciidoc.String{
-													Value: "content",
 												},
 											},
 											Blank: false,
@@ -23512,12 +23518,12 @@ var tablesTestAsciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &a
 	},
 }
 
-var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
+var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{ // p0
 	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{
+		&asciidoc.Section{ // p1
 			AttributeList: nil,
 			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
@@ -23529,11 +23535,11 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
-						&asciidoc.Table{
+						&asciidoc.Table{ // p2
 							AttributeList: nil,
 							ColumnCount:   1,
 							Elements: asciidoc.Elements{
-								&asciidoc.TableRow{
+								&asciidoc.TableRow{ // p3
 									Elements: asciidoc.Elements{
 										&asciidoc.TableCell{
 											Format: &asciidoc.TableCellFormat{
@@ -23564,40 +23570,42 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 													IsSet: true,
 												},
 											},
-											Elements: asciidoc.Elements{
+											Elements: asciidoc.Elements{ // p4
 												&asciidoc.NewLine{},
-												&asciidoc.Section{
+												&asciidoc.Section{ // p5
 													AttributeList: nil,
-													Elements:      nil,
+													Elements: asciidoc.Elements{
+														&asciidoc.AttributeEntry{
+															Name:     "toc",
+															Elements: nil,
+														},
+														&asciidoc.EmptyLine{
+															Text: "",
+														},
+														&asciidoc.Section{
+															AttributeList: nil,
+															Elements: asciidoc.Elements{
+																&asciidoc.EmptyLine{
+																	Text: "",
+																},
+																&asciidoc.String{
+																	Value: "content",
+																},
+															},
+															Title: asciidoc.Elements{
+																&asciidoc.String{
+																	Value: "Subdocument Section A",
+																},
+															},
+															Level: 1,
+														},
+													},
 													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "Subdocument Title",
 														},
 													},
 													Level: 0,
-												},
-												&asciidoc.AttributeEntry{
-													Name:     "toc",
-													Elements: nil,
-												},
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
-												&asciidoc.Section{
-													AttributeList: nil,
-													Elements:      nil,
-													Title: asciidoc.Elements{
-														&asciidoc.String{
-															Value: "Subdocument Section A",
-														},
-													},
-													Level: 1,
-												},
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
-												&asciidoc.String{
-													Value: "content",
 												},
 											},
 											Blank: false,
@@ -23625,12 +23633,12 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 	},
 }
 
-var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi = &asciidoc.Document{
+var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi = &asciidoc.Document{ // p0
 	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{
+		&asciidoc.Section{ // p1
 			AttributeList: nil,
 			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
@@ -23642,11 +23650,11 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi =
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
-						&asciidoc.Table{
+						&asciidoc.Table{ // p2
 							AttributeList: nil,
 							ColumnCount:   1,
 							Elements: asciidoc.Elements{
-								&asciidoc.TableRow{
+								&asciidoc.TableRow{ // p3
 									Elements: asciidoc.Elements{
 										&asciidoc.TableCell{
 											Format: &asciidoc.TableCellFormat{
@@ -23677,40 +23685,42 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi =
 													IsSet: true,
 												},
 											},
-											Elements: asciidoc.Elements{
+											Elements: asciidoc.Elements{ // p4
 												&asciidoc.NewLine{},
-												&asciidoc.Section{
+												&asciidoc.Section{ // p5
 													AttributeList: nil,
-													Elements:      nil,
+													Elements: asciidoc.Elements{
+														&asciidoc.AttributeEntry{
+															Name:     "toc",
+															Elements: nil,
+														},
+														&asciidoc.EmptyLine{
+															Text: "",
+														},
+														&asciidoc.Section{
+															AttributeList: nil,
+															Elements: asciidoc.Elements{
+																&asciidoc.EmptyLine{
+																	Text: "",
+																},
+																&asciidoc.String{
+																	Value: "content",
+																},
+															},
+															Title: asciidoc.Elements{
+																&asciidoc.String{
+																	Value: "Subdocument Section A",
+																},
+															},
+															Level: 1,
+														},
+													},
 													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "Subdocument Title",
 														},
 													},
 													Level: 0,
-												},
-												&asciidoc.AttributeEntry{
-													Name:     "toc",
-													Elements: nil,
-												},
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
-												&asciidoc.Section{
-													AttributeList: nil,
-													Elements:      nil,
-													Title: asciidoc.Elements{
-														&asciidoc.String{
-															Value: "Subdocument Section A",
-														},
-													},
-													Level: 1,
-												},
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
-												&asciidoc.String{
-													Value: "content",
 												},
 											},
 											Blank: false,
@@ -23738,12 +23748,12 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi =
 	},
 }
 
-var tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell = &asciidoc.Document{
+var tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell = &asciidoc.Document{ // p0
 	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{
+		&asciidoc.Section{ // p1
 			AttributeList: nil,
 			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
@@ -23759,11 +23769,11 @@ var tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
-						&asciidoc.Table{
+						&asciidoc.Table{ // p2
 							AttributeList: nil,
 							ColumnCount:   1,
 							Elements: asciidoc.Elements{
-								&asciidoc.TableRow{
+								&asciidoc.TableRow{ // p3
 									Elements: asciidoc.Elements{
 										&asciidoc.TableCell{
 											Format: &asciidoc.TableCellFormat{
@@ -23794,70 +23804,72 @@ var tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell
 													IsSet: true,
 												},
 											},
-											Elements: asciidoc.Elements{
+											Elements: asciidoc.Elements{ // p4
 												&asciidoc.NewLine{},
-												&asciidoc.Section{
+												&asciidoc.Section{ // p5
 													AttributeList: nil,
-													Elements:      nil,
+													Elements: asciidoc.Elements{
+														&asciidoc.AttributeEntry{
+															Name: "toc",
+															Elements: asciidoc.Elements{
+																&asciidoc.String{
+																	Value: "macro",
+																},
+															},
+														},
+														&asciidoc.EmptyLine{
+															Text: "",
+														},
+														&asciidoc.Paragraph{
+															AttributeList: asciidoc.AttributeList{
+																&asciidoc.ShorthandAttribute{
+																	Style: nil,
+																	ID: &asciidoc.ShorthandID{
+																		Elements: asciidoc.Elements{
+																			&asciidoc.String{
+																				Value: "table-cell-toc",
+																			},
+																		},
+																	},
+																	Roles:   nil,
+																	Options: nil,
+																},
+															},
+															Elements: asciidoc.Elements{
+																&asciidoc.String{
+																	Value: "toc::[]",
+																},
+																&asciidoc.NewLine{},
+															},
+															Admonition: 0,
+														},
+														&asciidoc.EmptyLine{
+															Text: "",
+														},
+														&asciidoc.Section{
+															AttributeList: nil,
+															Elements: asciidoc.Elements{
+																&asciidoc.EmptyLine{
+																	Text: "",
+																},
+																&asciidoc.String{
+																	Value: "content",
+																},
+															},
+															Title: asciidoc.Elements{
+																&asciidoc.String{
+																	Value: "Subdocument Section A",
+																},
+															},
+															Level: 1,
+														},
+													},
 													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "Subdocument Title",
 														},
 													},
 													Level: 0,
-												},
-												&asciidoc.AttributeEntry{
-													Name: "toc",
-													Elements: asciidoc.Elements{
-														&asciidoc.String{
-															Value: "macro",
-														},
-													},
-												},
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
-												&asciidoc.Paragraph{
-													AttributeList: asciidoc.AttributeList{
-														&asciidoc.ShorthandAttribute{
-															Style: nil,
-															ID: &asciidoc.ShorthandID{
-																Elements: asciidoc.Elements{
-																	&asciidoc.String{
-																		Value: "table-cell-toc",
-																	},
-																},
-															},
-															Roles:   nil,
-															Options: nil,
-														},
-													},
-													Elements: asciidoc.Elements{
-														&asciidoc.String{
-															Value: "toc::[]",
-														},
-														&asciidoc.NewLine{},
-													},
-													Admonition: 0,
-												},
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
-												&asciidoc.Section{
-													AttributeList: nil,
-													Elements:      nil,
-													Title: asciidoc.Elements{
-														&asciidoc.String{
-															Value: "Subdocument Section A",
-														},
-													},
-													Level: 1,
-												},
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
-												&asciidoc.String{
-													Value: "content",
 												},
 											},
 											Blank: false,

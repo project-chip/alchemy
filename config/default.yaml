@@ -1,0 +1,10 @@
+minimum-version: 1.6
+libraries:
+   - name: Main
+     root-document: src/main.adoc
+   - name: App Clusters
+     root-document: src/appclusters.adoc
+   - name: Device Library
+     root-document: src/device_library.adoc
+   - name: Standard Namespaces
+     root-document: src/standard_namespaces.adoc

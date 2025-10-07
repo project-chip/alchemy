@@ -76,7 +76,7 @@ func populatePosition[T asciidoc.HasPosition](c *current, el T) T {
 		// Newlines end on the following line, so for logging purposes we shift the line back one
 		line -= 1
 	}
-	el.SetPath(c.parser.filename)
+	el.SetDocument(c.parser.document)
 	el.SetPosition(line, col, offset)
 	return el
 }

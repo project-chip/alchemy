@@ -22,15 +22,19 @@ func (Italic) TextFormat() TextFormat {
 	return TextFormatItalic
 }
 
-func (a *Italic) Equals(o Element) bool {
+func (i *Italic) Equals(o Element) bool {
 	oa, ok := o.(*Italic)
 	if !ok {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !i.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return i.Elements.Equals(oa.Elements)
+}
+
+func (i *Italic) Clone() Element {
+	return &Italic{position: i.position, raw: i.raw, AttributeList: i.AttributeList.Clone(), Elements: i.Elements.Clone()}
 }
 
 type DoubleItalic struct {
@@ -55,13 +59,17 @@ func (DoubleItalic) TextFormat() TextFormat {
 	return TextFormatItalic
 }
 
-func (a *DoubleItalic) Equals(o Element) bool {
+func (di *DoubleItalic) Equals(o Element) bool {
 	oa, ok := o.(*DoubleItalic)
 	if !ok {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !di.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return di.Elements.Equals(oa.Elements)
+}
+
+func (di *DoubleItalic) Clone() Element {
+	return &DoubleItalic{position: di.position, raw: di.raw, AttributeList: di.AttributeList.Clone(), Elements: di.Elements.Clone()}
 }

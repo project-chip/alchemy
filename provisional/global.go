@@ -7,7 +7,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func compareGlobals(specs specs, violations map[string][]Violation) {
+func compareGlobals(specs specs, violations entityViolations) {
 	compareGlobalEntities(specs, iterateBits, violations)
 	compareGlobalEntities(specs, iterateEnumValues, violations)
 	compareGlobalEntities(specs, iterateStructFields, violations)
@@ -15,7 +15,8 @@ func compareGlobals(specs specs, violations map[string][]Violation) {
 	compareGlobalEntities(specs, iterateEventFields, violations)
 }
 
-func compareGlobalEntities[Parent ComparableEntity, Child ComparableEntity](specs specs, iterator func(p Parent) iter.Seq[Child], violations map[string][]Violation) {
+func compareGlobalEntities[Parent ComparableEntity, Child ComparableEntity](specs specs, iterator func(p Parent) iter.Seq[Child], violations entityViolations) {
+
 	baseEntities := types.FilterSet[Parent](specs.Base.GlobalObjects)
 	baseInProgressEntities := types.FilterSet[Parent](specs.BaseInProgress.GlobalObjects)
 	headEntities := types.FilterSet[Parent](specs.Head.GlobalObjects)
@@ -26,10 +27,23 @@ func compareGlobalEntities[Parent ComparableEntity, Child ComparableEntity](spec
 		state.Head = findExistingEntity(e, internal.Iterate(headEntities))
 		state.BaseInProgress = findExistingEntity(e, internal.Iterate(baseInProgressEntities))
 		state.Base = findExistingEntity(e, internal.Iterate(baseEntities))
-		compareStates(specs.HeadInProgress, violations, state)
 
-		for c := range iterator(e) {
-			compareEntity(specs.HeadInProgress, violations, c, state, iterator)
+		presence := state.Presence()
+		novelty, err := presence.Novelty()
+		if err != nil {
+			continue
 		}
+		if novelty.IsNew() {
+			violationType := checkProvisionality(specs.HeadInProgress, state.HeadInProgress)
+			if !novelty.IsIfDefd() {
+				violationType |= ViolationTypeNotIfDefd
+			}
+			violations.add(state.HeadInProgress, violationType)
+		} else {
+			for c := range iterator(e) {
+				compareChildEntity(specs.HeadInProgress, violations, c, state, iterator)
+			}
+		}
+
 	}
 }

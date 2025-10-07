@@ -23,6 +23,10 @@ func (at AdmonitionType) Equals(e Element) bool {
 	return at == oat
 }
 
+func (at AdmonitionType) Clone() Element {
+	return at
+}
+
 type Admonition struct {
 	AdmonitionType AdmonitionType
 	AttributeList
@@ -38,15 +42,22 @@ func (Admonition) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (at *Admonition) Equals(e Element) bool {
+func (a *Admonition) Equals(e Element) bool {
 	oat, ok := e.(*Admonition)
 	if !ok {
 		return false
 	}
-	if at.AdmonitionType != oat.AdmonitionType {
+	if a.AdmonitionType != oat.AdmonitionType {
 		return false
 	}
-	return at.AttributeList.Equals(oat.AttributeList)
+	return a.AttributeList.Equals(oat.AttributeList)
+}
+
+func (a *Admonition) Clone() Element {
+	return &Admonition{
+		AdmonitionType: a.AdmonitionType,
+		AttributeList:  a.AttributeList.Clone(),
+	}
 }
 
 type Paragraph struct {
@@ -66,16 +77,25 @@ func (Paragraph) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *Paragraph) Equals(o Element) bool {
+func (p *Paragraph) Equals(o Element) bool {
 	oa, ok := o.(*Paragraph)
 	if !ok {
 		return false
 	}
-	if a.Admonition != oa.Admonition {
+	if p.Admonition != oa.Admonition {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !p.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return p.Elements.Equals(oa.Elements)
+}
+
+func (p *Paragraph) Clone() Element {
+	return &Paragraph{
+		position:      p.position,
+		AttributeList: p.AttributeList.Clone(),
+		Elements:      p.Elements.Clone(),
+		Admonition:    p.Admonition,
+	}
 }

@@ -74,3 +74,31 @@ func EntityName(e types.Entity) string {
 		return ""
 	}
 }
+
+func EntityID(e types.Entity) *Number {
+	switch entity := e.(type) {
+	case *Cluster:
+		return entity.ID
+	case *Field:
+		return entity.ID
+	case *Event:
+		return entity.ID
+	case *Command:
+		return entity.ID
+	case *Namespace:
+		return entity.ID
+	case *SemanticTag:
+		return entity.ID
+	case *Feature:
+		return ParseNumber(entity.Bit())
+	case *Condition:
+		return entity.ID
+	case *DeviceType:
+		return entity.ID
+	case Bit:
+		return ParseNumber(entity.Bit())
+	default:
+		slog.Error("Unknown entity type for id", LogEntity("entity", e))
+		return nil
+	}
+}

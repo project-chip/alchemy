@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/beevik/etree"
-	"github.com/project-chip/alchemy/config"
 	"github.com/project-chip/alchemy/zap"
 )
 
@@ -127,7 +126,7 @@ func (cr *configuratorRenderer) patchAlchemyComment(configurator *zap.Configurat
 		Path:       strings.Join(paths, " "),
 		Parameters: args,
 		Git:        cr.generator.specVersion,
-		Version:    config.Version(),
+		Version:    "v1.5.50",
 	})
 	if err != nil {
 		return err

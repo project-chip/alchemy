@@ -23,6 +23,10 @@ func (tb *ThematicBreak) Equals(e Element) bool {
 	return tb.AttributeList.Equals(otb.AttributeList)
 }
 
+func (tb *ThematicBreak) Clone() Element {
+	return &ThematicBreak{position: tb.position, raw: tb.raw, AttributeList: tb.AttributeList.Clone()}
+}
+
 type PageBreak struct {
 	position
 	raw
@@ -44,4 +48,8 @@ func (pb *PageBreak) Equals(e Element) bool {
 		return false
 	}
 	return pb.AttributeList.Equals(opb.AttributeList)
+}
+
+func (pb *PageBreak) Clone() Element {
+	return &PageBreak{position: pb.position, raw: pb.raw, AttributeList: pb.AttributeList.Clone()}
 }

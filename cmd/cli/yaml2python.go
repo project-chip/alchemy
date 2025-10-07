@@ -59,7 +59,7 @@ func (c *Yaml2Python) Run(cc *Context) (err error) {
 	}
 
 	var specification *spec.Specification
-	specification, _, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, nil, c.ASCIIDocAttributes.ToList())
+	specification, _, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, []spec.BuilderOption{spec.PatchForSdk(true)}, c.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
 	}
@@ -72,11 +72,6 @@ func (c *Yaml2Python) Run(cc *Context) (err error) {
 
 	var tests pipeline.Map[string, *pipeline.Data[*parse.Test]]
 	tests, err = pipeline.Parallel(cc, c.ProcessingOptions, parser, inputs)
-	if err != nil {
-		return
-	}
-
-	err = spec.PatchSpecForSdk(specification)
 	if err != nil {
 		return
 	}
@@ -110,5 +105,6 @@ func (c *Yaml2Python) Run(cc *Context) (err error) {
 
 	writer := files.NewWriter[string]("Writing test scripts", c.OutputOptions)
 	err = writer.Write(cc, scripts, c.ProcessingOptions)
+
 	return
 }

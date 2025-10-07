@@ -180,6 +180,16 @@ func (tcf *TableCellFormat) Equals(otcf *TableCellFormat) bool {
 	return true
 }
 
+func (tcf *TableCellFormat) Clone() *TableCellFormat {
+	return &TableCellFormat{
+		Multiplier:      tcf.Multiplier,
+		HorizontalAlign: tcf.HorizontalAlign,
+		VerticalAlign:   tcf.VerticalAlign,
+		Style:           tcf.Style,
+		Span:            tcf.Span,
+	}
+}
+
 func (tcf *TableCellFormat) AsciiDocString() string {
 	var sb strings.Builder
 
@@ -258,6 +268,15 @@ func (tc *TableCell) Equals(e Element) bool {
 	return true
 }
 
+func (tc *TableCell) Clone() Element {
+	return &TableCell{
+		position: tc.position,
+		Format:   tc.Format.Clone(),
+		Elements: tc.Elements.Clone(),
+		Blank:    tc.Blank,
+	}
+}
+
 type TableCells []*TableCell
 
 func (trs TableCells) Children() Elements {
@@ -307,6 +326,24 @@ func (tr *TableRow) Equals(e Element) bool {
 		return false
 	}
 	return tr.Elements.Equals(otr.Elements)
+}
+
+func (tr *TableRow) Clone() Element {
+	ctr := &TableRow{
+		position: tr.position,
+		Elements: make(Elements, 0, len(tr.Elements)),
+	}
+	for _, e := range tr.Elements {
+		switch e := e.(type) {
+		case *TableCell:
+			tc := e.Clone().(*TableCell)
+			tc.Parent = ctr
+			ctr.Elements = append(ctr.Elements, tc)
+		default:
+			ctr.Elements = append(ctr.Elements, e.Clone())
+		}
+	}
+	return ctr
 }
 
 func (tr *TableRow) TableCells() []*TableCell {
@@ -379,6 +416,26 @@ func (t *Table) Equals(e Element) bool {
 		return false
 	}
 	return t.Elements.Equals(ot.Elements)
+}
+
+func (t *Table) Clone() Element {
+	ct := &Table{
+		position:      t.position,
+		ColumnCount:   t.ColumnCount,
+		AttributeList: t.AttributeList.Clone(),
+		Elements:      make(Elements, 0, len(t.Elements)),
+	}
+	for _, e := range t.Elements {
+		switch e := e.(type) {
+		case *TableRow:
+			ctr := e.Clone().(*TableRow)
+			ctr.Parent = ct
+			ct.Elements = append(ct.Elements, ctr)
+		default:
+			ct.Elements = append(ct.Elements, e.Clone())
+		}
+	}
+	return ct
 }
 
 func (t *Table) TableRows(reader Reader) []*TableRow {

@@ -13,11 +13,6 @@ type Spec struct {
 	Domain         string                 `yaml:"domain,omitempty"`
 }
 
-func GetSpec(path string) *Spec {
-	e := GetErrata(path)
-	return &e.Spec
-}
-
 func (spec *Spec) IgnoreSection(sectionName string, purpose SpecPurpose) bool {
 	if spec == nil {
 		return false

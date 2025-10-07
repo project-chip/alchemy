@@ -18,16 +18,20 @@ func (SidebarBlock) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *SidebarBlock) Equals(o Element) bool {
+func (sbb *SidebarBlock) Equals(o Element) bool {
 	oa, ok := o.(*SidebarBlock)
 	if !ok {
 		return false
 	}
-	if !a.Delimiter.Equals(oa.Delimiter) {
+	if !sbb.Delimiter.Equals(oa.Delimiter) {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !sbb.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return sbb.Elements.Equals(oa.Elements)
+}
+
+func (sbb *SidebarBlock) Clone() Element {
+	return &SidebarBlock{position: sbb.position, raw: sbb.raw, Delimiter: sbb.Delimiter, AttributeList: sbb.AttributeList.Clone(), Elements: sbb.Elements.Clone()}
 }

@@ -623,7 +623,7 @@ var constraintTests = []constraintTest{
 	},
 }
 
-func TestSuite(t *testing.T) {
+func TestConstraints(t *testing.T) {
 	for _, ct := range constraintTests {
 		if ct.invalid {
 			c, err := TryParseString(ct.constraint)

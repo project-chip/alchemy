@@ -3,13 +3,14 @@ LogicalLimit = or:LogicalLimitOr &{
     if !ok {
         return false, nil
     }
+    debug("matched logical limit \"%s\"\n", string(c.text))
     return len(ll.Right) > 0, nil 
 } {
     return or, nil
 }
 
-LogicalLimitOr <- _ left:LogicalLimitXor _ right:LogicalLimitOrOp* _ {
-    //debug("matched OR %s\n", string(c.text))
+LogicalLimitOr <- _ left:LogicalLimitXor right:LogicalLimitOrOp* {
+    debug("matched OR %s\n", string(c.text))
     if right == nil {
         return left, nil
     }
@@ -22,13 +23,13 @@ LogicalLimitOr <- _ left:LogicalLimitXor _ right:LogicalLimitOrOp* _ {
 }
 
 LogicalLimitOrOp <- _ ("|" / "\\|") _ f:LogicalLimitXor {
-    //debug("matched OR op %s\n", string(c.text))
+    debug("matched OR op %s\n", string(c.text))
     fc := f.(Limit)
     return fc, nil
 }
 
-LogicalLimitXor <- _ left:LogicalLimitAnd _ right:LogicalLimitXorOp* _ {
-    //debug("matched XOR %s\n", string(c.text))
+LogicalLimitXor <- _ left:LogicalLimitAnd right:LogicalLimitXorOp* {
+    debug("matched XOR %s\n", string(c.text))
     if right == nil {
         return left, nil
     }
@@ -41,13 +42,13 @@ LogicalLimitXor <- _ left:LogicalLimitAnd _ right:LogicalLimitXorOp* _ {
 }
 
 LogicalLimitXorOp <- _ "^" _ f:LogicalLimitAnd {
-   // debug("matched XOR op %s\n", string(c.text))
+    debug("matched XOR op %s\n", string(c.text))
     fc := f.(Limit)
     return fc, nil
 }
 
-LogicalLimitAnd <- _ left:LogicalLimitTerm _ right:LogicalLimitAndOp* _ {
-   // debug("matched AND %s\n", string(c.text))
+LogicalLimitAnd <- _ left:LogicalLimitTerm right:LogicalLimitAndOp* {
+    debug("matched AND %s\n", string(c.text))
     if right == nil {
         return left, nil
     }
@@ -60,13 +61,13 @@ LogicalLimitAnd <- _ left:LogicalLimitTerm _ right:LogicalLimitAndOp* _ {
 }
 
 LogicalLimitAndOp <- _ "&" _ f:LogicalLimitTerm {
-    //debug("matched AND op %s\n", string(c.text))
+    debug("matched AND op %s\n", string(c.text))
     fc := f.(Limit)
     return fc, nil
 }
 
 LogicalLimitTerm <- limit:( ParentheticalLogicalLimit / PlainLogicalLimit ) {
-	debug("found limit %s\n", string(c.text))
+	debug("found logical limit term %s\n", string(c.text))
 	return limit.(Limit), nil
 }
 
@@ -76,6 +77,7 @@ ParentheticalLogicalLimit <- "(" _ limit:PlainLogicalLimit _ ")" {
 
 // Logical expressions are more restricted than most
 PlainLogicalLimit <- limit:( NullLimit / EmptyLimit / StringLimit / BooleanLimit / StatusCodeLimit / Expression / HexLimit / TempLimit / PercentageLimit / CharacterLimit / IntLimit / Term / LengthLimit / ReferenceLimit / LogicalIdentifierLimit ) {
+	debug("found plain logical limit %s\n", string(c.text))
 	return limit.(Limit), nil
 }
 
@@ -88,7 +90,9 @@ LogicalIdentifierLimit <- ref:(LogicalIdentifier) field:(ReferenceField)? {
 	return rl, nil
 }
 
-LogicalIdentifier <- Word {
+LogicalIdentifier <-  Word &{
+	return !isReservedWord(string(c.text)), nil
+} {
 	debug("found logical identifier %s\n", string(c.text))
 	return string(c.text), nil
 }
@@ -103,7 +107,7 @@ LogicalConstraint = or:LogicalConstraintOr &{
     return or, nil
 }
 
-LogicalConstraintOr <- _ left:LogicalConstraintXor _ right:LogicalConstraintOrOp* _ {
+LogicalConstraintOr <- _ left:LogicalConstraintXor right:LogicalConstraintOrOp* {
     //debug("matched OR %s\n", string(c.text))
     if right == nil {
         return left, nil
@@ -122,7 +126,7 @@ LogicalConstraintOrOp <- _ ("|" / "\\|") _ f:LogicalConstraintXor {
     return fc, nil
 }
 
-LogicalConstraintXor <- _ left:LogicalConstraintAnd _ right:LogicalConstraintXorOp* _ {
+LogicalConstraintXor <- _ left:LogicalConstraintAnd right:LogicalConstraintXorOp* {
     //debug("matched XOR %s\n", string(c.text))
     if right == nil {
         return left, nil
@@ -141,7 +145,7 @@ LogicalConstraintXorOp <- _ "^" _ f:LogicalConstraintAnd {
     return fc, nil
 }
 
-LogicalConstraintAnd <- _ left:LogicalConstraintTerm _ right:LogicalConstraintAndOp* _ {
+LogicalConstraintAnd <- _ left:LogicalConstraintTerm right:LogicalConstraintAndOp* {
    // debug("matched AND %s\n", string(c.text))
     if right == nil {
         return left, nil
