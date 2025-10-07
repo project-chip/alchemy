@@ -226,7 +226,7 @@ func (ti *TableInfo) ReadConformance(row *asciidoc.TableRow, column matter.Table
 
 	s := strings.TrimSpace(val)
 	if len(s) == 0 {
-		return conformance.Set{&conformance.Mandatory{}}
+		return conformance.Set{}
 	}
 	s = newLineReplacer.Replace(s)
 	conf := conformance.ParseConformance(s)
