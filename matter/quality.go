@@ -1,6 +1,7 @@
 package matter
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/project-chip/alchemy/matter/types"
@@ -79,13 +80,21 @@ func (q Quality) Any(o Quality) bool {
 }
 
 func (q Quality) String() string {
-	var s strings.Builder
+	var qualities []rune
 	for tq, i := range qualityIdentifiers {
 		if (q & tq) == tq {
-			s.WriteRune(i)
+			qualities = append(qualities, i)
 		}
 	}
-	return s.String()
+	slices.Sort(qualities)
+	var sb strings.Builder
+	for _, r := range qualities {
+		if sb.Len() > 0 {
+			sb.WriteRune(' ')
+		}
+		sb.WriteRune(r)
+	}
+	return sb.String()
 }
 
 func (q *Quality) Inherit(oq Quality) {

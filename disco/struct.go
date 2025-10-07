@@ -48,6 +48,11 @@ func (b *Baller) organizeStructSection(cxt *discoContext, ss *subSection) (err e
 		return fmt.Errorf("error fixing access cells in struct table in %s: %w", cxt.doc.Path, err)
 	}
 
+	err = b.fixQualityCells(cxt, ss)
+	if err != nil {
+		return err
+	}
+
 	err = b.fixConstraintCells(cxt, ss.section, fieldsTable)
 	if err != nil {
 		return err

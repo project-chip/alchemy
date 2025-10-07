@@ -8,6 +8,7 @@ type DiscoOptions struct {
 	ReorderColumns                bool `default:"true" aliases:"reorderColumns" help:"rearrange table columns into disco-ball order" group:"Discoballing:"`
 	RenameTableHeaders            bool `default:"true" aliases:"renameTableHeaders" help:"rename table headers to disco-ball standard names" group:"Discoballing:"`
 	FormatAccess                  bool `default:"true" aliases:"formatAccess" help:"reformat access columns in disco-ball order" group:"Discoballing:"`
+	FormatQuality                 bool `default:"true" help:"reformat quality columns in disco-ball order" group:"Discoballing:"`
 	PromoteDataTypes              bool `default:"true" aliases:"promoteDataTypes" help:"promote inline data types to Data Types section" group:"Discoballing:"`
 	ReorderSections               bool `default:"true" aliases:"reorderSections" help:"reorder sections in disco-ball order" group:"Discoballing:"`
 	NormalizeTableOptions         bool `default:"true" aliases:"normalizeTableOptions" help:"remove existing table options and replace with standard disco-ball options" group:"Discoballing:"`
@@ -29,6 +30,7 @@ var DefaultOptions = DiscoOptions{
 	ReorderColumns:                true,
 	RenameTableHeaders:            true,
 	FormatAccess:                  true,
+	FormatQuality:                 true,
 	PromoteDataTypes:              true,
 	ReorderSections:               true,
 	NormalizeTableOptions:         true,
