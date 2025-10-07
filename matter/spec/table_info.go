@@ -202,7 +202,6 @@ func (ti *TableInfo) RenderColumn(row *asciidoc.TableRow, renderer CellRenderer,
 		cell := row.Cell(offset)
 		cellElements := cell.Children()
 		if len(cellElements) == 0 {
-			ok = false
 			return
 		}
 		source = cell
