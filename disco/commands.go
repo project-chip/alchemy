@@ -35,6 +35,11 @@ func (b *Baller) organizeCommandsSection(cxt *discoContext) (err error) {
 			return fmt.Errorf("error fixing access cells in commands table in %s: %w", cxt.doc.Path, err)
 		}
 
+		err = b.fixQualityCells(cxt, commands)
+		if err != nil {
+			return err
+		}
+
 		err = b.fixConformanceCells(cxt, commands, commands.table.Rows, commands.table.ColumnMap)
 		if err != nil {
 			return fmt.Errorf("error fixing conformance cells in commands table in %s: %w", cxt.doc.Path, err)

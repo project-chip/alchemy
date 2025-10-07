@@ -40,6 +40,11 @@ func (b *Baller) organizeAttributesSection(cxt *discoContext) (err error) {
 			return err
 		}
 
+		err = b.fixQualityCells(cxt, attributes)
+		if err != nil {
+			return err
+		}
+
 		err = b.fixConstraintCells(cxt, attributes.section, attributesTable)
 		if err != nil {
 			return err

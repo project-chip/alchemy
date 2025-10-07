@@ -45,14 +45,16 @@ const (
 	DiscoPurposeDataTypeCommandFixDirection              = 1 << (iota - 1)
 	DiscoPurposeDataTypePromoteInline                    = 1 << (iota - 1)
 	DiscoPurposeNormalizeAnchor                          = 1 << (iota - 1)
+	DiscoPurposeTableQuality                             = 1 << (iota - 1)
 
-	DiscoPurposeAll DiscoPurpose = DiscoPurposeTableAccess | DiscoPurposeTableConformance | DiscoPurposeTableConstraint | DiscoPurposeTableLinkIndexes | DiscoPurposeTableRenameHeaders | DiscoPurposeTableAddMissingColumns | DiscoPurposeTableReorderColumns | DiscoPurposeDataTypeAppendSuffix | DiscoPurposeDataTypeRename
+	DiscoPurposeAll DiscoPurpose = DiscoPurposeTableAccess | DiscoPurposeTableConformance | DiscoPurposeTableConstraint | DiscoPurposeTableLinkIndexes | DiscoPurposeTableQuality | DiscoPurposeTableRenameHeaders | DiscoPurposeTableAddMissingColumns | DiscoPurposeTableReorderColumns | DiscoPurposeDataTypeAppendSuffix | DiscoPurposeDataTypeRename
 )
 
 var discoPurposes = map[string]DiscoPurpose{
 	"table-access":                    DiscoPurposeTableAccess,
 	"table-conformance":               DiscoPurposeTableConformance,
 	"table-constraint":                DiscoPurposeTableConstraint,
+	"table-quality":                   DiscoPurposeTableQuality,
 	"table-link-indexes":              DiscoPurposeTableLinkIndexes,
 	"table-rename-headers":            DiscoPurposeTableRenameHeaders,
 	"table-add-missing-columns":       DiscoPurposeTableRenameHeaders,

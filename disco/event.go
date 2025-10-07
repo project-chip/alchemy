@@ -34,6 +34,11 @@ func (b *Baller) organizeEventsSection(cxt *discoContext) (err error) {
 			return fmt.Errorf("error fixing access cells in section %s in %s: %w", cxt.doc.SectionName(events.section), cxt.doc.Path, err)
 		}
 
+		err = b.fixQualityCells(cxt, events)
+		if err != nil {
+			return err
+		}
+
 		err = b.fixConformanceCells(cxt, events, eventsTable.Rows, eventsTable.ColumnMap)
 		if err != nil {
 			return fmt.Errorf("error fixing conformance cells for event table in section %s in %s: %w", cxt.doc.SectionName(events.section), cxt.doc.Path, err)
