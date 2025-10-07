@@ -105,13 +105,7 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 		cx := c.CreateElement("clusters")
 		reqs := make([]*matter.ClusterRequirement, len(deviceType.ClusterRequirements))
 		copy(reqs, deviceType.ClusterRequirements)
-		slices.SortStableFunc(reqs, func(a, b *matter.ClusterRequirement) int {
-			cmp := a.ClusterID.Compare(b.ClusterID)
-			if cmp != 0 {
-				return cmp
-			}
-			return a.Interface.Compare(b.Interface)
-		})
+		slices.SortStableFunc(reqs, sortClusterRequirements)
 		for _, cr := range reqs {
 			clx := cx.CreateElement("cluster")
 			clx.CreateAttr("id", cr.ClusterID.HexString())
@@ -197,7 +191,16 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 			dte.CreateAttr("deviceTypeName", dt.Name)
 			if len(dtr.clusterRequirements) > 0 {
 				crx := dte.CreateElement("clusterRequirements")
-				for _, cr := range dtr.clusterRequirements {
+				reqs := make([]*matter.DeviceTypeClusterRequirement, len(dtr.clusterRequirements))
+				copy(reqs, dtr.clusterRequirements)
+				slices.SortStableFunc(reqs, func(a, b *matter.DeviceTypeClusterRequirement) int {
+					cmp := a.ClusterRequirement.ClusterID.Compare(b.ClusterRequirement.ClusterID)
+					if cmp != 0 {
+						return cmp
+					}
+					return a.ClusterRequirement.Interface.Compare(b.ClusterRequirement.Interface)
+				})
+				for _, cr := range reqs {
 					clx := crx.CreateElement("cluster")
 					clx.CreateAttr("id", cr.ClusterRequirement.ClusterID.HexString())
 					clx.CreateAttr("name", cr.ClusterRequirement.ClusterName)
@@ -215,16 +218,9 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 
 	if len(deviceType.ComposedDeviceTypeClusterRequirements) > 0 {
 		cx := c.CreateElement("composedDeviceTypes")
-
 		reqs := make([]*matter.ClusterRequirement, len(deviceType.ClusterRequirements))
 		copy(reqs, deviceType.ClusterRequirements)
-		slices.SortStableFunc(reqs, func(a, b *matter.ClusterRequirement) int {
-			cmp := a.ClusterID.Compare(b.ClusterID)
-			if cmp != 0 {
-				return cmp
-			}
-			return a.Interface.Compare(b.Interface)
-		})
+		slices.SortStableFunc(reqs, sortClusterRequirements)
 		for _, cr := range reqs {
 			clx := cx.CreateElement("cluster")
 			clx.CreateAttr("id", cr.ClusterID.HexString())
@@ -254,6 +250,14 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 	_, err = x.WriteTo(&b)
 	output = b.String()
 	return
+}
+
+func sortClusterRequirements(a, b *matter.ClusterRequirement) int {
+	cmp := a.ClusterID.Compare(b.ClusterID)
+	if cmp != 0 {
+		return cmp
+	}
+	return a.Interface.Compare(b.Interface)
 }
 
 type commandRequirement struct {
