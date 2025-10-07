@@ -22,7 +22,7 @@ func Parse(cxt context.Context, parserOptions ParserOptions, processingOptions p
 func Build(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions, builderOptions []BuilderOption, docs DocSet, attributes []asciidoc.AttributeName) (specification *Specification, specDocs DocSet, err error) {
 
 	var ec *errata.Collection
-	ec, err = errata.LoadErrataConfig(parserOptions.Root)
+	ec, err = errata.LoadErrata(parserOptions.Root)
 	if err != nil {
 		return
 	}

@@ -16,8 +16,8 @@ import (
 //go:embed default.yaml
 var defaultErrata []byte
 
-func LoadErrataConfig(specRoot string) (*Collection, error) {
-	b := loadConfig(specRoot)
+func LoadErrata(specRoot string) (*Collection, error) {
+	b := loadErrataFile(specRoot)
 	if b == nil {
 		b = defaultErrata
 	}
@@ -87,7 +87,7 @@ type overlayErrata struct {
 	ZAP      *SDK      `yaml:"zap,omitempty"`
 }
 
-func loadConfig(specRoot string) []byte {
+func loadErrataFile(specRoot string) []byte {
 	if specRoot == "" {
 		return nil
 	}
