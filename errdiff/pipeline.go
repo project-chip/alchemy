@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"os"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -23,7 +24,7 @@ type specs struct {
 	HeadInProgress *spec.Specification
 }
 
-func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions) (err error) {
+func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions, outputFile string) (err error) {
 	var specs specs
 
 	// Read Head specs
@@ -51,6 +52,19 @@ func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []
 	err2 := compare(specs.BaseInProgress, specs.HeadInProgress)
 
 	err = errors.Join(err1, err2)
+
+	if err != nil && len(outputFile) > 0 {
+		f, fileErr := os.OpenFile(outputFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+		if fileErr != nil {
+			slog.Error("error opening output file", "err", fileErr)
+			return
+		}
+		defer f.Close()
+		if _, fileErr = f.WriteString(err.Error()); fileErr != nil {
+			slog.Error("error writing to output file", "err", fileErr)
+			return
+		}
+	}
 
 	return
 }
