@@ -109,11 +109,9 @@ func compare(Base *spec.Specification, Head *spec.Specification) (err error) {
 						baseErrorsAsError[i] = e
 					}
 
-					if matchingError := findMatchingError(entityToFind, baseErrorsAsError); matchingError != nil {
-						slog.Info("Found matching error", "headError", headErr.Error(), "baseError", matchingError.Error())
-					} else {
-						slog.Info("Not found a matching error for", "headError", headErr.Error())
-						err = errors.New("found one or more new errors on head")
+					if matchingError := findMatchingError(entityToFind, baseErrorsAsError); matchingError == nil {
+						slog.Error("This error is introduced by the current PR: <", headErr.Error(), ">")
+						err = errors.Join(err, errors.New(("This error is introduced by the current PR: <" + headErr.Error() + ">")))
 					}
 				}
 			}
