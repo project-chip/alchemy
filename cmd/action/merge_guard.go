@@ -216,7 +216,7 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 	}
 
 	if c.WriteComment {
-		err = github.WriteComment(cc, githubContext, action, pr, "disco-ball", comment)
+		err = github.WriteComment(cc, githubContext, action, pr, "merge-guard", comment)
 		if err != nil {
 			return
 		}
