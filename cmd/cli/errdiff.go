@@ -19,7 +19,7 @@ type ErrDiff struct {
 }
 
 func (c *ErrDiff) Run(cc *Context) (err error) {
-	err = errdiff.Pipeline(cc, c.BaseRoot, c.HeadRoot, c.Paths, c.ProcessingOptions, c.OutputFile)
+	_, err = errdiff.Pipeline(cc, c.BaseRoot, c.HeadRoot, c.Paths, c.ProcessingOptions)
 
 	return
 }
