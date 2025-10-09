@@ -104,9 +104,6 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 
 	headRoot = githubContext.Workspace
 
-	_ = pipelineOptions
-	_ = headRoot
-
 	var out bytes.Buffer
 	writer := files.NewPatcher[string]("Generating patch file...", &out)
 
