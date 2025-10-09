@@ -95,6 +95,23 @@ func compareErrors(Base *spec.Specification, Head *spec.Specification) (violatio
 					}
 				}
 			}
+		} else {
+			for _, headErr := range headErrors {
+				if ce, ok := headErr.(ComparableError); ok {
+					entityToFind := ce.ComparableEntity()
+					if entityToFind == nil {
+						continue
+					}
+					slog.Error("This error is introduced by the current PR: <", headErr.Error(), ">")
+					err = errors.Join(err, errors.New(("This error is introduced by the current PR: <" + headErr.Error() + ">")))
+					v := spec.Violation{Entity: entityToFind, Type: spec.ViolationNewParseError}
+					source, ok := entityToFind.(log.Source)
+					if ok {
+						v.Path, v.Line = source.Origin()
+					}
+					violations[v.Path] = append(violations[v.Path], v)
+				}
+			}
 		}
 	}
 
