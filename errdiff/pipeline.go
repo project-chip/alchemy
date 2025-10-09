@@ -21,18 +21,18 @@ func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []
 	if err != nil {
 		return
 	}
-
-	return ProcessComparison(&specs, outputFile)
+	_, err = ProcessComparison(&specs, outputFile)
+	return
 }
 
-func ProcessComparison(specs *spec.SpecSet, outputFile string) error {
+func ProcessComparison(specs *spec.SpecSet, outputFile string) (violations map[string][]spec.Violation, err error) {
 	slog.Info("Comparing head and base")
 	err1 := compare(specs.Base, specs.Head)
 
 	slog.Info("Comparing head and base (in-progress)")
 	err2 := compare(specs.BaseInProgress, specs.HeadInProgress)
 
-	err := errors.Join(err1, err2)
+	err = errors.Join(err1, err2)
 
 	if err != nil && len(outputFile) > 0 {
 		fileErr := os.WriteFile(outputFile, []byte(err.Error()), 0666)
@@ -41,7 +41,7 @@ func ProcessComparison(specs *spec.SpecSet, outputFile string) error {
 		}
 	}
 
-	return err
+	return
 }
 
 func groupErrorsByType(errors []spec.Error) map[spec.ErrorType][]spec.Error {

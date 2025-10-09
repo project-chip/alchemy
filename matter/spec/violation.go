@@ -1,4 +1,4 @@
-package provisional
+package spec
 
 import (
 	"strings"
