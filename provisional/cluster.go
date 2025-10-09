@@ -9,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func compareClusters(specs specs, violations map[string][]Violation) {
+func compareClusters(specs spec.SpecSet, violations map[string][]Violation) {
 
 	var clusterStates []EntityState[*matter.Cluster]
 	//var headInProgressClusters []*matter.Cluster // Clusters which only appear in the head spec when in-progress is set

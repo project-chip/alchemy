@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -17,56 +16,32 @@ type ComparableError interface {
 	ComparableEntity() types.ComparableEntity
 }
 
-type specs struct {
-	Base           *spec.Specification
-	BaseInProgress *spec.Specification
-	Head           *spec.Specification
-	HeadInProgress *spec.Specification
+func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions, outputFile string) (err error) {
+	specs, err := spec.LoadSpecSet(cxt, baseRoot, headRoot, docPaths, pipelineOptions, nil)
+	if err != nil {
+		return
+	}
+
+	return ProcessComparison(&specs, outputFile)
 }
 
-func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions, outputFile string) (err error) {
-	var specs specs
-
-	// Read Head specs
-	specs.Head, specs.HeadInProgress, err = loadSpecs(cxt, pipelineOptions, headRoot)
-	if err != nil {
-		return
-	}
-	slog.Info("cluster count head", "count", len(specs.Head.Clusters))
-	slog.Info("cluster count head in-progress", "count", len(specs.HeadInProgress.Clusters))
-
-	// Read Base specs
-	specs.Base, specs.BaseInProgress, err = loadSpecs(cxt, pipelineOptions, baseRoot)
-	if err != nil {
-		return
-	}
-	slog.Info("cluster count base", "count", len(specs.Base.Clusters))
-	slog.Info("cluster count base in-progress", "count", len(specs.BaseInProgress.Clusters))
-
-	// Compare the head and base
+func ProcessComparison(specs *spec.SpecSet, outputFile string) error {
 	slog.Info("Comparing head and base")
 	err1 := compare(specs.Base, specs.Head)
 
-	// Compare the in-progress head and base
 	slog.Info("Comparing head and base (in-progress)")
 	err2 := compare(specs.BaseInProgress, specs.HeadInProgress)
 
-	err = errors.Join(err1, err2)
+	err := errors.Join(err1, err2)
 
 	if err != nil && len(outputFile) > 0 {
-		f, fileErr := os.OpenFile(outputFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+		fileErr := os.WriteFile(outputFile, []byte(err.Error()), 0666)
 		if fileErr != nil {
-			slog.Error("error opening output file", "err", fileErr)
-			return
-		}
-		defer f.Close()
-		if _, fileErr = f.WriteString(err.Error()); fileErr != nil {
 			slog.Error("error writing to output file", "err", fileErr)
-			return
 		}
 	}
 
-	return
+	return err
 }
 
 func groupErrorsByType(errors []spec.Error) map[spec.ErrorType][]spec.Error {
@@ -91,17 +66,6 @@ func findMatchingError(entity types.ComparableEntity, errors []error) error {
 		}
 	}
 	return nil
-}
-
-func loadSpecs(cxt context.Context, pipelineOptions pipeline.ProcessingOptions, specRoot string) (baseSpec *spec.Specification, inProgressSpec *spec.Specification, err error) {
-	parserOptions := spec.ParserOptions{Root: specRoot}
-	baseSpec, _, err = spec.Parse(cxt, parserOptions, pipelineOptions, nil, []asciidoc.AttributeName{})
-
-	if err != nil {
-		return
-	}
-	inProgressSpec, _, err = spec.Parse(cxt, parserOptions, pipelineOptions, nil, []asciidoc.AttributeName{"in-progress"})
-	return
 }
 
 func compare(Base *spec.Specification, Head *spec.Specification) (err error) {

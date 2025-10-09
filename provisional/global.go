@@ -4,10 +4,11 @@ import (
 	"iter"
 
 	"github.com/project-chip/alchemy/internal"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func compareGlobals(specs specs, violations map[string][]Violation) {
+func compareGlobals(specs spec.SpecSet, violations map[string][]Violation) {
 	compareGlobalEntities(specs, iterateBits, violations)
 	compareGlobalEntities(specs, iterateEnumValues, violations)
 	compareGlobalEntities(specs, iterateStructFields, violations)
@@ -15,7 +16,7 @@ func compareGlobals(specs specs, violations map[string][]Violation) {
 	compareGlobalEntities(specs, iterateEventFields, violations)
 }
 
-func compareGlobalEntities[Parent ComparableEntity, Child ComparableEntity](specs specs, iterator func(p Parent) iter.Seq[Child], violations map[string][]Violation) {
+func compareGlobalEntities[Parent ComparableEntity, Child ComparableEntity](specs spec.SpecSet, iterator func(p Parent) iter.Seq[Child], violations map[string][]Violation) {
 	baseEntities := types.FilterSet[Parent](specs.Base.GlobalObjects)
 	baseInProgressEntities := types.FilterSet[Parent](specs.BaseInProgress.GlobalObjects)
 	headEntities := types.FilterSet[Parent](specs.Head.GlobalObjects)

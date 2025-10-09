@@ -18,16 +18,17 @@ import (
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/provisional"
 	"github.com/sethvargo/go-githubactions"
 )
 
-type Provisional struct {
+type MergeGuard struct {
 	WriteComment bool `default:"false" hidden:"" help:"Write comment directly"`
 }
 
-func (c *Provisional) Run(cc *cli.Context) (err error) {
+func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 
 	action := githubactions.New()
 
@@ -108,8 +109,13 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 	var out bytes.Buffer
 	writer := files.NewPatcher[string]("Generating patch file...", &out)
 
+	specs, err := spec.LoadSpecSet(cc, baseRoot, headRoot, changedDocs, pipelineOptions, nil)
+	if err != nil {
+		return fmt.Errorf("failed to load specs: %v", err)
+	}
+
 	var violations map[string][]provisional.Violation
-	violations, err = provisional.Pipeline(cc, baseRoot, headRoot, changedDocs, pipelineOptions, nil, writer)
+	violations, err = provisional.ProcessSpecs(cc, &specs, pipelineOptions, writer)
 	if err != nil {
 		return fmt.Errorf("failed checking provisional status: %v", err)
 	}
