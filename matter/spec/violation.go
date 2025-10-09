@@ -42,6 +42,8 @@ type Violation struct {
 }
 
 func MergeViolations(v1, v2 map[string][]Violation) (v map[string][]Violation) {
+	v = make(map[string][]Violation, len(v1))
+
 	for key, value := range v1 {
 		v[key] = value
 	}
