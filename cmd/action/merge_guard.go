@@ -114,7 +114,7 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 		return fmt.Errorf("failed to load specs: %v", err)
 	}
 
-	var violations map[string][]provisional.Violation
+	var violations map[string][]spec.Violation
 	violations, err = provisional.ProcessSpecs(cc, &specs, pipelineOptions, writer)
 	if err != nil {
 		return fmt.Errorf("failed checking provisional status: %v", err)
@@ -149,7 +149,7 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 
 		for _, path := range paths {
 			vs := violations[path]
-			slices.SortFunc(vs, func(a provisional.Violation, b provisional.Violation) int {
+			slices.SortFunc(vs, func(a spec.Violation, b spec.Violation) int {
 				return a.Line - b.Line
 			})
 			vf := templates.ViolationFile{Path: path}
@@ -170,10 +170,10 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 				pathHash := sha256.Sum256([]byte(path))
 				vv.SourceLink = fmt.Sprintf("https://github.com/%s/%s/pull/%d/files#diff-%sR%d", owner, repo, pr.GetNumber(), hex.EncodeToString(pathHash[:]), v.Line)
 				vv.SourceLine = v.Line
-				if v.Type.Has(provisional.ViolationTypeNonProvisional) {
+				if v.Type.Has(spec.ViolationTypeNonProvisional) {
 					vv.Violations = append(vv.Violations, "Not marked Provisional")
 				}
-				if v.Type.Has(provisional.ViolationTypeNotIfDefd) {
+				if v.Type.Has(spec.ViolationTypeNotIfDefd) {
 					vv.Violations = append(vv.Violations, "Not in in-progress ifdef")
 				}
 				vf.Violations = append(vf.Violations, vv)
