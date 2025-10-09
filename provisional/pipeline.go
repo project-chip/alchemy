@@ -11,7 +11,7 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions, renderOptions []render.Option, writer files.Writer[string]) (violations map[string][]Violation, err error) {
+func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions, renderOptions []render.Option, writer files.Writer[string]) (violations map[string][]spec.Violation, err error) {
 	specs, err := spec.LoadSpecSet(cxt, baseRoot, headRoot, docPaths, pipelineOptions, renderOptions)
 
 	if err != nil {
@@ -21,7 +21,8 @@ func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []
 	return ProcessSpecs(cxt, &specs, pipelineOptions, writer)
 }
 
-func ProcessSpecs(cxt context.Context, specs *spec.SpecSet, pipelineOptions pipeline.ProcessingOptions, writer files.Writer[string]) (violations map[string][]Violation, err error) {
+
+func ProcessSpecs(cxt context.Context, specs *spec.SpecSet, pipelineOptions pipeline.ProcessingOptions, writer files.Writer[string]) (violations map[string][]spec.Violation, err error) {
 	violations = compare(*specs)
 
 	for path, vs := range violations {
