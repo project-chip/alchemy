@@ -15,7 +15,6 @@ type ErrDiff struct {
 
 	HeadRoot   string `name:"head-root" default:"connectedhomeip-spec" help:"the src root of your clone of CHIP-Specifications/connectedhomeip-spec"`
 	BaseRoot   string `name:"base-root" default:"connectedhomeip-spec" help:"the src root of your clone of CHIP-Specifications/connectedhomeip-spec"`
-	OutputFile string `name:"output-file" default:"" help:"the file to write the output to"`
 }
 
 func (c *ErrDiff) Run(cc *Context) (err error) {
