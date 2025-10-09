@@ -15,6 +15,7 @@ import (
 	"github.com/project-chip/alchemy/cmd/action/github/templates"
 	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/config"
+	"github.com/project-chip/alchemy/errdiff"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
@@ -114,17 +115,25 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 		return fmt.Errorf("failed to load specs: %v", err)
 	}
 
-	var violations map[string][]spec.Violation
-	violations, err = provisional.ProcessSpecs(cc, &specs, pipelineOptions, writer)
+	var vp map[string][]spec.Violation
+	vp, err = provisional.ProcessSpecs(cc, &specs, pipelineOptions, writer)
 	if err != nil {
 		return fmt.Errorf("failed checking provisional status: %v", err)
 	}
+
+	var ve map[string][]spec.Violation
+	ve, err = errdiff.ProcessComparison(&specs)
+	if err != nil {
+		return fmt.Errorf("failed checking parse errors: %v", err)
+	}
+
+	violations := spec.MergeViolations(vp, ve)
 
 	owner, repo := githubContext.Repo()
 
 	var comment string
 	if len(violations) > 0 {
-		action.SetOutput("provisional_status", "violations")
+		action.SetOutput("merge_guard_status", "violations")
 
 		err = os.WriteFile("provisional.patch", out.Bytes(), os.ModeAppend|0644)
 		if err != nil {
@@ -132,7 +141,7 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 		}
 
 		var t *raymond.Template
-		t, err = templates.LoadProvisionalViolationsTemplate()
+		t, err = templates.LoadMergeGuardViolationsTemplate()
 		if err != nil {
 			err = fmt.Errorf("error loading violation template: %w", err)
 			return
@@ -176,6 +185,9 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 				if v.Type.Has(spec.ViolationTypeNotIfDefd) {
 					vv.Violations = append(vv.Violations, "Not in in-progress ifdef")
 				}
+				if v.Type.Has(spec.ViolationNewParseError) {
+					vv.Violations = append(vv.Violations, "New Parse Error introduced by this PR")
+				}
 				vf.Violations = append(vf.Violations, vv)
 			}
 			vc.Files = append(vc.Files, vf)
@@ -189,10 +201,10 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 			return
 		}
 	} else {
-		action.SetOutput("provisional_status", "no_violations")
+		action.SetOutput("merge_guard_status", "no_violations")
 
 		var t *raymond.Template
-		t, err = templates.LoadProvisionalNoViolationsTemplate()
+		t, err = templates.LoadMergeGuardNoViolationsTemplate()
 		if err != nil {
 			err = fmt.Errorf("error loading no violation template: %w", err)
 			return
