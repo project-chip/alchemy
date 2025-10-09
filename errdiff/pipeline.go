@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"log/slog"
-	"os"
 
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -16,31 +16,25 @@ type ComparableError interface {
 	ComparableEntity() types.ComparableEntity
 }
 
-func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions, outputFile string) (err error) {
+func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions) (violations map[string][]spec.Violation, err error) {
 	specs, err := spec.LoadSpecSet(cxt, baseRoot, headRoot, docPaths, pipelineOptions, nil)
 	if err != nil {
 		return
 	}
-	_, err = ProcessComparison(&specs, outputFile)
+
+	violations, err = ProcessComparison(&specs)
 	return
 }
 
-func ProcessComparison(specs *spec.SpecSet, outputFile string) (violations map[string][]spec.Violation, err error) {
+func ProcessComparison(specs *spec.SpecSet) (violations map[string][]spec.Violation, err error) {
 	slog.Info("Comparing head and base")
-	err1 := compare(specs.Base, specs.Head)
+	v1, err1 := compareErrors(specs.Base, specs.Head)
 
 	slog.Info("Comparing head and base (in-progress)")
-	err2 := compare(specs.BaseInProgress, specs.HeadInProgress)
+	v2, err2 := compareErrors(specs.BaseInProgress, specs.HeadInProgress)
 
+	violations = spec.MergeViolations(v1, v2)
 	err = errors.Join(err1, err2)
-
-	if err != nil && len(outputFile) > 0 {
-		fileErr := os.WriteFile(outputFile, []byte(err.Error()), 0666)
-		if fileErr != nil {
-			slog.Error("error writing to output file", "err", fileErr)
-		}
-	}
-
 	return
 }
 
@@ -68,12 +62,19 @@ func findMatchingError(entity types.ComparableEntity, errors []error) error {
 	return nil
 }
 
-func compare(Base *spec.Specification, Head *spec.Specification) (err error) {
+func compareErrors(Base *spec.Specification, Head *spec.Specification) (violations map[string][]spec.Violation, err error) {
+	violations = make(map[string][]spec.Violation)
+
 	groupedHeadErrors := groupErrorsByType(Head.Errors)
 	groupedBaseErrors := groupErrorsByType(Base.Errors)
 	for errorType, headErrors := range groupedHeadErrors {
 		if baseErrors, ok := groupedBaseErrors[errorType]; ok {
 			slog.Info("Comparing errors", "type", errorType, "headCount", len(headErrors), "baseCount", len(baseErrors))
+
+			baseErrorsAsError := make([]error, len(baseErrors))
+			for i, e := range baseErrors {
+				baseErrorsAsError[i] = e
+			}
 
 			for _, headErr := range headErrors {
 				if ce, ok := headErr.(ComparableError); ok {
@@ -82,14 +83,15 @@ func compare(Base *spec.Specification, Head *spec.Specification) (err error) {
 						continue
 					}
 
-					baseErrorsAsError := make([]error, len(baseErrors))
-					for i, e := range baseErrors {
-						baseErrorsAsError[i] = e
-					}
-
 					if matchingError := findMatchingError(entityToFind, baseErrorsAsError); matchingError == nil {
 						slog.Error("This error is introduced by the current PR: <", headErr.Error(), ">")
 						err = errors.Join(err, errors.New(("This error is introduced by the current PR: <" + headErr.Error() + ">")))
+						v := spec.Violation{Entity: entityToFind, Type: spec.ViolationNewParseError}
+						source, ok := entityToFind.(log.Source)
+						if ok {
+							v.Path, v.Line = source.Origin()
+						}
+						violations[v.Path] = append(violations[v.Path], v)
 					}
 				}
 			}
