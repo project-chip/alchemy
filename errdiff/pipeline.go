@@ -83,7 +83,7 @@ func compareErrors(Base *spec.Specification, Head *spec.Specification) (violatio
 
 					if matchingError := findMatchingError(entityToFind, baseErrorsAsError); matchingError == nil {
 						slog.Error("This error is introduced by the current PR: <", headErr.Error(), ">")
-						v := spec.Violation{Entity: entityToFind, Type: spec.ViolationNewParseError}
+						v := spec.Violation{Entity: entityToFind, Type: spec.ViolationNewParseError, Text: headErr.Error()}
 						source, ok := entityToFind.(log.Source)
 						if ok {
 							v.Path, v.Line = source.Origin()
@@ -100,7 +100,7 @@ func compareErrors(Base *spec.Specification, Head *spec.Specification) (violatio
 						continue
 					}
 					slog.Error("This error is introduced by the current PR: <", headErr.Error(), ">")
-					v := spec.Violation{Entity: entityToFind, Type: spec.ViolationNewParseError}
+					v := spec.Violation{Entity: entityToFind, Type: spec.ViolationNewParseError, Text: headErr.Error()}
 					source, ok := entityToFind.(log.Source)
 					if ok {
 						v.Path, v.Line = source.Origin()

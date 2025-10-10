@@ -39,6 +39,7 @@ type Violation struct {
 	Entity types.Entity
 	Path   string
 	Line   int
+	Text   string
 }
 
 func MergeViolations(v1, v2 map[string][]Violation) (v map[string][]Violation) {
