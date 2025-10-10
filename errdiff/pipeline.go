@@ -2,7 +2,6 @@ package errdiff
 
 import (
 	"context"
-	"errors"
 	"log/slog"
 
 	"github.com/project-chip/alchemy/internal/log"
@@ -22,19 +21,18 @@ func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []
 		return
 	}
 
-	violations, err = ProcessComparison(&specs)
+	violations = ProcessComparison(&specs)
 	return
 }
 
-func ProcessComparison(specs *spec.SpecSet) (violations map[string][]spec.Violation, err error) {
+func ProcessComparison(specs *spec.SpecSet) (violations map[string][]spec.Violation) {
 	slog.Info("Comparing head and base")
-	v1, err1 := compareErrors(specs.Base, specs.Head)
+	v1 := compareErrors(specs.Base, specs.Head)
 
 	slog.Info("Comparing head and base (in-progress)")
-	v2, err2 := compareErrors(specs.BaseInProgress, specs.HeadInProgress)
+	v2 := compareErrors(specs.BaseInProgress, specs.HeadInProgress)
 
 	violations = spec.MergeViolations(v1, v2)
-	err = errors.Join(err1, err2)
 	return
 }
 
@@ -62,7 +60,7 @@ func findMatchingError(entity types.ComparableEntity, errors []error) error {
 	return nil
 }
 
-func compareErrors(Base *spec.Specification, Head *spec.Specification) (violations map[string][]spec.Violation, err error) {
+func compareErrors(Base *spec.Specification, Head *spec.Specification) (violations map[string][]spec.Violation) {
 	violations = make(map[string][]spec.Violation)
 
 	groupedHeadErrors := groupErrorsByType(Head.Errors)
@@ -85,7 +83,6 @@ func compareErrors(Base *spec.Specification, Head *spec.Specification) (violatio
 
 					if matchingError := findMatchingError(entityToFind, baseErrorsAsError); matchingError == nil {
 						slog.Error("This error is introduced by the current PR: <", headErr.Error(), ">")
-						err = errors.Join(err, errors.New(("This error is introduced by the current PR: <" + headErr.Error() + ">")))
 						v := spec.Violation{Entity: entityToFind, Type: spec.ViolationNewParseError}
 						source, ok := entityToFind.(log.Source)
 						if ok {
@@ -103,7 +100,6 @@ func compareErrors(Base *spec.Specification, Head *spec.Specification) (violatio
 						continue
 					}
 					slog.Error("This error is introduced by the current PR: <", headErr.Error(), ">")
-					err = errors.Join(err, errors.New(("This error is introduced by the current PR: <" + headErr.Error() + ">")))
 					v := spec.Violation{Entity: entityToFind, Type: spec.ViolationNewParseError}
 					source, ok := entityToFind.(log.Source)
 					if ok {

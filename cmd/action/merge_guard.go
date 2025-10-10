@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -118,11 +119,7 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 		return fmt.Errorf("failed checking provisional status: %v", err)
 	}
 
-	var ve map[string][]spec.Violation
-	ve, err = errdiff.ProcessComparison(&specs)
-	if err != nil {
-		return fmt.Errorf("failed checking parse errors: %v", err)
-	}
+	var ve map[string][]spec.Violation = errdiff.ProcessComparison(&specs)
 
 	violations := spec.MergeViolations(vp, ve)
 
@@ -220,7 +217,14 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 	} else {
 		action.SetOutput("comment", comment)
 	}
-	return nil
+
+	if len(violations) > 0 {
+		err = errors.New("merge guard violations found")
+		return
+	} else {
+		err = nil
+		return
+	}
 }
 
 func entityTypeName(e types.Entity) string {
