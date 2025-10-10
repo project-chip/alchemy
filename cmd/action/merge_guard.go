@@ -180,7 +180,7 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 					vv.Violations = append(vv.Violations, "Not in in-progress ifdef")
 				}
 				if v.Type.Has(spec.ViolationNewParseError) {
-					vv.Violations = append(vv.Violations, "New Parse Error introduced by this PR")
+					vv.Violations = append(vv.Violations, "New Parse Error introduced by this PR: "+v.Text)
 				}
 				vf.Violations = append(vf.Violations, vv)
 			}

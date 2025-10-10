@@ -9,7 +9,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/google/go-github/v60/github"
 	"github.com/sethvargo/go-githubactions"
@@ -168,30 +167,30 @@ func WriteComment(cxt context.Context, githubContext *githubactions.GitHubContex
 
 	messageIdComment := fmt.Sprintf("<!-- add-pr-comment:%s -->", messageId)
 	slog.Info("fetched comments", "total", len(comments))
-	var existingComment *github.IssueComment
-	for _, c := range comments {
-		slog.Info("comment", slog.Any("c", c))
-		body := c.GetBody()
-		if strings.HasPrefix(body, messageIdComment) {
-			existingComment = c
-			break
-		}
-	}
+	// var existingComment *github.IssueComment
+	// for _, c := range comments {
+	// 	slog.Info("comment", slog.Any("c", c))
+	// 	body := c.GetBody()
+	// 	if strings.HasPrefix(body, messageIdComment) {
+	// 		existingComment = c
+	// 	}
+	// }
 
 	comment = fmt.Sprintf("%s\n\n%s", messageIdComment, comment)
 	ic := &github.IssueComment{Body: &comment}
-	if existingComment != nil {
-		_, _, err = client.Issues.EditComment(cxt, owner, repo, existingComment.GetID(), ic)
-		if err != nil {
-			err = fmt.Errorf("failed editing comment: %w", err)
-			return
-		}
-	} else {
-		_, _, err = client.Issues.CreateComment(cxt, owner, repo, pr.GetNumber(), ic)
-		if err != nil {
-			err = fmt.Errorf("failed creating comment: %w", err)
-			return
-		}
+	// if existingComment != nil {
+	// 	_, _, err = client.Issues.EditComment(cxt, owner, repo, existingComment.GetID(), ic)
+	// 	if err != nil {
+	// 		err = fmt.Errorf("failed editing comment: %w", err)
+	// 		return
+	// 	}
+	// } else {
+	_, _, err = client.Issues.CreateComment(cxt, owner, repo, pr.GetNumber(), ic)
+	if err != nil {
+		err = fmt.Errorf("failed creating comment: %w", err)
+		return
 	}
+	// }
+
 	return
 }
