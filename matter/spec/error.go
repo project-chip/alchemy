@@ -591,6 +591,13 @@ func (ddt UnknownConformanceIdentifierError) Error() string {
 	return fmt.Sprintf("unknown conformance identifier: %s", ddt.Identifier)
 }
 
+func (ddt UnknownConformanceIdentifierError) ComparableEntity() types.ComparableEntity {
+	if ce, ok := ddt.Entity.(types.ComparableEntity); ok {
+		return ce
+	}
+	return nil
+}
+
 type UnknownConformanceReferenceError struct {
 	Entity    types.Entity
 	Reference string
@@ -606,6 +613,13 @@ func (cf UnknownConformanceReferenceError) Origin() (path string, line int) {
 
 func (ddt UnknownConformanceReferenceError) Error() string {
 	return fmt.Sprintf("unknown conformance reference: %s", ddt.Reference)
+}
+
+func (ddt UnknownConformanceReferenceError) ComparableEntity() types.ComparableEntity {
+	if ce, ok := ddt.Entity.(types.ComparableEntity); ok {
+		return ce
+	}
+	return nil
 }
 
 type FabricScopingNotAllowedError struct {
@@ -624,6 +638,13 @@ func (ddt FabricScopingNotAllowedError) Error() string {
 	return fmt.Sprintf("fabric scoping not allowed: %s", matter.EntityName(ddt.Entity))
 }
 
+func (ddt FabricScopingNotAllowedError) ComparableEntity() types.ComparableEntity {
+	if ce, ok := ddt.Entity.(types.ComparableEntity); ok {
+		return ce
+	}
+	return nil
+}
+
 type FabricSensitivityNotAllowedError struct {
 	Entity types.Entity
 }
@@ -640,6 +661,13 @@ func (ddt FabricSensitivityNotAllowedError) Error() string {
 	return fmt.Sprintf("fabric sensitivity not allowed: %s", matter.EntityName(ddt.Entity))
 }
 
+func (ddt FabricSensitivityNotAllowedError) ComparableEntity() types.ComparableEntity {
+	if ce, ok := ddt.Entity.(types.ComparableEntity); ok {
+		return ce
+	}
+	return nil
+}
+
 type FabricScopedStructNotAllowedError struct {
 	Entity types.Entity
 }
@@ -654,6 +682,13 @@ func (cf FabricScopedStructNotAllowedError) Origin() (path string, line int) {
 
 func (ddt FabricScopedStructNotAllowedError) Error() string {
 	return fmt.Sprintf("fabric scoped struct not allowed: \"%s\"", matter.EntityName(ddt.Entity))
+}
+
+func (ddt FabricScopedStructNotAllowedError) ComparableEntity() types.ComparableEntity {
+	if ce, ok := ddt.Entity.(types.ComparableEntity); ok {
+		return ce
+	}
+	return nil
 }
 
 type InvalidConformanceError struct {
