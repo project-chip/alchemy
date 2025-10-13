@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/config"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
@@ -12,11 +13,13 @@ import (
 type LibraryBuilder struct {
 	specRoot string
 	errata   *errata.Collection
+	config   *config.Config
 }
 
-func NewLibraryBuilder(specRoot string, errata *errata.Collection) *LibraryBuilder {
+func NewLibraryBuilder(specRoot string, config *config.Config, errata *errata.Collection) *LibraryBuilder {
 	b := &LibraryBuilder{
 		specRoot: specRoot,
+		config:   config,
 		errata:   errata,
 	}
 	return b
@@ -30,10 +33,10 @@ func (lb *LibraryBuilder) Process(cxt context.Context, inputs []*pipeline.Data[*
 
 	docCache := cacheFromPipeline(lb.specRoot, inputs)
 
-	for _, docRoot := range lb.errata.DocRoots() {
-		root, ok := docCache.cache.Load(docRoot)
+	for _, library := range lb.config.Libraries {
+		root, ok := docCache.cache.Load(library.Root)
 		if !ok {
-			slog.Warn("doc root not found", "root", docRoot)
+			slog.Warn("doc root not found", "root", library.Root)
 			continue
 		}
 		outputs = append(outputs, pipeline.NewData(root.Path.Relative, NewLibrary(root, lb.errata, docCache)))

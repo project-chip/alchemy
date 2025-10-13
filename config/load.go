@@ -26,7 +26,14 @@ func Load(specRoot string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	cfg.root = specRoot
+	cfg.libraryRoots = make(map[string]struct{})
+	for _, l := range cfg.Libraries {
+		if _, ok := cfg.libraryRoots[l.Root]; ok {
+			return nil, fmt.Errorf("duplicate library root: %s", l.Root)
+		}
+		cfg.libraryRoots[l.Root] = struct{}{}
+	}
 	return &cfg, nil
 }
 

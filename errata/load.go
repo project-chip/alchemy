@@ -16,8 +16,8 @@ import (
 //go:embed default.yaml
 var defaultErrata []byte
 
-func LoadErrata(specRoot string) (*Collection, error) {
-	b := loadErrataFile(specRoot)
+func LoadErrata(config *config.Config) (*Collection, error) {
+	b := loadErrataFile(config.Root())
 	if b == nil {
 		b = defaultErrata
 	}
@@ -54,9 +54,8 @@ func LoadErrata(specRoot string) (*Collection, error) {
 	}
 	c := &Collection{errata: overlayErrata}
 
-	var docRoots []string
-	for p, e := range c.errata {
-		path := filepath.Join(specRoot, p)
+	for p := range c.errata {
+		path := filepath.Join(config.Root(), p)
 		exists, err := files.Exists(path)
 		if err != nil {
 			slog.Error("error checking if file exists", slog.Any("error", err))
@@ -64,13 +63,9 @@ func LoadErrata(specRoot string) (*Collection, error) {
 		if !exists {
 			slog.Warn("errata points to non-existent file", "path", p)
 		}
-		if e.Spec.DocRoot {
-			docRoots = append(docRoots, p)
-		}
+
 	}
-	if len(docRoots) > 0 {
-		c.docRoots = docRoots
-	}
+
 	return c, nil
 }
 

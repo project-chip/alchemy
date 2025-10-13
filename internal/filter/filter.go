@@ -101,10 +101,9 @@ func (p *Filter[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (ou
 	}
 	if !p.exclude && len(ignoredFiles) > 0 {
 		slices.Sort(ignoredFiles)
-		docRoots := p.spec.Errata.DocRoots()
-		docRootLogs := make([]slog.Attr, 0, len(docRoots))
-		for _, p := range docRoots {
-			docRootLogs = append(docRootLogs, slog.String("path", p))
+		docRootLogs := make([]slog.Attr, 0, len(p.spec.Config.Libraries))
+		for _, library := range p.spec.Config.Libraries {
+			docRootLogs = append(docRootLogs, slog.String("path", library.Root))
 		}
 		ignoreLogs := make([]slog.Attr, 0, len(ignoredFiles))
 		for _, p := range ignoredFiles {

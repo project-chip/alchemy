@@ -1,11 +1,25 @@
 package config
 
-type Config struct {
-	MinimumVersion string    `yaml:"minimum-version"`
-	Libraries      []Library `yaml:"libraries"`
-}
+import "github.com/project-chip/alchemy/asciidoc"
 
 type Library struct {
 	Name string `yaml:"name"`
 	Root string `yaml:"root-document"`
+}
+
+type Config struct {
+	MinimumVersion string    `yaml:"minimum-version"`
+	root           string    `yaml:"-"`
+	Libraries      []Library `yaml:"libraries"`
+
+	libraryRoots map[string]struct{}
+}
+
+func (c *Config) Root() string {
+	return c.root
+}
+
+func (c *Config) IsLibraryRootPath(path asciidoc.Path) bool {
+	_, ok := c.libraryRoots[path.Relative]
+	return ok
 }

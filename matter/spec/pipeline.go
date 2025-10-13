@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/config"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
@@ -21,13 +22,19 @@ func Parse(cxt context.Context, parserOptions ParserOptions, processingOptions p
 
 func Build(cxt context.Context, parserOptions ParserOptions, processingOptions pipeline.ProcessingOptions, builderOptions []BuilderOption, docs DocSet, attributes []asciidoc.AttributeName) (specification *Specification, specDocs DocSet, err error) {
 
+	var cfg *config.Config
+	cfg, err = config.Load(parserOptions.Root)
+	if err != nil {
+		return
+	}
+
 	var ec *errata.Collection
-	ec, err = errata.LoadErrata(parserOptions.Root)
+	ec, err = errata.LoadErrata(cfg)
 	if err != nil {
 		return
 	}
 	var libraries LibrarySet
-	libraries, err = pipeline.Collective(cxt, processingOptions, NewLibraryBuilder(parserOptions.Root, ec), docs)
+	libraries, err = pipeline.Collective(cxt, processingOptions, NewLibraryBuilder(parserOptions.Root, cfg, ec), docs)
 	if err != nil {
 		return
 	}
@@ -42,7 +49,7 @@ func Build(cxt context.Context, parserOptions ParserOptions, processingOptions p
 		return
 	}
 
-	specBuilder := NewBuilder(parserOptions.Root, ec, builderOptions...)
+	specBuilder := NewBuilder(parserOptions.Root, cfg, ec, builderOptions...)
 	specDocs, err = pipeline.Collective(cxt, processingOptions, &specBuilder, libraries)
 	if err != nil {
 		return
