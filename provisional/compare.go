@@ -18,7 +18,7 @@ type EntityState[T types.Entity] struct {
 	Base           T
 }
 
-func compare(specs spec.SpecSet) (violations map[string][]spec.Violation) {
+func compare(specs spec.SpecPullRequest) (violations map[string][]spec.Violation) {
 	violations = make(map[string][]spec.Violation)
 	compareClusters(specs, violations)
 	compareGlobals(specs, violations)

@@ -108,7 +108,7 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 	var out bytes.Buffer
 	writer := files.NewPatcher[string]("Generating patch file...", &out)
 
-	specs, err := spec.LoadSpecSet(cc, baseRoot, headRoot, changedDocs, pipelineOptions, nil)
+	specs, err := spec.LoadSpecPullRequest(cc, baseRoot, headRoot, changedDocs, pipelineOptions, nil)
 	if err != nil {
 		return fmt.Errorf("failed to load specs: %v", err)
 	}
@@ -220,11 +220,9 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 
 	if len(violations) > 0 {
 		err = errors.New("merge guard violations found")
-		return
-	} else {
-		err = nil
-		return
 	}
+
+	return
 }
 
 func entityTypeName(e types.Entity) string {

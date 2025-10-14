@@ -9,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
-type SpecSet struct {
+type SpecPullRequest struct {
 	Base           *Specification
 	BaseInProgress *Specification
 	Head           *Specification
@@ -27,7 +27,7 @@ func loadSpec(cxt context.Context, pipelineOptions pipeline.ProcessingOptions, s
 	return
 }
 
-func LoadSpecSet(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions, renderOptions []render.Option) (ss SpecSet, err error) {
+func LoadSpecPullRequest(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions, renderOptions []render.Option) (ss SpecPullRequest, err error) {
 	ss.Head, ss.HeadInProgress, err = loadSpec(cxt, pipelineOptions, headRoot)
 	if err != nil {
 		return

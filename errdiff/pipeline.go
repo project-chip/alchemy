@@ -16,7 +16,7 @@ type ComparableError interface {
 }
 
 func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions) (violations map[string][]spec.Violation, err error) {
-	specs, err := spec.LoadSpecSet(cxt, baseRoot, headRoot, docPaths, pipelineOptions, nil)
+	specs, err := spec.LoadSpecPullRequest(cxt, baseRoot, headRoot, docPaths, pipelineOptions, nil)
 	if err != nil {
 		return
 	}
@@ -25,7 +25,7 @@ func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []
 	return
 }
 
-func ProcessComparison(specs *spec.SpecSet) (violations map[string][]spec.Violation) {
+func ProcessComparison(specs *spec.SpecPullRequest) (violations map[string][]spec.Violation) {
 	slog.Info("Comparing head and base")
 	v1 := compareErrors(specs.Base, specs.Head)
 
