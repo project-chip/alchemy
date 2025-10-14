@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -15,19 +16,21 @@ import (
 	"github.com/project-chip/alchemy/cmd/action/github/templates"
 	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/config"
+	"github.com/project-chip/alchemy/errdiff"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/provisional"
 	"github.com/sethvargo/go-githubactions"
 )
 
-type Provisional struct {
+type MergeGuard struct {
 	WriteComment bool `default:"false" hidden:"" help:"Write comment directly"`
 }
 
-func (c *Provisional) Run(cc *cli.Context) (err error) {
+func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 
 	action := githubactions.New()
 
@@ -102,23 +105,29 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 
 	headRoot = githubContext.Workspace
 
-	_ = pipelineOptions
-	_ = headRoot
-
 	var out bytes.Buffer
 	writer := files.NewPatcher[string]("Generating patch file...", &out)
 
-	var violations map[string][]provisional.Violation
-	violations, err = provisional.Pipeline(cc, baseRoot, headRoot, changedDocs, pipelineOptions, nil, writer)
+	specs, err := spec.LoadSpecSet(cc, baseRoot, headRoot, changedDocs, pipelineOptions, nil)
+	if err != nil {
+		return fmt.Errorf("failed to load specs: %v", err)
+	}
+
+	var vp map[string][]spec.Violation
+	vp, err = provisional.ProcessSpecs(cc, &specs, pipelineOptions, writer)
 	if err != nil {
 		return fmt.Errorf("failed checking provisional status: %v", err)
 	}
+
+	var ve map[string][]spec.Violation = errdiff.ProcessComparison(&specs)
+
+	violations := spec.MergeViolations(vp, ve)
 
 	owner, repo := githubContext.Repo()
 
 	var comment string
 	if len(violations) > 0 {
-		action.SetOutput("provisional_status", "violations")
+		action.SetOutput("merge_guard_status", "violations")
 
 		err = os.WriteFile("provisional.patch", out.Bytes(), os.ModeAppend|0644)
 		if err != nil {
@@ -126,7 +135,7 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 		}
 
 		var t *raymond.Template
-		t, err = templates.LoadProvisionalViolationsTemplate()
+		t, err = templates.LoadMergeGuardViolationsTemplate()
 		if err != nil {
 			err = fmt.Errorf("error loading violation template: %w", err)
 			return
@@ -143,7 +152,7 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 
 		for _, path := range paths {
 			vs := violations[path]
-			slices.SortFunc(vs, func(a provisional.Violation, b provisional.Violation) int {
+			slices.SortFunc(vs, func(a spec.Violation, b spec.Violation) int {
 				return a.Line - b.Line
 			})
 			vf := templates.ViolationFile{Path: path}
@@ -164,11 +173,14 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 				pathHash := sha256.Sum256([]byte(path))
 				vv.SourceLink = fmt.Sprintf("https://github.com/%s/%s/pull/%d/files#diff-%sR%d", owner, repo, pr.GetNumber(), hex.EncodeToString(pathHash[:]), v.Line)
 				vv.SourceLine = v.Line
-				if v.Type.Has(provisional.ViolationTypeNonProvisional) {
+				if v.Type.Has(spec.ViolationTypeNonProvisional) {
 					vv.Violations = append(vv.Violations, "Not marked Provisional")
 				}
-				if v.Type.Has(provisional.ViolationTypeNotIfDefd) {
+				if v.Type.Has(spec.ViolationTypeNotIfDefd) {
 					vv.Violations = append(vv.Violations, "Not in in-progress ifdef")
+				}
+				if v.Type.Has(spec.ViolationNewParseError) {
+					vv.Violations = append(vv.Violations, "New Parse Error introduced by this PR: "+v.Text)
 				}
 				vf.Violations = append(vf.Violations, vv)
 			}
@@ -183,10 +195,10 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 			return
 		}
 	} else {
-		action.SetOutput("provisional_status", "no_violations")
+		action.SetOutput("merge_guard_status", "no_violations")
 
 		var t *raymond.Template
-		t, err = templates.LoadProvisionalNoViolationsTemplate()
+		t, err = templates.LoadMergeGuardNoViolationsTemplate()
 		if err != nil {
 			err = fmt.Errorf("error loading no violation template: %w", err)
 			return
@@ -198,14 +210,21 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 	}
 
 	if c.WriteComment {
-		err = github.WriteComment(cc, githubContext, action, pr, "disco-ball", comment)
+		err = github.WriteComment(cc, githubContext, action, pr, "merge-guard", comment)
 		if err != nil {
 			return
 		}
 	} else {
 		action.SetOutput("comment", comment)
 	}
-	return nil
+
+	if len(violations) > 0 {
+		err = errors.New("merge guard violations found")
+		return
+	} else {
+		err = nil
+		return
+	}
 }
 
 func entityTypeName(e types.Entity) string {

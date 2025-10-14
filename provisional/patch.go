@@ -17,7 +17,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func patchProvisional(cxt context.Context, pipelineOptions pipeline.ProcessingOptions, s *spec.Specification, violations map[string][]Violation, writer files.Writer[string]) (err error) {
+func patchProvisional(cxt context.Context, pipelineOptions pipeline.ProcessingOptions, s *spec.Specification, violations map[string][]spec.Violation, writer files.Writer[string]) (err error) {
 	var docPaths []string
 	for path := range violations {
 		docPaths = append(docPaths, path)
@@ -65,7 +65,7 @@ func patchProvisional(cxt context.Context, pipelineOptions pipeline.ProcessingOp
 	return
 }
 
-func patchViolation(doc *spec.Doc, v Violation) (err error) {
+func patchViolation(doc *spec.Doc, v spec.Violation) (err error) {
 	switch e := v.Entity.(type) {
 	case *matter.EnumValue:
 		source := e.Source()
