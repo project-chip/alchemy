@@ -11,6 +11,14 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
+type entityViolations map[types.Entity]spec.ViolationType
+
+func (ev entityViolations) add(entity types.Entity, violationType spec.ViolationType) {
+	if violationType != spec.ViolationTypeNone {
+		ev[entity] = violationType
+	}
+}
+
 type EntityState[T types.Entity] struct {
 	HeadInProgress T
 	Head           T
@@ -34,14 +42,14 @@ func (es EntityState[T]) Presence() (p Presence) {
 	return
 }
 
-func compare(specs specs) (violationsByPath map[string][]Violation) {
-	violationsByPath = make(map[string][]Violation)
+func compare(specs spec.SpecPullRequest) (violationsByPath map[string][]spec.Violation) {
+	violationsByPath = make(map[string][]spec.Violation)
 	violations := make(entityViolations)
 	compareClusters(specs, violations)
 	compareGlobals(specs, violations)
 
 	for entity, violationType := range violations {
-		if violationType == ViolationTypeNone {
+		if violationType == spec.ViolationTypeNone {
 			continue
 		}
 		parent := entity.Parent()
@@ -52,7 +60,7 @@ func compare(specs specs) (violationsByPath map[string][]Violation) {
 			parent = parent.Parent()
 		}
 
-		v := Violation{Entity: entity, Type: violationType}
+		v := spec.Violation{Entity: entity, Type: violationType}
 		v.Path, v.Line = entity.Origin()
 		violationsByPath[v.Path] = append(violationsByPath[v.Path], v)
 	}
@@ -97,7 +105,7 @@ func isNil[T any](val T) bool {
 	}
 }
 
-func checkProvisionality(spec *spec.Specification, e types.Entity) (violationType ViolationType) {
+func checkProvisionality(s *spec.Specification, e types.Entity) (violationType spec.ViolationType) {
 	switch e.(type) {
 	case *matter.Cluster,
 		*matter.DeviceType,
@@ -109,7 +117,7 @@ func checkProvisionality(spec *spec.Specification, e types.Entity) (violationTyp
 		matter.Bit:
 		// All these are types that can be marked explicitly provisional
 		if !conformance.IsProvisional(matter.EntityConformance(e)) {
-			violationType = ViolationTypeNonProvisional
+			violationType = spec.ViolationTypeNonProvisional
 		}
 	case *matter.Bitmap, *matter.Enum, *matter.Struct:
 		// These types can't be marked provsional, so we'll rely on ifdefs

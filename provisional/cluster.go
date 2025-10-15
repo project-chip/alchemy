@@ -9,8 +9,7 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func compareClusters(specs specs, violations entityViolations) {
-
+func compareClusters(specs spec.SpecPullRequest, violations entityViolations) {
 	var clusterStates []EntityState[*matter.Cluster]
 	for cluster := range specs.HeadInProgress.Clusters {
 		state := EntityState[*matter.Cluster]{HeadInProgress: cluster}
@@ -29,7 +28,7 @@ func compareClusters(specs specs, violations entityViolations) {
 		if novelty.IsNew() {
 			violationType := checkProvisionality(specs.HeadInProgress, state.HeadInProgress)
 			if !novelty.IsIfDefd() {
-				violationType |= ViolationTypeNotIfDefd
+				violationType |= spec.ViolationTypeNotIfDefd
 			}
 			violations.add(state.HeadInProgress, violationType)
 		} else {
@@ -49,7 +48,7 @@ func findExistingClusterInSpec(needle *matter.Cluster, haystack *spec.Specificat
 	return
 }
 
-func compareChildEntity[Parent ComparableEntity, Child ComparableEntity](spec *spec.Specification, violations entityViolations, entity Child, parentState EntityState[Parent], childIterator func(parent Parent) iter.Seq[Child]) {
+func compareChildEntity[Parent ComparableEntity, Child ComparableEntity](s *spec.Specification, violations entityViolations, entity Child, parentState EntityState[Parent], childIterator func(parent Parent) iter.Seq[Child]) {
 	entityState := getEntityState(entity, parentState, childIterator)
 	presence := entityState.Presence()
 	novelty, err := presence.Novelty()
@@ -60,15 +59,15 @@ func compareChildEntity[Parent ComparableEntity, Child ComparableEntity](spec *s
 	if !novelty.IsNew() {
 		return
 	}
-	violationType := checkProvisionality(spec, entity)
+	violationType := checkProvisionality(s, entity)
 
 	if !novelty.IsIfDefd() {
-		violationType |= ViolationTypeNotIfDefd
+		violationType |= spec.ViolationTypeNotIfDefd
 	}
 	violations.add(entity, violationType)
 }
 
-func compareClusterParentEntity[Parent ComparableEntity, Child ComparableEntity](spec *spec.Specification, violations entityViolations, clusterState EntityState[*matter.Cluster], parentIterator func(c *matter.Cluster) iter.Seq[Parent], childIterator func(parent Parent) iter.Seq[Child]) {
+func compareClusterParentEntity[Parent ComparableEntity, Child ComparableEntity](s *spec.Specification, violations entityViolations, clusterState EntityState[*matter.Cluster], parentIterator func(c *matter.Cluster) iter.Seq[Parent], childIterator func(parent Parent) iter.Seq[Child]) {
 	for e := range parentIterator(clusterState.HeadInProgress) {
 		entityState := getEntityState(e, clusterState, parentIterator)
 		novelty, err := entityState.Presence().Novelty()
@@ -77,14 +76,14 @@ func compareClusterParentEntity[Parent ComparableEntity, Child ComparableEntity]
 			continue
 		}
 		if novelty.IsNew() {
-			violationType := checkProvisionality(spec, clusterState.HeadInProgress)
+			violationType := checkProvisionality(s, clusterState.HeadInProgress)
 			if !novelty.IsIfDefd() {
-				violationType |= ViolationTypeNotIfDefd
+				violationType |= spec.ViolationTypeNotIfDefd
 			}
 			violations.add(e, violationType)
 		} else { // We don't need to check the children of new entities
 			for child := range childIterator(e) {
-				compareChildEntity(spec, violations, child, entityState, childIterator)
+				compareChildEntity(s, violations, child, entityState, childIterator)
 			}
 		}
 	}

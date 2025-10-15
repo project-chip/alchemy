@@ -18,9 +18,9 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func patchProvisional(cxt context.Context, pipelineOptions pipeline.ProcessingOptions, s *spec.Specification, violations map[string][]Violation, writer files.Writer[string]) (err error) {
-	docs := make(map[*asciidoc.Document][]Violation)
-	violationsByEntity := make(map[types.Entity]Violation)
+func patchProvisional(cxt context.Context, pipelineOptions pipeline.ProcessingOptions, s *spec.Specification, violations map[string][]spec.Violation, writer files.Writer[string]) (err error) {
+	docs := make(map[*asciidoc.Document][]spec.Violation)
+	violationsByEntity := make(map[types.Entity]spec.Violation)
 	for _, vs := range violations {
 		for _, v := range vs {
 			if v.Entity != nil {
@@ -72,12 +72,12 @@ func patchProvisional(cxt context.Context, pipelineOptions pipeline.ProcessingOp
 
 type tableViolation struct {
 	row       *asciidoc.TableRow
-	violation Violation
+	violation spec.Violation
 }
 
 var inProgressAttributes []asciidoc.AttributeName = []asciidoc.AttributeName{"in-progress", "env-github"}
 
-func patchViolations(s *spec.Specification, doc *asciidoc.Document, violations []Violation) (err error) {
+func patchViolations(s *spec.Specification, doc *asciidoc.Document, violations []spec.Violation) (err error) {
 	library, ok := s.LibraryForDocument(doc)
 	if !ok {
 		err = fmt.Errorf("unable to find library for doc %s", doc.Path.Relative)
@@ -143,10 +143,10 @@ func patchViolations(s *spec.Specification, doc *asciidoc.Document, violations [
 				case *asciidoc.TableRow:
 					for _, v := range vs {
 						if v.row == child {
-							if v.violation.Type.Has(ViolationTypeNotIfDefd) {
+							if v.violation.Type.Has(spec.ViolationTypeNotIfDefd) {
 								ifDefIndexes = append(ifDefIndexes, i)
 							}
-							if v.violation.Type.Has(ViolationTypeNonProvisional) {
+							if v.violation.Type.Has(spec.ViolationTypeNonProvisional) {
 								addProvisionalConformance(library, doc, v.violation.Entity, child)
 							}
 						}
@@ -268,7 +268,7 @@ func setCellString(cell *asciidoc.TableCell, v string) {
 	cell.SetChildren(asciidoc.Elements{se})
 }
 
-func tableForViolation(library *spec.Library, doc *asciidoc.Document, v Violation) (table *asciidoc.Table, row *asciidoc.TableRow, err error) {
+func tableForViolation(library *spec.Library, doc *asciidoc.Document, v spec.Violation) (table *asciidoc.Table, row *asciidoc.TableRow, err error) {
 	source := v.Entity.Source()
 	switch source := source.(type) {
 	case *asciidoc.TableRow:

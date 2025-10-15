@@ -10,14 +10,14 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func patchIncludes(s *spec.Specification, violations map[string][]Violation) (alteredDocs []*asciidoc.Document, err error) {
-	docs := make(map[*asciidoc.Document][]Violation)
+func patchIncludes(s *spec.Specification, violations map[string][]spec.Violation) (alteredDocs []*asciidoc.Document, err error) {
+	docs := make(map[*asciidoc.Document][]spec.Violation)
 	for _, vs := range violations {
 		for _, v := range vs {
 			var includeViolation bool
 			switch v.Entity.(type) {
 			case *matter.Cluster:
-				includeViolation = v.Type.Has(ViolationTypeNotIfDefd)
+				includeViolation = v.Type.Has(spec.ViolationTypeNotIfDefd)
 			}
 			if !includeViolation {
 				continue

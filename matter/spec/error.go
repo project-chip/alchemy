@@ -578,7 +578,7 @@ func (ddt DeviceTypeReferenceNameMismatch) Error() string {
 }
 
 type UnknownConformanceIdentifierError struct {
-	Entity     types.Entity
+	Entity     types.ComparableEntity
 	Identifier string
 }
 
@@ -594,8 +594,12 @@ func (ddt UnknownConformanceIdentifierError) Error() string {
 	return fmt.Sprintf("unknown conformance identifier: %s", ddt.Identifier)
 }
 
+func (cf UnknownConformanceIdentifierError) ComparableEntity() types.ComparableEntity {
+	return cf.Entity
+}
+
 type UnknownConformanceReferenceError struct {
-	Entity    types.Entity
+	Entity    types.ComparableEntity
 	Reference string
 }
 
@@ -611,8 +615,12 @@ func (ddt UnknownConformanceReferenceError) Error() string {
 	return fmt.Sprintf("unknown conformance reference: %s", ddt.Reference)
 }
 
+func (cf UnknownConformanceReferenceError) ComparableEntity() types.ComparableEntity {
+	return cf.Entity
+}
+
 type FabricScopingNotAllowedError struct {
-	Entity types.Entity
+	Entity types.ComparableEntity
 }
 
 func (cf FabricScopingNotAllowedError) Type() ErrorType {
@@ -627,8 +635,12 @@ func (ddt FabricScopingNotAllowedError) Error() string {
 	return fmt.Sprintf("fabric scoping not allowed: %s", matter.EntityName(ddt.Entity))
 }
 
+func (cf FabricScopingNotAllowedError) ComparableEntity() types.ComparableEntity {
+	return cf.Entity
+}
+
 type FabricSensitivityNotAllowedError struct {
-	Entity types.Entity
+	Entity types.ComparableEntity
 }
 
 func (cf FabricSensitivityNotAllowedError) Type() ErrorType {
@@ -643,8 +655,12 @@ func (ddt FabricSensitivityNotAllowedError) Error() string {
 	return fmt.Sprintf("fabric sensitivity not allowed: %s", matter.EntityName(ddt.Entity))
 }
 
+func (cf FabricSensitivityNotAllowedError) ComparableEntity() types.ComparableEntity {
+	return cf.Entity
+}
+
 type FabricScopedStructNotAllowedError struct {
-	Entity types.Entity
+	Entity types.ComparableEntity
 }
 
 func (cf FabricScopedStructNotAllowedError) Type() ErrorType {
@@ -657,6 +673,10 @@ func (cf FabricScopedStructNotAllowedError) Origin() (path string, line int) {
 
 func (ddt FabricScopedStructNotAllowedError) Error() string {
 	return fmt.Sprintf("fabric scoped struct not allowed: \"%s\"", matter.EntityName(ddt.Entity))
+}
+
+func (cf FabricScopedStructNotAllowedError) ComparableEntity() types.ComparableEntity {
+	return cf.Entity
 }
 
 type InvalidConformanceError struct {

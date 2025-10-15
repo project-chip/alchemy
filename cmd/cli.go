@@ -22,6 +22,7 @@ var commands struct {
 	Validate    cli.Validate    `cmd:"" help:"validate the Matter specification object model" group:"Spec Commands:"`
 	Yaml2Python cli.Yaml2Python `cmd:"" name:"yaml-2-python" aliases:"yaml2python" help:"create a shell python script from a test YAML, optionally filtered to the files specified by filename_pattern"  group:"Testing Commands:"`
 	Wordlist    cli.Wordlist    `cmd:"" hidden:"" name:"wordlist" help:"add words to wordlist.txt"`
+	ErrDiff     cli.ErrDiff     `cmd:"" name:"err-diff" hidden:"" help:"Checks for new errors caused by a PR in review."`
 	Version     Version         `cmd:"" hidden:"" name:"version" help:"display version number"`
 
 	globalFlags `embed:""`
