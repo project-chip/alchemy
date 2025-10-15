@@ -45,6 +45,14 @@ func (c ClusterGroup) Explode() []*Cluster {
 	return c.Clusters
 }
 
+func (c *ClusterGroup) Equals(e types.Entity) bool {
+	oc, ok := e.(*ClusterGroup)
+	if !ok {
+		return false
+	}
+	return c.Name == oc.Name
+}
+
 type Cluster struct {
 	entity
 	ID            *Number         `json:"id,omitempty"`

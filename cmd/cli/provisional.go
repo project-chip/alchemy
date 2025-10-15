@@ -27,7 +27,7 @@ func (c *Provisional) Run(cc *Context) (err error) {
 	writer := files.NewPatcher[string]("Generating patch file...", &out)
 	writer.Root = c.HeadRoot
 
-	_, err = provisional.Pipeline(cc, c.BaseRoot, c.HeadRoot, nil, c.ProcessingOptions, nil, writer)
+	_, err = provisional.Pipeline(cc, c.BaseRoot, c.HeadRoot, nil, c.ProcessingOptions, writer)
 	if err != nil {
 		return
 	}

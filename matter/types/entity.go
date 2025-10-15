@@ -41,6 +41,7 @@ type Entity interface {
 	Source() asciidoc.Element
 	Origin() (path string, line int)
 	Parent() Entity
+	Equals(Entity) bool
 }
 
 func (et EntityType) String() string {

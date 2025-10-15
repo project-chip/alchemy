@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
@@ -33,7 +32,7 @@ func loadSpecs(cxt context.Context, pipelineOptions pipeline.ProcessingOptions, 
 	return
 }
 
-func LoadSpecPullRequest(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions, renderOptions []render.Option) (ss SpecPullRequest, err error) {
+func LoadSpecPullRequest(cxt context.Context, baseRoot string, headRoot string, pipelineOptions pipeline.ProcessingOptions) (ss SpecPullRequest, err error) {
 	ss.Head, ss.HeadInProgress, err = loadSpecs(cxt, pipelineOptions, headRoot)
 	if err != nil {
 		return
