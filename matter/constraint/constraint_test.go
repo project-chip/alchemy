@@ -31,6 +31,14 @@ func (f *field) Parent() types.Entity {
 	return nil
 }
 
+func (f *field) Equals(e types.Entity) bool {
+	oe, ok := e.(*field)
+	if !ok {
+		return false
+	}
+	return f.Name == oe.Name
+}
+
 type fieldSet []*field
 
 func (fs fieldSet) getField(name string) *field {
