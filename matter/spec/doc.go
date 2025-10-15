@@ -1,53 +1,35 @@
 package spec
 
 import (
-	"strings"
-	"unicode"
-	"unicode/utf8"
-
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/types"
 )
 
-type Doc struct {
-	Path asciidoc.Path
-
-	Base *asciidoc.Document
-	//asciidoc.Elements
-
-	docType matter.DocType
-
+/*type LibraryDocument struct {
+	Library  *Library
+	Document *asciidoc.Document
 	Domain   matter.Domain
-	parents  []*Doc
-	children []*Doc
-
-	referenceIndex
-
-	parsed            bool // Tracks whether this doc was parsed vs. just read (i.e. were file substituions done)
-	entities          []types.Entity
-	orderedEntities   []types.Entity
-	globalObjects     []types.Entity
-	entitiesBySection map[asciidoc.Attributable][]types.Entity
-	entitiesParsed    bool
-
-	spec  *Specification
-	group *DocGroup
-
-	errata *errata.Errata
-
-	reader asciidoc.Reader
 }
 
-type DocSet pipeline.Map[string, *pipeline.Data[*Doc]]
+func (d *LibraryDocument) Entities() []types.Entity {
+	return d.Library.Spec.EntityRefs[d.Document]
+}*/
+
+type DocumentInfoCache interface {
+	DocType(document *asciidoc.Document) (matter.DocType, error)
+	SetDocType(document *asciidoc.Document, docType matter.DocType)
+	Parents(document *asciidoc.Document) []*asciidoc.Document
+}
+
+type DocSet pipeline.Map[string, *pipeline.Data[*asciidoc.Document]]
 
 func NewDocSet() DocSet {
-	return pipeline.NewMap[string, *pipeline.Data[*Doc]]()
+	return pipeline.NewMap[string, *pipeline.Data[*asciidoc.Document]]()
 }
 
-func newDoc(d *asciidoc.Document, path asciidoc.Path) (*Doc, error) {
+/*
+func newDoc(d *asciidoc.Document, path asciidoc.Path) (*asciidoc.Document, error) {
 	doc := &Doc{
 		Base:           d,
 		Path:           path,
@@ -57,10 +39,6 @@ func newDoc(d *asciidoc.Document, path asciidoc.Path) (*Doc, error) {
 	return doc, nil
 }
 
-func firstLetterIsLower(s string) bool {
-	firstLetter, _ := utf8.DecodeRuneInString(s)
-	return unicode.IsLower(firstLetter)
-}
 
 func (doc *Doc) Footnotes() []*asciidoc.Footnote {
 	return nil
@@ -70,19 +48,10 @@ func (doc *Doc) Errata() *errata.Errata {
 	return doc.errata
 }
 
-func (doc *Doc) Reader() asciidoc.Reader {
-	if doc.reader != nil {
-		return doc.reader
-	}
-	if doc.group != nil {
-		return doc.group.Reader
-	}
-	return asciidoc.RawReader
-}
 
 func (doc *Doc) Parents() []*Doc {
 	doc.RLock()
-	p := make([]*Doc, len(doc.parents))
+	p := make([]*asciidoc.Document, len(doc.parents))
 	copy(p, doc.parents)
 	doc.RUnlock()
 	return p
@@ -109,6 +78,13 @@ func (doc *Doc) Equals(other asciidoc.Element) bool {
 		return doc.Path.Absolute == other.Path.Absolute
 	}
 	return false
+}
+
+func (doc *Doc) Clone() asciidoc.Element {
+	return &Doc{
+		Path: doc.Path,
+		Base: doc.Base.Clone().(*asciidoc.Document),
+	}
 }
 
 func (doc *Doc) Group() *DocGroup {
@@ -199,3 +175,4 @@ func (d *Doc) EntitiesForSection(section *asciidoc.Section) ([]types.Entity, boo
 	e, ok := d.entitiesBySection[section]
 	return e, ok
 }
+*/

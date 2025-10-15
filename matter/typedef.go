@@ -23,16 +23,24 @@ func (*TypeDef) EntityType() types.EntityType {
 	return types.EntityTypeDef
 }
 
-func (s *TypeDef) Clone() *TypeDef {
-	ns := &TypeDef{Name: s.Name, Description: s.Description, Type: s.Type}
+func (td *TypeDef) Equals(e types.Entity) bool {
+	otd, ok := e.(*TypeDef)
+	if !ok {
+		return false
+	}
+	return td.Name == otd.Name
+}
+
+func (td *TypeDef) Clone() *TypeDef {
+	ns := &TypeDef{Name: td.Name, Description: td.Description, Type: td.Type}
 	return ns
 }
 
-func (s *TypeDef) Inherit(parent *TypeDef) {
-	if len(s.Description) == 0 {
-		s.Description = parent.Description
+func (td *TypeDef) Inherit(parent *TypeDef) {
+	if len(td.Description) == 0 {
+		td.Description = parent.Description
 	}
-	s.Type = parent.Type
+	td.Type = parent.Type
 }
 
 type TypeDefSet []*TypeDef

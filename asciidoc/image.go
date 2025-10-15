@@ -17,15 +17,19 @@ func (BlockImage) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *BlockImage) Equals(o Element) bool {
+func (bi *BlockImage) Equals(o Element) bool {
 	oa, ok := o.(*BlockImage)
 	if !ok {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !bi.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.ImagePath.Equals(oa.ImagePath)
+	return bi.ImagePath.Equals(oa.ImagePath)
+}
+
+func (bi *BlockImage) Clone() Element {
+	return &BlockImage{position: bi.position, raw: bi.raw, AttributeList: bi.AttributeList.Clone(), ImagePath: bi.ImagePath.Clone()}
 }
 
 type InlineImage struct {
@@ -42,13 +46,17 @@ func (InlineImage) Type() ElementType {
 	return ElementTypeInline
 }
 
-func (a *InlineImage) Equals(o Element) bool {
+func (ii *InlineImage) Equals(o Element) bool {
 	oa, ok := o.(*InlineImage)
 	if !ok {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !ii.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.ImagePath.Equals(oa.ImagePath)
+	return ii.ImagePath.Equals(oa.ImagePath)
+}
+
+func (ii *InlineImage) Clone() Element {
+	return &InlineImage{AttributeList: ii.AttributeList.Clone(), ImagePath: ii.ImagePath.Clone()}
 }

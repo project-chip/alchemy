@@ -11,10 +11,7 @@ func (cr *configuratorRenderer) reorderConfigurator(configuratorElement *etree.E
 	entityOrder := make(map[types.Entity]int)
 	var order int
 	for _, d := range cr.configurator.Docs {
-		entities, err := d.OrderedEntities()
-		if err != nil {
-			return err
-		}
+		entities := cr.configurator.Spec.EntitiesForDocument(d)
 		for _, e := range entities {
 			entityOrder[e] = order
 			order++

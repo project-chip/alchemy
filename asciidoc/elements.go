@@ -29,6 +29,14 @@ func (s Elements) Equals(o Elements) bool {
 	return true
 }
 
+func (s Elements) Clone() Elements {
+	var els Elements
+	for _, e := range s {
+		els = append(els, e.Clone())
+	}
+	return els
+}
+
 func (s Elements) IsWhitespace() bool {
 	if len(s) == 0 {
 		return true

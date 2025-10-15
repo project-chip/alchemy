@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/dolthub/go-mysql-server/sql"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/db"
@@ -21,7 +22,7 @@ type Command struct {
 
 	Address string `default:"localhost" help:"the address to host the database server on"`
 	Port    int    `default:"3306" help:"the port to run the database server on"`
-	Raw     bool   `default:"false" help:"parse the sections directly, bypassing entity building"`
+	Raw     bool   `default:"false" hidden:"" help:"parse the sections directly, bypassing entity building"`
 }
 
 func (cmd *Command) Run(cc *cli.Context) (err error) {
@@ -33,8 +34,8 @@ func (cmd *Command) Run(cc *cli.Context) (err error) {
 		return
 	}
 
-	docs := make([]*spec.Doc, 0, specDocs.Size())
-	specDocs.Range(func(key string, value *pipeline.Data[*spec.Doc]) bool {
+	docs := make([]*asciidoc.Document, 0, specDocs.Size())
+	specDocs.Range(func(key string, value *pipeline.Data[*asciidoc.Document]) bool {
 		docs = append(docs, value.Content)
 		return true
 	})
@@ -43,7 +44,7 @@ func (cmd *Command) Run(cc *cli.Context) (err error) {
 	sc.SetCurrentDatabase("matter")
 
 	h := db.New()
-	err = h.Build(sc, specification, docs, cmd.Raw)
+	err = h.Build(sc, specification, docs)
 	if err != nil {
 		return fmt.Errorf("error building DB: %w", err)
 	}

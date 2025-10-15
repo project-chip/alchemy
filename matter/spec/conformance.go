@@ -66,45 +66,29 @@ func (sp *Builder) noteConformanceResolutionFailures(spec *Specification) {
 		switch exp := exp.(type) {
 		case *conformance.ReferenceExpression:
 			if exp.Entity == nil {
-				if comparableEntity, ok := failure.source.(types.ComparableEntity); ok {
-					slog.Error("Failed to resolve conformance expression reference", "ref", exp.Reference, log.Path("source", comparableEntity))
-					spec.addError(&UnknownConformanceReferenceError{Entity: comparableEntity, Reference: exp.Reference})
-				} else {
-					slog.Error("Conformance failure source is not a ComparableEntity", log.Type("type", failure.source), log.Path("source", failure.source))
-				}
+				slog.Error("Failed to resolve conformance expression reference", "ref", exp.Reference, log.Path("source", failure.source))
+				spec.addError(&UnknownConformanceReferenceError{Entity: failure.source, Reference: exp.Reference})
 			}
 		case *conformance.IdentifierExpression:
 			if exp.Entity == nil {
-				if comparableEntity, ok := failure.source.(types.ComparableEntity); ok {
-					slog.Error("Failed to resolve conformance expression identifier", "ref", exp.ID, log.Path("source", comparableEntity))
-					spec.addError(&UnknownConformanceIdentifierError{Entity: comparableEntity, Identifier: exp.ID})
-					suggestions := make(map[types.Entity]int)
-					failure.finder.suggestIdentifiers(exp.ID, suggestions)
-					suggest.ListPossibilities(exp.ID, suggestions)
-				} else {
-					slog.Error("Conformance failure source is not a ComparableEntity", log.Type("type", failure.source), log.Path("source", failure.source))
-				}
+				slog.Error("Failed to resolve conformance expression identifier", "ref", exp.ID, log.Path("source", failure.source))
+				spec.addError(&UnknownConformanceIdentifierError{Entity: failure.source, Identifier: exp.ID})
+				suggestions := make(map[types.Entity]int)
+				failure.finder.suggestIdentifiers(exp.ID, suggestions)
+				suggest.ListPossibilities(exp.ID, suggestions)
 			}
 		case *conformance.IdentifierValue:
 			if exp.Entity == nil {
-				if comparableEntity, ok := failure.source.(types.ComparableEntity); ok {
-					slog.Error("failed to resolve conformance value identifier", "id", exp.ID, log.Path("source", comparableEntity))
-					spec.addError(&UnknownConformanceIdentifierError{Entity: comparableEntity, Identifier: exp.ID})
-					suggestions := make(map[types.Entity]int)
-					failure.finder.suggestIdentifiers(exp.ID, suggestions)
-					suggest.ListPossibilities(exp.ID, suggestions)
-				} else {
-					slog.Error("Conformance failure source is not a ComparableEntity", log.Type("type", failure.source), log.Path("source", failure.source))
-				}
+				slog.Error("failed to resolve conformance value identifier", "id", exp.ID, log.Path("source", failure.source))
+				spec.addError(&UnknownConformanceIdentifierError{Entity: failure.source, Identifier: exp.ID})
+				suggestions := make(map[types.Entity]int)
+				failure.finder.suggestIdentifiers(exp.ID, suggestions)
+				suggest.ListPossibilities(exp.ID, suggestions)
 			}
 		case *conformance.ReferenceValue:
 			if exp.Entity == nil {
-				if comparableEntity, ok := failure.source.(types.ComparableEntity); ok {
-					slog.Error("failed to resolve conformance value reference", "ref", exp.Reference, log.Path("source", comparableEntity))
-					spec.addError(&UnknownConformanceReferenceError{Entity: comparableEntity, Reference: exp.Reference})
-				} else {
-					slog.Error("Conformance failure source is not a ComparableEntity", log.Type("type", failure.source), log.Path("source", failure.source))
-				}
+				slog.Error("failed to resolve conformance value reference", "ref", exp.Reference, log.Path("source", failure.source))
+				spec.addError(&UnknownConformanceReferenceError{Entity: failure.source, Reference: exp.Reference})
 			}
 		default:
 			slog.Warn("Unexpected failed conformance entity", log.Type("type", exp), log.Path("source", failure.source))
@@ -191,7 +175,7 @@ func (sp *Builder) resolveEntityConformanceReferences(cluster *matter.Cluster, f
 	case *conformance.Generic:
 		if !conformance.IsBlank(con) {
 			slog.Warn("Can not resolve entities on generic conformance", slog.String("conformance", con.RawText()), log.Path("source", source))
-
+			sp.Spec.addError(&InvalidConformanceError{Source: source, Conformance: con.RawText()})
 		}
 	default:
 		slog.Warn("Unexpected field conformance type", log.Type("type", con))

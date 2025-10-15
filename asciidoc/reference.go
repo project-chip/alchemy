@@ -39,8 +39,12 @@ func (cr *CrossReference) Equals(o Element) bool {
 	return cr.Elements.Equals(oa.Elements)
 }
 
-func (cr *CrossReference) Traverse(parent Parent) iter.Seq2[Parent, Parent] {
-	return func(yield func(Parent, Parent) bool) {
+func (cr *CrossReference) Clone() Element {
+	return &CrossReference{position: cr.position, raw: cr.raw, AttributeList: cr.AttributeList.Clone(), Elements: cr.Elements.Clone(), ID: cr.ID.Clone(), Format: cr.Format}
+}
+
+func (cr *CrossReference) Traverse(parent ParentElement) iter.Seq2[ParentElement, Parent] {
+	return func(yield func(ParentElement, Parent) bool) {
 		if !cr.AttributeList.traverse(cr, yield) {
 			return
 		}
@@ -76,4 +80,8 @@ func (dcr *DocumentCrossReference) Equals(o Element) bool {
 		return false
 	}
 	return dcr.ReferencePath.Equals(oa.ReferencePath)
+}
+
+func (dcr *DocumentCrossReference) Clone() Element {
+	return &DocumentCrossReference{position: dcr.position, raw: dcr.raw, AttributeList: dcr.AttributeList.Clone(), ReferencePath: dcr.ReferencePath.Clone()}
 }

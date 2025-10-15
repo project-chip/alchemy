@@ -37,7 +37,7 @@ func (b *Baller) organizeClassificationSection(cxt *discoContext) (err error) {
 
 		err = b.renameTableHeaderCells(cxt, classification.section, classificationTable, matter.Tables[tableType].ColumnRenames)
 		if err != nil {
-			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.doc.SectionName(classification.section), cxt.doc.Path, err)
+			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.library.SectionName(classification.section), cxt.doc.Path, err)
 		}
 
 		if tableType != matter.TableTypeUnknown {
@@ -54,7 +54,7 @@ type classificationInfo struct {
 	hierarchy string
 }
 
-func getClassificationInfo(classificationTable *spec.TableInfo) (ci *classificationInfo) {
+func getClassificationInfo(cxt *discoContext, classificationTable *spec.TableInfo) (ci *classificationInfo) {
 	ci = &classificationInfo{}
 	hierarchyIndex, hasHierarchy := classificationTable.ColumnMap[matter.TableColumnHierarchy]
 	for i, row := range classificationTable.Rows {
@@ -63,7 +63,7 @@ func getClassificationInfo(classificationTable *spec.TableInfo) (ci *classificat
 		}
 		if hasHierarchy {
 			hierarchyCell := row.Cell(hierarchyIndex)
-			vc, e := spec.RenderTableCell(hierarchyCell)
+			vc, e := spec.RenderTableCell(cxt.library, hierarchyCell)
 			if e != nil {
 				continue
 			}

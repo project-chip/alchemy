@@ -10,7 +10,8 @@ IdentifierLimit <- not:'!'? ref:(Identifier) field:(ReferenceField)? {
 	return rl, nil
 }
 
-Identifier <- PascalCase {
+Identifier <-  PascalCase 
+{
 	debug("found identifier %s\n", string(c.text))
 	return string(c.text), nil
 }

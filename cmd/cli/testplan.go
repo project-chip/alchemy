@@ -1,19 +1,13 @@
 package cli
 
 import (
-	"context"
-	"log/slog"
-
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
-	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	testplanRender "github.com/project-chip/alchemy/testplan/render"
-	"github.com/project-chip/alchemy/zap"
 )
 
 type TestPlan struct {
@@ -35,28 +29,6 @@ func (c *TestPlan) Run(cc *Context) (err error) {
 		return
 	}
 
-	var appClusterIndexes spec.DocSet
-	appClusterIndexes, err = pipeline.Collective(cc, c.ProcessingOptions, common.NewDocTypeFilter(matter.DocTypeAppClusterIndex), specDocs)
-
-	if err != nil {
-		return err
-	}
-
-	domainIndexer := func(cxt context.Context, input *pipeline.Data[*spec.Doc], index, total int32) (outputs []*pipeline.Data[*spec.Doc], extra []*pipeline.Data[*spec.Doc], err error) {
-		doc := input.Content
-		top := parse.FindFirst[*asciidoc.Section](doc.Reader(), doc)
-		if top != nil {
-			doc.Domain = zap.StringToDomain(doc.SectionName(top))
-			slog.DebugContext(cxt, "Assigned domain", "file", doc.SectionName(top), "domain", doc.Domain)
-		}
-		return
-	}
-
-	_, err = pipeline.Parallel(cc, c.ProcessingOptions, pipeline.ParallelFunc("Assigning index domains", domainIndexer), appClusterIndexes)
-	if err != nil {
-		return err
-	}
-
 	specDocs, err = filterSpecDocs(cc, specDocs, specification, c.FilterOptions, c.ProcessingOptions)
 	if err != nil {
 		return
@@ -72,7 +44,7 @@ func (c *TestPlan) Run(cc *Context) (err error) {
 		return
 	}
 
-	generator := testplanRender.NewRenderer(c.RendererOptions)
+	generator := testplanRender.NewRenderer(specification, c.RendererOptions)
 	var testplans pipeline.StringSet
 	testplans, err = pipeline.Parallel(cc, c.ProcessingOptions, generator, specDocs)
 	if err != nil {
@@ -88,7 +60,7 @@ func (c *TestPlan) Run(cc *Context) (err error) {
 		return err
 	}
 
-	ids := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[render.InputDocument]](testplanDocs.Size())
+	ids := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[*asciidoc.Document]](testplanDocs.Size())
 	err = pipeline.Cast(testplanDocs, ids)
 	if err != nil {
 		return err

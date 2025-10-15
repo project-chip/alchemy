@@ -446,3 +446,21 @@ var ClusterIDSectionName = "Cluster ID"
 var ClusterIDsSectionName = "Cluster IDs"
 
 var CommandsSectionName = "Commands"
+
+var IDColumns = struct {
+	Attribute []TableColumn
+	BitmapBit []TableColumn
+	EnumValue []TableColumn
+	Command   []TableColumn
+	Event     []TableColumn
+	Field     []TableColumn
+	Cluster   []TableColumn
+}{
+	Attribute: []TableColumn{TableColumnAttributeID, TableColumnID},
+	BitmapBit: []TableColumn{TableColumnBit, TableColumnValue},
+	Command:   []TableColumn{TableColumnCommandID, TableColumnID},
+	EnumValue: []TableColumn{TableColumnValue, TableColumnStatusCode},
+	Event:     []TableColumn{TableColumnEventID, TableColumnID},
+	Field:     []TableColumn{TableColumnFieldID, TableColumnID},
+	Cluster:   []TableColumn{TableColumnClusterID, TableColumnID},
+}

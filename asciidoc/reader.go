@@ -1,6 +1,10 @@
 package asciidoc
 
-import "iter"
+import (
+	"fmt"
+	"iter"
+	"strings"
+)
 
 type ElementIterator iter.Seq[Element]
 
@@ -22,6 +26,9 @@ func (ei ElementIterator) Count() (count int) {
 
 type Reader interface {
 	Iterate(parent Parent, elements Elements) ElementIterator
+	StringValue(parent Parent, elements Elements) (string, error)
+	Parent(child ChildElement) Element
+	Children(parent ParentElement) Elements
 }
 
 type rawReader struct {
@@ -37,12 +44,35 @@ func (rr *rawReader) Iterate(parent Parent, elements Elements) ElementIterator {
 	}
 }
 
-func (rr *rawReader) Count(elements Elements) int {
-	return len(elements)
+func (rr *rawReader) StringValue(parent Parent, elements Elements) (string, error) {
+	var sb strings.Builder
+	for el := range rr.Iterate(parent, elements) {
+		switch el := el.(type) {
+		case *String:
+			sb.WriteString(el.Value)
+		case *NewLine:
+			sb.WriteRune('\n')
+		case *EmptyLine:
+			sb.WriteRune('\n')
+		case *CharacterReplacementReference:
+			sb.WriteString(el.ReplacementValue())
+		default:
+			return "", fmt.Errorf("unexpected type rendering preparsed doc: %T", el)
+		}
+	}
+	return sb.String(), nil
+}
+
+func (rr *rawReader) Parent(child ChildElement) Element {
+	return child.Parent()
+}
+
+func (rr *rawReader) Children(parent ParentElement) Elements {
+	return parent.Children()
 }
 
 var RawReader Reader = &rawReader{}
 
 type Traverser interface {
-	Traverse(parent Parent) iter.Seq2[Parent, Parent]
+	Traverse(parent ParentElement) iter.Seq2[ParentElement, Parent]
 }

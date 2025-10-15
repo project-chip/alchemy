@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"log/slog"
+
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/dm"
 	"github.com/project-chip/alchemy/internal/files"
@@ -43,6 +45,14 @@ func (c *DataModel) Run(cc *Context) (err error) {
 	err = checkSpecErrors(cc, specification, c.FilterOptions, specDocs)
 	if err != nil {
 		return
+	}
+
+	if len(specification.UnusedDocs) > 0 {
+		unuseds := make([]slog.Attr, 0, len(specification.UnusedDocs))
+		for _, ud := range specification.UnusedDocs {
+			unuseds = append(unuseds, slog.String("path", ud.Path.Relative))
+		}
+		slog.Warn("The following Asciidoctor files exist on disk, but were not used in parsing the specification. If this seems incorrect, check to make sure they are included properly.", slog.GroupAttrs("paths", unuseds...))
 	}
 
 	dataModelRenderer := dm.NewRenderer(c.DmRoot, specification)

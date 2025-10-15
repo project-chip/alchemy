@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -19,7 +20,7 @@ type DependencyTracer struct {
 func NewDependencyTracer(specification *spec.Specification) *DependencyTracer {
 	dt := &DependencyTracer{
 		spec:                     specification,
-		GlobalObjectDependencies: pipeline.NewConcurrentMap[string, *pipeline.Data[*spec.Doc]](),
+		GlobalObjectDependencies: pipeline.NewConcurrentMap[string, *pipeline.Data[*asciidoc.Document]](),
 	}
 
 	return dt
@@ -29,18 +30,14 @@ func (p DependencyTracer) Name() string {
 	return "Tracing dependencies"
 }
 
-func (p DependencyTracer) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[*spec.Doc], err error) {
+func (p DependencyTracer) Process(cxt context.Context, inputs []*pipeline.Data[*asciidoc.Document]) (outputs []*pipeline.Data[*asciidoc.Document], err error) {
 
-	docMap := make(map[*spec.Doc]struct{}, len(inputs))
+	docMap := make(map[*asciidoc.Document]struct{}, len(inputs))
 	for _, input := range inputs {
 		docMap[input.Content] = struct{}{}
 	}
 	for _, input := range inputs {
-		var entities []types.Entity
-		entities, err = input.Content.Entities()
-		if err != nil {
-			return
-		}
+		entities := p.spec.EntitiesForDocument(input.Content)
 		p.findDependencies(p.spec, entities, docMap)
 	}
 	for doc := range docMap {
@@ -49,7 +46,7 @@ func (p DependencyTracer) Process(cxt context.Context, inputs []*pipeline.Data[*
 	return
 }
 
-func (tg *DependencyTracer) findDependencies(spec *spec.Specification, entities []types.Entity, dependencies map[*spec.Doc]struct{}) {
+func (tg *DependencyTracer) findDependencies(spec *spec.Specification, entities []types.Entity, dependencies map[*asciidoc.Document]struct{}) {
 	for _, m := range entities {
 		switch m := m.(type) {
 		case *matter.ClusterGroup:
@@ -64,7 +61,7 @@ func (tg *DependencyTracer) findDependencies(spec *spec.Specification, entities 
 	}
 }
 
-func (tg *DependencyTracer) findClusterDependencies(spec *spec.Specification, c *matter.Cluster, dependencies map[*spec.Doc]struct{}) {
+func (tg *DependencyTracer) findClusterDependencies(spec *spec.Specification, c *matter.Cluster, dependencies map[*asciidoc.Document]struct{}) {
 	tg.findFieldSetDependencies(spec, c.Attributes, dependencies)
 	for _, s := range c.Structs {
 		tg.findFieldSetDependencies(spec, s.Fields, dependencies)
@@ -77,13 +74,13 @@ func (tg *DependencyTracer) findClusterDependencies(spec *spec.Specification, c 
 	}
 }
 
-func (tg *DependencyTracer) findFieldSetDependencies(spec *spec.Specification, fs matter.FieldSet, dependencies map[*spec.Doc]struct{}) {
+func (tg *DependencyTracer) findFieldSetDependencies(spec *spec.Specification, fs matter.FieldSet, dependencies map[*asciidoc.Document]struct{}) {
 	for _, f := range fs {
 		tg.findDataTypeDependencies(spec, f.Type, dependencies)
 	}
 }
 
-func (tg *DependencyTracer) findDataTypeDependencies(spec *spec.Specification, dt *types.DataType, dependencies map[*spec.Doc]struct{}) {
+func (tg *DependencyTracer) findDataTypeDependencies(spec *spec.Specification, dt *types.DataType, dependencies map[*asciidoc.Document]struct{}) {
 	if dt == nil {
 		return
 	}

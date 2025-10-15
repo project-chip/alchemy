@@ -22,7 +22,7 @@ func dump(indent int, els ...asciidoc.Element) {
 		case *asciidoc.AttributeEntry:
 			dumpAttributeEntry(v, indent)
 		case *asciidoc.TableCell:
-			fmt.Printf("[%s]", asciidoc.Describe(v))
+			fmt.Printf("table cell (%d)", len(v.Elements))
 			if v.Format != nil {
 				fmt.Printf(" (format: %s)", v.Format.AsciiDocString())
 			}
