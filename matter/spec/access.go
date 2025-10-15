@@ -235,11 +235,19 @@ func privilegeToString(p matter.Privilege) string {
 
 func validateAccess(spec *Specification, entity types.Entity, access matter.Access) {
 	if access.IsFabricScoped() && !matter.IsFabricScopingAllowed(entity) {
-		slog.Error("Fabric scoping is not allowed on this entity", matter.LogEntity("entity", entity), log.Path("source", entity))
-		spec.addError(&FabricScopingNotAllowedError{Entity: entity})
+		if comparableEntity, ok := entity.(types.ComparableEntity); ok {
+			slog.Error("Fabric scoping is not allowed on this entity", matter.LogEntity("entity", entity), log.Path("source", entity))
+			spec.addError(&FabricScopingNotAllowedError{Entity: comparableEntity})
+		} else {
+			slog.Error("entity is not a ComparableEntity", matter.LogEntity("entity", entity), log.Path("source", entity))
+		}
 	}
 	if access.IsFabricSensitive() && !matter.IsFabricSensitivityAllowed(entity) {
-		slog.Error("Fabric sensitivity is not allowed on this entity", matter.LogEntity("entity", entity), log.Path("source", entity))
-		spec.addError(&FabricSensitivityNotAllowedError{Entity: entity})
+		if comparableEntity, ok := entity.(types.ComparableEntity); ok {
+			slog.Error("Fabric sensitivity is not allowed on this entity", matter.LogEntity("entity", entity), log.Path("source", entity))
+			spec.addError(&FabricSensitivityNotAllowedError{Entity: comparableEntity})
+		} else {
+			slog.Error("entity is not a ComparableEntity", matter.LogEntity("entity", entity), log.Path("source", entity))
+		}
 	}
 }
