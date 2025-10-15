@@ -25,15 +25,15 @@ type ViolationComment struct {
 	Files []ViolationFile
 }
 
-//go:embed provisional
-var provisionalTemplateFiles embed.FS
+//go:embed merge_guard
+var mergeGuardTemplateFiles embed.FS
 
-var provisionalViolationsTemplate pipeline.Once[*raymond.Template]
+var mergeGuardViolationsTemplate pipeline.Once[*raymond.Template]
 
-func LoadProvisionalViolationsTemplate() (*raymond.Template, error) {
-	t, err := provisionalViolationsTemplate.Do(func() (*raymond.Template, error) {
+func LoadMergeGuardViolationsTemplate() (*raymond.Template, error) {
+	t, err := mergeGuardViolationsTemplate.Do(func() (*raymond.Template, error) {
 
-		t, err := handlebars.LoadTemplate("{{> provisional/violations}}", provisionalTemplateFiles)
+		t, err := handlebars.LoadTemplate("{{> merge_guard/violations}}", mergeGuardTemplateFiles)
 		if err != nil {
 			return nil, err
 		}
@@ -50,12 +50,12 @@ func LoadProvisionalViolationsTemplate() (*raymond.Template, error) {
 	return t.Clone(), nil
 }
 
-var provisionalNoViolationsTemplate pipeline.Once[*raymond.Template]
+var mergeGuardNoViolationsTemplate pipeline.Once[*raymond.Template]
 
-func LoadProvisionalNoViolationsTemplate() (*raymond.Template, error) {
-	t, err := provisionalNoViolationsTemplate.Do(func() (*raymond.Template, error) {
+func LoadMergeGuardNoViolationsTemplate() (*raymond.Template, error) {
+	t, err := mergeGuardNoViolationsTemplate.Do(func() (*raymond.Template, error) {
 
-		t, err := handlebars.LoadTemplate("{{> provisional/no_violations}}", provisionalTemplateFiles)
+		t, err := handlebars.LoadTemplate("{{> merge_guard/no_violations}}", mergeGuardTemplateFiles)
 		if err != nil {
 			return nil, err
 		}

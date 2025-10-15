@@ -1,4 +1,4 @@
-package provisional
+package spec
 
 import (
 	"strings"
@@ -13,6 +13,7 @@ const (
 
 	ViolationTypeNonProvisional ViolationType = 1 << (iota - 1)
 	ViolationTypeNotIfDefd
+	ViolationNewParseError
 )
 
 func (vt ViolationType) String() string {
@@ -38,4 +39,19 @@ type Violation struct {
 	Entity types.Entity
 	Path   string
 	Line   int
+	Text   string
+}
+
+func MergeViolations(v1, v2 map[string][]Violation) (v map[string][]Violation) {
+	v = make(map[string][]Violation, len(v1))
+
+	for key, value := range v1 {
+		v[key] = value
+	}
+
+	for key, valueToAppend := range v2 {
+		v[key] = append(v[key], valueToAppend...)
+	}
+
+	return
 }

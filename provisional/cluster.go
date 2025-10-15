@@ -9,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func compareClusters(specs specs, violations map[string][]Violation) {
+func compareClusters(specs spec.SpecPullRequest, violations map[string][]spec.Violation) {
 
 	var clusterStates []EntityState[*matter.Cluster]
 	//var headInProgressClusters []*matter.Cluster // Clusters which only appear in the head spec when in-progress is set
@@ -28,7 +28,7 @@ func compareClusters(specs specs, violations map[string][]Violation) {
 	}
 }
 
-func compareClusterEntities(spec *spec.Specification, violations map[string][]Violation, clusterState EntityState[*matter.Cluster]) {
+func compareClusterEntities(spec *spec.Specification, violations map[string][]spec.Violation, clusterState EntityState[*matter.Cluster]) {
 
 	for f := range clusterState.HeadInProgress.Features.FeatureBits() {
 		compareEntity(spec, violations, f, clusterState, func(c *matter.Cluster) iter.Seq[*matter.Feature] {
@@ -103,7 +103,7 @@ func compareClusterEntities(spec *spec.Specification, violations map[string][]Vi
 	}
 }
 
-func compareEntity[T ComparableEntity, Parent types.Entity](spec *spec.Specification, violations map[string][]Violation, e T, parentState EntityState[Parent], iterator func(p Parent) iter.Seq[T]) {
+func compareEntity[T ComparableEntity, Parent types.Entity](spec *spec.Specification, violations map[string][]spec.Violation, e T, parentState EntityState[Parent], iterator func(p Parent) iter.Seq[T]) {
 	compareStates(spec, violations, getEntityState(e, parentState, iterator))
 }
 

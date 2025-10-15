@@ -18,8 +18,8 @@ type EntityState[T types.Entity] struct {
 	Base           T
 }
 
-func compare(specs specs) (violations map[string][]Violation) {
-	violations = make(map[string][]Violation)
+func compare(specs spec.SpecPullRequest) (violations map[string][]spec.Violation) {
+	violations = make(map[string][]spec.Violation)
 	compareClusters(specs, violations)
 	compareGlobals(specs, violations)
 	return
@@ -60,7 +60,7 @@ func isNil[T any](val T) bool {
 	}
 }
 
-func compareStates[T types.Entity](spec *spec.Specification, violations map[string][]Violation, state EntityState[T]) {
+func compareStates[T types.Entity](spec *spec.Specification, violations map[string][]spec.Violation, state EntityState[T]) {
 	//slog.Info(state.HeadInProgress.EntityType().String(), "name", matter.EntityName(state.HeadInProgress), "inHead", state.Head, "inBaseIP", state.BaseInProgress, "inBase", state.Base)
 	if !isNil(state.Head) {
 		//	slog.Info("state.Head is not nil")
@@ -121,9 +121,9 @@ func compareStates[T types.Entity](spec *spec.Specification, violations map[stri
 	}
 }
 
-func checkProvisionality(spec *spec.Specification, violations map[string][]Violation, e types.Entity, ifDefd bool) {
-	var violationType ViolationType
-	state := Check(spec, e, e)
+func checkProvisionality(s *spec.Specification, violations map[string][]spec.Violation, e types.Entity, ifDefd bool) {
+	var violationType spec.ViolationType
+	state := Check(s, e, e)
 	switch e.(type) {
 	case *matter.Cluster,
 		*matter.Feature,
@@ -133,7 +133,7 @@ func checkProvisionality(spec *spec.Specification, violations map[string][]Viola
 		case StateAllClustersProvisional,
 			StateExplicitlyProvisional:
 		case StateAllClustersNonProvisional, StateSomeClustersProvisional:
-			violationType |= ViolationTypeNonProvisional
+			violationType |= spec.ViolationTypeNonProvisional
 		default:
 			slog.Warn("Unexpected provisional state for entity", matter.LogEntity("entity", e), slog.String("state", state.String()))
 		}
@@ -145,10 +145,10 @@ func checkProvisionality(spec *spec.Specification, violations map[string][]Viola
 			StateSomeClustersProvisional,
 			StateSomeDataTypeReferencesProvisional,
 			StateAllDataTypeReferencesNonProvisional:
-			violationType |= ViolationTypeNonProvisional
+			violationType |= spec.ViolationTypeNonProvisional
 		case StateUnreferenced:
 			if !ifDefd {
-				violationType |= ViolationTypeNotIfDefd
+				violationType |= spec.ViolationTypeNotIfDefd
 			}
 		default:
 			slog.Warn("Unexpected provisional state for entity", matter.LogEntity("entity", e), slog.String("state", state.String()))
@@ -163,10 +163,10 @@ func checkProvisionality(spec *spec.Specification, violations map[string][]Viola
 			StateSomeClustersProvisional,
 			StateSomeDataTypeReferencesProvisional,
 			StateAllDataTypeReferencesNonProvisional:
-			violationType |= ViolationTypeNonProvisional
+			violationType |= spec.ViolationTypeNonProvisional
 		case StateUnreferenced:
 			if !ifDefd {
-				violationType |= ViolationTypeNotIfDefd
+				violationType |= spec.ViolationTypeNotIfDefd
 			}
 		default:
 			slog.Warn("Unexpected provisional state for entity", matter.LogEntity("entity", e), slog.String("state", state.String()))
@@ -175,11 +175,11 @@ func checkProvisionality(spec *spec.Specification, violations map[string][]Viola
 		slog.Error("Unexpected provisionality entity", matter.LogEntity("entity", e))
 
 	}
-	if violationType != ViolationTypeNone {
+	if violationType != spec.ViolationTypeNone {
 		if !ifDefd {
-			violationType |= ViolationTypeNotIfDefd
+			violationType |= spec.ViolationTypeNotIfDefd
 		}
-		v := Violation{Entity: e, Type: violationType}
+		v := spec.Violation{Entity: e, Type: violationType}
 		source, ok := e.(log.Source)
 		if ok {
 			v.Path, v.Line = source.Origin()
