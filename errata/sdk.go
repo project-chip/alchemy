@@ -29,8 +29,6 @@ type SDK struct {
 	ClusterSplit map[string]string `yaml:"cluster-split,omitempty"`
 	ClusterSkip  []string          `yaml:"cluster-skip,omitempty"`
 
-	Domain matter.Domain `yaml:"domain,omitempty"`
-
 	TypeNames         map[string]string `yaml:"type-names,omitempty"`
 	ForceIncludeTypes []string          `yaml:"force-include-types,omitempty"`
 

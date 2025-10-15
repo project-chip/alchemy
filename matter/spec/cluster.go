@@ -14,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, d *asciidoc.Document, section *asciidoc.Section, domain matter.Domain) (entity types.Entity, err error) {
+func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, d *asciidoc.Document, section *asciidoc.Section, domain string) (entity types.Entity, err error) {
 	var clusters []*matter.Cluster
 
 	sections := parse.SkimList[*asciidoc.Section](reader, section, reader.Children(section))
@@ -190,7 +190,7 @@ func readRevisionHistory(reader asciidoc.Reader, doc *asciidoc.Document, section
 	return
 }
 
-func readClusterIDs(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, domain matter.Domain) ([]*matter.Cluster, error) {
+func readClusterIDs(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, domain string) ([]*matter.Cluster, error) {
 	ti, err := parseFirstTable(reader, doc, section)
 	if err != nil {
 		return nil, newGenericParseError(section, "failed reading cluster ID: %w", err)

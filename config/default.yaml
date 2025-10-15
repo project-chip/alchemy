@@ -4,6 +4,29 @@ libraries:
      root-document: src/main.adoc
    - name: App Clusters
      root-document: src/appclusters.adoc
+     documents:
+      src/app_clusters/appliances.adoc:
+        domain: "Appliances"
+      src/app_clusters/cameras.adoc:
+        domain: "Cameras"
+      src/app_clusters/energy_management.adoc:
+        domain: "Energy Management"
+      src/app_clusters/EntryControl.adoc:
+        domain: "Closures"
+      src/app_clusters/hvac.adoc:
+        domain: "HVAC"
+      src/app_clusters/lighting.adoc:
+        domain: "Lighting"
+      src/app_clusters/meas_and_sense.adoc:
+        domain: "Measurement & Sensing"
+      src/app_clusters/media/media.adoc:
+        domain: "Media"
+      src/app_clusters/network_infrastructure.adoc:
+        domain: "Network Infrastructure"
+      src/app_clusters/robots.adoc:
+        domain: "Robots"
+      src/app_clusters/webrtc.adoc:
+        domain: "Cameras"
    - name: Device Library
      root-document: src/device_library.adoc
    - name: Standard Namespaces

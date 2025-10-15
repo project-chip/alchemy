@@ -14,19 +14,28 @@ import (
 func (library *Library) parseEntities(spec *Specification) iter.Seq2[*asciidoc.Document, any] {
 
 	return func(yield func(*asciidoc.Document, any) bool) {
-		var currentDomain matter.Domain
-		currentDomain = matter.DomainGeneral
+		var currentDomain string
+		currentDomain = "General"
+		var currentDoc *asciidoc.Document
 		parse.Search(library.Root, library, library.Root, library.Children(library.Root), func(doc *asciidoc.Document, section *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
 			var err error
 			var skip bool
 
+			if doc != currentDoc {
+				if libraryDoc, ok := library.config.Documents[doc.Path.Relative]; ok {
+					if libraryDoc.Domain != "" {
+						currentDomain = libraryDoc.Domain
+					}
+				}
+				currentDoc = doc
+			}
 			sectionType := library.SectionType(section)
 			switch sectionType {
 			case matter.SectionTop:
 				dt, _ := library.DocType(doc)
 				switch dt {
 				case matter.DocTypeAppClusterIndex:
-					currentDomain = ParseDomain(library.SectionName(section))
+					//currentDomain = ParseDomain(library.SectionName(section))
 				}
 			case matter.SectionCluster:
 				//slog.Info("parsing cluster in library doc", "path", library.Root.Path.Relative, "doc", doc.Path.Relative, "sectionName", library.SectionName(section), "sectionType", sectionType.String(), log.Path("source", section))

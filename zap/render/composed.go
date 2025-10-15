@@ -201,8 +201,6 @@ func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.
 
 	}
 
-	slog.Info("conformance state", slog.String("conf", req.ClusterRequirement.Conformance.ASCIIDocString()), slog.Any("state", state))
-
 	switch req.Origin {
 	case matter.RequirementOriginBaseDeviceType, matter.RequirementOriginSubsetDeviceType:
 		// Normally, we do not include clusters from the Base Device Type or subset device types...

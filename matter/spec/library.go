@@ -8,6 +8,7 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
+	"github.com/project-chip/alchemy/config"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -20,6 +21,7 @@ type Library struct {
 	Spec *Specification
 
 	Errata *errata.Collection
+	config config.Library
 
 	cache *DocCache
 
@@ -50,10 +52,11 @@ type Library struct {
 
 type LibrarySet pipeline.Map[string, *pipeline.Data[*Library]]
 
-func NewLibrary(root *asciidoc.Document, errata *errata.Collection, cache *DocCache) *Library {
+func NewLibrary(root *asciidoc.Document, config config.Library, errata *errata.Collection, cache *DocCache) *Library {
 	return &Library{
 		Root:               root,
 		Errata:             errata,
+		config:             config,
 		referenceIndex:     newReferenceIndex(),
 		crossReferenceDocs: make(map[*asciidoc.CrossReference]*asciidoc.Document),
 		index:              map[string]*asciidoc.Document{},

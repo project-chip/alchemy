@@ -33,13 +33,13 @@ func (lb *LibraryBuilder) Process(cxt context.Context, inputs []*pipeline.Data[*
 
 	docCache := cacheFromPipeline(lb.specRoot, inputs)
 
-	for _, library := range lb.config.Libraries {
-		root, ok := docCache.cache.Load(library.Root)
+	for _, libraryConfig := range lb.config.Libraries {
+		root, ok := docCache.cache.Load(libraryConfig.Root)
 		if !ok {
-			slog.Warn("doc root not found", "root", library.Root)
+			slog.Warn("doc root not found", "root", libraryConfig.Root)
 			continue
 		}
-		outputs = append(outputs, pipeline.NewData(root.Path.Relative, NewLibrary(root, lb.errata, docCache)))
+		outputs = append(outputs, pipeline.NewData(root.Path.Relative, NewLibrary(root, libraryConfig, lb.errata, docCache)))
 	}
 
 	return

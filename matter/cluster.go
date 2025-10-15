@@ -53,7 +53,7 @@ type Cluster struct {
 	Revisions     []*Revision     `json:"revisions,omitempty"`
 	ParentCluster *Cluster        `json:"-"`
 	Conformance   conformance.Set `json:"conformance,omitempty"`
-	Domain        Domain          `json:"domain,omitempty"`
+	Domain        string          `json:"domain,omitempty"`
 
 	ClusterClassification
 
