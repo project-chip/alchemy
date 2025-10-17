@@ -1,0 +1,6 @@
+{{#ifFabricScoped struct}}fabric_scoped {{/ifFabricScoped ~}}
+struct {{asUpperCamelCase struct.Name}} {
+{{#structFields struct}}
+  {{> field cluster=cluster struct=struct field=this}}
+{{/structFields}}
+}

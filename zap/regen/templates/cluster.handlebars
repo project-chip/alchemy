@@ -1,0 +1,15 @@
+{{descriptionComment cluster.Description ~}}
+cluster {{asUpperCamelCase cluster.Name}} = {{number cluster.ID}} {
+  revision {{currentRevision cluster}};
+{{#enums cluster}}
+
+  {{> enum cluter=cluster enum=this}}
+{{/enums}}
+{{#structs cluster}}
+
+  {{> struct cluter=cluster struct=this}}
+{{/structs}}
+{{#each cluster.Attributes}}
+  {{> attribute cluster=cluster attribute=this}}
+{{/each}}
+}
