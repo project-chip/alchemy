@@ -1,0 +1,4 @@
+{{#ifReadOnly attribute.Access}}readonly {{/ifReadOnly ~}}
+attribute {{#ifOptional attribute.Conformance}}optional {{/ifOptional ~}}
+{{#ifNullable attribute.Quality}}nullable {{/ifNullable ~}}
+{{fieldType attribute.Type}} {{asLowerCamelCase attribute.Name}}{{#fieldIsArray attribute.Type}}[]{{/fieldIsArray}} = {{number attribute.ID}};

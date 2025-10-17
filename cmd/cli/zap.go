@@ -6,10 +6,17 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/sdk"
+	"github.com/project-chip/alchemy/zap"
+	"github.com/project-chip/alchemy/zap/regen"
 	"github.com/project-chip/alchemy/zap/render"
 )
 
 type ZAP struct {
+	ZAPXML   ZAPXML   `cmd:"" name:"xml" default:"withargs"`
+	ZAPRegen ZAPRegen `cmd:"" name:"regen"`
+}
+
+type ZAPXML struct {
 	common.ASCIIDocAttributes  `embed:""`
 	pipeline.ProcessingOptions `embed:""`
 	files.OutputOptions        `embed:""`
@@ -19,7 +26,7 @@ type ZAP struct {
 	render.TemplateOptions     `embed:""`
 }
 
-func (z *ZAP) Run(cc *Context) (err error) {
+func (z *ZAPXML) Run(cc *Context) (err error) {
 
 	err = sdk.CheckAlchemyVersion(z.SdkRoot)
 	if err != nil {
@@ -203,4 +210,60 @@ func (z *ZAP) Run(cc *Context) (err error) {
 	}
 
 	return
+}
+
+type ZAPRegen struct {
+	common.ASCIIDocAttributes  `embed:""`
+	pipeline.ProcessingOptions `embed:""`
+	files.OutputOptions        `embed:""`
+	spec.ParserOptions         `embed:""`
+	spec.FilterOptions         `embed:""`
+	sdk.SDKOptions             `embed:""`
+	render.TemplateOptions     `embed:""`
+}
+
+func (z *ZAPRegen) Run(cc *Context) (err error) {
+	zapTargeter := regen.Targeter(z.SdkRoot)
+
+	var specification *spec.Specification
+	specification, _, err = spec.Parse(cc, z.ParserOptions, z.ProcessingOptions, []spec.BuilderOption{spec.PatchForSdk(true)}, z.ASCIIDocAttributes.ToList())
+	if err != nil {
+		return
+	}
+
+	var zapPaths pipeline.Paths
+	zapPaths, err = pipeline.Start(cc, zapTargeter)
+	if err != nil {
+		return
+	}
+
+	var reader regen.Reader
+	reader, err = regen.NewReader()
+	if err != nil {
+		return
+	}
+
+	var zapFiles pipeline.Map[string, *pipeline.Data[*zap.File]]
+	zapFiles, err = pipeline.Parallel(cc, z.ProcessingOptions, reader, zapPaths)
+	if err != nil {
+		return
+	}
+
+	var renderer regen.IdlRenderer
+	renderer, err = regen.NewIdlRenderer(specification)
+	if err != nil {
+		return
+	}
+
+	var matterFiles pipeline.StringSet
+
+	matterFiles, err = pipeline.Parallel(cc, z.ProcessingOptions, renderer, zapFiles)
+	if err != nil {
+		return
+	}
+
+	writer := files.NewWriter[string]("Writing test scripts", z.OutputOptions)
+	err = writer.Write(cc, matterFiles, z.ProcessingOptions)
+
+	return nil
 }

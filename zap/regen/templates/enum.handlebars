@@ -1,0 +1,5 @@
+enum {{asUpperCamelCase enum.Name}} : {{fieldType enum.Type}} {
+{{#each enum.Values}}
+  {{> enum_value cluster=cluster enum=enum value=this}}
+{{/each}}
+}
