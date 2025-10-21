@@ -81,12 +81,12 @@ func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 		}
 	}
 
-	err = insertClusterName(&o, "ClientDirectories", names)
+	err = insertClusterName(&o, "ClientDirectories", names, true /* optional */)
 	if err != nil {
 		return
 	}
 
-	err = insertClusterName(&o, "ServerDirectories", names)
+	err = insertClusterName(&o, "ServerDirectories", names, false /* optional */)
 	if err != nil {
 		return
 	}
@@ -100,9 +100,12 @@ func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	return
 }
 
-func insertClusterName(o *internal.JSONMap, key string, names []string) error {
+func insertClusterName(o *internal.JSONMap, key string, names []string, optional bool) error {
 	val, ok := o.Get(key)
 	if !ok {
+		if optional {
+			return nil
+		}
 		return fmt.Errorf("no %s field in zap_cluster_list.json", key)
 	}
 	is, ok := val.(*internal.JSONMap)

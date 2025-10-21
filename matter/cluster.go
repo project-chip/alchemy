@@ -58,7 +58,7 @@ type Cluster struct {
 	ID            *Number         `json:"id,omitempty"`
 	Name          string          `json:"name,omitempty"`
 	Description   string          `json:"description,omitempty"`
-	Revisions     []*Revision     `json:"revisions,omitempty"`
+	Revisions     Revisions       `json:"revisions,omitempty"`
 	ParentCluster *Cluster        `json:"-"`
 	Conformance   conformance.Set `json:"conformance,omitempty"`
 	Domain        string          `json:"domain,omitempty"`

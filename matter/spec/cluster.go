@@ -174,8 +174,14 @@ func readRevisionHistory(reader asciidoc.Reader, doc *asciidoc.Document, section
 	}
 	for row := range ti.ContentRows() {
 		rev := &matter.Revision{}
-		rev.Number, err = ti.ReadString(reader, row, matter.TableColumnRevision)
+		var number string
+		number, err = ti.ReadString(reader, row, matter.TableColumnRevision)
 		if err != nil {
+			err = newGenericParseError(row, "error reading revision column: %w", err)
+			return
+		}
+		rev.Number = matter.ParseNumber(number)
+		if !rev.Number.Valid() {
 			err = newGenericParseError(row, "error reading revision column: %w", err)
 			return
 		}
