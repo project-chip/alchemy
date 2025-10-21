@@ -234,7 +234,7 @@ func (sp *Builder) resolveCommandResponseDataType(library *Library, cluster *mat
 			if cmd.Response == nil {
 				break
 			}
-			command.Response.Entity = cmd.Response.Entity
+			command.Response.Entity = cmd
 			return
 		}
 	}
