@@ -108,7 +108,7 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 	var out bytes.Buffer
 	writer := files.NewPatcher[string]("Generating patch file...", &out)
 
-	specs, err := spec.LoadSpecPullRequest(cc, baseRoot, headRoot, changedDocs, pipelineOptions, nil)
+	specs, err := spec.LoadSpecPullRequest(cc, baseRoot, headRoot, pipelineOptions)
 	if err != nil {
 		return fmt.Errorf("failed to load specs: %v", err)
 	}

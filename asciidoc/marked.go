@@ -20,15 +20,19 @@ func (Marked) TextFormat() TextFormat {
 	return TextFormatMarked
 }
 
-func (b *Marked) Equals(e Element) bool {
+func (m *Marked) Equals(e Element) bool {
 	ob, ok := e.(*Marked)
 	if !ok {
 		return false
 	}
-	if !b.AttributeList.Equals(ob.AttributeList) {
+	if !m.AttributeList.Equals(ob.AttributeList) {
 		return false
 	}
-	return b.Elements.Equals(ob.Elements)
+	return m.Elements.Equals(ob.Elements)
+}
+
+func (m *Marked) Clone() Element {
+	return &Marked{position: m.position, raw: m.raw, AttributeList: m.AttributeList.Clone(), Elements: m.Elements.Clone()}
 }
 
 type DoubleMarked struct {
@@ -51,13 +55,17 @@ func (DoubleMarked) TextFormat() TextFormat {
 	return TextFormatMarked
 }
 
-func (b *DoubleMarked) Equals(e Element) bool {
+func (dm *DoubleMarked) Equals(e Element) bool {
 	ob, ok := e.(*DoubleMarked)
 	if !ok {
 		return false
 	}
-	if !b.AttributeList.Equals(ob.AttributeList) {
+	if !dm.AttributeList.Equals(ob.AttributeList) {
 		return false
 	}
-	return b.Elements.Equals(ob.Elements)
+	return dm.Elements.Equals(ob.Elements)
+}
+
+func (dm *DoubleMarked) Clone() Element {
+	return &DoubleMarked{position: dm.position, raw: dm.raw, AttributeList: dm.AttributeList.Clone(), Elements: dm.Elements.Clone()}
 }

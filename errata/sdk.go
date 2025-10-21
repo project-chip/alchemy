@@ -29,13 +29,24 @@ type SDK struct {
 	ClusterSplit map[string]string `yaml:"cluster-split,omitempty"`
 	ClusterSkip  []string          `yaml:"cluster-skip,omitempty"`
 
-	Domain matter.Domain `yaml:"domain,omitempty"`
-
 	TypeNames         map[string]string `yaml:"type-names,omitempty"`
 	ForceIncludeTypes []string          `yaml:"force-include-types,omitempty"`
 
 	Types      *SDKTypes `yaml:"types,omitempty"`
 	ExtraTypes *SDKTypes `yaml:"extra-types,omitempty"`
+}
+
+func (s *SDK) HasSpecPatch() bool {
+	if s.ClusterName != "" {
+		return true
+	}
+	if s.Types != nil {
+		return true
+	}
+	if s.ExtraTypes != nil {
+		return true
+	}
+	return false
 }
 
 type SDKTypes struct {
@@ -67,11 +78,6 @@ type SDKType struct {
 	Constraint  string `yaml:"constraint,omitempty"`
 	Conformance string `yaml:"conformance,omitempty"`
 	Fallback    string `yaml:"fallback,omitempty"`
-}
-
-func GetSDK(path string) *SDK {
-	e := GetErrata(path)
-	return &e.SDK
 }
 
 type SDKTypeCollection map[string]*SDKType

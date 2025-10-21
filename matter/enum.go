@@ -173,3 +173,11 @@ type AnonymousEnum struct {
 func (AnonymousEnum) EntityType() types.EntityType {
 	return types.EntityTypeEnum
 }
+
+func (ae *AnonymousEnum) Equals(e types.Entity) bool {
+	oae, ok := e.(*AnonymousEnum)
+	if !ok {
+		return false
+	}
+	return ae.parent.Equals(oae.parent)
+}

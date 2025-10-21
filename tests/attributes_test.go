@@ -570,7 +570,6 @@ var attributesTestShouldNotRecognizePassMacroWithInvalidSubstitutionListInAttrib
 				"holygrail",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -594,7 +593,6 @@ var attributesTestShouldNotRecognizePassMacroWithInvalidSubstitutionListInAttrib
 				"holygrail",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }

@@ -9,9 +9,9 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func toAttributes(spec *Specification, d *Doc, section *asciidoc.Section, cluster *matter.Cluster, pc *parseContext) (attributes matter.FieldSet, err error) {
+func (library *Library) toAttributes(spec *Specification, reader asciidoc.Reader, d *asciidoc.Document, section *asciidoc.Section, cluster *matter.Cluster) (attributes matter.FieldSet, err error) {
 	var ti *TableInfo
-	ti, err = parseFirstTable(d, section)
+	ti, err = parseFirstTable(reader, d, section)
 	if err != nil {
 		if err == ErrNoTableFound {
 			if !isBaseOrDerivedCluster(cluster) {
@@ -22,11 +22,11 @@ func toAttributes(spec *Specification, d *Doc, section *asciidoc.Section, cluste
 		return
 	}
 	var attributeMap map[string]*matter.Field
-	attributes, attributeMap, err = d.readFields(spec, ti, types.EntityTypeAttribute, cluster)
+	attributes, attributeMap, err = library.readFields(spec, reader, ti, types.EntityTypeAttribute, cluster)
 	if err != nil {
 		return
 	}
-	err = mapFields(d, section, attributeMap, pc)
+	err = library.mapFields(reader, d, section, attributeMap)
 	return
 }
 

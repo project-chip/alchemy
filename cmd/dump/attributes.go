@@ -5,10 +5,9 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func dumpAttributes(doc *spec.Doc, attributes []asciidoc.Attribute, indent int) {
+func dumpAttributes(reader Reader, attributes []asciidoc.Attribute, indent int) {
 	if len(attributes) == 0 {
 		return
 	}
@@ -30,7 +29,7 @@ func dumpAttributes(doc *spec.Doc, attributes []asciidoc.Attribute, indent int) 
 		case string:
 			fmt.Print(v)
 		case asciidoc.Elements:
-			dumpElements(doc, &v, v, indent+1)
+			dumpElements(reader, &v, v, indent+1)
 		case []any:
 			dumpAttributeVals(v, indent+1)
 		default:

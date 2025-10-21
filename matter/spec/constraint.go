@@ -156,13 +156,17 @@ func (sp *Builder) resolveFieldConstraintLimit(cluster *matter.Cluster, finder e
 		*constraint.StatusCodeLimit,
 		*constraint.EmptyLimit,
 		*constraint.StringLimit,
-		*constraint.GenericLimit,
 		*constraint.BooleanLimit,
 		*constraint.TemperatureLimit,
 		*constraint.UnspecifiedLimit,
 		*constraint.ExpLimit,
 		*constraint.HexLimit,
+		*constraint.DescribedLimit,
 		*constraint.PercentLimit: // None of these limits have references to be resolved
+	case *constraint.GenericLimit:
+		if !constraint.IsBlankLimit(l) {
+			sp.Spec.addError(&InvalidFallbackError{Source: source, Fallback: l.Value})
+		}
 	default:
 		slog.Warn("Unexpected field constraint limit type", log.Type("type", l))
 	}

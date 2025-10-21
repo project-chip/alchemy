@@ -227,7 +227,7 @@ InlineTableCellIntermediateLine = ValidTableCellPrefix newline:NewLine? ValidMul
 
 InlineTableCellEmptyLine = ValidTableCellPrefix NewLine AnySpaces &(NewLine) !TableEnd !TableCellDelimiter !TableMacros &(InlineTableCellLine / InlineTableCellLastLine) 
  {
-    debugPosition(c, "TABLE: inline table intermediate cell empty line (%d): \"%s\"\n",string(c.text))
+    debugPosition(c, "TABLE: inline table intermediate cell empty line: \"%s\"\n", string(c.text))
     return asciidoc.Elements{populatePosition(c, asciidoc.NewEmptyLine(string(c.text)))}, nil
 }
 

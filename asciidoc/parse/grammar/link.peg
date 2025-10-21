@@ -6,7 +6,7 @@ Link = link:(HTMLLink / PrefixedLink / ExternalLink / Email) {
     return link, nil
 }
 
-LinkMacro = "link:"
+LinkMacro = "link:" ":"?
 
 HTMLLink = "<" url:(FullURL) ">" {
     debugPosition(c, "matched HTML link\n")

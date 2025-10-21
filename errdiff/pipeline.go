@@ -12,11 +12,11 @@ import (
 
 type ComparableError interface {
 	spec.Error
-	ComparableEntity() types.ComparableEntity
+	ComparableEntity() types.Entity
 }
 
 func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions) (violations map[string][]spec.Violation, err error) {
-	specs, err := spec.LoadSpecPullRequest(cxt, baseRoot, headRoot, docPaths, pipelineOptions, nil)
+	specs, err := spec.LoadSpecPullRequest(cxt, baseRoot, headRoot, pipelineOptions)
 	if err != nil {
 		return
 	}
@@ -47,7 +47,7 @@ func groupErrorsByType(errors []spec.Error) map[spec.ErrorType][]spec.Error {
 	return errorBuckets
 }
 
-func findMatchingError(entity types.ComparableEntity, errors []error) error {
+func findMatchingError(entity types.Entity, errors []error) error {
 	for _, e := range errors {
 		switch e := e.(type) {
 		case ComparableError:

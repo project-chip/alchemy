@@ -40,7 +40,7 @@ func (b *Baller) organizeStructSection(cxt *discoContext, ss *subSection) (err e
 
 	/*err = b.renameTableHeaderCells(cxt, ss.section, fieldsTable, nil)
 	if err != nil {
-		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.doc.SectionName(ss.section), cxt.doc.Path, err)
+		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", cxt.library.SectionName(ss.section), cxt.doc.Path, err)
 	}*/
 
 	err = b.fixAccessCells(cxt, ss, types.EntityTypeStruct)
@@ -60,12 +60,12 @@ func (b *Baller) organizeStructSection(cxt *discoContext, ss *subSection) (err e
 
 	err = b.renameTableHeaderCells(cxt, ss.section, fieldsTable, matter.Tables[matter.TableTypeStruct].ColumnRenames)
 	if err != nil {
-		return fmt.Errorf("error renaming table header cells in struct table in section %s in %s: %w", cxt.doc.SectionName(ss.section), cxt.doc.Path, err)
+		return fmt.Errorf("error renaming table header cells in struct table in section %s in %s: %w", cxt.library.SectionName(ss.section), cxt.doc.Path, err)
 	}
 
 	err = b.addMissingColumns(cxt, ss.section, fieldsTable, matter.Tables[matter.TableTypeStruct], types.EntityTypeStructField)
 	if err != nil {
-		return fmt.Errorf("error adding missing table columns in struct table in section %s in %s: %w", cxt.doc.SectionName(ss.section), cxt.doc.Path, err)
+		return fmt.Errorf("error adding missing table columns in struct table in section %s in %s: %w", cxt.library.SectionName(ss.section), cxt.doc.Path, err)
 	}
 
 	err = b.reorderColumns(cxt, ss.section, fieldsTable, matter.TableTypeStruct)
@@ -74,7 +74,7 @@ func (b *Baller) organizeStructSection(cxt *discoContext, ss *subSection) (err e
 	}
 
 	b.appendSubsectionTypes(cxt, ss.section, fieldsTable.ColumnMap, fieldsTable.Rows)
-	b.removeMandatoryFallbacks(fieldsTable)
+	b.removeMandatoryFallbacks(cxt, fieldsTable)
 
 	err = b.linkIndexTables(cxt, ss)
 	if err != nil {

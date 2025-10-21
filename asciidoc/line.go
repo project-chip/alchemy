@@ -2,29 +2,37 @@ package asciidoc
 
 type LineList []string
 
-func (s LineList) Lines() []string {
-	return s
+func (ll LineList) Lines() []string {
+	return ll
 }
 
-func (s *LineList) AppendLine(e string) {
-	*s = append(*s, e)
+func (ll *LineList) AppendLine(e string) {
+	*ll = append(*ll, e)
 }
 
-func (s *LineList) SetLines(els []string) {
-	*s = els
+func (ll *LineList) SetLines(els []string) {
+	*ll = els
 }
 
-func (s LineList) Equals(oll LineList) bool {
-	if len(s) != len(oll) {
+func (ll LineList) Equals(oll LineList) bool {
+	if len(ll) != len(oll) {
 		return false
 	}
-	for i, l := range s {
+	for i, l := range ll {
 		ol := oll[i]
 		if l != ol {
 			return false
 		}
 	}
 	return true
+}
+
+func (ll LineList) Clone() []string {
+	var els []string
+	for _, e := range ll {
+		els = append(els, e)
+	}
+	return els
 }
 
 type HasLines interface {
@@ -48,11 +56,15 @@ func (*EmptyLine) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *EmptyLine) Equals(o Element) bool {
+func (el *EmptyLine) Equals(o Element) bool {
 	oa, ok := o.(*EmptyLine)
 	if !ok {
 		return false
 	}
 
-	return a.Text == oa.Text
+	return el.Text == oa.Text
+}
+
+func (el *EmptyLine) Clone() Element {
+	return &EmptyLine{position: el.position, Text: el.Text}
 }

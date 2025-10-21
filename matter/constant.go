@@ -22,6 +22,14 @@ func (*Constant) EntityType() types.EntityType {
 	return types.EntityTypeConstant
 }
 
+func (c *Constant) Equals(e types.Entity) bool {
+	oc, ok := e.(*Constant)
+	if !ok {
+		return false
+	}
+	return c.Name == oc.Name
+}
+
 func (s *Constant) Clone() *Constant {
 	ns := &Constant{Name: s.Name, Value: s.Value}
 	return ns

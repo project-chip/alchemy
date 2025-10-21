@@ -57,6 +57,12 @@ func (an AttributeNames) Equals(oan AttributeNames) bool {
 	return true
 }
 
+func (an AttributeNames) Clone() []AttributeName {
+	oa := make([]AttributeName, len(an))
+	copy(oa, an)
+	return oa
+}
+
 func attributeNameToType(name AttributeName) AttributeType {
 	switch name {
 	case AttributeNameAlternateText:

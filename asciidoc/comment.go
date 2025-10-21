@@ -23,6 +23,10 @@ func (slc *SingleLineComment) Equals(e Element) bool {
 	return slc.Value == oslc.Value
 }
 
+func (slc *SingleLineComment) Clone() Element {
+	return &SingleLineComment{position: slc.position, raw: slc.raw, Value: slc.Value}
+}
+
 type MultiLineComment struct {
 	position
 	raw
@@ -48,4 +52,8 @@ func (mlc *MultiLineComment) Equals(e Element) bool {
 		return false
 	}
 	return omlc.LineList.Equals(mlc.LineList)
+}
+
+func (mlc *MultiLineComment) Clone() Element {
+	return &MultiLineComment{position: mlc.position, raw: mlc.raw, Delimiter: mlc.Delimiter, LineList: mlc.LineList.Clone()}
 }

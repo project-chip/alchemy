@@ -9,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func parseQuality(s string, entityType types.EntityType, doc *Doc, element asciidoc.Element) matter.Quality {
+func parseQuality(s string, entityType types.EntityType, doc *asciidoc.Document, element asciidoc.Element) matter.Quality {
 
 	q := matter.ParseQuality(s)
 	if allowed, ok := matter.AllowedQualities[entityType]; ok {
