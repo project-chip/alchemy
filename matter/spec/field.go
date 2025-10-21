@@ -263,7 +263,7 @@ func (library *Library) findAnonymousBitmap(reader asciidoc.Reader, doc *asciido
 
 func (library *Library) findTagNamespace(reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section, field *matter.Field, fieldMap map[string]*matter.Field) error {
 	var found bool
-	parse.Search(doc, reader, s, s.Elements, func(doc *asciidoc.Document, ref *asciidoc.CrossReference, parent asciidoc.ParentElement, index int) parse.SearchShould {
+	parse.Search(doc, reader, s, reader.Children(s), func(doc *asciidoc.Document, ref *asciidoc.CrossReference, parent asciidoc.ParentElement, index int) parse.SearchShould {
 		if library.elementIdentifier(reader, ref, ref, ref.ID) == "ref_StandardNamespaces" {
 			label := buildReferenceName(reader, ref, ref.Elements)
 			name := strings.TrimSpace(text.TrimCaseInsensitiveSuffix(label, " Namespace"))
@@ -356,7 +356,7 @@ func checkNullText(library *Library, doc *asciidoc.Document, section *asciidoc.S
 		return
 	}
 	var hasNullDefinition bool
-	parse.Search(doc, library, section, section.Children(), func(d *asciidoc.Document, s *asciidoc.String, parent asciidoc.ParentElement, index int) parse.SearchShould {
+	parse.Search(doc, library, section, library.Children(section), func(d *asciidoc.Document, s *asciidoc.String, parent asciidoc.ParentElement, index int) parse.SearchShould {
 		if nullIndicationPattern.MatchString(s.Value) {
 			hasNullDefinition = true
 			return parse.SearchShouldStop
