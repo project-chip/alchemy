@@ -1,4 +1,5 @@
-enum {{asUpperCamelCase enum.Name}} : {{fieldType enum.Type}} {
+{{#if shared}}shared {{/if ~}}
+enum {{asUpperCamelCase enum.Name}} : {{enum.Type.Name}} {
 {{#each enum.Values}}
   {{> enum_value cluster=cluster enum=enum value=this}}
 {{/each}}

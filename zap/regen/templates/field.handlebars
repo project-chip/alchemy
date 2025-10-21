@@ -1,3 +1,5 @@
+{{#ifFabricSensitive field.Access}}fabric_sensitive {{/ifFabricSensitive ~}}
 {{#ifOptional field.Conformance}}optional {{/ifOptional ~}}
 {{#ifNullable field.Quality}}nullable {{/ifNullable ~}}
-{{fieldType field.Type}} {{asLowerCamelCase field.Name}}{{#fieldIsArray field.Type}}[]{{/fieldIsArray}} = {{number field.ID}};
+{{fieldType field fieldset ~}}
+{{#ifHasLengthConstraint field fieldset}}<{{lengthConstraint field fieldset}}>{{/ifHasLengthConstraint}} {{asLowerCamelCase field.Name}}{{#fieldIsArray field.Type}}[]{{/fieldIsArray}} = {{number field.ID}};

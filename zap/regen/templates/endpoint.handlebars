@@ -1,0 +1,23 @@
+endpoint {{endpoint.ID}} {
+  device type {{deviceTypeName endpoint.DeviceTypeName}} = {{endpoint.DeviceTypeCode}}, version {{currentRevision endpoint.DeviceType.Revisions}};
+
+{{#each endpoint.Clusters}}
+
+  server cluster {{asUpperCamelCase this.Name}} {
+{{#each this.Events}}
+    emits event {{asUpperCamelCase this.Name}};
+{{/each}}
+{{#if this.Attributes}}
+{{#each this.Attributes}}
+    {{storageOption this.StorageOption}} attribute {{asLowerCamelCase this.Name}}{{#if this.DefaultValue}} default = {{this.DefaultValue}}{{/if}};
+{{/each}}
+{{/if}}
+{{#if this.Commands}}
+
+{{#each this.Commands}}
+    handle command {{asUpperCamelCase this.Name}};
+{{/each}}
+{{/if}}
+  }
+{{/each}}
+}

@@ -3,6 +3,7 @@ package provisional
 import (
 	"log/slog"
 
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -165,7 +166,7 @@ func Check(spec *spec.Specification, entity types.Entity, originalEntity types.E
 			return Check(spec, c, originalEntity)
 		}
 	default:
-		slog.Error("Unexpected entity type checking provisional status", matter.LogEntity("entity", entity))
+		slog.Error("Unexpected entity type checking provisional status", matter.LogEntity("entity", entity), log.Type("type", entity))
 	}
 	return StateUnknown
 }
