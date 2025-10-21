@@ -231,7 +231,7 @@ func (sp *Builder) resolveCommandResponseDataType(docGroup *DocGroup, cluster *m
 			if cmd.Response == nil {
 				break
 			}
-			command.Response.Entity = cmd.Response.Entity
+			command.Response.Entity = cmd
 			return
 		}
 	}
