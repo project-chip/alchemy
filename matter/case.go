@@ -21,17 +21,21 @@ func isSeparator(r rune) bool {
 // It is Unicode-aware, and preserves acronyms
 // e.g. "Level control" becomes "LevelControl", "TV set" becomes "TVSet"
 func Case(s string) string {
-	return caseify(s, 0)
+	return caseify(s, 0, true, false)
 }
 
 // Case turns a string with spaces into a valid Matter identifier, with a custom separator rune
 // e.g. "Level control" becomes "Level-Control", "TV set" becomes "TV-Set"
 func CaseWithSeparator(s string, separator rune) string {
-	return caseify(s, separator)
+	return caseify(s, separator, true, false)
+}
+
+func CaseWithAcronyms(s string) string {
+	return caseify(s, 0, true, true)
 }
 
 func CamelCase(s string) string {
-	s = caseify(s, 0)
+	s = caseify(s, 0, false, false)
 	_, isAcronym := acronyms.Load(s)
 	if isAcronym {
 		return s
@@ -44,11 +48,21 @@ func CamelCase(s string) string {
 	return s
 }
 
-func caseify(s string, separator rune) string {
+func CamelCaseWithAcronyms(s string) string {
+	s = caseify(s, 0, false, true)
+	runes := []rune(s)
+	if len(runes) > 0 && unicode.IsUpper(runes[0]) {
+		runes[0] = unicode.ToLower(runes[0])
+		s = string(runes)
+	}
+	return s
+}
+
+func caseify(s string, separator rune, startWithCapital bool, preserveAcronyms bool) string {
 	runes := []rune(s)
 	b := make([]byte, 0, len(runes))
 	var index int
-	upperCaseNextRune := true // We'll always start with a capital
+	upperCaseNextRune := startWithCapital // We'll always start with a capital
 	for index < len(runes) {
 		r := runes[index]
 		if unicode.IsUpper(r) {
@@ -73,7 +87,7 @@ func caseify(s string, separator rune) string {
 			if end-index > 1 {
 
 				_, isAcronym := acronyms.Load(string(runes[index:end]))
-				if isAcronym || endedBySeparator {
+				if isAcronym || endedBySeparator || preserveAcronyms {
 					// If this run of upper-case letters is a known acronym, or
 					// it ends the string, preserve it
 					for index < end {

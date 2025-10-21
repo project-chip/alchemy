@@ -1,15 +1,41 @@
 {{descriptionComment cluster.Description ~}}
 cluster {{asUpperCamelCase cluster.Name}} = {{number cluster.ID}} {
-  revision {{currentRevision cluster}};
-{{#enums cluster}}
+  revision {{currentRevision cluster.Revisions}};
+{{#enums cluster.Enums}}
 
-  {{> enum cluter=cluster enum=this}}
+  {{> enum cluter=cluster shared=@shared enum=this}}
 {{/enums}}
-{{#structs cluster}}
+{{#bitmaps cluster}}
+
+  {{> bitmap cluter=cluster bitmap=this}}
+{{/bitmaps}}
+{{#structs cluster.Structs}}
 
   {{> struct cluter=cluster struct=this}}
 {{/structs}}
-{{#each cluster.Attributes}}
-  {{> attribute cluster=cluster attribute=this}}
-{{/each}}
+{{#events cluster}}
+
+  {{> event cluter=cluster event=this}}
+{{/events}}
+
+{{#attributes cluster}}
+  {{> attribute cluster=cluster provisional=@provisional attribute=this}}
+{{/attributes}}
+{{#commands cluster.Commands}}
+{{#ifRequest this ~}}
+{{#if this.Fields}}
+
+  {{> request cluster=cluster command=this}}
+{{/if}}
+{{else}}
+
+  {{> response cluster=cluster command=this}}
+{{/ifRequest}}
+{{/commands}}
+{{#if cluster.Commands}}
+
+{{#requests cluster.Commands}}
+  {{> command cluster=cluster command=this}}
+{{/requests}}
+{{/if}}
 }

@@ -23,25 +23,6 @@ func (library *Library) SyncCrossReference(cr *CrossReference, id asciidoc.Eleme
 	}
 }
 
-/*
-func (doc *Library) CrossReferences(reader asciidoc.Reader) map[string][]*CrossReference {
-	doc.Lock()
-	if doc.crossReferencesParsed {
-		doc.Unlock()
-		return doc.crossReferences
-	}
-
-	parse.Search(reader, nil, doc.Base.Children(), func(icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) parse.SearchShould {
-		referenceID := doc.anchorId(reader, icr, icr, icr.ID)
-		doc.crossReferences[referenceID] = append(doc.crossReferences[referenceID], &CrossReference{Document: doc, Reference: icr, Parent: parent, Source: NewSource(doc, icr)})
-		return parse.SearchShouldContinue
-	})
-	doc.crossReferencesParsed = true
-	doc.Unlock()
-	return doc.crossReferences
-}
-*/
-
 func ReferenceName(reader asciidoc.Reader, element any) string {
 	if element == nil {
 		return ""

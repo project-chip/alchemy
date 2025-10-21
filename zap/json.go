@@ -1,6 +1,10 @@
 package zap
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/project-chip/alchemy/matter"
+)
 
 type File struct {
 	FileFormat    int            `json:"fileFormat"`
@@ -39,6 +43,8 @@ type EndpointType struct {
 	DeviceTypeName      string `json:"deviceTypeName"`
 
 	Clusters []ClusterRef `json:"clusters"`
+
+	DeviceType *matter.DeviceType `json:"-"`
 }
 
 type DeviceTypeRef struct {
@@ -58,6 +64,8 @@ type ClusterRef struct {
 	ApiMaturity string `json:"apiMaturity"`
 	Enabled     int    `json:"enabled"`
 
+	Cluster *matter.Cluster `json:"-"`
+
 	Attributes []AttributeRef `json:"attributes"`
 	Commands   []CommandRef   `json:"commands"`
 	Events     []EventRef     `json:"events"`
@@ -70,6 +78,8 @@ type CommandRef struct {
 	Source     string `json:"source"`
 	IsIncoming int    `json:"isIncoming"`
 	IsEnabled  int    `json:"isEnabled"`
+
+	Command *matter.Command `json:"-"`
 }
 
 type AttributeRef struct {

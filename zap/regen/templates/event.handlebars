@@ -1,0 +1,6 @@
+{{#ifFabricSensitive event.Access}}fabric_sensitive {{/ifFabricSensitive ~}}
+{{toLower event.Priority}} event {{> access access=event.Access ~}}{{asUpperCamelCase event.Name}} = {{number event.ID}} {
+{{#eventFields event}}
+  {{> field cluster=cluster event=event field=this fieldset=event.Fields}}
+{{/eventFields}}
+}

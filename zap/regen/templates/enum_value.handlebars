@@ -1,1 +1,1 @@
-k{{value.Name}} = {{number value.Value}};
+k{{asUpperCamelCase value.Name}} = {{number value.Value}}{{#upperCamelCaseDiffers value.Name}} [spec_name = "{{value.Name}}"]{{/upperCamelCaseDiffers}};

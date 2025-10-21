@@ -1,0 +1,5 @@
+request struct {{requestName command}}Request {
+{{#commandFields command}}
+  {{> field cluster=cluster command=command field=this fieldset=command.Fields}}
+{{/commandFields}}
+}

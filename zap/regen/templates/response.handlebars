@@ -1,0 +1,5 @@
+response struct {{requestName command}} = {{number command.ID}} {
+{{#commandFields command}}
+  {{> field cluster=cluster command=command field=this fieldset=command.Fields}}
+{{/commandFields}}
+}

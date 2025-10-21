@@ -1,0 +1,4 @@
+{{descriptionComment command.Description ~}}
+{{#ifFabricScoped command.Access.FabricScoping}}fabric {{/ifFabricScoped ~}}
+{{#isTimed command}}timed {{/isTimed ~}}
+command {{> access access=event.Access ~}}{{asUpperCamelCase command.Name}}({{#if command.Fields}}{{requestName command}}Request{{/if}}): {{responseName command}} = {{number command.ID}};

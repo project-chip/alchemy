@@ -1,0 +1,5 @@
+bitmap {{asUpperCamelCase bitmap.Name}} : {{bitmapType bitmap}} {
+{{#each bitmap.Bits}}
+  {{> bitmap_bit cluster=cluster bitmap=bitmap bit=this}}
+{{/each}}
+}

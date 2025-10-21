@@ -38,12 +38,14 @@ func (cr *EntityRefs[T]) Get(m types.Entity) (pipeline.Map[T, struct{}], bool) {
 }
 
 func (spec *Specification) BuildDataTypeReferences() {
-	iterateOverDataTypes(spec, func(cluster *matter.Cluster, parent, entity types.Entity) {
-		spec.DataTypeRefs.Add(parent, entity)
+	IterateOverDataTypes(spec, func(cluster *matter.Cluster, parent, entity types.Entity) {
+		if parent != nil {
+			spec.DataTypeRefs.Add(parent, entity)
+		}
 	})
 }
 
-func iterateOverDataTypes(spec *Specification, callback func(cluster *matter.Cluster, parent types.Entity, entity types.Entity)) {
+func IterateOverDataTypes(spec *Specification, callback func(cluster *matter.Cluster, parent types.Entity, entity types.Entity)) {
 	for _, c := range spec.ClustersByName {
 		if c.Features != nil {
 			callback(c, c, c.Features)
@@ -65,7 +67,7 @@ func iterateOverDataTypes(spec *Specification, callback func(cluster *matter.Clu
 			for _, f := range cmd.Fields {
 				iterateOverFieldDataTypes(spec, c, f, callback)
 			}
-			if cmd.Response != nil && cmd.Response.Entity != nil && cmd.Response.Name == "" {
+			if cmd.Response != nil && cmd.Response.Entity != nil && cmd.Response.Name != "" {
 				callback(c, cmd, cmd.Response.Entity)
 			}
 		}
@@ -81,6 +83,7 @@ func iterateOverDataTypes(spec *Specification, callback func(cluster *matter.Clu
 		}
 	}
 	for e := range spec.GlobalObjects {
+		callback(nil, nil, e)
 		switch en := e.(type) {
 		case *matter.Struct:
 			for _, f := range en.Fields {

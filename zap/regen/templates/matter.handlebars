@@ -1,4 +1,21 @@
+// This IDL was generated automatically by ZAP.
+// It is for view/code review purposes only.
+
+{{#enums enums}}
+
+{{> enum shared=shared enum=this}}
+{{/enums}}
+{{#structs structs}}
+
+{{> struct shared=shared struct=this}}
+{{/structs}}
 {{#each clusters}}
 
 {{> cluster cluster=this}}
 {{/each}}
+
+{{#each endpoints}}
+{{> endpoint endpoint=this}}
+{{/each}}
+
+
