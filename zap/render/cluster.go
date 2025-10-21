@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"slices"
-	"strconv"
 	"strings"
 
 	"github.com/beevik/etree"
@@ -211,15 +210,11 @@ func generateClusterGlobalAttributes(configurator *zap.Configurator, cle *etree.
 func setClusterGlobalAttribute(parent *etree.Element, globalAttribute *etree.Element, cluster *matter.Cluster, id *matter.Number) {
 	switch id.Value() {
 	case 0xFFFD:
-		var lastRevision uint64
-		for _, rev := range cluster.Revisions {
-			revNumber := matter.ParseNumber(rev.Number)
-			if revNumber.Valid() && revNumber.Value() > lastRevision {
-				lastRevision = revNumber.Value()
-			}
-		}
 		globalAttribute.CreateAttr("side", "either")
-		globalAttribute.CreateAttr("value", strconv.FormatUint(lastRevision, 10))
+		mostRecentRevision := cluster.Revisions.MostRecent()
+		if mostRecentRevision != nil {
+			globalAttribute.CreateAttr("value", mostRecentRevision.Number.HexString())
+		}
 	case 0xFFFC:
 		slog.Warn("Removing redundant feature global attribute", slog.String("clusterName", cluster.Name))
 		parent.RemoveChild(globalAttribute)

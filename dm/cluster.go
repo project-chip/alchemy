@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/beevik/etree"
@@ -71,16 +70,13 @@ func (p *Renderer) renderAppCluster(doc *spec.Doc, entity types.Entity) (output 
 	c.CreateAttr("name", clusterName)
 
 	revs := c.CreateElement("revisionHistory")
-	var latestRev uint64 = 0
 	for _, r := range cluster.Revisions {
-		id := matter.ParseNumber(r.Number)
-		if id.Valid() {
+		if r.Number.Valid() {
 			rev := revs.CreateElement("revision")
-			rev.CreateAttr("revision", id.IntString())
+			rev.CreateAttr("revision", r.Number.IntString())
 			if len(r.Description) > 0 {
 				rev.CreateAttr("summary", scrubDescription(r.Description))
 			}
-			latestRev = max(id.Value(), latestRev)
 		}
 	}
 	ids := c.CreateElement("clusterIds")
@@ -100,7 +96,10 @@ func (p *Renderer) renderAppCluster(doc *spec.Doc, entity types.Entity) (output 
 			}
 		}
 	}
-	c.CreateAttr("revision", strconv.FormatUint(latestRev, 10))
+	mostRecent := cluster.Revisions.MostRecent()
+	if mostRecent != nil {
+		c.CreateAttr("revision", mostRecent.Number.IntString())
+	}
 	class := c.CreateElement("classification")
 	switch clusterClassification.Hierarchy {
 	case "Base":

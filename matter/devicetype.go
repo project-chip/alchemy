@@ -11,10 +11,10 @@ import (
 
 type DeviceType struct {
 	entity
-	ID          *Number     `json:"id,omitempty"`
-	Name        string      `json:"name,omitempty"`
-	Description string      `json:"description,omitempty"`
-	Revisions   []*Revision `json:"revisions,omitempty"`
+	ID          *Number   `json:"id,omitempty"`
+	Name        string    `json:"name,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Revisions   Revisions `json:"revisions,omitempty"`
 
 	SupersetOf string `json:"supersetOf,omitempty"`
 	Class      string `json:"class,omitempty"`
