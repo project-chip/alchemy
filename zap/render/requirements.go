@@ -21,7 +21,7 @@ import (
 func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.DeviceType, dte *etree.Element, errata *errata.SDK) (err error) {
 	setDeviceTypeName(spec, dte, deviceType, errata)
 	xml.SetOrCreateSimpleElement(dte, "domain", "CHIP", "name")
-	xml.SetOrCreateSimpleElement(dte, "typeName", errata.OverrideType(deviceType, deviceType.Name), "name", "domain")
+	xml.SetOrCreateSimpleElement(dte, "typeName", errata.OverrideDeviceType(deviceType, deviceType.Name), "name", "domain")
 	xml.SetOrCreateSimpleElement(dte, "profileId", "0x0103", "name", "domain", "typeName").CreateAttr("editable", "false")
 	xml.SetOrCreateSimpleElement(dte, "deviceId", deviceType.ID.HexString(), "name", "domain", "typeName", "profileId").CreateAttr("editable", "false")
 	mostRecentRevision := deviceType.Revisions.MostRecent()

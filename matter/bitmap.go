@@ -159,6 +159,7 @@ type Bit interface {
 
 	Bit() string
 	Name() string
+	SetName(name string)
 	Summary() string
 	Conformance() conformance.Set
 
@@ -209,6 +210,10 @@ func (bmb *BitmapBit) Bit() string {
 
 func (bmb *BitmapBit) Name() string {
 	return bmb.name
+}
+
+func (bmb *BitmapBit) SetName(name string) {
+	bmb.name = name
 }
 
 func (bmb *BitmapBit) Summary() string {
