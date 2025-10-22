@@ -25,10 +25,10 @@ func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, d
 	xml.SetOrCreateSimpleElement(dte, "deviceId", deviceType.ID.HexString(), "name", "domain", "typeName", "profileId").CreateAttr("editable", "false")
 	mostRecentRevision := deviceType.Revisions.MostRecent()
 	if mostRecentRevision != nil {
-		xml.SetOrCreateSimpleElement(dte, "deviceRevision", mostRecentRevision.Number.IntString(), "name", "domain", "typeName", "profileId", "deviceId").CreateAttr("editable", "false")
+		xml.SetOrCreateSimpleElement(dte, "revision", mostRecentRevision.Number.IntString(), "name", "domain", "typeName", "profileId", "deviceId").CreateAttr("editable", "false")
 	}
-	xml.SetOrCreateSimpleElement(dte, "class", deviceType.Class, "name", "domain", "typeName", "profileId", "deviceId", "deviceRevision")
-	xml.SetOrCreateSimpleElement(dte, "scope", deviceType.Scope, "name", "domain", "typeName", "profileId", "deviceId", "deviceRevision", "class")
+	xml.SetOrCreateSimpleElement(dte, "class", deviceType.Class, "name", "domain", "typeName", "profileId", "deviceId", "revision")
+	xml.SetOrCreateSimpleElement(dte, "scope", deviceType.Scope, "name", "domain", "typeName", "profileId", "deviceId", "revision", "class")
 
 	var composition *matter.DeviceTypeComposition
 	composition, err = spec.ComposeDeviceType(deviceType)
