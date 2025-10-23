@@ -131,16 +131,7 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 	var globalEnums []*matter.Enum
 	var globalStructs []*matter.Struct
 	var globalBitmaps []*matter.Bitmap
-	/*for _, cluster := range clusterList {
-		dataTypes, ok := p.spec.DataTypeRefs.Get(cluster)
-		if !ok {
-			continue
-		}
-		dataTypes.Range(func(key types.Entity, value struct{}) bool {
-			slog.Info("Cluster data type", "cluster", cluster.Name, matter.LogEntity("entity", key))
-			return true
-		})
-	}*/
+
 	spec.IterateOverDataTypes(p.spec, func(cluster *matter.Cluster, parent, entity types.Entity) {
 		if cluster == nil {
 			_, ok := globalEntities[entity]
@@ -153,15 +144,24 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 		if !ok {
 			return
 		}
+		switch entity := entity.(type) {
+		case *matter.Namespace:
+			field, ok := parent.(*matter.Field)
+			if ok {
+				entity = entity.Clone()
+				entity.Name = field.Name
+				globalEntities[entity] = true
+			}
+		default:
+			clusterEntities[cluster] = append(ce, entity)
+			globalEntities[entity] = false
+		}
 
-		clusterEntities[cluster] = append(ce, entity)
-		globalEntities[entity] = false
 	})
 	for entity, isGlobal := range globalEntities {
 		if !isGlobal {
 			continue
 		}
-		slog.Info("global entity", matter.LogEntity("entity", entity))
 		switch entity := entity.(type) {
 		case *matter.Bitmap:
 			globalBitmaps = append(globalBitmaps, entity)
@@ -182,20 +182,6 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 			globalEnums = append(globalEnums, ns)
 		}
 	}
-	/*enums := types.FilterSet[*matter.Enum](p.spec.GlobalObjects)
-
-	for _, namespace := range p.spec.Namespaces {
-		ns := matter.NewEnum(namespace.Source(), namespace.Parent())
-		ns.Name = namespace.Name + "Tag"
-		ns.Type = types.NewDataType(types.BaseDataTypeEnum8, false)
-		for _, tag := range namespace.SemanticTags {
-			nst := matter.NewEnumValue(tag.Source(), ns)
-			nst.Name = tag.Name
-			nst.Value = tag.ID
-			ns.Values = append(ns.Values, nst)
-		}
-		enums = append(enums, ns)
-	}*/
 
 	tc := map[string]any{
 		"bitmaps":   globalBitmaps,
@@ -207,7 +193,7 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 	var out string
 	out, err = t.Exec(tc)
 	if err != nil {
-		slog.Error("error", "err", err)
+		slog.Error("error rendering matter template", slog.Any("err", err))
 		return
 	}
 	outputs = append(outputs, pipeline.NewData(path, out))

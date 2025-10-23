@@ -77,15 +77,12 @@ func numberHelper(value any) raymond.SafeString {
 	}
 }
 
-func currentRevisionHelper(revisions []*matter.Revision) raymond.SafeString {
-	var lastRevision uint64
-	for _, rev := range revisions {
-		revNumber := matter.ParseNumber(rev.Number)
-		if revNumber.Valid() && revNumber.Value() > lastRevision {
-			lastRevision = revNumber.Value()
-		}
+func currentRevisionHelper(revisions matter.Revisions) raymond.SafeString {
+	lastRevision := revisions.MostRecent()
+	if lastRevision != nil {
+		return raymond.SafeString(lastRevision.Number.IntString())
 	}
-	return raymond.SafeString(strconv.FormatUint(lastRevision, 10))
+	return raymond.SafeString("")
 
 }
 
@@ -211,8 +208,13 @@ func clusterEventsHelper(spec *spec.Specification) func(cluster matter.Cluster, 
 
 func structFieldsHelper(spec *spec.Specification) func(s matter.Struct, options *raymond.Options) raymond.SafeString {
 	return func(s matter.Struct, options *raymond.Options) raymond.SafeString {
-		fields := make(matter.FieldSet, len(s.Fields))
-		copy(fields, s.Fields)
+		fields := make(matter.FieldSet, 0, len(s.Fields))
+		for _, f := range s.Fields {
+			if conformance.IsZigbee(f.Conformance) || zap.IsDisallowed(f, f.Conformance) {
+				continue
+			}
+			fields = append(fields, f)
+		}
 		if s.FabricScoping == matter.FabricScopingScoped {
 			fabricIndex := &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, false), Conformance: conformance.Set{&conformance.Mandatory{}}}
 			fabricIndex.SetParent(&s)
@@ -225,8 +227,13 @@ func structFieldsHelper(spec *spec.Specification) func(s matter.Struct, options 
 
 func eventFieldsHelper(spec *spec.Specification) func(e matter.Event, options *raymond.Options) raymond.SafeString {
 	return func(e matter.Event, options *raymond.Options) raymond.SafeString {
-		fields := make(matter.FieldSet, len(e.Fields))
-		copy(fields, e.Fields)
+		fields := make(matter.FieldSet, 0, len(e.Fields))
+		for _, f := range e.Fields {
+			if conformance.IsZigbee(f.Conformance) || zap.IsDisallowed(f, f.Conformance) {
+				continue
+			}
+			fields = append(fields, f)
+		}
 		if e.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
 			fields = append(fields, &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, false), Conformance: conformance.Set{&conformance.Mandatory{}}})
 		}
@@ -270,8 +277,13 @@ func commandsHelper(spec *spec.Specification) func(commands matter.CommandSet, o
 
 func commandFieldsHelper(spec *spec.Specification) func(e matter.Command, options *raymond.Options) raymond.SafeString {
 	return func(e matter.Command, options *raymond.Options) raymond.SafeString {
-		fields := make(matter.FieldSet, len(e.Fields))
-		copy(fields, e.Fields)
+		fields := make(matter.FieldSet, 0, len(e.Fields))
+		for _, f := range e.Fields {
+			if conformance.IsZigbee(f.Conformance) || zap.IsDisallowed(f, f.Conformance) {
+				continue
+			}
+			fields = append(fields, f)
+		}
 		if e.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
 			fields = append(fields, &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, false), Conformance: conformance.Set{&conformance.Mandatory{}}})
 		}
@@ -283,6 +295,9 @@ func requestsHelper(spec *spec.Specification) func(commands matter.CommandSet, o
 	return func(commands matter.CommandSet, options *raymond.Options) raymond.SafeString {
 		var requests []*matter.Command
 		for _, command := range commands {
+			if conformance.IsZigbee(command.Conformance) || zap.IsDisallowed(command, command.Conformance) {
+				continue
+			}
 			switch command.Direction {
 			case matter.InterfaceServer:
 				requests = append(requests, command)

@@ -470,6 +470,12 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field, constraint constrai
 		// Special case; needs to be long_octet_string if over 255
 		return "long_octet_string"
 	}
+	if f.Type.BaseType == types.BaseDataTypeTag {
+		switch f.Type.Entity.(type) {
+		case *matter.Namespace:
+			return f.Name + "Tag"
+		}
+	}
 	if f.Type.IsArray() {
 		return DataTypeName(f.Type.EntryType)
 	}
