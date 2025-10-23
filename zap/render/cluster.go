@@ -213,7 +213,7 @@ func setClusterGlobalAttribute(parent *etree.Element, globalAttribute *etree.Ele
 		globalAttribute.CreateAttr("side", "either")
 		mostRecentRevision := cluster.Revisions.MostRecent()
 		if mostRecentRevision != nil {
-			globalAttribute.CreateAttr("value", mostRecentRevision.Number.HexString())
+			globalAttribute.CreateAttr("value", mostRecentRevision.Number.IntString())
 		}
 	case 0xFFFC:
 		slog.Warn("Removing redundant feature global attribute", slog.String("clusterName", cluster.Name))
