@@ -38,32 +38,34 @@ func excludeNonAlchemyFiles(ff []string) (out []string) {
 }
 
 func getFilePairs(ff1, ff2 []string) (common []filePair) {
+	map2 := make(map[string]string, len(ff2))
+	for _, p2 := range ff2 {
+		map2[filepath.Base(p2)] = p2
+	}
+
 	common = make([]filePair, 0)
 	for _, p1 := range ff1 {
 		base1 := filepath.Base(p1)
-		for _, p2 := range ff2 {
-			if filepath.Base(p2) == base1 {
-				common = append(common, filePair{p1: p1, p2: p2})
-				break
-			}
+		if p2, ok := map2[base1]; ok {
+			common = append(common, filePair{p1: p1, p2: p2})
 		}
 	}
 	return
 }
 
 func fileListDiff(ff1, ff2 []string, n1, n2 string) (mm []XmlMismatch) {
-	mm = make([]XmlMismatch, 0)
+	map1 := make(map[string]string, len(ff1))
+	for _, p := range ff1 {
+		map1[filepath.Base(p)] = p
+	}
 
-	for _, p1 := range ff1 {
-		b1 := filepath.Base(p1)
-		found := false
-		for _, p2 := range ff2 {
-			if filepath.Base(p2) == b1 {
-				found = true
-				break
-			}
-		}
-		if !found {
+	map2 := make(map[string]string, len(ff2))
+	for _, p := range ff2 {
+		map2[filepath.Base(p)] = p
+	}
+
+	for b1 := range map1 {
+		if _, ok := map2[b1]; !ok {
 			m := XmlMismatch{
 				Path:      b1,
 				Type:      XmlMismatchNewFile,
@@ -74,16 +76,8 @@ func fileListDiff(ff1, ff2 []string, n1, n2 string) (mm []XmlMismatch) {
 		}
 	}
 
-	for _, p2 := range ff2 {
-		b2 := filepath.Base(p2)
-		found := false
-		for _, p1 := range ff1 {
-			if filepath.Base(p1) == b2 {
-				found = true
-				break
-			}
-		}
-		if !found {
+	for b2 := range map2 {
+		if _, ok := map1[b2]; !ok {
 			m := XmlMismatch{
 				Path:      b2,
 				Type:      XmlMismatchNewFile,

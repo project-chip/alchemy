@@ -17,6 +17,9 @@ func parentAndSelfText(e *etree.Element) string {
 }
 
 func getElementID(e *etree.Element) string {
+	if e == nil {
+		return ""
+	}
 	p := e.GetPath()
 
 	switch p {

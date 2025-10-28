@@ -44,17 +44,17 @@ func (z *ZAPDiff) Run(cc *Context) (err error) {
 	ff1, err := listXMLFiles(p1)
 	if err != nil {
 		slog.Error("error listing files", "dir", p1, "error", err)
-		return
+		return err
 	}
 
 	p2 := filepath.Join(z.SdkRoot2, "src", "app", "zap-templates", "zcl", "data-model", "chip")
 	ff2, err := listXMLFiles(p2)
 	if err != nil {
 		slog.Error("error listing files", "dir", p2, "error", err)
-		return
+		return err
 	}
 
-	mm := zapdiff.Pipeline(ff1, ff2, "sdk-1", "skd-2")
+	mm := zapdiff.Pipeline(ff1, ff2, "sdk-1", "sdk-2")
 
 	csvOutputPath := filepath.Join(z.Out, "mismatches.csv")
 	err = writeMismatchesToCSV(csvOutputPath, mm, mismatchPrintLevel)
@@ -85,7 +85,7 @@ func writeMismatchesToCSV(p string, mm []zapdiff.XmlMismatch, l zapdiff.XmlMisma
 	f, err := os.Create(p)
 	if err != nil {
 		slog.Error("failed to create file", "path", p, "error", err)
-		return
+		return err
 	}
 	defer f.Close()
 
@@ -107,7 +107,7 @@ func writeMismatchesToCSV(p string, mm []zapdiff.XmlMismatch, l zapdiff.XmlMisma
 		if mm[i].Path != mm[j].Path {
 			return mm[i].Path < mm[j].Path
 		}
-		if mm[i].Type.String() != mm[j].Type.String() {
+		if mm[i].Type != mm[j].Type {
 			return mm[i].Type.String() < mm[j].Type.String()
 		}
 		if mm[i].ElementID != mm[j].ElementID {
@@ -126,12 +126,13 @@ func writeMismatchesToCSV(p string, mm []zapdiff.XmlMismatch, l zapdiff.XmlMisma
 				m.ElementID,
 				m.Details,
 			}
-			if err := w.Write(row); err != nil {
-				slog.Warn("Warning: failed to write row to CSV", "err", err)
+			if err = w.Write(row); err != nil {
+				slog.Error("Warning: failed to write row to CSV", "err", err)
+				return
 			}
 		}
 	}
 
 	slog.Info("Successfully wrote mismatches to CSV", "dir", p)
-	return nil
+	return
 }

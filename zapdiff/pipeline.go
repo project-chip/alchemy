@@ -35,12 +35,12 @@ func Pipeline(ff1, ff2 []string, n1, n2 string) (mm []XmlMismatch) {
 
 		err := d1.ReadFromFile(f.p1)
 		if err != nil {
-			slog.Warn("Failed to parse %s: %v\n", f.p1, err)
+			slog.Warn("Failed to parse", "file", f.p1, "error", err)
 			continue
 		}
 		err = d2.ReadFromFile(f.p2)
 		if err != nil {
-			slog.Warn("Failed to parse %s: %v\n", f.p2, err)
+			slog.Warn("Failed to parse", "file", f.p2, "error", err)
 			continue
 		}
 
@@ -48,11 +48,11 @@ func Pipeline(ff1, ff2 []string, n1, n2 string) (mm []XmlMismatch) {
 		r2 := d2.Root()
 
 		if r1 == nil {
-			slog.Warn("File %s (%s) has no root element\n", baseName, n1)
+			slog.Warn("File has no root element", "file", baseName, "clone", n1)
 			continue
 		}
 		if r2 == nil {
-			slog.Warn("File %s (%s) has no root element\n", baseName, n2)
+			slog.Warn("File has no root element", "file", baseName, "clone", n2)
 			continue
 		}
 
