@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/project-chip/alchemy/matter/spec"
@@ -97,6 +98,23 @@ func writeMismatchesToCSV(p string, mm []zapdiff.XmlMismatch, l zapdiff.XmlMisma
 		slog.Error("failed to write CSV header", "error", err)
 		return
 	}
+
+	sort.Slice(mm, func(i, j int) bool {
+		// Level (Descending), Path, Type, ElementID, Details
+		if mm[i].Level() != mm[j].Level() {
+			return mm[i].Level() > mm[j].Level()
+		}
+		if mm[i].Path != mm[j].Path {
+			return mm[i].Path < mm[j].Path
+		}
+		if mm[i].Type.String() != mm[j].Type.String() {
+			return mm[i].Type.String() < mm[j].Type.String()
+		}
+		if mm[i].ElementID != mm[j].ElementID {
+			return mm[i].ElementID < mm[j].ElementID
+		}
+		return mm[i].Details < mm[j].Details
+	})
 
 	// Write mismatches
 	for _, m := range mm {
