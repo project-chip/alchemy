@@ -40,7 +40,7 @@ func Process(root string, s *spec.Specification) (violations map[string][]spec.V
 				v.Path, v.Line = c.Origin()
 				violations[v.Path] = append(violations[v.Path], v)
 			} else if reserved := clusterIdReserved(c.ID.HexString(), reservedClusterIDs); reserved {
-				v := spec.Violation{Entity: c, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster ID is reserved. ID='%s' Violating cluster name='%s' ", c.Name, c.ID.HexString())}
+				v := spec.Violation{Entity: c, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster ID is reserved. ID='%s' Violating cluster name='%s' ", c.ID.HexString(), c.Name)}
 				v.Path, v.Line = c.Origin()
 				violations[v.Path] = append(violations[v.Path], v)
 			}
@@ -60,7 +60,7 @@ func Process(root string, s *spec.Specification) (violations map[string][]spec.V
 				v.Path, v.Line = dt.Origin()
 				violations[v.Path] = append(violations[v.Path], v)
 			} else if reserved := deviceTypeIdReserved(dt.ID.HexString(), reservedDeviceTypeIDs); reserved {
-				v := spec.Violation{Entity: dt, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Device Type ID is reserved. ID='%s' Violating device type name='%s' ", dt.Name, dt.ID.HexString())}
+				v := spec.Violation{Entity: dt, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Device Type ID is reserved. ID='%s' Violating device type name='%s' ", dt.ID.HexString(), dt.Name)}
 				v.Path, v.Line = dt.Origin()
 				violations[v.Path] = append(violations[v.Path], v)
 			}
