@@ -4,20 +4,15 @@ import (
 	"log/slog"
 
 	"github.com/project-chip/alchemy/cmd/common"
-	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/mle"
-	"github.com/project-chip/alchemy/zap/render"
 )
 
 type MLE struct {
 	common.ASCIIDocAttributes  `embed:""`
 	pipeline.ProcessingOptions `embed:""`
-	files.OutputOptions        `embed:""`
 	spec.ParserOptions         `embed:""`
-	spec.FilterOptions         `embed:""`
-	render.TemplateOptions     `embed:""`
 }
 
 func (m *MLE) Run(cc *Context) (err error) {
