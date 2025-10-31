@@ -22,6 +22,7 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/mle"
 	"github.com/project-chip/alchemy/provisional"
 	"github.com/sethvargo/go-githubactions"
 )
@@ -121,7 +122,13 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 
 	var ve map[string][]spec.Violation = errdiff.ProcessComparison(&specs)
 
-	violations := spec.MergeViolations(vp, ve)
+	var vm map[string][]spec.Violation
+	vm, err = mle.Process(headRoot, specs.Head)
+	if err != nil {
+		return fmt.Errorf("failed checking Master List Enforcer status: %v", err)
+	}
+
+	violations := spec.MergeViolations(vp, ve, vm)
 
 	owner, repo := githubContext.Repo()
 
@@ -175,12 +182,12 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 				vv.SourceLine = v.Line
 				if v.Type.Has(spec.ViolationTypeNonProvisional) {
 					vv.Violations = append(vv.Violations, "Not marked Provisional")
-				}
-				if v.Type.Has(spec.ViolationTypeNotIfDefd) {
+				} else if v.Type.Has(spec.ViolationTypeNotIfDefd) {
 					vv.Violations = append(vv.Violations, "Not in in-progress ifdef")
-				}
-				if v.Type.Has(spec.ViolationNewParseError) {
+				} else if v.Type.Has(spec.ViolationNewParseError) {
 					vv.Violations = append(vv.Violations, "New Parse Error introduced by this PR: "+v.Text)
+				} else if v.Type.Has(spec.ViolationMasterList) {
+					vv.Violations = append(vv.Violations, "Incompatible with Master List: "+v.Text)
 				}
 				vf.Violations = append(vf.Violations, vv)
 			}
