@@ -182,11 +182,14 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 				vv.SourceLine = v.Line
 				if v.Type.Has(spec.ViolationTypeNonProvisional) {
 					vv.Violations = append(vv.Violations, "Not marked Provisional")
-				} else if v.Type.Has(spec.ViolationTypeNotIfDefd) {
+				}
+				if v.Type.Has(spec.ViolationTypeNotIfDefd) {
 					vv.Violations = append(vv.Violations, "Not in in-progress ifdef")
-				} else if v.Type.Has(spec.ViolationNewParseError) {
+				}
+				if v.Type.Has(spec.ViolationNewParseError) {
 					vv.Violations = append(vv.Violations, "New Parse Error introduced by this PR: "+v.Text)
-				} else if v.Type.Has(spec.ViolationMasterList) {
+				}
+				if v.Type.Has(spec.ViolationMasterList) {
 					vv.Violations = append(vv.Violations, "Incompatible with Master List: "+v.Text)
 				}
 				vf.Violations = append(vf.Violations, vv)
