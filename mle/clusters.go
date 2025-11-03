@@ -30,6 +30,22 @@ func clusterIdTaken(id string, masterClusterMap map[string]clusterInfo) (taken b
 	return
 }
 
+func clusterPICSTaken(p string, masterClusterMap map[string]clusterInfo) (taken bool, name string) {
+	var ci clusterInfo
+	if p == "" {
+		taken = false
+		return
+	}
+	for name, ci = range masterClusterMap {
+		if ci.PICScode == p {
+			taken = true
+			return
+		}
+	}
+	taken = false
+	return
+}
+
 func clusterIdReserved(id string, reserveds []string) (reserved bool) {
 	for _, r := range reserveds {
 		if r == id {
@@ -81,6 +97,12 @@ func parseMasterClusterList(filePath string) (ci map[string]clusterInfo, reserve
 			}
 			if taken, _ := clusterIdTaken(id, ci); taken {
 				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster ID is duplicated on Master List. ID='%s'", id)}
+				v.Path, v.Line = "MasterClusterList.adoc", lineNumber
+				violations[v.Path] = append(violations[v.Path], v)
+				continue
+			}
+			if taken, _ := clusterPICSTaken(pics, ci); taken {
+				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster PICS is duplicated on Master List. PICS='%s'", pics)}
 				v.Path, v.Line = "MasterClusterList.adoc", lineNumber
 				violations[v.Path] = append(violations[v.Path], v)
 				continue
