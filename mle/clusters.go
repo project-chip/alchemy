@@ -53,8 +53,10 @@ func parseMasterClusterList(filePath string) (ci map[string]clusterInfo, reserve
 	ci = make(map[string]clusterInfo)
 	reserveds = make([]string, 0)
 	violations = make(map[string][]spec.Violation)
+	lineNumber := 0
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
+		lineNumber++
 
 		if !strings.HasPrefix(line, "|") {
 			continue
@@ -79,13 +81,13 @@ func parseMasterClusterList(filePath string) (ci map[string]clusterInfo, reserve
 			}
 			if taken, _ := clusterIdTaken(id, ci); taken {
 				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster ID is duplicated on Master List. ID='%s'", id)}
-				v.Path, v.Line = "MasterClusterList.adoc", 0
+				v.Path, v.Line = "MasterClusterList.adoc", lineNumber
 				violations[v.Path] = append(violations[v.Path], v)
 				continue
 			}
 			if _, ok := ci[name]; ok {
 				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster Name is duplicated on Master List. name='%s'", name)}
-				v.Path, v.Line = "MasterClusterList.adoc", 0
+				v.Path, v.Line = "MasterClusterList.adoc", lineNumber
 				violations[v.Path] = append(violations[v.Path], v)
 				continue
 			}
