@@ -16,6 +16,10 @@ type clusterInfo struct {
 
 func clusterIdTaken(id string, masterClusterMap map[string]clusterInfo) (taken bool, name string) {
 	var ci clusterInfo
+	if id == "n/a" {
+		taken = false
+		return
+	}
 	for name, ci = range masterClusterMap {
 		if ci.ClusterID == id {
 			taken = true

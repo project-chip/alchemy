@@ -34,6 +34,11 @@ func Process(root string, s *spec.Specification) (violations map[string][]spec.V
 				v.Path, v.Line = c.Origin()
 				violations[v.Path] = append(violations[v.Path], v)
 			}
+			if ci.PICScode != c.PICS {
+				v := spec.Violation{Entity: c, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster PICS mismatch. Cluster='%s' PICS in data model='%s' PICS on master list='%s'", c.Name, c.PICS, ci.PICScode)}
+				v.Path, v.Line = c.Origin()
+				violations[v.Path] = append(violations[v.Path], v)
+			}
 		} else {
 			if taken, name := clusterIdTaken(c.ID.HexString(), masterClusterMap); taken {
 				v := spec.Violation{Entity: c, Type: spec.ViolationMasterList, Text: fmt.Sprintf("This Cluster ID is present on Master List with another name. ID='%s' cluster name='%s' Name on master list='%s'", c.ID.HexString(), c.Name, name)}
