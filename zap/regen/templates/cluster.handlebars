@@ -3,39 +3,39 @@ cluster {{asUpperCamelCase cluster.Name}} = {{number cluster.ID}} {
   revision {{currentRevision cluster.Revisions}};
 {{#enums cluster.Enums}}
 
-  {{> enum cluter=cluster shared=@shared enum=this}}
+  {{> enum cluter=cluster shared=@shared enum=this provisional=@provisional}}
 {{/enums}}
 {{#bitmaps cluster}}
 
-  {{> bitmap cluter=cluster bitmap=this}}
+  {{> bitmap cluter=cluster bitmap=this provisional=@provisional}}
 {{/bitmaps}}
 {{#structs cluster.Structs}}
 
-  {{> struct cluter=cluster struct=this}}
+  {{> struct cluter=cluster struct=this provisional=@provisional}}
 {{/structs}}
 {{#events cluster}}
 
-  {{> event cluter=cluster event=this}}
+  {{> event cluter=cluster event=this provisional=@provisional }}
 {{/events}}
 
 {{#attributes cluster}}
-  {{> attribute cluster=cluster provisional=@provisional attribute=this}}
+  {{> attribute cluster=cluster  attribute=this provisional=@provisional}}
 {{/attributes}}
 {{#commands cluster.Commands}}
 {{#ifRequest this ~}}
-{{#if this.Fields}}
+{{#ifHasValidFields this.Fields}}
 
-  {{> request cluster=cluster command=this}}
-{{/if}}
+  {{> request cluster=cluster command=this provisional=@provisional}}
+{{/ifHasValidFields}}
 {{else}}
 
-  {{> response cluster=cluster command=this}}
+  {{> response cluster=cluster command=this provisional=@provisional}}
 {{/ifRequest}}
 {{/commands}}
 {{#if cluster.Commands}}
 
 {{#requests cluster.Commands}}
-  {{> command cluster=cluster command=this}}
+  {{> command cluster=cluster command=this provisional=@provisional}}
 {{/requests}}
 {{/if}}
 }

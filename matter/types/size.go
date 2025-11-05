@@ -51,6 +51,8 @@ func (dt *DataType) Size() int {
 		return 4
 	case BaseDataTypeIPv6Address, BaseDataTypeMessageID:
 		return 16
+	case BaseDataTypeIPv6Prefix:
+		return 254
 	case BaseDataTypeSemanticTag:
 		return 4
 	case BaseDataTypeNamespaceID:

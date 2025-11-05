@@ -3,19 +3,19 @@
 
 {{#enums enums}}
 
-{{> enum shared=shared enum=this}}
+{{> enum enum=this shared=shared provisional=@provisional}}
 {{/enums}}
 {{#structs structs}}
 
-{{> struct shared=shared struct=this}}
+{{> struct struct=this shared=shared provisional=@provisional}}
 {{/structs}}
 {{#each clusters}}
 
-{{> cluster cluster=this}}
+{{> cluster cluster=this  provisional=@provisional}}
 {{/each}}
 
 {{#each endpoints}}
-{{> endpoint endpoint=this}}
+{{> endpoint endpoint=this  provisional=@provisional}}
 {{/each}}
 
 

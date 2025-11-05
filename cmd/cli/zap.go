@@ -231,6 +231,11 @@ func (z *ZAPRegen) Run(cc *Context) (err error) {
 		return
 	}
 
+	err = sdk.ApplyErrata(specification)
+	if err != nil {
+		return
+	}
+
 	var zapPaths pipeline.Paths
 	zapPaths, err = pipeline.Start(cc, zapTargeter)
 	if err != nil {

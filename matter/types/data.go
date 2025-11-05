@@ -252,7 +252,7 @@ func (dt *DataType) Clone() *DataType {
 }
 
 func (dt *DataType) HasLength() bool {
-	return dt != nil && (dt.BaseType == BaseDataTypeString || dt.BaseType == BaseDataTypeOctStr || dt.BaseType == BaseDataTypeMessageID)
+	return dt != nil && (dt.BaseType.HasLength())
 }
 
 func (dt *DataType) IsArray() bool {

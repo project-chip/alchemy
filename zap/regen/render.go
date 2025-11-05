@@ -99,21 +99,26 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 		endpointType := input.Content.EndpointTypes[endpoint.EndpointTypeIndex]
 
 		deviceType, ok := p.spec.DeviceTypesByID[uint64(endpointType.DeviceTypeCode)]
-		if ok {
-			endpointType.DeviceType = deviceType
-			endpoints = append(endpoints, Endpoint{ID: endpoint.EndpointId, EndpointType: endpointType})
-		} else {
+		if !ok {
 			continue
 		}
-		for _, clusterId := range endpointType.Clusters {
-			cluster, ok := p.spec.ClustersByID[uint64(clusterId.Code)]
+		ep := Endpoint{ID: endpoint.EndpointId, EndpointType: endpointType}
+		ep.DeviceType = deviceType
+		for _, clusterRef := range ep.Clusters {
+			cluster, ok := p.spec.ClustersByID[uint64(clusterRef.Code)]
 			if !ok {
 				//err = fmt.Errorf("unrecognized cluster id in %s: %d", input.Path, clusterId.Code)
 				return
 			}
 			clusters[cluster] = struct{}{}
-			clusterId.Cluster = cluster
+			switch clusterRef.Side {
+			case "server":
+				ep.Servers = append(ep.Servers, cluster)
+			case "client":
+				ep.Clients = append(ep.Clients, cluster)
+			}
 		}
+		endpoints = append(endpoints, ep)
 	}
 
 	clusterList := make([]*matter.Cluster, 0, len(clusters))
@@ -152,10 +157,10 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 				entity.Name = field.Name
 				globalEntities[entity] = true
 			}
-		default:
-			clusterEntities[cluster] = append(ce, entity)
-			globalEntities[entity] = false
+			return
 		}
+		clusterEntities[cluster] = append(ce, entity)
+		globalEntities[entity] = false
 
 	})
 	for entity, isGlobal := range globalEntities {
@@ -198,11 +203,6 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 	}
 	outputs = append(outputs, pipeline.NewData(path, out))
 	return
-}
-
-type Endpoint struct {
-	ID int
-	zap.EndpointType
 }
 
 var template pipeline.Once[*raymond.Template]

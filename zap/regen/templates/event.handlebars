@@ -1,3 +1,4 @@
+{{#if provisional}}provisional {{/if ~}}
 {{#ifFabricSensitive event.Access}}fabric_sensitive {{/ifFabricSensitive ~}}
 {{toLower event.Priority}} event {{> access access=event.Access ~}}{{asUpperCamelCase event.Name}} = {{number event.ID}} {
 {{#eventFields event}}

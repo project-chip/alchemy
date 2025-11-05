@@ -137,6 +137,16 @@ func (bdt BaseDataType) IsSimple() bool {
 	return false
 }
 
+func (bdt BaseDataType) HasLength() bool {
+	switch bdt {
+	case BaseDataTypeString,
+		BaseDataTypeOctStr,
+		BaseDataTypeMessageID:
+		return true
+	}
+	return false
+}
+
 func BaseDataTypeName(baseDataType BaseDataType) string {
 	switch baseDataType {
 	case BaseDataTypeUnknown:

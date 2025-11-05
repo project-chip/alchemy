@@ -8,12 +8,11 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/mailgun/raymond/v2"
-	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/provisional"
+	"github.com/project-chip/alchemy/sdk"
 	"github.com/project-chip/alchemy/zap"
 )
 
@@ -31,7 +30,6 @@ func (sp *IdlRenderer) registerIdlHelpers(t *raymond.Template, spec *spec.Specif
 	t.RegisterHelper("commands", commandsHelper(sp.spec))
 	t.RegisterHelper("requests", requestsHelper(sp.spec))
 	t.RegisterHelper("isTimed", isTimedHelper)
-	t.RegisterHelper("isProvisional", ifProvisionalHelper(sp.spec))
 	t.RegisterHelper("requestName", requestNameHelper)
 	t.RegisterHelper("responseName", responseNameHelper)
 	t.RegisterHelper("attributes", clusterAttributesHelper(sp.spec, sp.commonAttributes))
@@ -47,6 +45,7 @@ func (sp *IdlRenderer) registerIdlHelpers(t *raymond.Template, spec *spec.Specif
 	t.RegisterHelper("ifNullable", ifNullableHelper)
 	t.RegisterHelper("ifReadOnly", ifReadOnlyHelper)
 	t.RegisterHelper("ifHasAccess", ifHasAccessHelper)
+	t.RegisterHelper("ifHasValidFields", ifHasValidFieldsHelper)
 	t.RegisterHelper("ifRequest", ifRequestHelper)
 
 	t.RegisterHelper("storageOption", storageOptionHelper)
@@ -58,6 +57,9 @@ func (sp *IdlRenderer) registerIdlHelpers(t *raymond.Template, spec *spec.Specif
 	t.RegisterHelper("bitMask", bitMaskHelper)
 	t.RegisterHelper("bitmapType", bitmapTypeHelper)
 	t.RegisterHelper("deviceTypeName", deviceTypeNameHelper)
+	t.RegisterHelper("endpointServers", endpointServersHelper(sp.spec))
+	t.RegisterHelper("endpointClients", endpointClientsHelper(spec))
+
 }
 
 func numberHelper(value any) raymond.SafeString {
@@ -86,32 +88,7 @@ func currentRevisionHelper(revisions matter.Revisions) raymond.SafeString {
 
 }
 
-func asUpperCamelCaseHelper(value string) raymond.SafeString {
-	return raymond.SafeString(caseify(value, false, true))
-}
-
-func asLowerCamelCaseHelper(value string) raymond.SafeString {
-	if len(value) > 1 && text.IsUpperCase(value) {
-		return raymond.SafeString(strings.ToLower(value))
-	}
-	return raymond.SafeString(caseify(value, true, true))
-}
-
-func upperCamelCaseDiffersHelper(value string, options *raymond.Options) string {
-	if string(asUpperCamelCaseHelper(value)) != value {
-		return options.Fn()
-	}
-	return options.Inverse()
-}
-
-func lowerCamelCaseDiffersHelper(value string, options *raymond.Options) string {
-	if string(asLowerCamelCaseHelper(value)) != value {
-		return options.Fn()
-	}
-	return options.Inverse()
-}
-
-func enumerateHelper[T types.Entity](list []T, spec *spec.Specification, options *raymond.Options) raymond.SafeString {
+func enumerateHelper[T any](list []T, spec *spec.Specification, options *raymond.Options) raymond.SafeString {
 	var result strings.Builder
 	for i, en := range list {
 		df := options.DataFrame().Copy()
@@ -119,23 +96,6 @@ func enumerateHelper[T types.Entity](list []T, spec *spec.Specification, options
 		df.Set("key", nil)
 		df.Set("first", i == 0)
 		df.Set("last", i == len(list)-1)
-		if spec != nil {
-			refs, ok := spec.ClusterRefs.Get(en)
-			if ok && refs.Size() > 1 {
-				df.Set("shared", true)
-			}
-			is := provisional.Check(spec, en, en)
-			switch is {
-			case provisional.StateAllClustersProvisional,
-				provisional.StateAllDataTypeReferencesProvisional,
-				provisional.StateExplicitlyProvisional,
-				provisional.StateUnreferenced:
-				df.Set("provisional", true)
-			default:
-				df.Set("provisional", false)
-			}
-
-		}
 		result.WriteString(options.FnCtxData(en, df))
 	}
 	return raymond.SafeString(result.String())
@@ -148,229 +108,38 @@ func enumsHelper(spec *spec.Specification) func(enums matter.EnumSet, options *r
 		slices.SortStableFunc(sortedEnums, func(a *matter.Enum, b *matter.Enum) int {
 			return strings.Compare(a.Name, b.Name)
 		})
-		return enumerateHelper(sortedEnums, spec, options)
+		return enumerateEntitiesHelper(sortedEnums, spec, options)
 	}
 }
 
-func clusterBitmapsHelper(spec *spec.Specification) func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
-	return func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
-		bitmaps := make(matter.BitmapSet, 0, len(cluster.Bitmaps))
-		bitmaps = append(bitmaps, cluster.Bitmaps...)
-		slices.SortStableFunc(bitmaps, func(a *matter.Bitmap, b *matter.Bitmap) int {
-			return strings.Compare(a.Name, b.Name)
-		})
-		if cluster.Features != nil {
-			features := cluster.Features.Bitmap.Clone()
-			// ZAP renames this for some reason
-			features.Name = "Feature"
-			bitmaps = append(matter.BitmapSet{features}, bitmaps...)
-		}
-		return enumerateHelper(bitmaps, spec, options)
-
-	}
-}
-
-func clusterAttributesHelper(spec *spec.Specification, commonAttributes matter.FieldSet) func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
-	return func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
-		attributes := make(matter.FieldSet, 0, len(cluster.Attributes)+len(commonAttributes))
-		attributes = append(attributes, cluster.Attributes...)
-		for _, ca := range commonAttributes {
-			ca = ca.Clone()
-			ca.SetParent(&cluster)
-			attributes = append(attributes, ca)
-		}
-		slices.SortStableFunc(attributes, func(a *matter.Field, b *matter.Field) int {
-			return a.ID.Compare(b.ID)
-		})
-		return enumerateHelper(attributes, spec, options)
-	}
-}
-
-func clusterStructsHelper(spec *spec.Specification) func(s matter.StructSet, options *raymond.Options) raymond.SafeString {
-	return func(s matter.StructSet, options *raymond.Options) raymond.SafeString {
-		structs := make(matter.StructSet, len(s))
-		copy(structs, s)
-		slices.SortStableFunc(structs, func(a *matter.Struct, b *matter.Struct) int {
-			return strings.Compare(a.Name, b.Name)
-		})
-		return enumerateHelper(structs, spec, options)
-
-	}
-}
-
-func clusterEventsHelper(spec *spec.Specification) func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
-	return func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
-		events := make(matter.EventSet, len(cluster.Events))
-		copy(events, cluster.Events)
-		return enumerateHelper(events, spec, options)
+func ifHasValidFieldsHelper(fs matter.FieldSet, options *raymond.Options) string {
+	if len(filterFields(fs)) > 0 {
+		return options.Fn()
+	} else {
+		return options.Inverse()
 	}
 }
 
 func structFieldsHelper(spec *spec.Specification) func(s matter.Struct, options *raymond.Options) raymond.SafeString {
 	return func(s matter.Struct, options *raymond.Options) raymond.SafeString {
-		fields := make(matter.FieldSet, 0, len(s.Fields))
-		for _, f := range s.Fields {
-			if conformance.IsZigbee(f.Conformance) || zap.IsDisallowed(f, f.Conformance) {
-				continue
-			}
-			fields = append(fields, f)
-		}
+		fields := filterFields(s.Fields)
 		if s.FabricScoping == matter.FabricScopingScoped {
 			fabricIndex := &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, false), Conformance: conformance.Set{&conformance.Mandatory{}}}
 			fabricIndex.SetParent(&s)
 			fields = append(fields, fabricIndex)
 		}
-		return enumerateHelper(fields, spec, options)
+		return enumerateEntitiesHelper(fields, spec, options)
 
 	}
 }
 
 func eventFieldsHelper(spec *spec.Specification) func(e matter.Event, options *raymond.Options) raymond.SafeString {
 	return func(e matter.Event, options *raymond.Options) raymond.SafeString {
-		fields := make(matter.FieldSet, 0, len(e.Fields))
-		for _, f := range e.Fields {
-			if conformance.IsZigbee(f.Conformance) || zap.IsDisallowed(f, f.Conformance) {
-				continue
-			}
-			fields = append(fields, f)
-		}
+		fields := filterFields(e.Fields)
 		if e.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
 			fields = append(fields, &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, false), Conformance: conformance.Set{&conformance.Mandatory{}}})
 		}
-		return enumerateHelper(fields, spec, options)
-	}
-}
-
-func commandsHelper(spec *spec.Specification) func(commands matter.CommandSet, options *raymond.Options) raymond.SafeString {
-	return func(commands matter.CommandSet, options *raymond.Options) raymond.SafeString {
-		sortedCommands := make(matter.CommandSet, 0, len(commands))
-		var requests []*matter.Command
-		responses := make(map[*matter.Command]struct{})
-		for _, command := range commands {
-			switch command.Direction {
-			case matter.InterfaceServer:
-				requests = append(requests, command)
-			case matter.InterfaceClient:
-				responses[command] = struct{}{}
-			}
-		}
-		slices.SortStableFunc(requests, func(a *matter.Command, b *matter.Command) int {
-			return a.ID.Compare(b.ID)
-		})
-		for _, req := range requests {
-			sortedCommands = append(sortedCommands, req)
-			if req.Response != nil {
-				switch response := req.Response.Entity.(type) {
-				case *matter.Command:
-					if _, unused := responses[response]; unused {
-						sortedCommands = append(sortedCommands, response)
-						delete(responses, response)
-					}
-				case nil:
-				}
-			}
-		}
-		return enumerateHelper(sortedCommands, spec, options)
-	}
-
-}
-
-func commandFieldsHelper(spec *spec.Specification) func(e matter.Command, options *raymond.Options) raymond.SafeString {
-	return func(e matter.Command, options *raymond.Options) raymond.SafeString {
-		fields := make(matter.FieldSet, 0, len(e.Fields))
-		for _, f := range e.Fields {
-			if conformance.IsZigbee(f.Conformance) || zap.IsDisallowed(f, f.Conformance) {
-				continue
-			}
-			fields = append(fields, f)
-		}
-		if e.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
-			fields = append(fields, &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, false), Conformance: conformance.Set{&conformance.Mandatory{}}})
-		}
-		return enumerateHelper(fields, spec, options)
-	}
-}
-
-func requestsHelper(spec *spec.Specification) func(commands matter.CommandSet, options *raymond.Options) raymond.SafeString {
-	return func(commands matter.CommandSet, options *raymond.Options) raymond.SafeString {
-		var requests []*matter.Command
-		for _, command := range commands {
-			if conformance.IsZigbee(command.Conformance) || zap.IsDisallowed(command, command.Conformance) {
-				continue
-			}
-			switch command.Direction {
-			case matter.InterfaceServer:
-				requests = append(requests, command)
-			}
-		}
-		slices.SortStableFunc(requests, func(a *matter.Command, b *matter.Command) int {
-			return a.ID.Compare(b.ID)
-		})
-		return enumerateHelper(requests, spec, options)
-	}
-
-}
-
-func isTimedHelper(command matter.Command, options *raymond.Options) string {
-	if command.Access.Timing == matter.TimingTimed {
-		return options.Fn()
-	} else {
-		return options.Inverse()
-	}
-}
-
-func ifProvisionalHelper(spec *spec.Specification) func(entity types.Entity, options *raymond.Options) string {
-	return func(entity types.Entity, options *raymond.Options) string {
-		is := provisional.Check(spec, entity, entity)
-		switch is {
-		case provisional.StateAllClustersProvisional,
-			provisional.StateAllDataTypeReferencesProvisional,
-			provisional.StateExplicitlyProvisional,
-			provisional.StateUnreferenced:
-			return options.Fn()
-		default:
-			return options.Inverse()
-		}
-	}
-
-}
-
-func requestNameHelper(command matter.Command) raymond.SafeString {
-	return raymond.SafeString(command.Name)
-}
-
-func responseNameHelper(command matter.Command) raymond.SafeString {
-	if command.Response != nil {
-		switch response := command.Response.Entity.(type) {
-		case *matter.Command:
-			return raymond.SafeString(response.Name)
-		default:
-		}
-	}
-	return raymond.SafeString("DefaultSuccess")
-}
-
-func fieldTypeHelper(field matter.Field, fs matter.FieldSet, options *raymond.Options) raymond.SafeString {
-	return raymond.SafeString(zap.FieldToZapDataType(fs, &field, field.Constraint))
-}
-
-func fieldIsArrayHelper(a any, options *raymond.Options) string {
-	var t *types.DataType
-	switch a := a.(type) {
-	case types.DataType:
-		t = &a
-	case *types.DataType:
-		t = a
-	default:
-		return options.Inverse()
-	}
-	if t == nil {
-		return options.Inverse()
-	}
-	if t.IsArray() {
-		return options.Fn()
-	} else {
-		return options.Inverse()
+		return enumerateEntitiesHelper(fields, spec, options)
 	}
 }
 
@@ -389,20 +158,40 @@ func ifFabricSensitiveHelper(access matter.Access, options *raymond.Options) str
 }
 
 func maxValue(field matter.Field, fs matter.FieldSet) (max types.DataTypeExtreme, ok bool) {
-	if field.Type == nil {
+	if field.Type == nil || field.Type.IsArray() {
 		return
 	}
-	if !field.Type.HasLength() {
-		return
-	}
-
 	if field.Constraint == nil {
 		return
 	}
-	_, max = zap.GetMinMax(matter.NewConstraintContext(&field, fs), field.Constraint)
-	if max.IsNumeric() {
-		ok = true
+	if !field.Type.HasLength() {
+		switch field.Type.Entity.(type) {
+		case *matter.Enum, *matter.Bitmap:
+			return
+		}
+		if field.Type.BaseType.IsSimple() {
+			return
+		}
 	}
+	_, max = zap.GetMinMax(matter.NewConstraintContext(&field, fs), field.Constraint)
+	hasNumericMax := max.IsNumeric()
+	if !hasNumericMax {
+		return
+	}
+
+	var maxDueToNullable bool
+	if hasNumericMax {
+		maxDueToNullable = types.Max(sdk.ToUnderlyingType(sdk.FindBaseType(field.Type)), true).ValueEquals(max)
+	}
+	if maxDueToNullable {
+		return
+	}
+	var redundant bool
+	max, redundant = sdk.CheckUnderlyingType(&field, max, types.DataExtremePurposeMaximum)
+	if redundant {
+		return
+	}
+	ok = true
 	return
 }
 
@@ -516,52 +305,6 @@ func descriptionCommentHelper(description string) raymond.SafeString {
 	comment.WriteString(line.String())
 	comment.WriteRune('\n')
 	return raymond.SafeString(comment.String())
-}
-
-func bitmapTypeHelper(bitmap matter.Bitmap) raymond.SafeString {
-	switch bitmap.Type.BaseType {
-	case types.BaseDataTypeMap8:
-		return raymond.SafeString("bitmap8")
-	case types.BaseDataTypeMap16:
-		return raymond.SafeString("bitmap16")
-	case types.BaseDataTypeMap32:
-		return raymond.SafeString("bitmap32")
-	case types.BaseDataTypeMap64:
-		return raymond.SafeString("bitmap24")
-	default:
-		return raymond.SafeString("unknown bitmap type")
-
-	}
-}
-
-func bitNameHelper(bit any) raymond.SafeString {
-	switch bit := bit.(type) {
-	case matter.BitmapBit:
-		return raymond.SafeString(bit.Name())
-	case matter.Feature:
-		return raymond.SafeString(bit.Name())
-	default:
-		return raymond.SafeString(fmt.Sprintf("unexpected bitName type: %T", bit))
-	}
-}
-
-func bitMaskHelper(bit any) raymond.SafeString {
-	switch bit := bit.(type) {
-	case matter.BitmapBit:
-		mask, err := bit.Mask()
-		if err != nil {
-			return raymond.SafeString(fmt.Sprintf("error converting bitmap mask: %v", err))
-		}
-		return raymond.SafeString(fmt.Sprintf("0x%s", strconv.FormatUint(mask, 16)))
-	case matter.Feature:
-		mask, err := bit.Mask()
-		if err != nil {
-			return raymond.SafeString(fmt.Sprintf("error converting feature mask: %v", err))
-		}
-		return raymond.SafeString(fmt.Sprintf("0x%s", strconv.FormatUint(mask, 16)))
-	default:
-		return raymond.SafeString(fmt.Sprintf("unexpected bitName type: %T", bit))
-	}
 }
 
 func deviceTypeNameHelper(s string) raymond.SafeString {

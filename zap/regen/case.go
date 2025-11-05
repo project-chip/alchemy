@@ -5,8 +5,34 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/internal/text"
 )
+
+func asUpperCamelCaseHelper(value string) raymond.SafeString {
+	return raymond.SafeString(caseify(value, false, true))
+}
+
+func asLowerCamelCaseHelper(value string) raymond.SafeString {
+	if len(value) > 1 && text.IsUpperCase(value) {
+		return raymond.SafeString(strings.ToLower(value))
+	}
+	return raymond.SafeString(caseify(value, true, true))
+}
+
+func upperCamelCaseDiffersHelper(value string, options *raymond.Options) string {
+	if string(asUpperCamelCaseHelper(value)) != value {
+		return options.Fn()
+	}
+	return options.Inverse()
+}
+
+func lowerCamelCaseDiffersHelper(value string, options *raymond.Options) string {
+	if string(asLowerCamelCaseHelper(value)) != value {
+		return options.Fn()
+	}
+	return options.Inverse()
+}
 
 var (
 	wordPattern         = regexp.MustCompile(`[ _\-/]`)
@@ -26,7 +52,8 @@ func caseify(s string, camelCase bool, preserveAcronyms bool) string {
 			continue
 		}
 
-		isAllUpperCase := text.IsUpperCase(token)
+		// Some of the WPA stuff has "Personal" rendered as "PERSONAL", so this is special-cased in ZAP
+		isAllUpperCase := text.IsUpperCase(token) && token != "PERSONAL"
 
 		if isAllUpperCase && preserveAcronyms {
 			result.WriteString(token)

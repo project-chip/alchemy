@@ -1,3 +1,4 @@
+{{#if provisional}}provisional {{/if ~}}
 {{#ifFabricScoped struct.FabricScoping}}fabric_scoped {{/ifFabricScoped ~}}
 struct {{asUpperCamelCase struct.Name}} {
 {{#structFields struct}}
