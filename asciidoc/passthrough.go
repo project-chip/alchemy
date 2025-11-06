@@ -16,15 +16,19 @@ func (InlinePassthrough) Type() ElementType {
 	return ElementTypeInline
 }
 
-func (a *InlinePassthrough) Equals(o Element) bool {
+func (ip *InlinePassthrough) Equals(o Element) bool {
 	oa, ok := o.(*InlinePassthrough)
 	if !ok {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !ip.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return ip.Elements.Equals(oa.Elements)
+}
+
+func (ip *InlinePassthrough) Clone() Element {
+	return &InlinePassthrough{position: ip.position, raw: ip.raw, AttributeList: ip.AttributeList.Clone(), Elements: ip.Elements.Clone()}
 }
 
 type InlineDoublePassthrough struct {
@@ -43,13 +47,17 @@ func (InlineDoublePassthrough) Type() ElementType {
 	return ElementTypeInline
 }
 
-func (a *InlineDoublePassthrough) Equals(o Element) bool {
+func (idp *InlineDoublePassthrough) Equals(o Element) bool {
 	oa, ok := o.(*InlineDoublePassthrough)
 	if !ok {
 		return false
 	}
-	if !a.AttributeList.Equals(oa.AttributeList) {
+	if !idp.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return idp.Elements.Equals(oa.Elements)
+}
+
+func (idp *InlineDoublePassthrough) Clone() Element {
+	return &InlineDoublePassthrough{position: idp.position, raw: idp.raw, AttributeList: idp.AttributeList.Clone(), Elements: idp.Elements.Clone()}
 }

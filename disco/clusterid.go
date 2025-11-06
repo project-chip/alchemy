@@ -17,9 +17,9 @@ func (b *Baller) organizeClusterIDSection(cxt *discoContext) (err error) {
 			return
 		}
 		if len(clusterIDsTable.Element.TableRows(asciidoc.RawReader)) > 2 {
-			setSectionTitle(cxt.doc, clusterIDs.section, matter.ClusterIDsSectionName)
+			setSectionTitle(cxt, cxt.doc, clusterIDs.section, matter.ClusterIDsSectionName)
 		} else {
-			setSectionTitle(cxt.doc, clusterIDs.section, matter.ClusterIDSectionName)
+			setSectionTitle(cxt, cxt.doc, clusterIDs.section, matter.ClusterIDSectionName)
 		}
 
 		if clusterIDsTable.ColumnMap == nil {

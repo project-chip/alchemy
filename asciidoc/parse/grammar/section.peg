@@ -14,13 +14,13 @@ Section = level:([=]+ {
 SectionTitle = (SectionTitleValue)+
 
 SectionTitleValue = !EndOfLine (
-    UnbrokenText 
+    Link 
+    / UnbrokenText 
     / __ 
     / Apostrophe 
     / Punctuation  
     / FormattedText
     / InlinePassthrough
-    / Link 
     / SpecialCharacter 
     / Icon 
     / AttributeReference 

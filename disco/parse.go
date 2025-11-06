@@ -14,7 +14,8 @@ import (
 )
 
 type docParse struct {
-	doc     *spec.Doc
+	doc     *asciidoc.Document
+	library *spec.Library
 	docType matter.DocType
 
 	clusters map[*asciidoc.Section]*clusterInfo
@@ -65,17 +66,17 @@ func newSubSectionChildPattern(suffix string, indexColumns ...matter.TableColumn
 	return subSectionChildPattern{suffix: suffix, indexColumns: indexColumns}
 }
 
-func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *asciidoc.Section) (dp *docParse, err error) {
+func (b *Baller) parseDoc(library *spec.Library, doc *asciidoc.Document, docType matter.DocType, topLevelSection *asciidoc.Section) (dp *docParse, err error) {
 	dp = &docParse{
 		doc:              doc,
+		library:          library,
 		docType:          docType,
 		clusters:         make(map[*asciidoc.Section]*clusterInfo),
 		conformanceCache: make(map[asciidoc.Element]conformance.Set),
 		tableCache:       make(map[*asciidoc.Table]*spec.TableInfo),
 	}
-	for section := range parse.FindAll[*asciidoc.Section](asciidoc.RawReader, topLevelSection) {
-		sectionType := doc.SectionType(section)
-
+	for section := range parse.FindAll[*asciidoc.Section](doc, asciidoc.RawReader, topLevelSection) {
+		sectionType := library.SectionType(section)
 		switch sectionType {
 		case matter.SectionCluster:
 			dp.clusters[section] = &clusterInfo{}
@@ -193,7 +194,7 @@ func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection
 			}
 		}
 		if err != nil {
-			err = fmt.Errorf("error organizing subsections of section %s in %s: %w", doc.SectionName(section), doc.Path, err)
+			err = fmt.Errorf("error organizing subsections of section %s in %s: %w", library.SectionName(section), doc.Path, err)
 			return
 		}
 
@@ -258,7 +259,7 @@ func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSecti
 	}
 	subSectionNames := make(map[string]int, len(parent.table.Rows))
 	for i, row := range parent.table.Rows {
-		subSectionName, err := spec.RenderTableCell(row.Cell(index))
+		subSectionName, err := spec.RenderTableCell(dp.library, row.Cell(index))
 		if err != nil {
 			slog.Debug("could not get cell value for entity index", "err", err)
 			continue
@@ -267,7 +268,7 @@ func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSecti
 	}
 	var i int
 	for ss := range parse.Skim[*asciidoc.Section](asciidoc.RawReader, parent.section, parent.section.Children()) {
-		name := text.TrimCaseInsensitiveSuffix(dp.doc.SectionName(ss), childPattern.suffix)
+		name := text.TrimCaseInsensitiveSuffix(dp.library.SectionName(ss), childPattern.suffix)
 		var ok bool
 		if _, ok = subSectionNames[name]; !ok {
 			i++
@@ -294,7 +295,7 @@ func getSubsectionCluster(docParse *docParse, section *asciidoc.Section) *cluste
 	parent, ok := section.Parent().(*asciidoc.Section)
 	if ok {
 		for parent != nil {
-			if docParse.doc.SectionType(parent) == matter.SectionCluster {
+			if docParse.library.SectionType(parent) == matter.SectionCluster {
 				ci, ok := docParse.clusters[parent]
 				if !ok {
 					ci = &clusterInfo{}
@@ -314,7 +315,7 @@ func getSubsectionDeviceType(docParse *docParse, section *asciidoc.Section) *clu
 	parent, ok := section.Parent().(*asciidoc.Section)
 	if ok {
 		for parent != nil {
-			if docParse.doc.SectionType(parent) == matter.SectionDeviceType {
+			if docParse.library.SectionType(parent) == matter.SectionDeviceType {
 				ci, ok := docParse.clusters[parent]
 				if !ok {
 					ci = &clusterInfo{}

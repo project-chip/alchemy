@@ -1734,7 +1734,6 @@ var readerTestProcessLineReturnsNilIfCursorAdvanced = &asciidoc.Document{
 				"asciidoctor",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -1760,7 +1759,6 @@ var readerTestPeekLineAdvancesCursorToNextConditionalLineOfContent = &asciidoc.D
 				"asciidoctor",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -1838,7 +1836,6 @@ var readerTestProcessLineReturnsLineIfCursorNotAdvanced = &asciidoc.Document{
 				"asciidoctor",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -1868,7 +1865,6 @@ var readerTestPeekLineDoesNotAdvanceCursorWhenOnARegularContentLine = &asciidoc.
 				"asciidoctor",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -1894,7 +1890,6 @@ var readerTestPeekLineReturnsNilIfCursorAdvancesPastEndOfSource = &asciidoc.Docu
 				"foobar",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -1919,7 +1914,6 @@ var readerTestPeekLineReturnsNilIfContentsOfSkippedConditionalIsEmptyLine = &asc
 				"foobar",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -1945,7 +1939,6 @@ var readerTestIfdefWithDefinedAttributeIncludesContent = &asciidoc.Document{
 				"holygrail",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -1991,7 +1984,6 @@ var readerTestIfdefAttributeNameIsNotCaseSensitive = &asciidoc.Document{
 				"showScript",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -2048,7 +2040,6 @@ var readerTestIncludeWithNonMatchingNestedExclude = &asciidoc.Document{
 				"swallow",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 		&asciidoc.String{
 			Value: "grail",
@@ -2059,7 +2050,6 @@ var readerTestIncludeWithNonMatchingNestedExclude = &asciidoc.Document{
 				"grail",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -2092,14 +2082,12 @@ var readerTestNestedExcludesWithSameCondition = &asciidoc.Document{
 				"grail",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 		&asciidoc.EndIf{
 			Attributes: asciidoc.AttributeNames{
 				"grail",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -2136,7 +2124,6 @@ var readerTestIncludeWithNestedExcludeOfInvertedCondition = &asciidoc.Document{
 				"grail",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 		&asciidoc.String{
 			Value: "grail",
@@ -2147,7 +2134,6 @@ var readerTestIncludeWithNestedExcludeOfInvertedCondition = &asciidoc.Document{
 				"grail",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -2188,7 +2174,6 @@ var readerTestExcludeWithMatchingNestedExclude = &asciidoc.Document{
 				"swallow",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 		&asciidoc.String{
 			Value: "here",
@@ -2199,7 +2184,6 @@ var readerTestExcludeWithMatchingNestedExclude = &asciidoc.Document{
 				"swallow",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 		&asciidoc.String{
 			Value: "gone",
@@ -2242,7 +2226,6 @@ var readerTestExcludeWithNestedIncludeUsingShorthandEnd = &asciidoc.Document{
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 		&asciidoc.String{
 			Value: "in here",
@@ -2251,7 +2234,6 @@ var readerTestExcludeWithNestedIncludeUsingShorthandEnd = &asciidoc.Document{
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 		&asciidoc.String{
 			Value: "gone",
@@ -2283,7 +2265,6 @@ var readerTestIfdefWithOneAlternativeAttributeSetIncludesContent = &asciidoc.Doc
 				"swallow",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -2311,7 +2292,6 @@ var readerTestIfdefWithNoAlternativeAttributesSetDoesNotIncludeContent = &asciid
 				"swallow",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -2377,7 +2357,6 @@ var readerTestIfndefWithUndefinedAttributeIncludesBlock = &asciidoc.Document{
 				"holygrail",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -2405,7 +2384,6 @@ var readerTestIfndefWithOneAlternativeAttributeSetDoesNotIncludeContent = &ascii
 				"swallow",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -2433,7 +2411,6 @@ var readerTestIfndefWithBothAlternativeAttributesSetDoesNotIncludeContent = &asc
 				"swallow",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -2461,7 +2438,6 @@ var readerTestIfndefWithNoAlternativeAttributesSetIncludesContent = &asciidoc.Do
 				"swallow",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -2548,7 +2524,6 @@ var readerTestIfdefAroundEmptyLineDoesNotIntroduceExtraLine = &asciidoc.Document
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 		&asciidoc.String{
 			Value: "after",
@@ -2571,7 +2546,6 @@ var readerTestShouldLogWarningIfEndifIsUnmatched = &asciidoc.Document{
 				"on-quest",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -2597,7 +2571,6 @@ var readerTestShouldLogWarningIfEndifIsMismatched = &asciidoc.Document{
 				"on-journey",
 			},
 			Union: 0,
-			Open:  nil,
 		},
 	},
 }
@@ -2673,7 +2646,6 @@ var readerTestIfevalComparingMissingAttributeToNilIncludesContent = &asciidoc.Do
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -2713,7 +2685,6 @@ var readerTestIfevalComparingMissingAttributeTo0DropsContent = &asciidoc.Documen
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -2740,7 +2711,6 @@ var readerTestIfevalRunningUnsupportedOperationOnMissingAttributeDropsContent = 
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -2767,7 +2737,6 @@ var readerTestIfevalRunningInvalidOperationDropsContent = &asciidoc.Document{
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -2804,7 +2773,6 @@ var readerTestIfevalComparingDoubleQuotedAttributeToMatchingStringIncludesConten
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -2841,7 +2809,6 @@ var readerTestIfevalComparingSingleQuotedAttributeToMatchingStringIncludesConten
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -2878,7 +2845,6 @@ var readerTestIfevalComparingQuotedAttributeToNonMatchingStringDropsContent = &a
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -2905,7 +2871,6 @@ var readerTestIfevalComparingAttributeToLowerVersionNumberIncludesContent = &asc
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -2942,7 +2907,6 @@ var readerTestIfevalComparingAttributeToSelfIncludesContent = &asciidoc.Document
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -2969,7 +2933,6 @@ var readerTestIfevalArgumentsCanBeTransposed = &asciidoc.Document{
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -3009,7 +2972,6 @@ var readerTestIfevalMatchingNumericEqualityIncludesContent = &asciidoc.Document{
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -3036,7 +2998,6 @@ var readerTestIfevalMatchingNumericInequalityIncludesContent = &asciidoc.Documen
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -3132,7 +3093,6 @@ var readerTestShouldNotWarnAboutInvalidIfdefPreprocessorDirectiveIfAlreadySkippi
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 		&asciidoc.String{
 			Value: "baz",
@@ -3168,7 +3128,6 @@ var readerTestShouldNotWarnAboutInvalidIfevalPreprocessorDirectiveIfAlreadySkipp
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 		&asciidoc.String{
 			Value: "baz",

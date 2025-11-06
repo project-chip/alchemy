@@ -24,44 +24,46 @@ type TestScript struct {
 func (cmd *TestScript) Run(cc *Context) (err error) {
 
 	err = sdk.CheckAlchemyVersion(cmd.SDKOptions.SdkRoot)
+
 	if err != nil {
 		return
 	}
 
 	var specification *spec.Specification
 	var specDocs spec.DocSet
-	specification, _, err = spec.Parse(cc, cmd.ParserOptions, cmd.ProcessingOptions, nil, cmd.ASCIIDocAttributes.ToList())
-	if err != nil {
-		return
-	}
+	specification, _, err = spec.Parse(cc, cmd.ParserOptions, cmd.ProcessingOptions, []spec.BuilderOption{spec.PatchForSdk(true)}, cmd.ASCIIDocAttributes.ToList())
 
-	err = spec.PatchSpecForSdk(specification)
 	if err != nil {
 		return
 	}
 
 	picsLabels, err := parse.LoadPICSLabels(cmd.SDKOptions.SdkRoot)
+
 	if err != nil {
 		return
 	}
 
 	specDocs, err = filterSpecDocs(cc, specDocs, specification, cmd.FilterOptions, cmd.ProcessingOptions)
+
 	if err != nil {
 		return
 	}
 
 	specDocs, err = filterSpecDocs(cc, specDocs, specification, cmd.FilterOptions, cmd.ProcessingOptions)
+
 	if err != nil {
 		return
 	}
 
 	err = checkSpecErrors(cc, specification, cmd.FilterOptions, specDocs)
+
 	if err != nil {
 		return
 	}
 
 	scriptGenerator := testscript.NewTestScriptGenerator(specification, cmd.SDKOptions.SdkRoot, picsLabels)
 	testplans, err := pipeline.Parallel(cc, cmd.ProcessingOptions, scriptGenerator, specDocs)
+
 	if err != nil {
 		return
 	}
@@ -69,6 +71,7 @@ func (cmd *TestScript) Run(cc *Context) (err error) {
 	generator := python.NewPythonTestRenderer(specification, cmd.SDKOptions.SdkRoot, picsLabels, cmd.GeneratorOptions.ToOptions()...)
 	var scripts pipeline.StringSet
 	scripts, err = pipeline.Parallel(cc, cmd.ProcessingOptions, generator, testplans)
+
 	if err != nil {
 		return
 	}
@@ -76,4 +79,5 @@ func (cmd *TestScript) Run(cc *Context) (err error) {
 	writer := files.NewWriter[string]("Writing test scripts", cmd.OutputOptions)
 	err = writer.Write(cc, scripts, cmd.ProcessingOptions)
 	return
+
 }

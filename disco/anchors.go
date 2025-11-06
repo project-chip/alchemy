@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -20,18 +19,19 @@ import (
 var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z0-9]+[a-z0-9]*(?:[A-Z]+[a-z]*)*([A-Z0-9]+[a-z0-9]*(?:[A-Z0-9]+[a-z0-9]*)*)*$`)
 var improperAnchorCharactersPattern = regexp.MustCompile(`[^A-Za-z0-9]+`)
 
-type anchorGroup struct {
-	group            *spec.DocGroup
+type anchorLibrary struct {
+	library          *spec.Library
 	updatedAnchors   map[string][]*spec.Anchor
 	rewrittenAnchors map[string][]*spec.Anchor
 }
 
 type AnchorNormalizer struct {
+	spec    *spec.Specification
 	options DiscoOptions
 }
 
-func newAnchorNormalizer(discoOptions DiscoOptions) AnchorNormalizer {
-	an := AnchorNormalizer{options: discoOptions}
+func newAnchorNormalizer(spec *spec.Specification, discoOptions DiscoOptions) AnchorNormalizer {
+	an := AnchorNormalizer{spec: spec, options: discoOptions}
 	return an
 }
 
@@ -39,17 +39,17 @@ func (r AnchorNormalizer) Name() string {
 	return "Normalizing anchors"
 }
 
-func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[render.InputDocument], err error) {
-	var anchorGroups map[*spec.DocGroup]*anchorGroup
-	anchorGroups, err = p.normalizeAnchors(inputs)
+func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*asciidoc.Document]) (outputs []*pipeline.Data[*asciidoc.Document], err error) {
+	var anchorLibraries map[*spec.Library]*anchorLibrary
+	anchorLibraries, err = p.normalizeAnchors(inputs)
 	if err != nil {
 		return
 	}
-	extraDocs := make(map[*spec.Doc]struct{})
-	for _, ag := range anchorGroups {
-		for id, infos := range ag.updatedAnchors {
+	extraDocs := make(map[*asciidoc.Document]struct{})
+	for _, al := range anchorLibraries {
+		for id, infos := range al.updatedAnchors {
 			if len(infos) == 1 {
-				infos[0].SyncToDoc(asciidoc.NewStringElements(id))
+				al.library.SyncToDoc(infos[0], asciidoc.NewStringElements(id))
 			} else if len(infos) > 1 { // We ended up with some duplicate anchors
 				var skip bool
 				for _, info := range infos {
@@ -61,7 +61,7 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 					continue
 				}
 				var disambiguatedIDs []string
-				disambiguatedIDs, err = disambiguateAnchorSet(infos, id, ag)
+				disambiguatedIDs, err = disambiguateAnchorSet(infos, id, al)
 				if err != nil {
 					var args []any
 					args = append(args, slog.String("id", id), slog.Any("error", err))
@@ -74,35 +74,35 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 					continue
 				}
 				for i, info := range infos {
-					info.SyncToDoc(asciidoc.NewStringElements(disambiguatedIDs[i]))
+					al.library.SyncToDoc(info, asciidoc.NewStringElements(disambiguatedIDs[i]))
 				}
 			}
 		}
-		for from, to := range ag.rewrittenAnchors {
-			xrefs := ag.group.CrossReferences(from)
+		for from, to := range al.rewrittenAnchors {
+			xrefs := al.library.CrossReferences(from)
 			// We're going to be modifying the underlying array, so we need to make a copy of the slice
 			xrefsToChange := make([]*spec.CrossReference, len(xrefs))
 			copy(xrefsToChange, xrefs)
 			if len(to) == 1 {
 				a := to[0]
 				for _, xref := range xrefsToChange {
-					xref.SyncToDoc(a.ID)
+					al.library.SyncCrossReference(xref, a.ID)
 					extraDocs[xref.Document] = struct{}{}
 				}
 			} else {
-				docs := make(map[*spec.Doc][]*spec.Anchor)
+				docs := make(map[*asciidoc.Document][]*spec.Anchor)
 				for _, info := range to {
 					docs[info.Document] = append(docs[info.Document], info)
 				}
 				for _, xref := range xrefsToChange {
 					info, ok := docs[xref.Document]
 					if ok && len(info) == 1 {
-						xref.SyncToDoc(info[0].ID)
+						al.library.SyncCrossReference(xref, info[0].ID)
 					} else {
 						var logArgs []any
-						logArgs = append(logArgs, slog.Any("id", xref.Identifier(asciidoc.RawReader)), log.Path("origin", xref.Source))
+						logArgs = append(logArgs, slog.Any("id", al.library.Identifier(xref.Reference, xref.Reference, xref.Reference.Elements)), log.Path("origin", xref.Source))
 						for _, info := range to {
-							logArgs = append(logArgs, slog.Any("target", info.Identifier(asciidoc.RawReader)), log.Path("targetPath", info.Source))
+							logArgs = append(logArgs, slog.Any("target", al.library.Identifier(info.Parent, info.Element, info.ID)), log.Path("targetPath", info.Source))
 						}
 						slog.Warn("rewritten xref points to multiple anchors", logArgs...)
 					}
@@ -114,68 +114,71 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 		doc := input.Content
 		p.rewriteCrossReferences(doc)
 		delete(extraDocs, doc)
-		outputs = append(outputs, pipeline.NewData[render.InputDocument](input.Path, input.Content))
+		outputs = append(outputs, pipeline.NewData[*asciidoc.Document](input.Path, input.Content))
 	}
 	for doc := range extraDocs {
-		outputs = append(outputs, pipeline.NewData[render.InputDocument](doc.Path.Relative, doc))
+		outputs = append(outputs, pipeline.NewData[*asciidoc.Document](doc.Path.Relative, doc))
 	}
 	return
 }
 
-func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) (anchorGroups map[*spec.DocGroup]*anchorGroup, err error) {
-	anchorGroups = make(map[*spec.DocGroup]*anchorGroup)
-	unaffiliatedDocs := spec.NewDocGroup(nil)
+func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*asciidoc.Document]) (anchorGroups map[*spec.Library]*anchorLibrary, err error) {
+	anchorGroups = make(map[*spec.Library]*anchorLibrary)
+	docs := make(map[*asciidoc.Document]struct{})
 	for _, input := range inputs {
 		doc := input.Content
-
-		group := doc.Group()
-		if group == nil {
-			group = unaffiliatedDocs
-		}
-		ag, ok := anchorGroups[group]
+		library, ok := an.spec.LibraryForDocument(doc)
 		if !ok {
-			ag = &anchorGroup{
-				group:            group,
+			continue
+		}
+		_, ok = anchorGroups[library]
+		if !ok {
+			anchorLibrary := &anchorLibrary{
+				library:          library,
 				updatedAnchors:   make(map[string][]*spec.Anchor),
 				rewrittenAnchors: make(map[string][]*spec.Anchor),
 			}
-			anchorGroups[group] = ag
+			anchorGroups[library] = anchorLibrary
 		}
-
+		docs[doc] = struct{}{}
+	}
+	for library, anchorLibrary := range anchorGroups {
 		var da map[string][]*spec.Anchor
-		da, err = doc.Anchors()
+		da, err = library.Anchors(asciidoc.RawReader)
 		if err != nil {
-			err = fmt.Errorf("error fetching anchors in %s: %w", doc.Path, err)
+			err = fmt.Errorf("error fetching anchors in %w", err)
 			return
 		}
-
 		for _, as := range da {
 			for _, a := range as {
+				if _, ok := docs[a.Document]; !ok {
+					continue
+				}
 				if isDynamicAnchor(a) {
 					continue
 				}
-				id := a.Identifier(asciidoc.RawReader)
-				newID := an.normalizeAnchor(a)
+				var id string
+				id, err = library.StringValue(a.Parent, a.ID)
+				newID := an.normalizeAnchor(library, a)
 				if id == newID {
-					ag.updatedAnchors[id] = append(ag.updatedAnchors[id], a)
+					anchorLibrary.updatedAnchors[id] = append(anchorLibrary.updatedAnchors[id], a)
 					continue
 				}
 				if _, existingAnchor := da[newID]; existingAnchor {
-					slog.Warn("Attempting to rename anchor to existing anchor", slog.Any("oldAnchor", id), slog.String("newAnchor", newID), log.Element("source", doc.Path, a.Element))
+					slog.Warn("Attempting to rename anchor to existing anchor", slog.Any("oldAnchor", id), slog.String("newAnchor", newID), log.Element("source", a.Document.Path, a.Element))
 					continue
 				}
-				ag.updatedAnchors[newID] = append(ag.updatedAnchors[newID], a)
+				anchorLibrary.updatedAnchors[newID] = append(anchorLibrary.updatedAnchors[newID], a)
 				slog.Debug("rewrote anchor", "from", id, "to", newID)
-				ag.rewrittenAnchors[id] = append(ag.rewrittenAnchors[id], a)
+				anchorLibrary.rewrittenAnchors[id] = append(anchorLibrary.rewrittenAnchors[id], a)
 			}
 		}
-
 	}
 	return
 }
 
-func (an AnchorNormalizer) normalizeAnchor(info *spec.Anchor) (id string) {
-	id = info.Identifier(asciidoc.RawReader)
+func (an AnchorNormalizer) normalizeAnchor(library *spec.Library, info *spec.Anchor) (id string) {
+	id = library.Identifier(info.Parent, info.Element, info.ID)
 	if skipAnchor(info) {
 		return
 	}
@@ -221,7 +224,7 @@ func skipAnchor(info *spec.Anchor) bool {
 	if !ok {
 		return false
 	}
-	if info.Document.Errata().Disco.IgnoreSection(section.Name(), errata.DiscoPurposeNormalizeAnchor) {
+	if info.Library.DiscoErrata(info.Document.Path.Relative).IgnoreSection(info.Library.SectionName(section), errata.DiscoPurposeNormalizeAnchor) {
 		return true
 	}
 	return false
@@ -278,7 +281,7 @@ func normalizeAnchorLabel(name string, element any) (label asciidoc.Elements) {
 	return
 }
 
-func disambiguateAnchorSet(conflictedAnchors []*spec.Anchor, newID string, ag *anchorGroup) (newIDs []string, err error) {
+func disambiguateAnchorSet(conflictedAnchors []*spec.Anchor, newID string, ag *anchorLibrary) (newIDs []string, err error) {
 	parents := make([]any, len(conflictedAnchors))
 	newIDs = make([]string, len(conflictedAnchors))
 	for i, info := range conflictedAnchors {
@@ -314,7 +317,7 @@ func disambiguateAnchorSet(conflictedAnchors []*spec.Anchor, newID string, ag *a
 		}
 		if duplicateIds {
 			for i := range conflictedAnchors {
-				parents[i] = parentSections[i].Parent
+				parents[i] = parentSections[i].Parent()
 			}
 		} else {
 			break

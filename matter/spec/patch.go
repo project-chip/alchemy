@@ -8,13 +8,17 @@ import (
 	"github.com/project-chip/alchemy/matter"
 )
 
-// PatchSpecForSdk is a grab bag of oddities in the spec that need to be corrected for use in the SDK
-func PatchSpecForSdk(spec *Specification) error {
+// patchSpecForSdk is a grab bag of oddities in the spec that need to be corrected for use in the SDK
+func patchSpecForSdk(spec *Specification) error {
 	patchDescriptorCluster(spec)
 	patchScenesCluster(spec)
 	patchLabelCluster(spec)
 	patchLevelControlCluster(spec)
 
+	return nil
+}
+
+func resolveAtomicOperations(spec *Specification) {
 	for m := range spec.DocRefs {
 		switch v := m.(type) {
 		case *matter.ClusterGroup:
@@ -29,12 +33,6 @@ func PatchSpecForSdk(spec *Specification) error {
 			}
 		}
 	}
-
-	// We have to rebuild these indicies after we make the above changes
-	spec.BuildClusterReferences()
-	spec.BuildDataTypeReferences()
-	spec.associateDeviceTypeRequirements()
-	return nil
 }
 
 func patchScenesCluster(spec *Specification) {

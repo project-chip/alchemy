@@ -12,10 +12,14 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func toBitmap(d *Doc, section *asciidoc.Section, pc *parseContext, parent types.Entity) (bm *matter.Bitmap, err error) {
-	name := text.TrimCaseInsensitiveSuffix(d.SectionName(section), " Type")
+func (library *Library) toBitmap(reader asciidoc.Reader, d *asciidoc.Document, section *asciidoc.Section, parent types.Entity) (bm *matter.Bitmap, err error) {
+	name := text.TrimCaseInsensitiveSuffix(library.SectionName(section), " Type")
 
-	dt := GetDataType(d, section)
+	var dt *types.DataType
+	dt, err = GetDataType(library, reader, d, section)
+	if err != nil {
+		return nil, newGenericParseError(section, "error parsing bitmap data type: %v", err)
+	}
 	if dt == nil {
 		dt = types.NewDataType(types.BaseDataTypeMap8, false)
 		slog.Warn("Bitmap does not declare its derived data type; assuming map8", log.Element("source", d.Path, section), slog.String("bitmap", name))
@@ -27,7 +31,7 @@ func toBitmap(d *Doc, section *asciidoc.Section, pc *parseContext, parent types.
 	bm.Name = name
 	bm.Type = dt
 	var ti *TableInfo
-	ti, err = parseFirstTable(d, section)
+	ti, err = parseFirstTable(reader, d, section)
 
 	if err != nil {
 		if err == ErrNoTableFound {
@@ -42,25 +46,25 @@ func toBitmap(d *Doc, section *asciidoc.Section, pc *parseContext, parent types.
 		for row := range ti.ContentRows() {
 			var bit, name, summary string
 			var conf conformance.Set
-			name, err = ti.ReadValue(row, matter.TableColumnName)
+			name, err = ti.ReadValue(reader, row, matter.TableColumnName)
 			if err != nil {
 				return
 			}
 			name = matter.StripTypeSuffixes(name)
-			summary, err = ti.ReadValue(row, matter.TableColumnSummary, matter.TableColumnDescription)
+			summary, err = ti.ReadValue(reader, row, matter.TableColumnSummary, matter.TableColumnDescription)
 			if err != nil {
 				return
 			}
-			conf = ti.ReadConformance(row, matter.TableColumnConformance)
+			conf = ti.ReadConformance(reader, row, matter.TableColumnConformance)
 			if conf == nil {
 				conf = conformance.Set{&conformance.Mandatory{}}
 			}
-			bit, err = ti.ReadString(row, matter.TableColumnBit)
+			bit, err = ti.ReadString(reader, row, matter.TableColumnBit)
 			if err != nil {
 				return
 			}
 			if len(bit) == 0 {
-				bit, err = ti.ReadString(row, matter.TableColumnValue)
+				bit, err = ti.ReadString(reader, row, matter.TableColumnValue)
 				if err != nil {
 					return
 				}
@@ -72,9 +76,8 @@ func toBitmap(d *Doc, section *asciidoc.Section, pc *parseContext, parent types.
 			bm.AddBit(bv)
 		}
 	}
-
+	library.addEntity(section, bm)
 	bm.Name = CanonicalName(bm.Name)
-	pc.addEntity(bm, section)
 	return
 }
 
@@ -135,8 +138,10 @@ func validateBitmaps(spec *Specification) {
 func validateBitmap(spec *Specification, en *matter.Bitmap) {
 	bits := make(map[uint64]matter.Bit)
 	nu := make(nameUniqueness[matter.Bit])
+	cv := make(conformanceValidation)
 	for _, b := range en.Bits {
 		nu.check(spec, b)
+		cv.add(b, b.Conformance())
 		from, to, err := b.Bits()
 		if err != nil {
 			slog.Warn("Unable to determine range of bitmap values", log.Path("source", b), matter.LogEntity("parent", en), slog.String("name", b.Name()), slog.Any("error", err))
@@ -151,5 +156,5 @@ func validateBitmap(spec *Specification, en *matter.Bitmap) {
 			bits[i] = b
 		}
 	}
-
+	cv.check(spec)
 }

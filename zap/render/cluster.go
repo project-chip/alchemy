@@ -127,7 +127,7 @@ func (cr *configuratorRenderer) populateCluster(clusterElement *etree.Element, c
 		return !conformance.IsZigbee(c.Conformance) && !zap.IsDisallowed(c, c.Conformance)
 	})))
 
-	xml.SetOrCreateSimpleElement(clusterElement, "domain", cr.configurator.Errata.OverrideDomain(cluster.Name, cr.configurator.Domain))
+	xml.SetOrCreateSimpleElement(clusterElement, "domain", cr.configurator.Errata.OverrideDomain(cluster.Name, cluster.Domain))
 	clusterName := cluster.Name
 	if cr.configurator.Errata.ClusterName != "" {
 		clusterName = cr.configurator.Errata.ClusterName

@@ -18,18 +18,22 @@ func (Counter) Type() ElementType {
 	return ElementTypeInline
 }
 
-func (a *Counter) Equals(o Element) bool {
+func (c *Counter) Equals(o Element) bool {
 	oa, ok := o.(*Counter)
 	if !ok {
 		return false
 	}
-	if a.Name != oa.Name {
+	if c.Name != oa.Name {
 		return false
 	}
-	if a.InitialValue != oa.InitialValue {
+	if c.InitialValue != oa.InitialValue {
 		return false
 	}
-	return a.Display == oa.Display
+	return c.Display == oa.Display
+}
+
+func (c *Counter) Clone() Element {
+	return &Counter{position: c.position, raw: c.raw, Name: c.Name, InitialValue: c.InitialValue}
 }
 
 type CounterType uint8

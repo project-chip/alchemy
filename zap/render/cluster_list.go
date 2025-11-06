@@ -9,28 +9,29 @@ import (
 	"path"
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/matter/types"
 	"github.com/tidwall/pretty"
 )
 
 type ClusterListPatcher struct {
+	spec    *spec.Specification
 	sdkRoot string
 }
 
-func NewClusterListPatcher(sdkRoot string) *ClusterListPatcher {
-	return &ClusterListPatcher{sdkRoot: sdkRoot}
+func NewClusterListPatcher(spec *spec.Specification, sdkRoot string) *ClusterListPatcher {
+	return &ClusterListPatcher{spec: spec, sdkRoot: sdkRoot}
 }
 
 func (p ClusterListPatcher) Name() string {
 	return "Patching files with cluster list"
 }
 
-func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[[]byte], err error) {
+func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*asciidoc.Document]) (outputs []*pipeline.Data[[]byte], err error) {
 
 	clusterListPath := path.Join(p.sdkRoot, "/src/app/zap_cluster_list.json")
 	var clusterListBytes []byte
@@ -49,12 +50,14 @@ func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	var names []string
 	for _, input := range inputs {
 		doc := input.Content
-		var entities []types.Entity
-		entities, err = doc.Entities()
-		if err != nil {
+
+		library, ok := p.spec.LibraryForDocument(input.Content)
+		if !ok {
+			err = fmt.Errorf("unable to find library for doc %s", doc.Path)
 			return
 		}
-		errata := doc.Errata()
+		errata := library.ErrataForPath(doc.Path.Relative)
+		entities := p.spec.EntitiesForDocument(input.Content)
 		for _, e := range entities {
 			switch e := e.(type) {
 			case *matter.Cluster:

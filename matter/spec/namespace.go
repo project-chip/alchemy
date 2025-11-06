@@ -12,11 +12,11 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func toNamespace(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext) (err error) {
+func (library *Library) toNamespace(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) (ns *matter.Namespace, err error) {
 	var namespaceTable *TableInfo
 	var valuesTable *TableInfo
-	parse.SkimFunc(d.Reader(), s, s.Children(), func(t *asciidoc.Table) bool {
-		ti, err := ReadTable(d, d.Reader(), t)
+	parse.SkimFunc(reader, s, reader.Children(s), func(t *asciidoc.Table) bool {
+		ti, err := ReadTable(d, reader, t)
 		if err != nil {
 			return true
 		}
@@ -34,14 +34,14 @@ func toNamespace(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseCont
 	if namespaceTable == nil || valuesTable == nil {
 		return
 	}
-	ns := matter.NewNamespace(namespaceTable.Element)
+	ns = matter.NewNamespace(namespaceTable.Element)
 	for row := range namespaceTable.ContentRows() {
-		ns.ID, err = namespaceTable.ReadID(row, matter.TableColumnID)
+		ns.ID, err = namespaceTable.ReadID(reader, row, matter.TableColumnID)
 		if err != nil {
 			return
 		}
 		var name string
-		name, err = namespaceTable.ReadString(row, matter.TableColumnNamespace)
+		name, err = namespaceTable.ReadString(reader, row, matter.TableColumnNamespace)
 		if err != nil {
 			return
 		}
@@ -51,14 +51,14 @@ func toNamespace(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseCont
 	}
 	for row := range valuesTable.ContentRows() {
 		st := matter.NewSemanticTag(ns, row)
-		st.ID, err = valuesTable.ReadID(row, matter.TableColumnID)
+		st.ID, err = valuesTable.ReadID(reader, row, matter.TableColumnID)
 		if err != nil {
 			return
 		}
 		if !st.ID.Valid() {
 			continue
 		}
-		st.Name, err = valuesTable.ReadString(row, matter.TableColumnName)
+		st.Name, err = valuesTable.ReadString(reader, row, matter.TableColumnName)
 		if err != nil {
 			return
 		}
@@ -69,12 +69,9 @@ func toNamespace(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseCont
 			slog.Debug("Skipping reserved semantic tag", slog.String("name", st.Name))
 			continue
 		}
-		st.Description, _ = valuesTable.ReadString(row, matter.TableColumnSummary)
+		st.Description, _ = valuesTable.ReadString(reader, row, matter.TableColumnSummary)
 		ns.SemanticTags = append(ns.SemanticTags, st)
 	}
-	pc.entities = append(pc.entities, ns)
-	pc.orderedEntities = append(pc.orderedEntities, ns)
-	pc.entitiesByElement[s] = append(pc.entitiesByElement[s], ns)
 	return
 }
 
