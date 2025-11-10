@@ -33,8 +33,7 @@ func (cr *configuratorRenderer) generateBitmaps(bitmaps map[*matter.Bitmap][]*ma
 		var clusterIds []*matter.Number
 		var skip bool
 		for bm, handled := range bitmaps {
-			typeName := cr.configurator.Errata.OverrideName(bm, bm.Name)
-			if typeName == name || strings.TrimSuffix(typeName, "Bitmap") == name {
+			if bm.Name == name || strings.TrimSuffix(bm.Name, "Bitmap") == name {
 				matchingBitmap = bm
 				clusterIds = handled
 				skip = len(handled) == 0
@@ -95,12 +94,12 @@ func (cr *configuratorRenderer) populateBitmap(ee *etree.Element, bm *matter.Bit
 
 	}
 
-	ee.CreateAttr("name", cr.configurator.Errata.OverrideName(bm, bm.Name))
+	ee.CreateAttr("name", bm.Name)
 	var typeName string
 	if bm.Type != nil {
-		typeName = cr.configurator.Errata.OverrideType(bm, zap.DataTypeName(bm.Type))
+		typeName = zap.DataTypeName(bm.Type)
 	} else {
-		typeName = cr.configurator.Errata.OverrideType(bm, "bitmap8")
+		typeName = "bitmap8"
 	}
 	ee.CreateAttr("type", typeName)
 	cr.setProvisional(ee, bm)
@@ -160,7 +159,6 @@ func (cr *configuratorRenderer) setBitmapFieldAttributes(e *etree.Element, b mat
 
 	name := b.Name()
 	name = zap.CleanName(name)
-	name = cr.configurator.Errata.OverrideName(b, name)
 	e.CreateAttr("name", name)
 	ma := e.SelectAttr("mask")
 	if ma != nil {

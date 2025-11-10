@@ -3,9 +3,6 @@ package errata
 import (
 	"github.com/goccy/go-yaml"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/constraint"
-	"github.com/project-chip/alchemy/matter/types"
 )
 
 type SDK struct {
@@ -78,10 +75,6 @@ type SDKType struct {
 
 type SDKTypeCollection map[string]*SDKType
 
-func (zap *SDK) OverrideName(entity types.Entity, defaultName string) string {
-	return defaultName
-}
-
 func (zap *SDK) OverrideDeviceTypeName(deviceType *matter.DeviceType, defaultName string) string {
 	if zap.Types == nil {
 		return defaultName
@@ -104,34 +97,6 @@ func (zap *SDK) OverrideDeviceType(deviceType *matter.DeviceType, defaultTypeNam
 		}
 	}
 	return defaultTypeName
-}
-
-func (zap *SDK) OverrideConformance(entity types.Entity) conformance.Conformance {
-	return matter.EntityConformance(entity)
-}
-
-func (zap *SDK) OverrideConstraint(entity types.Entity) constraint.Constraint {
-	return matter.EntityConstraint(entity)
-}
-
-func (zap *SDK) OverrideFallback(entity types.Entity) constraint.Limit {
-	return matter.EntityFallback(entity)
-}
-
-func (zap *SDK) OverrideDomain(clusterName string, defaultDomain string) string {
-	return defaultDomain
-}
-
-func (zap *SDK) OverrideType(entity types.Entity, defaultTypeName string) string {
-	return defaultTypeName
-}
-
-func (zap *SDK) OverrideDescription(entity types.Entity, defaultDescription string) string {
-	return defaultDescription
-}
-
-func (zap *SDK) OverridePriority(entity types.Entity, defaultPriority string) string {
-	return defaultPriority
 }
 
 type SeparateStructs map[string]struct{}

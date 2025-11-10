@@ -7,6 +7,7 @@ import (
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/sdk"
 	testplanRender "github.com/project-chip/alchemy/testplan/render"
 )
 
@@ -25,6 +26,11 @@ func (c *TestPlan) Run(cc *Context) (err error) {
 	var specDocs spec.DocSet
 	var specification *spec.Specification
 	specification, specDocs, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, nil, c.ASCIIDocAttributes.ToList())
+	if err != nil {
+		return
+	}
+
+	err = sdk.ApplyErrata(specification)
 	if err != nil {
 		return
 	}

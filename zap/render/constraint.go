@@ -20,7 +20,7 @@ func (cr *configuratorRenderer) renderConstraint(el *etree.Element, fs matter.Fi
 		return
 	}
 
-	from, to := zap.GetMinMax(matter.NewConstraintContext(f, fs), cr.configurator.Errata.OverrideConstraint(f))
+	from, to := zap.GetMinMax(matter.NewConstraintContext(f, fs), f.Constraint)
 
 	if !from.Defined() {
 		el.RemoveAttr("min")

@@ -37,6 +37,11 @@ func (cmd *TestScript) Run(cc *Context) (err error) {
 		return
 	}
 
+	err = sdk.ApplyErrata(specification)
+	if err != nil {
+		return
+	}
+
 	picsLabels, err := parse.LoadPICSLabels(cmd.SDKOptions.SdkRoot)
 
 	if err != nil {

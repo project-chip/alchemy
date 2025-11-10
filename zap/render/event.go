@@ -69,7 +69,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 
 	patchNumberAttribute(eventElement, event.ID, "code")
 	eventElement.CreateAttr("name", event.Name)
-	priority := cr.configurator.Errata.OverridePriority(event, strings.ToLower(event.Priority))
+	priority := strings.ToLower(event.Priority)
 	eventElement.CreateAttr("priority", priority)
 	eventElement.CreateAttr("side", "server")
 
@@ -92,7 +92,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 		eventElement.Child = append([]etree.Token{descriptionElement}, eventElement.Child...)
 	}
 	if len(event.Description) > 0 {
-		descriptionElement.SetText(cr.configurator.Errata.OverrideDescription(event, event.Description))
+		descriptionElement.SetText(event.Description)
 	}
 
 	if needsAccess {

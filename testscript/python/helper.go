@@ -158,15 +158,15 @@ func actionIsHelper(action testscript.TestAction, is string, options *raymond.Op
 
 func clusterNameHelper(errata *errata.SDK) func(test testscript.Test) raymond.SafeString {
 	return func(test testscript.Test) raymond.SafeString {
-		return raymond.SafeString(errata.OverrideName(test.Cluster, spec.CanonicalName(test.Cluster.Name)))
+		return raymond.SafeString(spec.CanonicalName(test.Cluster.Name))
 	}
 }
 
 func stepClusterNameHelper(errata *errata.SDK) func(test testscript.Test, step testscript.TestStep) raymond.SafeString {
 	return func(test testscript.Test, step testscript.TestStep) raymond.SafeString {
-		clusterName := errata.OverrideName(test.Cluster, test.Cluster.Name)
+		clusterName := test.Cluster.Name
 		if step.Cluster != nil {
-			clusterName = errata.OverrideName(step.Cluster, step.Cluster.Name)
+			clusterName = step.Cluster.Name
 		}
 		return raymond.SafeString(spec.CanonicalName(clusterName))
 	}
@@ -177,32 +177,32 @@ func attributeNameHelper(errata *errata.SDK) func(step testscript.TestStep, acti
 		switch action := action.(type) {
 		case testscript.ReadAttribute:
 			if action.Attribute != nil {
-				return raymond.SafeString(errata.OverrideName(action.Attribute, action.Attribute.Name))
+				return raymond.SafeString(action.Attribute.Name)
 			}
 			return raymond.SafeString(action.AttributeName)
 		case *testscript.ReadAttribute:
 			if action.Attribute != nil {
-				return raymond.SafeString(errata.OverrideName(action.Attribute, action.Attribute.Name))
+				return raymond.SafeString(action.Attribute.Name)
 			}
 			return raymond.SafeString(action.AttributeName)
 		case testscript.WriteAttribute:
 			if action.Attribute != nil {
-				return raymond.SafeString(errata.OverrideName(action.Attribute, action.Attribute.Name))
+				return raymond.SafeString(action.Attribute.Name)
 			}
 			return raymond.SafeString(action.AttributeName)
 		case *testscript.WriteAttribute:
 			if action.Attribute != nil {
-				return raymond.SafeString(errata.OverrideName(action.Attribute, action.Attribute.Name))
+				return raymond.SafeString(action.Attribute.Name)
 			}
 			return raymond.SafeString(action.AttributeName)
 		case testscript.CheckType:
-			return raymond.SafeString(errata.OverrideName(action.Field, action.Field.Name))
+			return raymond.SafeString(action.Field.Name)
 		case testscript.CheckMaxConstraint:
-			return raymond.SafeString(errata.OverrideName(action.Field, action.Field.Name))
+			return raymond.SafeString(action.Field.Name)
 		case testscript.CheckMinConstraint:
-			return raymond.SafeString(errata.OverrideName(action.Field, action.Field.Name))
+			return raymond.SafeString(action.Field.Name)
 		case testscript.CheckRangeConstraint:
-			return raymond.SafeString(errata.OverrideName(action.Field, action.Field.Name))
+			return raymond.SafeString(action.Field.Name)
 		default:
 			slog.Error("Unexpected action type in attribute name helper", log.Type("type", action))
 		}
@@ -446,7 +446,7 @@ func enumNameHelper(errata *errata.SDK) func(action testscript.CheckType) raymon
 		}
 		switch entity := action.Field.Type.Entity.(type) {
 		case *matter.Enum:
-			return raymond.SafeString(errata.OverrideName(entity, entity.Name))
+			return raymond.SafeString(entity.Name)
 		default:
 			slog.Error("Unexpected type getting enum name", log.Type("type", entity))
 			return raymond.SafeString("unknown")
@@ -475,7 +475,7 @@ func bitmapNameHelper(errata *errata.SDK) func(action testscript.CheckType) raym
 		}
 		switch entity := action.Field.Type.Entity.(type) {
 		case *matter.Bitmap:
-			return raymond.SafeString(errata.OverrideName(entity, entity.Name))
+			return raymond.SafeString(entity.Name)
 		default:
 			slog.Error("Unexpected type getting bitmap name", log.Type("type", entity))
 			return raymond.SafeString("unknown")
@@ -548,19 +548,19 @@ func customTypeHelper(test testscript.Test, step testscript.TestStep, field matt
 	var cluster *matter.Cluster
 	switch entryEntity := entity.(type) {
 	case *matter.Bitmap:
-		name = errata.OverrideName(entryEntity, entryEntity.Name)
+		name = entryEntity.Name
 		cluster = entryEntity.Cluster()
 		collection = "Bitmaps"
 	case *matter.Command:
-		name = errata.OverrideName(entryEntity, entryEntity.Name)
+		name = entryEntity.Name
 		cluster = entryEntity.Cluster()
 		collection = "Commands"
 	case *matter.Struct:
-		name = errata.OverrideName(entryEntity, entryEntity.Name)
+		name = entryEntity.Name
 		cluster = entryEntity.Cluster()
 		collection = "Structs"
 	case *matter.Enum:
-		name = errata.OverrideName(entryEntity, entryEntity.Name)
+		name = entryEntity.Name
 		cluster = entryEntity.Cluster()
 		collection = "Enums"
 	case nil:
@@ -599,7 +599,7 @@ func customTypeHelper(test testscript.Test, step testscript.TestStep, field matt
 
 func fieldNameHelper(errata *errata.SDK) func(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
 	return func(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
-		return raymond.SafeString(strcase.ToLowerCamel(errata.OverrideName(&field, field.Name)))
+		return raymond.SafeString(strcase.ToLowerCamel(field.Name))
 	}
 }
 
