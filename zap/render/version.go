@@ -14,8 +14,8 @@ import (
 	"time"
 
 	"github.com/beevik/etree"
-	"github.com/project-chip/alchemy/zap"
 	"github.com/project-chip/alchemy/config"
+	"github.com/project-chip/alchemy/zap"
 )
 
 func (cr *configuratorRenderer) patchComments(configurator *zap.Configurator, x *etree.Document) error {

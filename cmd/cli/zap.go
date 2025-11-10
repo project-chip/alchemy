@@ -33,6 +33,11 @@ func (z *ZAP) Run(cc *Context) (err error) {
 		return
 	}
 
+	err = sdk.ApplyErrata(specification)
+	if err != nil {
+		return
+	}
+
 	specDocs, err = filterSpecDocs(cc, specDocs, specification, z.FilterOptions, z.ProcessingOptions)
 	if err != nil {
 		return
