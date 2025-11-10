@@ -126,45 +126,23 @@ func applyErrataToBitmap(bitmap *matter.Bitmap, typeNames map[string]string, typ
 }
 
 func applyErrataToEnum(en *matter.Enum, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
-	log := false
-	if en.Name == "LockTypeEnum" {
-		log = true
-	}
-	if log {
-		slog.Info("patching LockTypeEnum")
-	}
 	if typeOverrides != nil {
 		override, ok := typeOverrides.Enums[en.Name]
-
 		if ok {
 			if override.OverrideName != "" {
 				en.Name = override.OverrideName
-				if log {
-					slog.Info("rename LockTypeEnum", "name", en.Name)
-				}
-
 			}
 			if override.OverrideType != "" {
 				en.Type = types.ParseDataType(override.OverrideType, false)
 			}
 			if len(override.Fields) == 0 {
-				if log {
-					slog.Info("LockTypeEnum skipping fields")
-				}
-
 				return
 			}
 			for _, f := range override.Fields {
-				if log {
-					slog.Info("LockTypeEnum renaming fields", "field", f.Name)
-				}
 				for _, ev := range en.Values {
 					if ev.Name == f.Name {
 						if f.OverrideName != "" {
 							ev.Name = f.OverrideName
-							if log {
-								slog.Info("LockTypeEnum renamed fields", "field", f.Name, "name", ev.Name)
-							}
 						}
 						break
 					}

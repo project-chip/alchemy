@@ -12,11 +12,7 @@ func Traverse[T any](doc *asciidoc.Document, reader asciidoc.Reader, parent asci
 
 func traverse[T any](doc *asciidoc.Document, reader asciidoc.Reader, parent asciidoc.ParentElement, els asciidoc.Elements, callback ElementSearchCallback[T]) SearchShould {
 	var i int
-	//slog.Info("traversing", "count", len(els))
 	for el := range reader.Iterate(parent, els) {
-		/*if el, ok := el.(log.Source); ok {
-			slog.Info("traverse", log.Type("type", el), log.Path("source", el))
-		}*/
 		doc := doc
 		if de, ok := el.(asciidoc.DocumentElement); ok {
 			doc = de.Document()
