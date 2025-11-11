@@ -71,6 +71,9 @@ type SDKType struct {
 	Constraint  string `yaml:"constraint,omitempty"`
 	Conformance string `yaml:"conformance,omitempty"`
 	Fallback    string `yaml:"fallback,omitempty"`
+
+	Quality string `yaml:"quality,omitempty"`
+	Access  string `yaml:"access,omitempty"`
 }
 
 type SDKTypeCollection map[string]*SDKType

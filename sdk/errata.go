@@ -144,6 +144,9 @@ func applyErrataToEnum(en *matter.Enum, typeNames map[string]string, typeOverrid
 						if f.OverrideName != "" {
 							ev.Name = f.OverrideName
 						}
+						if f.Conformance != "" {
+							ev.Conformance = conformance.ParseConformance(f.Conformance)
+						}
 						break
 					}
 				}
@@ -225,22 +228,24 @@ func applyErrataToFields(fs matter.FieldSet, override *errata.SDKType) {
 	}
 }
 
-func applyErrataToField(entity *matter.Field, override *errata.SDKType) {
+func applyErrataToField(field *matter.Field, override *errata.SDKType) {
 	if override.OverrideName != "" {
-		entity.Name = override.OverrideName
+		field.Name = override.OverrideName
 	}
 	if override.OverrideType != "" {
-		entity.Type = types.ParseDataType(override.OverrideType, false)
+		field.Type = types.ParseDataType(override.OverrideType, false)
 	}
 	if override.Conformance != "" {
-		entity.Conformance = conformance.ParseConformance(override.Conformance)
+		field.Conformance = conformance.ParseConformance(override.Conformance)
 	}
 	if override.Constraint != "" {
-		entity.Constraint = constraint.ParseString(override.Constraint)
+		field.Constraint = constraint.ParseString(override.Constraint)
 	}
 	if override.Fallback != "" {
-		entity.Fallback = constraint.ParseLimit(override.Fallback)
+		field.Fallback = constraint.ParseLimit(override.Fallback)
 	}
+	field.Quality = overrideQuality(override, field.Quality)
+	field.Access = overrideAccess(override, field.EntityType(), field.Access)
 }
 
 func applyErrataToDeviceType(deviceType *matter.DeviceType, typeOverrides *errata.SDKTypes) {
@@ -261,4 +266,32 @@ func applyTypeName(typeNames map[string]string, name string) string {
 		return override
 	}
 	return name
+}
+
+func overrideQuality(override *errata.SDKType, defaultQuality matter.Quality) matter.Quality {
+	if override.Quality == "" {
+		return defaultQuality
+	}
+	switch override.Quality {
+	case "none":
+		return matter.QualityNone
+	default:
+		return matter.ParseQuality(override.Quality)
+	}
+}
+
+func overrideAccess(override *errata.SDKType, entityType types.EntityType, defaultAccess matter.Access) matter.Access {
+	if override.Access == "" {
+		return defaultAccess
+	}
+	switch override.Access {
+	case "none":
+		return matter.Access{}
+	default:
+		access, parsed := spec.ParseAccess(override.Access, entityType)
+		if parsed {
+			return access
+		}
+		return defaultAccess
+	}
 }
