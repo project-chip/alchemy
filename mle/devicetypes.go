@@ -1,11 +1,11 @@
 package mle
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strings"
+	"log/slog"
 
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
@@ -37,60 +37,64 @@ func deviceTypeIdReserved(id string, reserveds []string) (reserved bool) {
 }
 
 func parseMasterDeviceTypeList(filePath string) (dti map[string]deviceTypeInfo, reserveds []string, violations map[string][]spec.Violation, err error) {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-
 	dti = make(map[string]deviceTypeInfo)
 	reserveds = make([]string, 0)
 	violations = make(map[string][]spec.Violation)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
 
-		if !strings.HasPrefix(line, "|") {
-			continue
-		}
+	requiredColumns := []string{"Device Type ID", "Device Type Name"}
 
-		parts := strings.Split(line, "|")
-		if len(parts) > 2 && strings.Contains(parts[1], "Device Type ID") && strings.Contains(parts[2], "Device Type Name") {
-			continue
-		}
+	doc, err := parse.File(filePath)
+	if err != nil {
+		return
+	}
 
-		if len(parts) >= 3 {
-			id := strings.TrimSpace(parts[1])
-			name := strings.TrimSpace(parts[2])
+	t := findTableWithColumns(doc.Elements, requiredColumns)
+	if t == nil {
+		slog.Error("No device type master list table found.")
+		return
+	}
 
-			if id == "" || name == "" {
-				continue
-			}
-			if name == "Reserved" {
-				reserveds = append(reserveds, id)
-				continue
-			}
-			if taken, _ := deviceTypeIdTaken(id, dti); taken {
-				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Device Type ID is duplicated on Master List. ID='%s'", id)}
-				v.Path, v.Line = "MasterDeviceTypeList.adoc", 0
-				violations[v.Path] = append(violations[v.Path], v)
-				continue
-			}
-			if _, ok := dti[name]; ok {
-				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Device Type Name is duplicated on Master List. name='%s'", name)}
-				v.Path, v.Line = "MasterDeviceTypeList.adoc", 0
-				violations[v.Path] = append(violations[v.Path], v)
-				continue
-			}
-
-			dti[name] = deviceTypeInfo{
-				DeviceTypeID: id,
-			}
+	colIndices := make(map[string]int)
+	for _, colName := range requiredColumns {
+		colIndices[colName], err = getColumnIndex(t, colName)
+		if err != nil {
+			return
 		}
 	}
 
-	err = scanner.Err()
+	for i := 1; i < len(t.Elements); i++ {
+		row, ok := t.Elements[i].(*asciidoc.TableRow)
+		if !ok {
+			continue
+		}
+
+		id := getCellTextAtCol(row, colIndices["Device Type ID"])
+		name := getCellTextAtCol(row, colIndices["Device Type Name"])
+
+		if id == "" || name == "" {
+			continue
+		}
+		if name == "Reserved" {
+			reserveds = append(reserveds, id)
+			continue
+		}
+		if taken, _ := deviceTypeIdTaken(id, dti); taken {
+			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Device Type ID is duplicated on Master List. ID='%s'", id)}
+			v.Path, v.Line = row.Origin()
+			violations[v.Path] = append(violations[v.Path], v)
+			continue
+		}
+		if _, ok := dti[name]; ok {
+			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Device Type Name is duplicated on Master List. name='%s'", name)}
+			v.Path, v.Line = row.Origin()
+			violations[v.Path] = append(violations[v.Path], v)
+			continue
+		}
+
+		dti[name] = deviceTypeInfo{
+			DeviceTypeID: id,
+		}
+	}
 
 	return
 }

@@ -1,11 +1,11 @@
 package mle
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strings"
+	"log/slog"
 
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
@@ -58,70 +58,72 @@ func clusterIdReserved(id string, reserveds []string) (reserved bool) {
 }
 
 func parseMasterClusterList(filePath string) (ci map[string]clusterInfo, reserveds []string, violations map[string][]spec.Violation, err error) {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-
 	ci = make(map[string]clusterInfo)
 	reserveds = make([]string, 0)
 	violations = make(map[string][]spec.Violation)
-	lineNumber := 0
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		lineNumber++
 
-		if !strings.HasPrefix(line, "|") {
-			continue
-		}
+	requiredColumns := []string{"Cluster ID", "Cluster Name", "PICS Code"}
 
-		parts := strings.Split(line, "|")
-		if len(parts) > 2 && strings.Contains(parts[1], "Cluster ID") && strings.Contains(parts[2], "Cluster Name") {
-			continue
-		}
+	doc, err := parse.File(filePath)
+	if err != nil {
+		return
+	}
 
-		if len(parts) >= 4 {
-			id := strings.TrimSpace(parts[1])
-			name := strings.TrimSpace(parts[2])
-			pics := strings.TrimSpace(parts[3])
+	t := findTableWithColumns(doc.Elements, requiredColumns)
+	if t == nil {
+		slog.Error("No cluster master list table found.")
+		return
+	}
 
-			if id == "" || name == "" {
-				continue
-			}
-			if name == "Reserved" {
-				reserveds = append(reserveds, id)
-				continue
-			}
-			if taken, _ := clusterIdTaken(id, ci); taken {
-				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster ID is duplicated on Master List. ID='%s'", id)}
-				v.Path, v.Line = "MasterClusterList.adoc", lineNumber
-				violations[v.Path] = append(violations[v.Path], v)
-				continue
-			}
-			if taken, _ := clusterPICSTaken(pics, ci); taken {
-				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster PICS is duplicated on Master List. PICS='%s'", pics)}
-				v.Path, v.Line = "MasterClusterList.adoc", lineNumber
-				violations[v.Path] = append(violations[v.Path], v)
-				continue
-			}
-			if _, ok := ci[name]; ok {
-				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster Name is duplicated on Master List. name='%s'", name)}
-				v.Path, v.Line = "MasterClusterList.adoc", lineNumber
-				violations[v.Path] = append(violations[v.Path], v)
-				continue
-			}
-
-			ci[name] = clusterInfo{
-				ClusterID: id,
-				PICScode:  pics,
-			}
+	colIndices := make(map[string]int)
+	for _, colName := range requiredColumns {
+		colIndices[colName], err = getColumnIndex(t, colName)
+		if err != nil {
+			return
 		}
 	}
 
-	err = scanner.Err()
+	for i := 1; i < len(t.Elements); i++ {
+		row, ok := t.Elements[i].(*asciidoc.TableRow)
+		if !ok {
+			continue
+		}
+
+		id := getCellTextAtCol(row, colIndices["Cluster ID"])
+		name := getCellTextAtCol(row, colIndices["Cluster Name"])
+		pics := getCellTextAtCol(row, colIndices["PICS Code"])
+
+		if id == "" || name == "" {
+			continue
+		}
+		if name == "Reserved" {
+			reserveds = append(reserveds, id)
+			continue
+		}
+		if taken, _ := clusterIdTaken(id, ci); taken {
+			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster ID is duplicated on Master List. ID='%s'", id)}
+			v.Path, v.Line = row.Origin()
+			violations[v.Path] = append(violations[v.Path], v)
+			continue
+		}
+		if taken, _ := clusterPICSTaken(pics, ci); taken {
+			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster PICS is duplicated on Master List. PICS='%s'", pics)}
+			v.Path, v.Line = row.Origin()
+			violations[v.Path] = append(violations[v.Path], v)
+			continue
+		}
+		if _, ok := ci[name]; ok {
+			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster Name is duplicated on Master List. name='%s'", name)}
+			v.Path, v.Line = row.Origin()
+			violations[v.Path] = append(violations[v.Path], v)
+			continue
+		}
+
+		ci[name] = clusterInfo{
+			ClusterID: id,
+			PICScode:  pics,
+		}
+	}
 
 	return
 }
