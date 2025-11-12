@@ -6,94 +6,98 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
+	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
 type deviceTypeInfo struct {
-	DeviceTypeID string
+	ID   *matter.Number
+	Name string
 }
 
-func deviceTypeIdTaken(id string, masterDeviceTypeMap map[string]deviceTypeInfo) (taken bool, name string) {
-	var dti deviceTypeInfo
-	for name, dti = range masterDeviceTypeMap {
-		if dti.DeviceTypeID == id {
-			taken = true
-			return
-		}
-	}
-	taken = false
-	return
-}
-
-func deviceTypeIdReserved(id string, reserveds []string) (reserved bool) {
-	for _, r := range reserveds {
-		if r == id {
-			reserved = true
-			return
-		}
-	}
-	reserved = false
-	return
-}
-
-func parseMasterDeviceTypeList(filePath string) (dti map[string]deviceTypeInfo, reserveds []string, violations map[string][]spec.Violation, err error) {
-	dti = make(map[string]deviceTypeInfo)
-	reserveds = make([]string, 0)
+func parseMasterDeviceTypeList(filePath asciidoc.Path) (dti map[uint64]deviceTypeInfo, reserveds map[uint64]log.Source, violations map[string][]spec.Violation, err error) {
+	dti = make(map[uint64]deviceTypeInfo)
+	reserveds = make(map[uint64]log.Source)
+	uniqueNames := make(map[string]*matter.Number)
 	violations = make(map[string][]spec.Violation)
 
-	requiredColumns := []string{"Device Type ID", "Device Type Name"}
+	requiredColumns := []matter.TableColumn{matter.TableColumnDeviceID, matter.TableColumnDeviceName}
 
 	doc, err := parse.File(filePath)
 	if err != nil {
 		return
 	}
 
-	t := findTableWithColumns(doc.Elements, requiredColumns)
-	if t == nil {
+	var deviceTypeListTable *spec.TableInfo
+	deviceTypeListTable, err = findTableWithColumns(doc, requiredColumns)
+	if err != nil {
+		return
+	}
+	if deviceTypeListTable == nil {
 		slog.Error("No device type master list table found.")
 		return
 	}
 
-	colIndices := make(map[string]int)
-	for _, colName := range requiredColumns {
-		colIndices[colName], err = getColumnIndex(t, colName)
+	for row := range deviceTypeListTable.Body() {
+		var id *matter.Number
+		var name string
+		id, err = deviceTypeListTable.ReadID(asciidoc.RawReader, row, matter.TableColumnDeviceID)
 		if err != nil {
 			return
 		}
-	}
-
-	for i := 1; i < len(t.Elements); i++ {
-		row, ok := t.Elements[i].(*asciidoc.TableRow)
-		if !ok {
+		if !id.Valid() {
 			continue
 		}
-
-		id := getCellTextAtCol(row, colIndices["Device Type ID"])
-		name := getCellTextAtCol(row, colIndices["Device Type Name"])
-
-		if id == "" || name == "" {
+		name, _, err = deviceTypeListTable.ReadName(asciidoc.RawReader, row, matter.TableColumnDeviceName)
+		if err != nil {
+			return
+		}
+		switch name {
+		case "":
+			continue
+		case "Reserved":
+			if _, taken := reserveds[id.Value()]; taken {
+				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Duplicate reserved Cluster ID in Master List. ID='%s'", id.HexString())}
+				v.Path, v.Line = row.Origin()
+				violations[v.Path] = append(violations[v.Path], v)
+				continue
+			}
+			if _, taken := dti[id.Value()]; taken {
+				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster ID is both reserved and in use in Master List. ID='%s'", id.HexString())}
+				v.Path, v.Line = row.Origin()
+				violations[v.Path] = append(violations[v.Path], v)
+				continue
+			}
+			reserveds[id.Value()] = row
 			continue
 		}
-		if name == "Reserved" {
-			reserveds = append(reserveds, id)
-			continue
+		if err != nil {
+			return
 		}
-		if taken, _ := deviceTypeIdTaken(id, dti); taken {
-			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Device Type ID is duplicated on Master List. ID='%s'", id)}
+		if _, reserved := reserveds[id.Value()]; reserved {
+			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster ID is both reserved and in use in Master List. ID='%s'", id.HexString())}
 			v.Path, v.Line = row.Origin()
 			violations[v.Path] = append(violations[v.Path], v)
 			continue
 		}
-		if _, ok := dti[name]; ok {
-			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Device Type Name is duplicated on Master List. name='%s'", name)}
+		if _, taken := dti[id.Value()]; taken {
+			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster ID is duplicated on Master List. ID='%s'", id.HexString())}
 			v.Path, v.Line = row.Origin()
 			violations[v.Path] = append(violations[v.Path], v)
 			continue
 		}
-
-		dti[name] = deviceTypeInfo{
-			DeviceTypeID: id,
+		if _, taken := uniqueNames[name]; taken {
+			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster Name is duplicated on Master List. name='%s'", name)}
+			v.Path, v.Line = row.Origin()
+			violations[v.Path] = append(violations[v.Path], v)
+			continue
 		}
+		dti[id.Value()] = deviceTypeInfo{
+			ID:   id,
+			Name: name,
+		}
+		uniqueNames[name] = id
 	}
 
 	return

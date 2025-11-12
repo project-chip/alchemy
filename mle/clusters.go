@@ -6,123 +6,112 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
+	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
 type clusterInfo struct {
-	ClusterID string
+	ClusterID *matter.Number
+	Name      string
 	PICScode  string
 }
 
-func clusterIdTaken(id string, masterClusterMap map[string]clusterInfo) (taken bool, name string) {
-	var ci clusterInfo
-	if id == "n/a" {
-		taken = false
-		return
-	}
-	for name, ci = range masterClusterMap {
-		if ci.ClusterID == id {
-			taken = true
-			return
-		}
-	}
-	taken = false
-	return
-}
-
-func clusterPICSTaken(p string, masterClusterMap map[string]clusterInfo) (taken bool, name string) {
-	var ci clusterInfo
-	if p == "" {
-		taken = false
-		return
-	}
-	for name, ci = range masterClusterMap {
-		if ci.PICScode == p {
-			taken = true
-			return
-		}
-	}
-	taken = false
-	return
-}
-
-func clusterIdReserved(id string, reserveds []string) (reserved bool) {
-	for _, r := range reserveds {
-		if r == id {
-			reserved = true
-			return
-		}
-	}
-	reserved = false
-	return
-}
-
-func parseMasterClusterList(filePath string) (ci map[string]clusterInfo, reserveds []string, violations map[string][]spec.Violation, err error) {
-	ci = make(map[string]clusterInfo)
-	reserveds = make([]string, 0)
+func parseMasterClusterList(filePath asciidoc.Path) (ci map[uint64]clusterInfo, reserveds map[uint64]log.Source, violations map[string][]spec.Violation, err error) {
+	ci = make(map[uint64]clusterInfo)
+	uniqueNames := make(map[string]*matter.Number)
+	uniquePics := make(map[string]*matter.Number)
 	violations = make(map[string][]spec.Violation)
+	reserveds = make(map[uint64]log.Source)
 
-	requiredColumns := []string{"Cluster ID", "Cluster Name", "PICS Code"}
+	requiredColumns := []matter.TableColumn{matter.TableColumnClusterID, matter.TableColumnClusterName, matter.TableColumnPICSCode}
 
 	doc, err := parse.File(filePath)
 	if err != nil {
 		return
 	}
 
-	t := findTableWithColumns(doc.Elements, requiredColumns)
-	if t == nil {
+	var clusterListTable *spec.TableInfo
+	clusterListTable, err = findTableWithColumns(doc, requiredColumns)
+	if err != nil {
+		return
+	}
+
+	if clusterListTable == nil {
 		slog.Error("No cluster master list table found.")
 		return
 	}
 
-	colIndices := make(map[string]int)
-	for _, colName := range requiredColumns {
-		colIndices[colName], err = getColumnIndex(t, colName)
+	for row := range clusterListTable.Body() {
+		var id *matter.Number
+		var name, pics string
+		id, err = clusterListTable.ReadID(asciidoc.RawReader, row, matter.TableColumnClusterID)
 		if err != nil {
 			return
 		}
-	}
-
-	for i := 1; i < len(t.Elements); i++ {
-		row, ok := t.Elements[i].(*asciidoc.TableRow)
-		if !ok {
+		if !id.Valid() {
 			continue
 		}
-
-		id := getCellTextAtCol(row, colIndices["Cluster ID"])
-		name := getCellTextAtCol(row, colIndices["Cluster Name"])
-		pics := getCellTextAtCol(row, colIndices["PICS Code"])
-
-		if id == "" || name == "" {
+		name, _, err = clusterListTable.ReadName(asciidoc.RawReader, row, matter.TableColumnClusterName)
+		if err != nil {
+			return
+		}
+		switch name {
+		case "":
+			continue
+		case "Reserved":
+			if _, taken := reserveds[id.Value()]; taken {
+				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Duplicate reserved Cluster ID in Master List. ID='%s'", id.HexString())}
+				v.Path, v.Line = row.Origin()
+				violations[v.Path] = append(violations[v.Path], v)
+				continue
+			}
+			if _, taken := ci[id.Value()]; taken {
+				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster ID is both reserved and in use in Master List. ID='%s'", id.HexString())}
+				v.Path, v.Line = row.Origin()
+				violations[v.Path] = append(violations[v.Path], v)
+				continue
+			}
+			reserveds[id.Value()] = row
 			continue
 		}
-		if name == "Reserved" {
-			reserveds = append(reserveds, id)
-			continue
+		pics, err = clusterListTable.ReadString(asciidoc.RawReader, row, matter.TableColumnPICSCode)
+		if err != nil {
+			return
 		}
-		if taken, _ := clusterIdTaken(id, ci); taken {
-			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster ID is duplicated on Master List. ID='%s'", id)}
+		if _, reserved := reserveds[id.Value()]; reserved {
+			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster ID is both reserved and in use in Master List. ID='%s'", id.HexString())}
 			v.Path, v.Line = row.Origin()
 			violations[v.Path] = append(violations[v.Path], v)
 			continue
 		}
-		if taken, _ := clusterPICSTaken(pics, ci); taken {
-			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster PICS is duplicated on Master List. PICS='%s'", pics)}
+		if _, taken := ci[id.Value()]; taken {
+			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster ID is duplicated on Master List. ID='%s'", id.HexString())}
 			v.Path, v.Line = row.Origin()
 			violations[v.Path] = append(violations[v.Path], v)
 			continue
 		}
-		if _, ok := ci[name]; ok {
+		if _, taken := uniqueNames[name]; taken {
 			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster Name is duplicated on Master List. name='%s'", name)}
 			v.Path, v.Line = row.Origin()
 			violations[v.Path] = append(violations[v.Path], v)
 			continue
 		}
-
-		ci[name] = clusterInfo{
+		if pics != "" {
+			if _, taken := uniquePics[pics]; taken {
+				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster PICS is duplicated on Master List. PICS='%s'", pics)}
+				v.Path, v.Line = row.Origin()
+				violations[v.Path] = append(violations[v.Path], v)
+				continue
+			}
+			uniquePics[pics] = id
+		}
+		ci[id.Value()] = clusterInfo{
 			ClusterID: id,
+			Name:      name,
 			PICScode:  pics,
 		}
+		uniqueNames[name] = id
 	}
 
 	return
