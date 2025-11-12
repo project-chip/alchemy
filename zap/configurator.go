@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -13,7 +14,7 @@ import (
 
 type Configurator struct {
 	Spec    *spec.Specification
-	Docs    []*spec.Doc
+	Docs    []*asciidoc.Document
 	Domain  string
 	OutPath string
 
@@ -30,7 +31,7 @@ type Configurator struct {
 	ExternalEntities map[types.Entity]struct{}
 }
 
-func NewConfigurator(spec *spec.Specification, docs []*spec.Doc, entities []types.Entity, outPath string, errata *errata.SDK, global bool) (*Configurator, error) {
+func NewConfigurator(spec *spec.Specification, docs []*asciidoc.Document, entities []types.Entity, outPath string, errata *errata.SDK, global bool) (*Configurator, error) {
 	c := &Configurator{
 		Spec:    spec,
 		Docs:    docs,
@@ -47,7 +48,7 @@ func NewConfigurator(spec *spec.Specification, docs []*spec.Doc, entities []type
 		ExternalEntities: make(map[types.Entity]struct{}),
 	}
 	if len(docs) > 0 {
-		c.Domain = matter.DomainNames[docs[0].Domain]
+		//c.Domain = matter.DomainNames[docs[0].Domain]
 	}
 
 	for _, m := range entities {
@@ -87,8 +88,6 @@ func (c *Configurator) addCluster(parentEntity types.Entity, v *matter.Cluster) 
 		c.addTypes(parentEntity, e.Fields)
 	}
 
-	c.addForcedTypes(v, parentEntity)
-
 	if v.ID.Valid() {
 		c.ClusterIDs = append(c.ClusterIDs, v.ID.HexString())
 	}
@@ -105,35 +104,6 @@ func (c *Configurator) addCluster(parentEntity types.Entity, v *matter.Cluster) 
 		}
 	}
 	c.Clusters[v] = false
-}
-
-func (c *Configurator) addForcedTypes(cluster *matter.Cluster, parentEntity types.Entity) {
-	if c.Errata != nil && len(c.Errata.ForceIncludeTypes) > 0 {
-		for _, bm := range cluster.Bitmaps {
-			for _, force := range c.Errata.ForceIncludeTypes {
-				if strings.EqualFold(bm.Name, force) {
-					c.addEntityType(parentEntity, bm)
-					break
-				}
-			}
-		}
-		for _, en := range cluster.Enums {
-			for _, force := range c.Errata.ForceIncludeTypes {
-				if strings.EqualFold(en.Name, force) {
-					c.addEntityType(parentEntity, en)
-					break
-				}
-			}
-		}
-		for _, s := range cluster.Structs {
-			for _, force := range c.Errata.ForceIncludeTypes {
-				if strings.EqualFold(s.Name, force) {
-					c.addEntityType(parentEntity, s)
-					break
-				}
-			}
-		}
-	}
 }
 
 func (c *Configurator) addTypes(parentEntity types.Entity, fs matter.FieldSet) {

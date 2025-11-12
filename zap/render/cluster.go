@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"slices"
-	"strconv"
 	"strings"
 
 	"github.com/beevik/etree"
@@ -128,7 +127,7 @@ func (cr *configuratorRenderer) populateCluster(clusterElement *etree.Element, c
 		return !conformance.IsZigbee(c.Conformance) && !zap.IsDisallowed(c, c.Conformance)
 	})))
 
-	xml.SetOrCreateSimpleElement(clusterElement, "domain", cr.configurator.Errata.OverrideDomain(cluster.Name, cr.configurator.Domain))
+	xml.SetOrCreateSimpleElement(clusterElement, "domain", cluster.Domain)
 	clusterName := cluster.Name
 	if cr.configurator.Errata.ClusterName != "" {
 		clusterName = cr.configurator.Errata.ClusterName
@@ -139,7 +138,7 @@ func (cr *configuratorRenderer) populateCluster(clusterElement *etree.Element, c
 
 	descriptionElement := clusterElement.SelectElement("description")
 	if descriptionElement == nil || descriptionElement.Text() == "" {
-		xml.SetOrCreateSimpleElement(clusterElement, "description", cr.configurator.Errata.OverrideDescription(cluster, cluster.Description), "define", "code", "name", "domain")
+		xml.SetOrCreateSimpleElement(clusterElement, "description", cluster.Description, "define", "code", "name", "domain")
 	}
 
 	if client := clusterElement.SelectElement("client"); client == nil {
@@ -211,15 +210,11 @@ func generateClusterGlobalAttributes(configurator *zap.Configurator, cle *etree.
 func setClusterGlobalAttribute(parent *etree.Element, globalAttribute *etree.Element, cluster *matter.Cluster, id *matter.Number) {
 	switch id.Value() {
 	case 0xFFFD:
-		var lastRevision uint64
-		for _, rev := range cluster.Revisions {
-			revNumber := matter.ParseNumber(rev.Number)
-			if revNumber.Valid() && revNumber.Value() > lastRevision {
-				lastRevision = revNumber.Value()
-			}
-		}
 		globalAttribute.CreateAttr("side", "either")
-		globalAttribute.CreateAttr("value", strconv.FormatUint(lastRevision, 10))
+		mostRecentRevision := cluster.Revisions.MostRecent()
+		if mostRecentRevision != nil {
+			globalAttribute.CreateAttr("value", mostRecentRevision.Number.IntString())
+		}
 	case 0xFFFC:
 		slog.Warn("Removing redundant feature global attribute", slog.String("clusterName", cluster.Name))
 		parent.RemoveChild(globalAttribute)

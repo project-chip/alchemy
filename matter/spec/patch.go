@@ -8,13 +8,16 @@ import (
 	"github.com/project-chip/alchemy/matter"
 )
 
-// PatchSpecForSdk is a grab bag of oddities in the spec that need to be corrected for use in the SDK
-func PatchSpecForSdk(spec *Specification) error {
-	patchDescriptorCluster(spec)
+// patchSpecForSdk is a grab bag of oddities in the spec that need to be corrected for use in the SDK
+func patchSpecForSdk(spec *Specification) error {
 	patchScenesCluster(spec)
 	patchLabelCluster(spec)
 	patchLevelControlCluster(spec)
 
+	return nil
+}
+
+func resolveAtomicOperations(spec *Specification) {
 	for m := range spec.DocRefs {
 		switch v := m.(type) {
 		case *matter.ClusterGroup:
@@ -29,12 +32,6 @@ func PatchSpecForSdk(spec *Specification) error {
 			}
 		}
 	}
-
-	// We have to rebuild these indicies after we make the above changes
-	spec.BuildClusterReferences()
-	spec.BuildDataTypeReferences()
-	spec.associateDeviceTypeRequirements()
-	return nil
 }
 
 func patchScenesCluster(spec *Specification) {
@@ -57,31 +54,6 @@ func patchScenesCluster(spec *Specification) {
 	for _, f := range addSceneCommand.Fields {
 		if strings.EqualFold(f.Name, "ExtensionFieldSetStructs") {
 			f.Name = "ExtensionFieldSets"
-			break
-		}
-	}
-}
-
-func patchDescriptorCluster(spec *Specification) {
-	/* This is a hacky workaround for a spec problem: SemanticTagStruct is defined twice, in two different ways.
-	The first is a global struct that's used by the Descriptor cluster
-	The second is a cluster-level struct on Mode Select
-	Inserting one as a global object, and the other as a struct on Mode Select breaks zap
-	*/
-	desc, ok := spec.ClustersByName["Descriptor"]
-	if !ok {
-		slog.Warn("Could not find Descriptor cluster")
-		return
-	}
-	for o := range spec.GlobalObjects {
-		s, ok := o.(*matter.Struct)
-		if !ok {
-			continue
-		}
-
-		if s.Name == "SemanticTagStruct" {
-			desc.AddStructs(s)
-			delete(spec.GlobalObjects, s)
 			break
 		}
 	}

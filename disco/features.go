@@ -39,7 +39,7 @@ func (b *Baller) organizeFeaturesSection(cxt *discoContext) (err error) {
 					continue
 				}
 				featureCell := row.Cell(featureIndex)
-				vc, e := spec.RenderTableCell(featureCell)
+				vc, e := spec.RenderTableCell(cxt.library, featureCell)
 				if e != nil {
 					continue
 				}
@@ -59,7 +59,7 @@ func (b *Baller) organizeFeaturesSection(cxt *discoContext) (err error) {
 					continue
 				}
 				codeCell := row.Cell(codeIndex)
-				vc, e := spec.RenderTableCell(codeCell)
+				vc, e := spec.RenderTableCell(cxt.library, codeCell)
 				if e != nil {
 					continue
 				}

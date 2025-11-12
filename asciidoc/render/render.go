@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
@@ -25,7 +26,7 @@ func (p Renderer) Name() string {
 	return "Rendering Asciidoc"
 }
 
-func (p Renderer) Process(cxt context.Context, input *pipeline.Data[InputDocument], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[InputDocument], err error) {
+func (p Renderer) Process(cxt context.Context, input *pipeline.Data[*asciidoc.Document], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*asciidoc.Document], err error) {
 	doc := input.Content
 	var renderContext Target
 	if p.wordWrapLength > 0 {

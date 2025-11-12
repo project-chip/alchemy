@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"reflect"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -11,6 +13,17 @@ import (
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/sanity-io/litter"
 )
+
+func init() {
+	litter.Config.DisablePointerReplacement = true
+	litter.Config.FieldExclusions = regexp.MustCompile("^Parent$")
+	litter.Config.FieldFilter = func(sf reflect.StructField, v reflect.Value) bool {
+		if sf.Name == "Path" {
+			return false
+		}
+		return true
+	}
+}
 
 type parseTest struct {
 	name   string
@@ -31,7 +44,7 @@ func (pt *parseTest) run() error {
 }
 
 func (pt *parseTest) testParser(in []byte) error {
-	out, err := parse.Reader("", bytes.NewReader(in))
+	out, err := parse.Reader(asciidoc.Path{}, bytes.NewReader(in))
 	if err != nil {
 		return fmt.Errorf("error parsing %s: %v", pt.name, err)
 	}

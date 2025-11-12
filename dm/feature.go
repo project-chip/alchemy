@@ -4,13 +4,13 @@ import (
 	"fmt"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func renderFeatures(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
+func renderFeatures(doc *asciidoc.Document, cluster *matter.Cluster, c *etree.Element) (err error) {
 	if cluster.Features == nil || len(cluster.Features.Bits) == 0 {
 		return
 	}
@@ -19,7 +19,7 @@ func renderFeatures(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 	return
 }
 
-func RenderFeatureElements(doc *spec.Doc, cluster *matter.Cluster, features *etree.Element, excludeDisallowed bool, errata *errata.SDK) (err error) {
+func RenderFeatureElements(doc *asciidoc.Document, cluster *matter.Cluster, features *etree.Element, excludeDisallowed bool, errata *errata.SDK) (err error) {
 	for _, b := range cluster.Features.Bits {
 		f, ok := b.(*matter.Feature)
 		if !ok {
@@ -36,8 +36,7 @@ func RenderFeatureElements(doc *spec.Doc, cluster *matter.Cluster, features *etr
 		feature := features.CreateElement("feature")
 		feature.CreateAttr("bit", bit.IntString())
 		feature.CreateAttr("code", f.Code)
-		name := errata.OverrideName(b, f.Name())
-		feature.CreateAttr("name", name)
+		feature.CreateAttr("name", f.Name())
 		if len(f.Summary()) > 0 {
 			feature.CreateAttr("summary", scrubDescription(f.Summary()))
 		}

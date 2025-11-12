@@ -30,8 +30,7 @@ func (cr *configuratorRenderer) generateStructs(structs map[*matter.Struct][]*ma
 		var clusterIds []*matter.Number
 		var skip bool
 		for s, handled := range structs {
-			typeName := errata.OverrideName(s, s.Name)
-			if typeName == name || strings.TrimSuffix(typeName, "Struct") == name {
+			if s.Name == name || strings.TrimSuffix(s.Name, "Struct") == name {
 				matchingStruct = s
 				skip = len(handled) == 0
 				clusterIds = handled
@@ -108,7 +107,7 @@ func (cr *configuratorRenderer) generateStructs(structs map[*matter.Struct][]*ma
 
 func (cr *configuratorRenderer) populateStruct(ee *etree.Element, s *matter.Struct, clusterIDs []*matter.Number, newlyAdded bool) (remainingClusterIDs []*matter.Number, err error) {
 	cr.elementMap[ee] = s
-	ee.CreateAttr("name", cr.configurator.Errata.OverrideName(s, s.Name))
+	ee.CreateAttr("name", s.Name)
 	switch provisional.Policy(cr.generator.options.ProvisionalPolicy) {
 	case provisional.PolicyNone:
 		if newlyAdded {
@@ -175,7 +174,6 @@ func (cr *configuratorRenderer) setStructFieldAttributes(e *etree.Element, s *ma
 	e.RemoveAttr("id")
 	xml.PrependAttribute(e, "fieldId", v.ID.IntString())
 	name := zap.CleanName(v.Name)
-	name = cr.configurator.Errata.OverrideName(s, name)
 	e.CreateAttr("name", name)
 	cr.writeDataType(e, types.EntityTypeStruct, s.Name, s.Fields, v)
 	if v.Quality.Has(matter.QualityNullable) && !cr.generator.options.ExtendedQuality {

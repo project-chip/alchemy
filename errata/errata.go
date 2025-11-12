@@ -1,8 +1,6 @@
 package errata
 
-import (
-	"path/filepath"
-)
+import "iter"
 
 type Errata struct {
 	Disco    Disco    `yaml:"disco,omitempty"`
@@ -13,20 +11,24 @@ type Errata struct {
 
 var DefaultErrata = &Errata{}
 
-func GetErrata(path string) *Errata {
-	path = filepath.ToSlash(path)
-	errata, ok := Erratas[path]
+type Collection struct {
+	errata map[string]*Errata
+}
+
+func (c *Collection) Get(path string) *Errata {
+	errata, ok := c.errata[path]
 	if ok {
 		return errata
 	}
 	return DefaultErrata
 }
 
-var Erratas = map[string]*Errata{}
-
-var DocRoots = []string{
-	"src/main.adoc",
-	"src/appclusters.adoc",
-	"src/device_library.adoc",
-	"src/standard_namespaces.adoc",
+func (c *Collection) All() iter.Seq2[string, *Errata] {
+	return func(yield func(string, *Errata) bool) {
+		for path, errata := range c.errata {
+			if !yield(path, errata) {
+				return
+			}
+		}
+	}
 }

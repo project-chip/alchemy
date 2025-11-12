@@ -15,7 +15,7 @@ func (b *Baller) fixConformanceCells(cxt *discoContext, section *subSection, row
 	if len(rows) < 2 {
 		return
 	}
-	if cxt.errata.IgnoreSection(cxt.doc.SectionName(section.section), errata.DiscoPurposeTableConformance) {
+	if cxt.errata.IgnoreSection(cxt.library.SectionName(section.section), errata.DiscoPurposeTableConformance) {
 		return nil
 	}
 	conformanceIndex, ok := columnMap[matter.TableColumnConformance]
@@ -24,7 +24,7 @@ func (b *Baller) fixConformanceCells(cxt *discoContext, section *subSection, row
 	}
 	for _, row := range rows[1:] {
 		cell := row.Cell(conformanceIndex)
-		vc, e := spec.RenderTableCell(cell)
+		vc, e := spec.RenderTableCell(cxt.library, cell)
 		if e != nil {
 			continue
 		}
@@ -45,7 +45,7 @@ func (b *Baller) fixConformanceCells(cxt *discoContext, section *subSection, row
 
 func disambiguateConformance(cxt *discoContext) (err error) {
 	globalChoices := make(map[string]string)
-	parse.Search(asciidoc.RawReader, cxt.doc, cxt.doc.Children(), func(table *asciidoc.Table, parent asciidoc.Parent, index int) parse.SearchShould {
+	parse.Search(cxt.doc, asciidoc.RawReader, cxt.doc, cxt.doc.Children(), func(doc *asciidoc.Document, table *asciidoc.Table, parent asciidoc.ParentElement, index int) parse.SearchShould {
 		ti, ok := cxt.parsed.tableCache[table]
 		if !ok {
 
@@ -68,7 +68,7 @@ func disambiguateConformance(cxt *discoContext) (err error) {
 			cell := row.Cell(conformanceIndex)
 			conf, ok := cxt.parsed.conformanceCache[cell]
 			if !ok {
-				vc, e := spec.RenderTableCell(cell)
+				vc, e := spec.RenderTableCell(cxt.library, cell)
 				if e != nil {
 					continue
 				}

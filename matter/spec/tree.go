@@ -2,117 +2,45 @@ package spec
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
-	"path/filepath"
-	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/parse"
+	"github.com/project-chip/alchemy/config"
 	"github.com/project-chip/alchemy/errata"
-	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
-type DocumentGrouper struct {
+type LibraryBuilder struct {
 	specRoot string
+	errata   *errata.Collection
+	config   *config.Config
 }
 
-func NewDocumentGrouper(specRoot string) *DocumentGrouper {
-	b := &DocumentGrouper{
+func NewLibraryBuilder(specRoot string, config *config.Config, errata *errata.Collection) *LibraryBuilder {
+	b := &LibraryBuilder{
 		specRoot: specRoot,
+		config:   config,
+		errata:   errata,
 	}
 	return b
 }
 
-func (dg DocumentGrouper) Name() string {
+func (lb LibraryBuilder) Name() string {
 	return "Grouping spec documents"
 }
 
-func (dg *DocumentGrouper) Process(cxt context.Context, inputs []*pipeline.Data[*Doc]) (outputs []*pipeline.Data[*DocGroup], err error) {
-	docs := make([]*Doc, 0, len(inputs))
-	for _, i := range inputs {
-		docs = append(docs, i.Content)
-	}
+func (lb *LibraryBuilder) Process(cxt context.Context, inputs []*pipeline.Data[*asciidoc.Document]) (outputs []*pipeline.Data[*Library], err error) {
 
-	buildTree(dg.specRoot, docs)
+	docCache := cacheFromPipeline(lb.specRoot, inputs)
 
-	docGroups := buildDocumentGroups(docs)
-	for _, g := range docGroups {
-		outputs = append(outputs, pipeline.NewData(g.Root.Path.Relative, g))
-	}
-	return
-}
-
-func buildTree(specRoot string, docs []*Doc) error {
-
-	tree := make(map[*Doc][]*asciidoc.FileInclude)
-	docPaths := make(map[string]*Doc)
-
-	for _, doc := range docs {
-
-		path := doc.Path
-		docPaths[path.Absolute] = doc
-
-		parse.Search(doc.Reader(), doc, doc.Children(), func(link *asciidoc.FileInclude, parent asciidoc.Parent, index int) parse.SearchShould {
-			tree[doc] = append(tree[doc], link)
-			return parse.SearchShouldContinue
-		})
-	}
-
-	for doc, children := range tree {
-		for _, link := range children {
-			var p strings.Builder
-			buildDataTypeString(doc, link.Elements, &p)
-			linkFullPath := filepath.Join(doc.Path.Dir(), p.String())
-			linkPath, err := asciidoc.NewPath(linkFullPath, specRoot)
-			if err != nil {
-				return err
-			}
-			slog.Debug("Link path", log.Path("from", doc.Path), slog.String("to", p.String()), log.Path("linkPath", linkPath))
-			if cd, ok := docPaths[linkPath.Absolute]; ok {
-				cd.addParent(doc)
-				doc.addChild(cd)
-			} else {
-				if strings.HasPrefix(linkPath.Relative, "src/") {
-					slog.Warn("unknown child path", log.Element("parent", doc.Path, link), "child", linkPath.Relative)
-				}
-			}
-		}
-	}
-	return nil
-}
-
-func dumpTree(r *Doc, indent int) {
-	fmt.Print(strings.Repeat("\t", indent))
-	fmt.Printf("%s (%s)\n", r.Path.Absolute, r.Path.Relative)
-	for _, c := range r.children {
-		dumpTree(c, indent+1)
-	}
-}
-
-func buildDocumentGroups(docs []*Doc) (docGroups []*DocGroup) {
-	for _, d := range docs {
-		if len(d.parents) > 0 {
+	for _, libraryConfig := range lb.config.Libraries {
+		root, ok := docCache.cache.Load(libraryConfig.Root)
+		if !ok {
+			slog.Warn("doc root not found", "root", libraryConfig.Root)
 			continue
 		}
-
-		var isDocRoot bool
-		path := d.Path.Relative
-		for _, docRoot := range errata.DocRoots {
-			if strings.EqualFold(path, docRoot) {
-				isDocRoot = true
-				break
-			}
-		}
-
-		if !isDocRoot {
-			continue
-		}
-
-		dg := NewDocGroup(d)
-		docGroups = append(docGroups, dg)
-		setDocGroup(d, dg)
+		outputs = append(outputs, pipeline.NewData(root.Path.Relative, NewLibrary(root, libraryConfig, lb.errata, docCache)))
 	}
+
 	return
 }

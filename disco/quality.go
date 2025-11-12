@@ -12,7 +12,7 @@ func (b *Baller) fixQualityCells(cxt *discoContext, subSection *subSection) (err
 	if !b.options.FormatQuality {
 		return nil
 	}
-	if cxt.errata.IgnoreSection(cxt.doc.SectionName(subSection.section), errata.DiscoPurposeTableQuality) {
+	if cxt.errata.IgnoreSection(cxt.library.SectionName(subSection.section), errata.DiscoPurposeTableQuality) {
 		return nil
 	}
 	table := subSection.table
@@ -26,7 +26,7 @@ func (b *Baller) fixQualityCells(cxt *discoContext, subSection *subSection) (err
 
 	for _, row := range table.Rows[1:] {
 		qualityCell := row.Cell(qualityIndex)
-		vc, e := spec.RenderTableCell(qualityCell)
+		vc, e := spec.RenderTableCell(cxt.library, qualityCell)
 		if e != nil {
 			continue
 		}

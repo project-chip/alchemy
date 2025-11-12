@@ -7,10 +7,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hexops/gotextdiff"
-	"github.com/hexops/gotextdiff/myers"
-	"github.com/hexops/gotextdiff/span"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"znkr.io/diff"
+	"znkr.io/diff/textdiff"
 )
 
 type Patcher[T string | []byte] struct {
@@ -37,6 +36,13 @@ func (sp *Patcher[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (
 		if err != nil {
 			return
 		}
+		if !exists && sp.Root != "" {
+			path = filepath.Join(sp.Root, path)
+			exists, err = Exists(path)
+			if err != nil {
+				return
+			}
+		}
 		var existing string
 		if exists {
 			var eb []byte
@@ -55,10 +61,17 @@ func (sp *Patcher[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (
 			}
 		}
 
-		edits := myers.ComputeEdits(span.URIFromPath(path), existing, string(i.Content))
+		diff := textdiff.Unified(existing, string(i.Content), textdiff.IndentHeuristic(), diff.Optimal())
+		if len(diff) > 0 {
+			fmt.Fprintf(sp.out, "--- %s\n", path)
+			fmt.Fprintf(sp.out, "+++ %s\n", path)
+			fmt.Fprintln(sp.out, diff)
+		}
+
+		/*edits := myers.ComputeEdits(span.URIFromPath(path), existing, string(i.Content))
 		if len(edits) > 0 {
 			fmt.Fprintln(sp.out, gotextdiff.ToUnified(path, path, existing, edits))
-		}
+		}*/
 	}
 	return
 }

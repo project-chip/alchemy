@@ -39,6 +39,10 @@ func (a *IfDef) Equals(o Element) bool {
 	return a.Attributes.Equals(oa.Attributes)
 }
 
+func (a *IfDef) Clone() Element {
+	return &IfDef{position: a.position, raw: a.raw, Attributes: a.Attributes.Clone(), Union: a.Union}
+}
+
 func (a *IfDef) Eval(cc ConditionalContext) bool {
 	return ifIsTrue(cc, a.Attributes, a.Union)
 }
@@ -61,16 +65,20 @@ func (IfNDef) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *IfNDef) Equals(o Element) bool {
+func (id *IfNDef) Equals(o Element) bool {
 	oa, ok := o.(*IfNDef)
 	if !ok {
 		return false
 	}
-	return a.Attributes.Equals(oa.Attributes)
+	return id.Attributes.Equals(oa.Attributes)
 }
 
-func (a *IfNDef) Eval(cc ConditionalContext) bool {
-	return !ifIsTrue(cc, a.Attributes, a.Union)
+func (id *IfNDef) Clone() Element {
+	return &IfNDef{position: id.position, raw: id.raw, Attributes: id.Attributes.Clone(), Union: id.Union}
+}
+
+func (id *IfNDef) Eval(cc ConditionalContext) bool {
+	return !ifIsTrue(cc, id.Attributes, id.Union)
 }
 
 type InlineIfDef struct {
@@ -91,20 +99,24 @@ func (InlineIfDef) Type() ElementType {
 	return ElementTypeInline
 }
 
-func (a *InlineIfDef) Equals(o Element) bool {
+func (iid *InlineIfDef) Equals(o Element) bool {
 	oa, ok := o.(*InlineIfDef)
 	if !ok {
 		return false
 	}
 
-	if !a.Attributes.Equals(oa.Attributes) {
+	if !iid.Attributes.Equals(oa.Attributes) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return iid.Elements.Equals(oa.Elements)
 }
 
-func (a *InlineIfDef) Eval(cc ConditionalContext) bool {
-	return ifIsTrue(cc, a.Attributes, a.Union)
+func (iid *InlineIfDef) Clone() Element {
+	return &InlineIfDef{position: iid.position, raw: iid.raw, Attributes: iid.Attributes.Clone(), Elements: iid.Elements.Clone(), Union: iid.Union}
+}
+
+func (iid *InlineIfDef) Eval(cc ConditionalContext) bool {
+	return ifIsTrue(cc, iid.Attributes, iid.Union)
 }
 
 type InlineIfNDef struct {
@@ -125,20 +137,24 @@ func (InlineIfNDef) Type() ElementType {
 	return ElementTypeInline
 }
 
-func (a *InlineIfNDef) Equals(o Element) bool {
+func (iind *InlineIfNDef) Equals(o Element) bool {
 	oa, ok := o.(*InlineIfNDef)
 	if !ok {
 		return false
 	}
 
-	if !a.Attributes.Equals(oa.Attributes) {
+	if !iind.Attributes.Equals(oa.Attributes) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return iind.Elements.Equals(oa.Elements)
 }
 
-func (a *InlineIfNDef) Eval(cc ConditionalContext) bool {
-	return !ifIsTrue(cc, a.Attributes, a.Union)
+func (iind *InlineIfNDef) Clone() Element {
+	return &InlineIfNDef{position: iind.position, raw: iind.raw, Attributes: iind.Attributes.Clone(), Elements: iind.Elements.Clone(), Union: iind.Union}
+}
+
+func (iind *InlineIfNDef) Eval(cc ConditionalContext) bool {
+	return !ifIsTrue(cc, iind.Attributes, iind.Union)
 }
 
 type EndIf struct {
@@ -147,8 +163,6 @@ type EndIf struct {
 
 	Attributes AttributeNames
 	Union      ConditionalUnion
-
-	Open Element
 }
 
 func NewEndIf(attributes []AttributeName, union ConditionalUnion) *EndIf {
@@ -159,12 +173,17 @@ func (EndIf) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *EndIf) Equals(o Element) bool {
+func (ei *EndIf) Equals(o Element) bool {
 	oa, ok := o.(*EndIf)
 	if !ok {
 		return false
 	}
-	return a.Attributes.Equals(oa.Attributes)
+	return ei.Attributes.Equals(oa.Attributes)
+}
+
+func (ei *EndIf) Clone() Element {
+	return &EndIf{position: ei.position, raw: ei.raw, Attributes: ei.Attributes.Clone(), Union: ei.Union}
+
 }
 
 type ConditionalOperator uint8
@@ -224,22 +243,26 @@ func (IfEval) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *IfEval) Equals(o Element) bool {
+func (ie *IfEval) Equals(o Element) bool {
 	oa, ok := o.(*IfEval)
 	if !ok {
 		return false
 	}
-	if !a.Left.Equals(oa.Left) {
+	if !ie.Left.Equals(oa.Left) {
 		return false
 	}
-	if a.Operator != oa.Operator {
+	if ie.Operator != oa.Operator {
 		return false
 	}
-	return a.Right.Equals(oa.Right)
+	return ie.Right.Equals(oa.Right)
 }
 
-func (a *IfEval) Eval(cc ConditionalContext) (bool, error) {
-	return eval(cc, a.Left, a.Operator, a.Right)
+func (ie *IfEval) Clone() Element {
+	return &IfEval{position: ie.position, raw: ie.raw, Left: ie.Left.Clone(), Operator: ie.Operator, Right: ie.Right.Clone()}
+}
+
+func (ie *IfEval) Eval(cc ConditionalContext) (bool, error) {
+	return eval(cc, ie.Left, ie.Operator, ie.Right)
 }
 
 type IfDefBlock struct {
@@ -259,19 +282,23 @@ func (IfDefBlock) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *IfDefBlock) Equals(o Element) bool {
+func (idb *IfDefBlock) Equals(o Element) bool {
 	oa, ok := o.(*IfDefBlock)
 	if !ok {
 		return false
 	}
-	if !a.Attributes.Equals(oa.Attributes) {
+	if !idb.Attributes.Equals(oa.Attributes) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return idb.Elements.Equals(oa.Elements)
 }
 
-func (a *IfDefBlock) Eval(cc ConditionalContext) bool {
-	return ifIsTrue(cc, a.Attributes, a.Union)
+func (idb *IfDefBlock) Clone() Element {
+	return &IfDefBlock{position: idb.position, raw: idb.raw, Attributes: idb.Attributes.Clone(), Elements: idb.Elements.Clone(), Union: idb.Union}
+}
+
+func (idb *IfDefBlock) Eval(cc ConditionalContext) bool {
+	return ifIsTrue(cc, idb.Attributes, idb.Union)
 }
 
 func ifIsTrue(cc ConditionalContext, a AttributeNames, union ConditionalUnion) bool {
@@ -319,19 +346,23 @@ func (IfNDefBlock) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *IfNDefBlock) Equals(o Element) bool {
+func (indb *IfNDefBlock) Equals(o Element) bool {
 	oa, ok := o.(*IfNDefBlock)
 	if !ok {
 		return false
 	}
-	if !a.Attributes.Equals(oa.Attributes) {
+	if !indb.Attributes.Equals(oa.Attributes) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return indb.Elements.Equals(oa.Elements)
 }
 
-func (a *IfNDefBlock) Eval(cc ConditionalContext) bool {
-	return !ifIsTrue(cc, a.Attributes, a.Union)
+func (indb *IfNDefBlock) Clone() Element {
+	return &IfNDefBlock{position: indb.position, raw: indb.raw, Attributes: indb.Attributes.Clone(), Elements: indb.Elements.Clone(), Union: indb.Union}
+}
+
+func (indb *IfNDefBlock) Eval(cc ConditionalContext) bool {
+	return !ifIsTrue(cc, indb.Attributes, indb.Union)
 }
 
 type IfEvalValue struct {
@@ -341,6 +372,10 @@ type IfEvalValue struct {
 
 func (iev IfEvalValue) Equals(oiev IfEvalValue) bool {
 	return iev.Quote == oiev.Quote && iev.Value.Equals(oiev.Value)
+}
+
+func (iev IfEvalValue) Clone() IfEvalValue {
+	return IfEvalValue{Quote: iev.Quote, Value: iev.Value.Clone()}
 }
 
 func (iev IfEvalValue) Eval(cc ConditionalContext) (any, error) {
@@ -413,25 +448,29 @@ func (IfEvalBlock) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a *IfEvalBlock) Equals(o Element) bool {
+func (ieb *IfEvalBlock) Equals(o Element) bool {
 	oa, ok := o.(*IfEvalBlock)
 	if !ok {
 		return false
 	}
-	if !a.Left.Equals(oa.Left) {
+	if !ieb.Left.Equals(oa.Left) {
 		return false
 	}
-	if a.Operator != oa.Operator {
+	if ieb.Operator != oa.Operator {
 		return false
 	}
-	if !a.Right.Equals(oa.Right) {
+	if !ieb.Right.Equals(oa.Right) {
 		return false
 	}
-	return a.Elements.Equals(oa.Elements)
+	return ieb.Elements.Equals(oa.Elements)
 }
 
-func (a *IfEvalBlock) Eval(cc ConditionalContext) (bool, error) {
-	return eval(cc, a.Left, a.Operator, a.Right)
+func (ieb *IfEvalBlock) Clone() Element {
+	return &IfEvalBlock{position: ieb.position, raw: ieb.raw, Left: ieb.Left.Clone(), Operator: ieb.Operator, Right: ieb.Right.Clone(), Elements: ieb.Elements.Clone()}
+}
+
+func (ieb *IfEvalBlock) Eval(cc ConditionalContext) (bool, error) {
+	return eval(cc, ieb.Left, ieb.Operator, ieb.Right)
 }
 
 func eval(cc ConditionalContext, leftValue IfEvalValue, operator ConditionalOperator, rightValue IfEvalValue) (bool, error) {

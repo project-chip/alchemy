@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"path/filepath"
 	"slices"
-	"strconv"
 	"strings"
 
 	"github.com/beevik/etree"
@@ -37,19 +36,19 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 		c.CreateAttr("id", deviceType.ID.HexString())
 	}
 	c.CreateAttr("name", deviceType.Name)
+	mostRecentRevision := deviceType.Revisions.MostRecent()
+	if mostRecentRevision != nil {
+		c.CreateAttr("revision", mostRecentRevision.Number.IntString())
+	}
 
 	revs := c.CreateElement("revisionHistory")
-	var latestRev uint64 = 0
 	for _, r := range deviceType.Revisions {
-		id := matter.ParseNumber(r.Number)
-		if id.Valid() {
+		if r.Number.Valid() {
 			rev := revs.CreateElement("revision")
-			rev.CreateAttr("revision", id.IntString())
+			rev.CreateAttr("revision", r.Number.IntString())
 			rev.CreateAttr("summary", scrubDescription(r.Description))
-			latestRev = max(id.Value(), latestRev)
 		}
 	}
-	c.CreateAttr("revision", strconv.FormatUint(latestRev, 10))
 	if deviceType.Class != "" || deviceType.Scope != "" {
 		class := c.CreateElement("classification")
 		if deviceType.SupersetOf != "" {

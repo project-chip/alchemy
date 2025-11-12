@@ -1,4 +1,4 @@
-package paths
+package filter
 
 import (
 	"context"
@@ -8,23 +8,23 @@ import (
 
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 type Filter[T any] struct {
-	specRoot string
-	paths    []string
+	spec  *spec.Specification
+	paths []string
 
 	exclude bool
 }
 
-func NewIncludeFilter[T any](specRoot string, paths []string) *Filter[T] {
-	return &Filter[T]{specRoot: specRoot, paths: paths}
+func NewIncludeFilter[T any](spec *spec.Specification, paths []string) *Filter[T] {
+	return &Filter[T]{spec: spec, paths: paths}
 }
 
-func NewExcludeFilter[T any](specRoot string, paths []string) *Filter[T] {
-	return &Filter[T]{specRoot: specRoot, paths: paths, exclude: true}
+func NewExcludeFilter[T any](spec *spec.Specification, paths []string) *Filter[T] {
+	return &Filter[T]{spec: spec, paths: paths, exclude: true}
 }
 
 func (p Filter[T]) Name() string {
@@ -83,9 +83,10 @@ func (p *Filter[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (ou
 
 	var ignoredFiles []string
 	for _, path := range filteredFiles {
-		specPath, err := asciidoc.NewPath(path, p.specRoot)
+		specPath, err := asciidoc.NewPath(path, p.spec.Root)
 		if err == nil {
-			if errata.GetSpec(specPath.Relative).UtilityInclude {
+
+			if p.spec.Errata.Get(specPath.Relative).Spec.UtilityInclude {
 				continue
 			}
 		}
@@ -100,9 +101,9 @@ func (p *Filter[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (ou
 	}
 	if !p.exclude && len(ignoredFiles) > 0 {
 		slices.Sort(ignoredFiles)
-		docRootLogs := make([]slog.Attr, 0, len(errata.DocRoots))
-		for _, p := range errata.DocRoots {
-			docRootLogs = append(docRootLogs, slog.String("path", p))
+		docRootLogs := make([]slog.Attr, 0, len(p.spec.Config.Libraries))
+		for _, library := range p.spec.Config.Libraries {
+			docRootLogs = append(docRootLogs, slog.String("path", library.Root))
 		}
 		ignoreLogs := make([]slog.Attr, 0, len(ignoredFiles))
 		for _, p := range ignoredFiles {

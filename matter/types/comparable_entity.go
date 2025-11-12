@@ -1,6 +1,7 @@
 package types
 
-type ComparableEntity interface {
+/*type ComparableEntity interface {
 	Entity
 	Equals(Entity) bool
 }
+*/

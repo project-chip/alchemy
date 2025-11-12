@@ -15,13 +15,12 @@ import (
 
 type DeviceTypeSet pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]]
 
-func toDeviceTypes(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext) (err error) {
-	var deviceTypes []*matter.DeviceType
+func (library *Library) toDeviceTypes(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) (deviceTypes []*matter.DeviceType, err error) {
 
-	for s := range parse.Skim[*asciidoc.Section](d.Reader(), s, s.Children()) {
-		switch d.SectionType(s) {
+	for s := range parse.Skim[*asciidoc.Section](reader, s, reader.Children(s)) {
+		switch library.SectionType(s) {
 		case matter.SectionClassification:
-			deviceTypes, err = readDeviceTypeIDs(d, s)
+			deviceTypes, err = readDeviceTypeIDs(reader, d, s)
 		}
 		if err != nil {
 			return
@@ -32,42 +31,42 @@ func toDeviceTypes(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseCo
 		return
 	}
 
-	description := getDescription(d, deviceTypes[0], s, s.Children())
+	description := library.getDescription(reader, d, deviceTypes[0], s, reader.Children(s))
 
 	for _, dt := range deviceTypes {
 		dt.Description = description
 
-		elements := parse.FindAll[*asciidoc.Section](d.Reader(), s)
+		elements := parse.FindAll[*asciidoc.Section](d, reader, s)
 		for s := range elements {
-			switch d.SectionType(s) {
+			switch library.SectionType(s) {
 			case matter.SectionClusterRequirements:
 				var crs []*matter.ClusterRequirement
-				crs, err = toClusterRequirements(d, s, dt)
+				crs, err = library.toClusterRequirements(reader, d, s, dt)
 				if err == nil {
 					dt.ClusterRequirements = append(dt.ClusterRequirements, crs...)
 				}
 			case matter.SectionElementRequirements:
 				var extraClusterRequirements []*matter.ClusterRequirement
-				dt.ElementRequirements, extraClusterRequirements, err = toElementRequirements(d, s, dt)
+				dt.ElementRequirements, extraClusterRequirements, err = library.toElementRequirements(reader, d, s, dt)
 				dt.ClusterRequirements = append(dt.ClusterRequirements, extraClusterRequirements...)
 			case matter.SectionConditions:
-				dt.Conditions, err = toConditions(d, s, dt)
+				dt.Conditions, err = library.toConditions(reader, d, s, dt)
 			case matter.SectionSemanticTagRequirements:
-				dt.TagRequirements, err = toTagRequirements(d, s, dt)
+				dt.TagRequirements, err = library.toTagRequirements(reader, d, s, dt)
 			case matter.SectionDeviceTypeRequirements:
-				dt.DeviceTypeRequirements, err = toDeviceTypeRequirements(d, s, dt)
+				dt.DeviceTypeRequirements, err = library.toDeviceTypeRequirements(reader, d, s, dt)
 			case matter.SectionComposedDeviceTypeClusterRequirements:
-				dt.ComposedDeviceTypeClusterRequirements, err = toComposedDeviceTypeClusterRequirements(d, s, dt)
+				dt.ComposedDeviceTypeClusterRequirements, err = library.toComposedDeviceTypeClusterRequirements(reader, d, s, dt)
 			case matter.SectionComposedDeviceTypeElementRequirements:
 				var extraComposedDeviceClusterRequirements []*matter.DeviceTypeClusterRequirement
-				dt.ComposedDeviceTypeElementRequirements, extraComposedDeviceClusterRequirements, err = toComposedDeviceTypeElementRequirements(d, s, dt)
+				dt.ComposedDeviceTypeElementRequirements, extraComposedDeviceClusterRequirements, err = library.toComposedDeviceTypeElementRequirements(reader, d, s, dt)
 				dt.ComposedDeviceTypeClusterRequirements = append(dt.ComposedDeviceTypeClusterRequirements, extraComposedDeviceClusterRequirements...)
-			case matter.SectionComposedDeviceTypeConditionRequirements:
-				dt.ConditionRequirements, err = toConditionRequirements(d, s, dt)
 			case matter.SectionComposedDeviceTypeSemanticTagRequirements:
-				dt.ComposedDeviceTagRequirements, err = toDeviceTypeTagRequirements(d, s, dt)
+				dt.ComposedDeviceTagRequirements, err = library.toDeviceTypeTagRequirements(reader, d, s, dt)
+			case matter.SectionComposedDeviceTypeConditionRequirements:
+				dt.ConditionRequirements, err = library.toConditionRequirements(reader, d, s, dt)
 			case matter.SectionRevisionHistory:
-				dt.Revisions, err = readRevisionHistory(d, s)
+				dt.Revisions, err = readRevisionHistory(reader, d, s)
 			default:
 			}
 			if err != nil {
@@ -75,39 +74,37 @@ func toDeviceTypes(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseCo
 			}
 		}
 	}
-	for _, c := range deviceTypes {
-		pc.entities = append(pc.entities, c)
-		pc.orderedEntities = append(pc.orderedEntities, c)
-		pc.entitiesByElement[s] = append(pc.entitiesByElement[s], c)
-	}
+	/*for _, c := range deviceTypes {
+		library.addEntity(s, c)
+	}*/
 	return
 }
 
-func readDeviceTypeIDs(doc *Doc, s *asciidoc.Section) ([]*matter.DeviceType, error) {
-	ti, err := parseFirstTable(doc, s)
+func readDeviceTypeIDs(reader asciidoc.Reader, doc *asciidoc.Document, s *asciidoc.Section) ([]*matter.DeviceType, error) {
+	ti, err := parseFirstTable(reader, doc, s)
 	if err != nil {
 		return nil, newGenericParseError(s, "failed reading device type ID: %w", err)
 	}
 	var deviceTypes []*matter.DeviceType
 	for row := range ti.ContentRows() {
 		c := matter.NewDeviceType(row)
-		c.ID, err = ti.ReadID(row, matter.TableColumnDeviceID, matter.TableColumnID)
+		c.ID, err = ti.ReadID(reader, row, matter.TableColumnDeviceID, matter.TableColumnID)
 		if err != nil {
 			return nil, err
 		}
-		c.Name, err = ti.ReadString(row, matter.TableColumnDeviceName, matter.TableColumnName)
+		c.Name, err = ti.ReadString(reader, row, matter.TableColumnDeviceName, matter.TableColumnDeviceName)
 		if err != nil {
 			return nil, err
 		}
-		c.SupersetOf, err = ti.ReadString(row, matter.TableColumnSupersetOf)
+		c.SupersetOf, err = ti.ReadString(reader, row, matter.TableColumnSupersetOf)
 		if err != nil {
 			return nil, err
 		}
-		c.Class, err = ti.ReadString(row, matter.TableColumnClass)
+		c.Class, err = ti.ReadString(reader, row, matter.TableColumnClass)
 		if err != nil {
 			return nil, err
 		}
-		c.Scope, err = ti.ReadString(row, matter.TableColumnScope)
+		c.Scope, err = ti.ReadString(reader, row, matter.TableColumnScope)
 		if err != nil {
 			return nil, err
 		}
@@ -117,63 +114,64 @@ func readDeviceTypeIDs(doc *Doc, s *asciidoc.Section) ([]*matter.DeviceType, err
 	return deviceTypes, nil
 }
 
-func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) {
-	for top := range parse.Skim[*asciidoc.Section](d.Reader(), d, d.Children()) {
-		err = AssignSectionTypes(d, top)
+func (library *Library) toBaseDeviceType(reader asciidoc.Reader, section *asciidoc.Section) (baseDeviceType *matter.DeviceType, err error) {
+	doc := section.Document()
+	var baseClusterRequirements, elementRequirements *asciidoc.Section
+	parse.Search(doc, reader, section, reader.Children(section), func(doc *asciidoc.Document, sec *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
+		switch library.SectionType(sec) {
+		case matter.SectionClusterRequirements:
+			baseClusterRequirements = sec
+		case matter.SectionElementRequirements:
+			elementRequirements = sec
+		}
+		return parse.SearchShouldContinue
+	})
+	if baseClusterRequirements == nil && elementRequirements == nil {
+		err = fmt.Errorf("unable to find base device type cluster requirements and element requirements")
+		return
+	}
+
+	baseDeviceType = matter.NewDeviceType(section)
+	baseDeviceType.Name = "Base Device Type"
+	baseDeviceType.ID = matter.InvalidID
+	if baseClusterRequirements != nil {
+		baseDeviceType.ClusterRequirements, err = library.toClusterRequirements(reader, doc, baseClusterRequirements, baseDeviceType)
 		if err != nil {
 			return
 		}
-		var baseClusterRequirements, elementRequirements *asciidoc.Section
-		parse.Search(d.Reader(), top, top.Children(), func(sec *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
-			switch d.SectionType(sec) {
-			case matter.SectionClusterRequirements:
-				baseClusterRequirements = sec
-			case matter.SectionElementRequirements:
-				elementRequirements = sec
-			}
-			return parse.SearchShouldContinue
-		})
-		if baseClusterRequirements == nil && elementRequirements == nil {
-			continue
-		}
-
-		baseDeviceType = matter.NewDeviceType(top)
-		baseDeviceType.Name = "Base Device Type"
-		baseDeviceType.ID = matter.InvalidID
-		if baseClusterRequirements != nil {
-			baseDeviceType.ClusterRequirements, err = toClusterRequirements(d, baseClusterRequirements, baseDeviceType)
-			if err != nil {
-				return
-			}
-		}
-		if elementRequirements != nil {
-			var extraClusterRequirements []*matter.ClusterRequirement
-			baseDeviceType.ElementRequirements, extraClusterRequirements, err = toElementRequirements(d, elementRequirements, baseDeviceType)
-			baseDeviceType.ClusterRequirements = append(baseDeviceType.ClusterRequirements, extraClusterRequirements...)
-			if err != nil {
-				return
-			}
-		}
-		parse.Search(d.Reader(), top, top.Children(), func(sec *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
-			switch d.SectionType(sec) {
-
-			case matter.SectionConditions:
-				var conditions []*matter.Condition
-				conditions, err = toBaseDeviceTypeConditions(d, sec, baseDeviceType)
-
-				baseDeviceType.Conditions = append(baseDeviceType.Conditions, conditions...)
-			case matter.SectionRevisionHistory:
-				baseDeviceType.Revisions, err = readRevisionHistory(d, sec)
-			}
-			if err != nil {
-				return parse.SearchShouldStop
-			}
-			return parse.SearchShouldContinue
-		})
-
-		return
 	}
-	return nil, fmt.Errorf("failed to find base device type")
+	if elementRequirements != nil {
+		var extraClusterRequirements []*matter.ClusterRequirement
+		baseDeviceType.ElementRequirements, extraClusterRequirements, err = library.toElementRequirements(reader, doc, elementRequirements, baseDeviceType)
+		baseDeviceType.ClusterRequirements = append(baseDeviceType.ClusterRequirements, extraClusterRequirements...)
+		if err != nil {
+			return
+		}
+	}
+	parse.Search(doc, reader, section, reader.Children(section), func(doc *asciidoc.Document, sec *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
+		switch library.SectionType(sec) {
+
+		case matter.SectionConditions:
+			var conditions []*matter.Condition
+			conditions, err = library.toBaseDeviceTypeConditions(reader, doc, sec, baseDeviceType)
+
+			baseDeviceType.Conditions = append(baseDeviceType.Conditions, conditions...)
+		case matter.SectionRevisionHistory:
+			baseDeviceType.Revisions, err = readRevisionHistory(reader, doc, sec)
+		}
+		if err != nil {
+			return parse.SearchShouldStop
+		}
+		return parse.SearchShouldContinue
+	})
+
+	return
+	/*
+	   for top := range parse.Skim[*asciidoc.Section](reader, section, reader.Children(section)) {
+
+	   }
+	   return nil, fmt.Errorf("failed to find base device type")
+	*/
 }
 
 func (spec *Specification) associateDeviceTypeRequirements() (err error) {
@@ -544,6 +542,7 @@ func validateDeviceTypes(spec *Specification) {
 		referencedClusters := make(map[*matter.Cluster]struct{})
 		buildReferencedClusters(spec.BaseDeviceType, referencedClusters)
 		buildReferencedClusters(dt, referencedClusters)
+		crcv := make(conformanceValidation)
 		for _, cr := range dt.ClusterRequirements {
 			if cr.Cluster == nil {
 				continue
@@ -554,18 +553,26 @@ func validateDeviceTypes(spec *Specification) {
 				slog.Warn("Cluster Requirement name mismatch", slog.String("deviceType", dt.Name), slog.String("clusterName", cr.ClusterName), slog.String("referencedName", cr.Cluster.Name))
 				continue
 			}
+			crcv.add(cr, cr.Conformance)
 		}
+		crcv.check(spec)
+		ercv := make(conformanceValidation)
 		for _, er := range dt.ElementRequirements {
 			validateAccess(spec, er, er.Access)
 			validateElementRequirement(spec, dt, er, referencedClusters)
+			ercv.add(er, er.Conformance)
 		}
+		ercv.check(spec)
+		cdercv := make(conformanceValidation)
 		for _, der := range dt.ComposedDeviceTypeElementRequirements {
 			if der.DeviceType == nil {
 				continue
 			}
 			validateAccess(spec, der.ElementRequirement, der.ElementRequirement.Access)
 			validateElementRequirement(spec, der.DeviceType, der.ElementRequirement, referencedClusters)
+			cdercv.add(der.ElementRequirement, der.DeviceTypeRequirement.Conformance)
 		}
+		cdercv.check(spec)
 	}
 }
 

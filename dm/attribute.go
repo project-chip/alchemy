@@ -129,14 +129,13 @@ func renderQuality(parent *etree.Element, q matter.Quality) {
 	scene := q.Has(matter.QualityScene)
 	fixed := q.Has(matter.QualityFixed)
 	nonvolatile := q.Has(matter.QualityNonVolatile)
-	reportable := q.Has(matter.QualityReportable)
 	singleton := q.Has(matter.QualitySingleton)
 	atomicWrite := q.Has(matter.QualityAtomicWrite)
 	diagnostics := q.Has(matter.QualityDiagnostics)
 	quieterReporting := q.Has(matter.QualityQuieterReporting)
 	sourceAttribution := q.Has(matter.QualitySourceAttribution)
 	largeMessage := q.Has(matter.QualityLargeMessage)
-	if !changeOmitted && !nullable && !scene && !fixed && !nonvolatile && !reportable && !singleton && !atomicWrite && !diagnostics && !quieterReporting && !sourceAttribution && !largeMessage {
+	if !changeOmitted && !nullable && !scene && !fixed && !nonvolatile && !singleton && !atomicWrite && !diagnostics && !quieterReporting && !sourceAttribution && !largeMessage {
 		return
 	}
 	qx := parent.CreateElement("quality")
@@ -156,9 +155,7 @@ func renderQuality(parent *etree.Element, q matter.Quality) {
 			qx.CreateAttr("persistence", "nonVolatile")
 		}
 	}
-	if reportable {
-		qx.CreateAttr("reportable", strconv.FormatBool(reportable))
-	}
+
 	if singleton {
 		qx.CreateAttr("singleton", strconv.FormatBool(singleton))
 	}

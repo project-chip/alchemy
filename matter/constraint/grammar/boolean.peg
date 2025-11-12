@@ -1,4 +1,6 @@
-BooleanLimit <- ("true"i / "false"i) {
+Boolean <- ("true"i / "false"i)
+
+BooleanLimit <- Boolean{
 	debug("found boolean %s\n", string(c.text))
     b, err := strconv.ParseBool(string(c.text))
     if err != nil {

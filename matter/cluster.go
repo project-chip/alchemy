@@ -45,14 +45,23 @@ func (c ClusterGroup) Explode() []*Cluster {
 	return c.Clusters
 }
 
+func (c *ClusterGroup) Equals(e types.Entity) bool {
+	oc, ok := e.(*ClusterGroup)
+	if !ok {
+		return false
+	}
+	return c.Name == oc.Name
+}
+
 type Cluster struct {
 	entity
 	ID            *Number         `json:"id,omitempty"`
 	Name          string          `json:"name,omitempty"`
 	Description   string          `json:"description,omitempty"`
-	Revisions     []*Revision     `json:"revisions,omitempty"`
+	Revisions     Revisions       `json:"revisions,omitempty"`
 	ParentCluster *Cluster        `json:"-"`
 	Conformance   conformance.Set `json:"conformance,omitempty"`
+	Domain        string          `json:"domain,omitempty"`
 
 	ClusterClassification
 

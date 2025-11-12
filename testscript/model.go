@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/goccy/go-yaml"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/testplan/pics"
 )
@@ -14,7 +14,7 @@ type Test struct {
 	ID   string
 	Name string
 
-	Doc *spec.Doc
+	Doc *asciidoc.Document
 
 	Cluster *matter.Cluster
 
