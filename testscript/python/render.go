@@ -2,6 +2,7 @@ package python
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/errata"
@@ -41,7 +42,13 @@ func (sp *PythonTestRenderer) Process(cxt context.Context, input *pipeline.Data[
 
 	var sdkErrata *errata.SDK
 	if input.Content.Doc != nil {
-		sdkErrata = errata.GetSDK(input.Content.Doc.Path.Relative)
+		library, ok := sp.spec.LibraryForDocument(input.Content.Doc)
+		if !ok {
+			err = fmt.Errorf("unable to find library for doc %s", input.Content.Doc.Path.Relative)
+			return
+		}
+		sdkErrata = &library.ErrataForPath(input.Content.Doc.Path.Relative).SDK
+
 	} else {
 		sdkErrata = &errata.DefaultErrata.SDK
 	}

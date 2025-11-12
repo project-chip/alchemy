@@ -1673,7 +1673,6 @@ var sectionsTestShouldPreprocessSecondLineOfSetextSectionTitle = &asciidoc.Docum
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -2879,7 +2878,6 @@ var sectionsTestShouldPreprocessSecondLineOfSetextDiscreteHeading = &asciidoc.Do
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 	},
 }
@@ -11330,8 +11328,26 @@ var sectionsTestShouldNotRemoveNonAnchorTagsFromContentsOfEntriesInTableOfConten
 						&asciidoc.NewLine{},
 					},
 					Title: asciidoc.Elements{
-						&asciidoc.String{
-							Value: "https://ecosia.org[_Sustainable_ Searches]",
+						&asciidoc.Link{
+							AttributeList: asciidoc.AttributeList{
+								&asciidoc.PositionalAttribute{
+									Offset:      0,
+									ImpliedName: "alt",
+									Val: asciidoc.Elements{
+										&asciidoc.String{
+											Value: "_Sustainable_ Searches",
+										},
+									},
+								},
+							},
+							URL: asciidoc.URL{
+								Scheme: "https://",
+								Path: asciidoc.Elements{
+									&asciidoc.String{
+										Value: "ecosia.org",
+									},
+								},
+							},
 						},
 					},
 					Level: 1,

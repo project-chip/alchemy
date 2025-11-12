@@ -14,10 +14,10 @@ type globalCommandFactory struct {
 	commandFactory
 }
 
-func (cf *globalCommandFactory) Children(d *Doc, s *asciidoc.Section) iter.Seq[*asciidoc.Section] {
+func (cf *globalCommandFactory) Children(library *Library, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section) iter.Seq[*asciidoc.Section] {
 	return func(yield func(*asciidoc.Section) bool) {
-		parse.Search(d.Reader(), s, s.Children(), func(sec *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
-			if d.SectionType(sec) != matter.SectionCommand {
+		parse.Search(d, reader, s, reader.Children(s), func(doc *asciidoc.Document, sec *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
+			if library.SectionType(sec) != matter.SectionCommand {
 				return parse.SearchShouldContinue
 			}
 			if !yield(sec) {
@@ -28,9 +28,9 @@ func (cf *globalCommandFactory) Children(d *Doc, s *asciidoc.Section) iter.Seq[*
 	}
 }
 
-func toGlobalElements(spec *Specification, d *Doc, s *asciidoc.Section, pc *parseContext, parent types.Entity) (entities []types.Entity, err error) {
+func (library *Library) toGlobalElements(spec *Specification, reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, parent types.Entity) (entities []types.Entity, err error) {
 	var commandsTable *asciidoc.Table
-	parse.SkimFunc(d.Reader(), s, s.Children(), func(t *asciidoc.Table) bool {
+	parse.SkimFunc(reader, s, reader.Children(s), func(t *asciidoc.Table) bool {
 		for _, a := range t.AttributeList.Attributes() {
 			switch a := a.(type) {
 			case *asciidoc.TitleAttribute:
@@ -48,7 +48,7 @@ func toGlobalElements(spec *Specification, d *Doc, s *asciidoc.Section, pc *pars
 
 	var cf globalCommandFactory
 	var commands matter.CommandSet
-	commands, err = buildList(spec, d, s, commandsTable, pc, commands, &cf, parent)
+	commands, err = buildList(spec, library, reader, d, s, commandsTable, commands, &cf, parent)
 
 	commandMap := make(map[string]*matter.Command)
 	for _, c := range commands {
@@ -56,11 +56,11 @@ func toGlobalElements(spec *Specification, d *Doc, s *asciidoc.Section, pc *pars
 		commandMap[c.Name] = c
 	}
 
-	// The definnition of global commands is frequently elsewhere, so let's scan the doc for other commmand sections
-	parse.Search(d.Reader(), d, d.Children(), func(sec *asciidoc.Section, parent asciidoc.Parent, index int) parse.SearchShould {
-		switch d.SectionType(sec) {
+	// The definition of global commands is frequently elsewhere, so let's scan the doc for other commmand sections
+	parse.Search(d, reader, d, reader.Children(d), func(doc *asciidoc.Document, sec *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
+		switch library.SectionType(sec) {
 		case matter.SectionCommand:
-			commandName := text.TrimCaseInsensitiveSuffix(d.SectionName(sec), " Command")
+			commandName := text.TrimCaseInsensitiveSuffix(library.SectionName(sec), " Command")
 			command, ok := commandMap[commandName]
 			if !ok {
 				return parse.SearchShouldContinue
@@ -71,7 +71,7 @@ func toGlobalElements(spec *Specification, d *Doc, s *asciidoc.Section, pc *pars
 			if command.Source() == sec {
 				return parse.SearchShouldContinue
 			}
-			err = readCommand(pc, spec, d, sec, command)
+			err = readCommand(spec, library, reader, d, sec, command)
 			if err != nil {
 				return parse.SearchShouldStop
 			}

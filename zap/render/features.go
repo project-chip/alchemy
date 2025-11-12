@@ -103,8 +103,7 @@ func (cr *configuratorRenderer) renderFeatureElements(cluster *matter.Cluster, f
 		featureElement := featuresElement.CreateElement("feature")
 		featureElement.CreateAttr("bit", bit.IntString())
 		featureElement.CreateAttr("code", feature.Code)
-		name := errata.OverrideName(feature, feature.Name())
-		featureElement.CreateAttr("name", name)
+		featureElement.CreateAttr("name", feature.Name())
 		if len(feature.Summary()) > 0 {
 			featureElement.CreateAttr("summary", scrubDescription(feature.Summary()))
 		}

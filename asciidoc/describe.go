@@ -8,7 +8,7 @@ import (
 func Describe(el Element) string {
 	switch el := el.(type) {
 	case *Section:
-		return fmt.Sprintf("Section %s (%d)", el.Name(), el.Level)
+		return fmt.Sprintf("Section %s (%d)", DescribeSet(el.Title), el.Level)
 	case *String:
 		return fmt.Sprintf("String: \"%s\" ", el.Value)
 	case *BlockAttributes:

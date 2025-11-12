@@ -10,7 +10,7 @@ import (
 
 func (cr *configuratorRenderer) setFieldAttributes(fieldElement *etree.Element, parentEntityType types.EntityType, parentTypeName string, field *matter.Field, fieldSet matter.FieldSet) {
 	mandatory := conformance.IsMandatory(field.Conformance)
-	fieldName := cr.configurator.Errata.OverrideName(field, field.Name)
+	fieldName := field.Name
 	fieldElement.CreateAttr("name", fieldName)
 	cr.writeDataType(fieldElement, parentEntityType, parentTypeName, fieldSet, field)
 	if !mandatory {
@@ -39,7 +39,6 @@ func (cr *configuratorRenderer) writeDataType(element *etree.Element, parentEnti
 		return
 	}
 	dts := cr.getDataTypeString(fieldSet, field)
-	dts = cr.configurator.Errata.OverrideType(field, dts)
 	if field.Type.IsArray() {
 		element.CreateAttr("array", "true")
 		element.CreateAttr("type", dts)
@@ -62,5 +61,5 @@ func (cr *configuratorRenderer) getDataTypeString(fs matter.FieldSet, f *matter.
 	case types.BaseDataTypeNamespaceID:
 		return "enum8"
 	}
-	return zap.FieldToZapDataType(fs, f, cr.configurator.Errata.OverrideConstraint(f))
+	return zap.FieldToZapDataType(fs, f, f.Constraint)
 }

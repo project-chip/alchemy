@@ -2,11 +2,7 @@ package db
 
 import (
 	"context"
-	"log/slog"
 
-	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/parse"
-	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -26,50 +22,6 @@ func (h *Host) indexEventModels(cxt context.Context, parent *sectionInfo, cluste
 		parent.children[eventTable] = append(parent.children[eventTable], ei)
 		for _, ef := range e.Fields {
 			h.readField(ef, ei, eventFieldTable, types.EntityTypeEvent)
-		}
-	}
-	return nil
-}
-
-func (h *Host) indexEvents(cxt context.Context, doc *spec.Doc, ci *sectionInfo, es *asciidoc.Section) error {
-	if ci.children == nil {
-		ci.children = make(map[string][]*sectionInfo)
-	}
-	err := h.readTableSection(cxt, doc, ci, es, eventTable)
-	if err != nil {
-		return err
-	}
-	events := ci.children[eventTable]
-	if len(events) == 0 {
-		return nil
-	}
-	em := make(map[string]*sectionInfo)
-	for _, si := range ci.children[eventTable] {
-		name, ok := si.values.values[matter.TableColumnName]
-		if ok {
-			if ns, ok := name.(string); ok {
-				em[ns] = si
-			}
-		}
-	}
-	for s := range parse.Skim[*asciidoc.Section](doc.Reader(), es, es.Children()) {
-		sectionType := doc.SectionType(s)
-		sectionName := doc.SectionName(s)
-		switch sectionType {
-		case matter.SectionEvent:
-			name := text.TrimCaseInsensitiveSuffix(sectionName, " Event")
-			p, ok := em[name]
-			if !ok {
-				slog.Error("no matching event", "name", s.Name)
-				continue
-			}
-			if p.children == nil {
-				p.children = make(map[string][]*sectionInfo)
-			}
-			err = h.readTableSection(cxt, doc, p, s, eventFieldTable)
-			if err != nil {
-				return err
-			}
 		}
 	}
 	return nil

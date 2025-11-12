@@ -11,10 +11,10 @@ import (
 
 type DeviceType struct {
 	entity
-	ID          *Number     `json:"id,omitempty"`
-	Name        string      `json:"name,omitempty"`
-	Description string      `json:"description,omitempty"`
-	Revisions   []*Revision `json:"revisions,omitempty"`
+	ID          *Number   `json:"id,omitempty"`
+	Name        string    `json:"name,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Revisions   Revisions `json:"revisions,omitempty"`
 
 	SupersetOf string `json:"supersetOf,omitempty"`
 	Class      string `json:"class,omitempty"`
@@ -53,6 +53,17 @@ func (dt *DeviceType) Identifier(name string) (types.Entity, bool) {
 	return nil, false
 }
 
+func (dt *DeviceType) Equals(e types.Entity) bool {
+	odt, ok := e.(*DeviceType)
+	if !ok {
+		return false
+	}
+	if dt.ID.Valid() && odt.ID.Valid() {
+		return dt.ID.Equals(odt.ID)
+	}
+	return dt.Name == odt.Name
+}
+
 func NewClusterRequirement(parent *DeviceType, source asciidoc.Element) *ClusterRequirement {
 	return &ClusterRequirement{entity: entity{parent: parent, source: source}}
 }
@@ -70,6 +81,21 @@ type ClusterRequirement struct {
 
 func (cr *ClusterRequirement) EntityType() types.EntityType {
 	return types.EntityTypeClusterRequirement
+}
+
+func (cr *ClusterRequirement) Equals(e types.Entity) bool {
+	ocr, ok := e.(*ClusterRequirement)
+	if !ok {
+		return false
+	}
+	if cr.ClusterID.Valid() && ocr.ClusterID.Valid() {
+		if !cr.ClusterID.Equals(ocr.ClusterID) {
+			return false
+		}
+	} else if cr.ClusterName != ocr.ClusterName {
+		return false
+	}
+	return true
 }
 
 func (cr *ClusterRequirement) Clone() *ClusterRequirement {
@@ -111,6 +137,36 @@ type ElementRequirement struct {
 
 func (er *ElementRequirement) EntityType() types.EntityType {
 	return types.EntityTypeElementRequirement
+}
+
+func (er *ElementRequirement) Equals(e types.Entity) bool {
+	oer, ok := e.(*ElementRequirement)
+	if !ok {
+		return false
+	}
+	if er.ClusterID.Valid() && oer.ClusterID.Valid() {
+		if !er.ClusterID.Equals(oer.ClusterID) {
+			return false
+		}
+	} else if er.ClusterName != oer.ClusterName {
+		return false
+	}
+	if er.Element != oer.Element {
+		return false
+	}
+	if er.Field != oer.Field {
+		return false
+	}
+	if er.Entity != nil {
+		if oer.Entity != nil {
+			return er.Entity.Equals(oer.Entity)
+		} else {
+			return false
+		}
+	} else if oer.Entity != nil {
+		return false
+	}
+	return true
 }
 
 func (er *ElementRequirement) Clone() *ElementRequirement {
@@ -206,6 +262,21 @@ type DeviceTypeRequirement struct {
 
 func (dtr *DeviceTypeRequirement) EntityType() types.EntityType {
 	return types.EntityTypeDeviceTypeRequirement
+}
+
+func (dtr *DeviceTypeRequirement) Equals(e types.Entity) bool {
+	odtr, ok := e.(*DeviceTypeRequirement)
+	if !ok {
+		return false
+	}
+	if dtr.DeviceTypeID.Valid() && odtr.DeviceTypeID.Valid() {
+		if !dtr.DeviceTypeID.Equals(odtr.DeviceTypeID) {
+			return false
+		}
+	} else if dtr.DeviceTypeName != odtr.DeviceTypeName {
+		return false
+	}
+	return true
 }
 
 func (dtr *DeviceTypeRequirement) Clone() *DeviceTypeRequirement {

@@ -8,12 +8,12 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/matter/types"
 )
 
 type NamespacePatcher struct {
@@ -30,7 +30,7 @@ func (p NamespacePatcher) Name() string {
 	return "Patching namespaces"
 }
 
-func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[[]byte], err error) {
+func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*asciidoc.Document]) (outputs []*pipeline.Data[[]byte], err error) {
 
 	namespaceXMLPath := filepath.Join(p.sdkRoot, "/src/app/zap-templates/zcl/data-model/chip/semantic-tag-namespace-enums.xml")
 
@@ -54,11 +54,7 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*
 
 	namespacesByName := make(map[string]*matter.Namespace)
 	for _, input := range inputs {
-		var entities []types.Entity
-		entities, err = input.Content.Entities()
-		if err != nil {
-			return
-		}
+		entities := p.spec.EntitiesForDocument(input.Content)
 		for _, entity := range entities {
 			switch namespace := entity.(type) {
 			case *matter.Namespace:

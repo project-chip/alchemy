@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/matter/types"
 )
 
 type TestScriptGenerator struct {
@@ -26,14 +26,8 @@ func (sp TestScriptGenerator) Name() string {
 	return "Creating test script steps"
 }
 
-func (sp *TestScriptGenerator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[*Test], extras []*pipeline.Data[*spec.Doc], err error) {
-	var entities []types.Entity
-	entities, err = input.Content.Entities()
-	if err != nil {
-		slog.ErrorContext(cxt, "error converting doc to entities", "doc", input.Content.Path, "error", err)
-		err = nil
-		return
-	}
+func (sp *TestScriptGenerator) Process(cxt context.Context, input *pipeline.Data[*asciidoc.Document], index int32, total int32) (outputs []*pipeline.Data[*Test], extras []*pipeline.Data[*asciidoc.Document], err error) {
+	entities := sp.spec.EntitiesForDocument(input.Content)
 
 	var clusters []*matter.Cluster
 	for _, m := range entities {

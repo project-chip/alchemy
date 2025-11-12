@@ -11,6 +11,7 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/mailgun/raymond/v2"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
@@ -24,6 +25,7 @@ import (
 type GeneratorOption func(g *Renderer)
 
 type Renderer struct {
+	spec    *spec.Specification
 	options RendererOptions
 }
 
@@ -33,8 +35,8 @@ type RendererOptions struct {
 	TemplateRoot string `default:"" aliases:"templateRoot" help:"the root of your local template files; if not specified, Alchemy will use an internal copy" group:"Test Plans:"`
 }
 
-func NewRenderer(options RendererOptions) *Renderer {
-	g := &Renderer{options: options}
+func NewRenderer(specification *spec.Specification, options RendererOptions) *Renderer {
+	g := &Renderer{spec: specification, options: options}
 
 	return g
 }
@@ -43,17 +45,20 @@ func (sp Renderer) Name() string {
 	return "Generating test plans"
 }
 
-func (sp *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*spec.Doc], err error) {
+func (sp *Renderer) Process(cxt context.Context, input *pipeline.Data[*asciidoc.Document], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*asciidoc.Document], err error) {
 	doc := input.Content
 	path := doc.Path
 
-	var entities []types.Entity
-	entities, err = doc.Entities()
-	if err != nil {
+	library, ok := sp.spec.LibraryForDocument(doc)
+	if !ok {
+		err = fmt.Errorf("unable to find library for doc %s", doc.Path.Relative)
 		return
 	}
+	errata := library.ErrataForPath(doc.Path.Relative).TestPlan
 
-	destinations := buildDestinations(sp.options.TestRoot, entities, doc.Errata().TestPlan)
+	entities := sp.spec.EntitiesForDocument(doc)
+
+	destinations := buildDestinations(sp.options.TestRoot, entities, errata)
 
 	var t *raymond.Template
 	t, err = sp.loadTemplate()

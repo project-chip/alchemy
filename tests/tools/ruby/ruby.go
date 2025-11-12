@@ -15,6 +15,7 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/lithammer/dedent"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/sanity-io/litter"
@@ -73,7 +74,7 @@ func main() {
 
 		for _, t := range tests {
 			a := dedent.Dedent(t.Asciidoc)
-			doc, err := parse.Reader("", strings.NewReader(a))
+			doc, err := parse.Reader(asciidoc.Path{}, strings.NewReader(a))
 			if err != nil {
 				slog.Error("failed parsing", "test", t.Name, "err", err)
 				continue

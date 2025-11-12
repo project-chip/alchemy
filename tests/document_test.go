@@ -1031,7 +1031,6 @@ var documentTestShouldRecognizeDocumentTitleWhenPrecededByBlankLinesIntroducedBy
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 		&asciidoc.Section{
 			AttributeList: nil,

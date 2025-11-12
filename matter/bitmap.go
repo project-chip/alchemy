@@ -159,6 +159,7 @@ type Bit interface {
 
 	Bit() string
 	Name() string
+	SetName(name string)
 	Summary() string
 	Conformance() conformance.Set
 
@@ -209,6 +210,10 @@ func (bmb *BitmapBit) Bit() string {
 
 func (bmb *BitmapBit) Name() string {
 	return bmb.name
+}
+
+func (bmb *BitmapBit) SetName(name string) {
+	bmb.name = name
 }
 
 func (bmb *BitmapBit) Summary() string {
@@ -321,11 +326,11 @@ type AnonymousBitmap struct {
 	Bits BitSet          `json:"bits,omitempty"`
 }
 
-func (bm *AnonymousBitmap) Size() int {
-	if bm.Type == nil {
+func (ab *AnonymousBitmap) Size() int {
+	if ab.Type == nil {
 		return 8
 	}
-	switch bm.Type.BaseType {
+	switch ab.Type.BaseType {
 	case types.BaseDataTypeMap64:
 		return 64
 	case types.BaseDataTypeMap32:
@@ -345,4 +350,12 @@ func NewAnonymousBitmap(source asciidoc.Element, parent types.Entity) *Anonymous
 
 func (AnonymousBitmap) EntityType() types.EntityType {
 	return types.EntityTypeBitmap
+}
+
+func (ab *AnonymousBitmap) Equals(e types.Entity) bool {
+	oab, ok := e.(*AnonymousBitmap)
+	if !ok {
+		return false
+	}
+	return ab.parent.Equals(oab.parent)
 }

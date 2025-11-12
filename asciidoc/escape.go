@@ -16,10 +16,14 @@ func (AlchemyEscape) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (mlc *AlchemyEscape) Equals(e Element) bool {
+func (ae *AlchemyEscape) Equals(e Element) bool {
 	omlc, ok := e.(*AlchemyEscape)
 	if !ok {
 		return false
 	}
-	return omlc.LineList.Equals(mlc.LineList)
+	return omlc.LineList.Equals(ae.LineList)
+}
+
+func (ae *AlchemyEscape) Clone() Element {
+	return &AlchemyEscape{position: ae.position, raw: ae.raw, Elements: ae.Elements.Clone(), LineList: ae.LineList.Clone()}
 }

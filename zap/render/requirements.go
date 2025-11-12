@@ -1,6 +1,7 @@
 package render
 
 import (
+	"fmt"
 	"log/slog"
 	"strconv"
 	"strings"
@@ -20,11 +21,15 @@ import (
 func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.DeviceType, dte *etree.Element, errata *errata.SDK) (err error) {
 	setDeviceTypeName(spec, dte, deviceType, errata)
 	xml.SetOrCreateSimpleElement(dte, "domain", "CHIP", "name")
-	xml.SetOrCreateSimpleElement(dte, "typeName", errata.OverrideType(deviceType, deviceType.Name), "name", "domain")
+	xml.SetOrCreateSimpleElement(dte, "typeName", errata.OverrideDeviceType(deviceType, deviceType.Name), "name", "domain")
 	xml.SetOrCreateSimpleElement(dte, "profileId", "0x0103", "name", "domain", "typeName").CreateAttr("editable", "false")
 	xml.SetOrCreateSimpleElement(dte, "deviceId", deviceType.ID.HexString(), "name", "domain", "typeName", "profileId").CreateAttr("editable", "false")
-	xml.SetOrCreateSimpleElement(dte, "class", deviceType.Class, "name", "domain", "typeName", "profileId", "deviceId")
-	xml.SetOrCreateSimpleElement(dte, "scope", deviceType.Scope, "name", "domain", "typeName", "profileId", "deviceId", "class")
+	mostRecentRevision := deviceType.Revisions.MostRecent()
+	if mostRecentRevision != nil {
+		xml.SetOrCreateSimpleElement(dte, "revision", mostRecentRevision.Number.IntString(), "name", "domain", "typeName", "profileId", "deviceId").CreateAttr("editable", "false")
+	}
+	xml.SetOrCreateSimpleElement(dte, "class", deviceType.Class, "name", "domain", "typeName", "profileId", "deviceId", "revision")
+	xml.SetOrCreateSimpleElement(dte, "scope", deviceType.Scope, "name", "domain", "typeName", "profileId", "deviceId", "revision", "class")
 
 	var composition *matter.DeviceTypeComposition
 	composition, err = spec.ComposeDeviceType(deviceType)
@@ -124,7 +129,12 @@ func (p *DeviceTypesPatcher) renderClusterInclude(spec *spec.Specification,
 		return
 	}
 
-	errata := errata.GetSDK(clusterDoc.Path.Relative)
+	library, ok := p.spec.LibraryForDocument(clusterDoc)
+	if !ok {
+		err = fmt.Errorf("unable to find library for device type doc %s", clusterDoc.Path.Relative)
+		return
+	}
+	errata := library.ErrataForPath(clusterDoc.Path.Relative)
 
 	if includeElement == nil {
 		includeElement = etree.NewElement("include")
@@ -147,7 +157,7 @@ func (p *DeviceTypesPatcher) renderClusterInclude(spec *spec.Specification,
 	includeElement.CreateAttr("clientLocked", strconv.FormatBool(clientLocked))
 	includeElement.CreateAttr("serverLocked", strconv.FormatBool(serverLocked))
 
-	err = p.renderClusterElementRequirements(spec, includeElement, deviceType, clusterComposition, errata)
+	err = p.renderClusterElementRequirements(spec, includeElement, deviceType, clusterComposition, &errata.SDK)
 	return
 }
 

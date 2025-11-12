@@ -2,7 +2,6 @@ package spec
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -12,7 +11,13 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
-func ReadFile(path string, rootPath string) (*Doc, error) {
+func ReadFile(path string, rootPath string) (*asciidoc.Document, error) {
+
+	var p asciidoc.Path
+	p, err := asciidoc.NewPath(path, rootPath)
+	if err != nil {
+		return nil, err
+	}
 
 	contents, err := os.Open(path)
 	if err != nil {
@@ -23,23 +28,43 @@ func ReadFile(path string, rootPath string) (*Doc, error) {
 	if err != nil {
 		return nil, err
 	}
-	return read(b, path, rootPath)
+	return parse.Bytes(p, b)
 }
 
-func readString(contents string, path string, rootPath string) (doc *Doc, err error) {
-	return read([]byte(contents), path, rootPath)
-}
+func readFile(path string, rootPath string) (*asciidoc.Document, error) {
 
-func read(b []byte, path string, rootPath string) (doc *Doc, err error) {
-	d, err := parse.Bytes(path, b)
+	var p asciidoc.Path
+	p, err := asciidoc.NewPath(path, rootPath)
 	if err != nil {
-		return nil, fmt.Errorf("read error in \"%s\": %w", path, err)
+		return nil, err
 	}
 
+	contents, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer contents.Close()
+	b, err := io.ReadAll(contents)
+	if err != nil {
+		return nil, err
+	}
+	return parse.Raw(p, b)
+}
+
+func readString(contents string, path string, rootPath string) (doc *asciidoc.Document, err error) {
 	var p asciidoc.Path
 	p, err = asciidoc.NewPath(path, rootPath)
 	if err != nil {
 		return nil, err
+	}
+	return parse.Bytes(p, []byte(contents))
+}
+
+/*
+func read(b []byte, path asciidoc.Path, rootPath string) (doc *asciidoc.Document, err error) {
+	d, err := parse.Bytes(path, b)
+	if err != nil {
+		return nil, fmt.Errorf("read error in \"%s\": %w", path, err)
 	}
 
 	doc, err = newDoc(d, p)
@@ -47,9 +72,9 @@ func read(b []byte, path string, rootPath string) (doc *Doc, err error) {
 		return nil, err
 	}
 	return doc, nil
-}
+}*/
 
-type Reader struct {
+/*type Reader struct {
 	name string
 	Root string
 }
@@ -78,7 +103,7 @@ func (r Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], ind
 	AssignSectionNames(doc)
 	outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
 	return
-}
+}*/
 
 type StringReader struct {
 	name     string
@@ -100,12 +125,12 @@ func (r StringReader) Name() string {
 	return r.name
 }
 
-func (r StringReader) Process(cxt context.Context, input *pipeline.Data[string], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[string], err error) {
-	var doc *Doc
+func (r StringReader) Process(cxt context.Context, input *pipeline.Data[string], index int32, total int32) (outputs []*pipeline.Data[*asciidoc.Document], extras []*pipeline.Data[string], err error) {
+	var doc *asciidoc.Document
 	doc, err = readString(input.Content, input.Path, r.rootPath)
 	if err != nil {
 		return
 	}
-	outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
+	outputs = append(outputs, &pipeline.Data[*asciidoc.Document]{Path: input.Path, Content: doc})
 	return
 }
