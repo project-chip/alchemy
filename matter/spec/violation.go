@@ -13,7 +13,10 @@ const (
 
 	ViolationTypeNonProvisional ViolationType = 1 << (iota - 1)
 	ViolationTypeNotIfDefd
+
 	ViolationNewParseError
+
+	ViolationMasterList
 )
 
 func (vt ViolationType) String() string {
@@ -26,6 +29,18 @@ func (vt ViolationType) String() string {
 			sb.WriteString(", ")
 		}
 		sb.WriteString("not-if-def'd")
+	}
+	if (vt & ViolationNewParseError) != ViolationTypeNone {
+		if sb.Len() > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString("new-parse-error")
+	}
+	if (vt & ViolationMasterList) != ViolationTypeNone {
+		if sb.Len() > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString("master-list-incompatible")
 	}
 	return sb.String()
 }
@@ -42,15 +57,13 @@ type Violation struct {
 	Text   string
 }
 
-func MergeViolations(v1, v2 map[string][]Violation) (v map[string][]Violation) {
-	v = make(map[string][]Violation, len(v1))
+func MergeViolations(vvs ...map[string][]Violation) (v map[string][]Violation) {
+	v = make(map[string][]Violation)
 
-	for key, value := range v1 {
-		v[key] = value
-	}
-
-	for key, valueToAppend := range v2 {
-		v[key] = append(v[key], valueToAppend...)
+	for _, vv := range vvs {
+		for key, valueToAppend := range vv {
+			v[key] = append(v[key], valueToAppend...)
+		}
 	}
 
 	return
