@@ -41,7 +41,7 @@ func TryParseLimit(limit string) (Limit, error) {
 		return nil, nil
 	}
 	if strings.EqualFold(limit, "desc") {
-		return &GenericLimit{Value: limit}, nil
+		return &DescribedLimit{}, nil
 	}
 	l, err := Parse("", []byte(limit), Entrypoint("Limit"))
 	if err != nil {

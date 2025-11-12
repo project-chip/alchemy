@@ -5,11 +5,11 @@ import (
 )
 
 type source struct {
-	doc     *Doc
+	doc     *asciidoc.Document
 	element asciidoc.Element
 }
 
-func NewSource(d *Doc, e asciidoc.Element) *source {
+func NewSource(d *asciidoc.Document, e asciidoc.Element) *source {
 	return &source{doc: d, element: e}
 }
 

@@ -1,19 +1,11 @@
 package cli
 
 import (
-	"context"
-	"log/slog"
-
-	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/cmd/common"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
-	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/sdk"
-	"github.com/project-chip/alchemy/zap"
 	"github.com/project-chip/alchemy/zap/render"
 )
 
@@ -36,42 +28,12 @@ func (z *ZAP) Run(cc *Context) (err error) {
 
 	var specDocs spec.DocSet
 	var specification *spec.Specification
-	specification, specDocs, err = spec.Parse(cc, z.ParserOptions, z.ProcessingOptions, nil, z.ASCIIDocAttributes.ToList())
+	specification, specDocs, err = spec.Parse(cc, z.ParserOptions, z.ProcessingOptions, []spec.BuilderOption{spec.PatchForSdk(true)}, z.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
 	}
 
-	err = spec.PatchSpecForSdk(specification)
-	if err != nil {
-		return
-	}
-
-	var appClusterIndexes spec.DocSet
-	appClusterIndexes, err = pipeline.Collective(cc, z.ProcessingOptions, common.NewDocTypeFilter(matter.DocTypeAppClusterIndex), specDocs)
-
-	if err != nil {
-		return
-	}
-
-	domainIndexer := func(cxt context.Context, input *pipeline.Data[*spec.Doc], index, total int32) (outputs []*pipeline.Data[*spec.Doc], extra []*pipeline.Data[*spec.Doc], err error) {
-		doc := input.Content
-		e := errata.GetErrata(input.Content.Path.Relative)
-		if e != nil && e.Spec.Domain != "" {
-			doc.Domain = zap.StringToDomain(e.Spec.Domain)
-			if doc.Domain != matter.DomainUnknown {
-				slog.DebugContext(cxt, "Assigned domain from errata", "file", input.Content.Path.Relative, "domain", doc.Domain)
-				return
-			}
-		}
-		top := parse.FindFirst[*asciidoc.Section](doc.Reader(), doc)
-		if top != nil {
-			doc.Domain = zap.StringToDomain(doc.SectionName(top))
-			slog.DebugContext(cxt, "Assigned domain", "file", input.Content.Path.Relative, "domain", doc.Domain)
-		}
-		return
-	}
-
-	_, err = pipeline.Parallel(cc, z.ProcessingOptions, pipeline.ParallelFunc("Assigning index domains", domainIndexer), appClusterIndexes)
+	err = sdk.ApplyErrata(specification)
 	if err != nil {
 		return
 	}
@@ -82,7 +44,7 @@ func (z *ZAP) Run(cc *Context) (err error) {
 	}
 
 	var clusters, deviceTypes, namespaces, globalObjectDependencies spec.DocSet
-	clusters, deviceTypes, namespaces, err = render.SplitZAPDocs(cc, specDocs)
+	clusters, deviceTypes, namespaces, err = render.SplitZAPDocs(cc, specification, specDocs)
 	if err != nil {
 		return
 	}
@@ -169,7 +131,7 @@ func (z *ZAP) Run(cc *Context) (err error) {
 
 	if clusters.Size() > 0 {
 
-		clusterListPatcher := render.NewClusterListPatcher(z.SdkRoot)
+		clusterListPatcher := render.NewClusterListPatcher(specification, z.SdkRoot)
 		clusterList, err = pipeline.Collective(cc, z.ProcessingOptions, clusterListPatcher, clusters)
 		if err != nil {
 			return

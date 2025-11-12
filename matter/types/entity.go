@@ -41,6 +41,7 @@ type Entity interface {
 	Source() asciidoc.Element
 	Origin() (path string, line int)
 	Parent() Entity
+	Equals(Entity) bool
 }
 
 func (et EntityType) String() string {
@@ -90,6 +91,16 @@ func IsDataTypeEntity(entityType EntityType) bool {
 		return true
 	}
 	return false
+}
+
+func Filter[T Entity](list []Entity) (out []T) {
+	for _, e := range list {
+		t, ok := e.(T)
+		if ok {
+			out = append(out, t)
+		}
+	}
+	return
 }
 
 type EntitySet[S any] map[Entity]S

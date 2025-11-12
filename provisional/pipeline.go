@@ -4,15 +4,14 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions, renderOptions []render.Option, writer files.Writer[string]) (violations map[string][]spec.Violation, err error) {
-	specs, err := spec.LoadSpecPullRequest(cxt, baseRoot, headRoot, docPaths, pipelineOptions, renderOptions)
+func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions, writer files.Writer[string]) (violations map[string][]spec.Violation, err error) {
+	specs, err := spec.LoadSpecPullRequest(cxt, baseRoot, headRoot, pipelineOptions)
 
 	if err != nil {
 		return nil, err
@@ -26,13 +25,14 @@ func ProcessSpecs(cxt context.Context, specs *spec.SpecPullRequest, pipelineOpti
 
 	for path, vs := range violations {
 		for _, v := range vs {
-			slog.Error("Provisionality violation", slog.String("path", path), matter.LogEntity("entity", v.Entity), slog.String("violationType", v.Type.String()))
+			if v.Type.Has(spec.ViolationTypeNonProvisional) {
+				slog.Error("Provisionality violation", slog.String("path", path), matter.LogEntity("entity", v.Entity), slog.String("violationType", v.Type.String()))
+			}
 		}
 	}
 
 	if writer != nil {
 		err = patchProvisional(cxt, pipelineOptions, specs.HeadInProgress, violations, writer)
 	}
-
 	return
 }

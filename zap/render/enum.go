@@ -28,13 +28,12 @@ func (cr *configuratorRenderer) generateEnums(enums map[*matter.Enum][]*matter.N
 		var matchingEnum *matter.Enum
 		var clusterIds []*matter.Number
 		var skip bool
-		for bm, handled := range enums {
-			typeName := cr.configurator.Errata.OverrideName(bm, bm.Name)
-			if typeName == name || strings.TrimSuffix(typeName, "Enum") == name {
-				matchingEnum = bm
+		for en, handled := range enums {
+			if en.Name == name || strings.TrimSuffix(en.Name, "Enum") == name {
+				matchingEnum = en
 				skip = len(handled) == 0
 				clusterIds = handled
-				enums[bm] = nil
+				enums[en] = nil
 				break
 			}
 		}
@@ -95,8 +94,8 @@ func (cr *configuratorRenderer) populateEnum(ee *etree.Element, en *matter.Enum,
 		valFormat = "0x%02X"
 	}
 
-	ee.CreateAttr("name", cr.configurator.Errata.OverrideName(en, en.Name))
-	ee.CreateAttr("type", cr.configurator.Errata.OverrideType(en, en.Type.Name))
+	ee.CreateAttr("name", en.Name)
+	ee.CreateAttr("type", en.Type.Name)
 
 	cr.setProvisional(ee, en)
 
@@ -142,7 +141,6 @@ func (cr *configuratorRenderer) populateEnum(ee *etree.Element, en *matter.Enum,
 
 func (cr *configuratorRenderer) setEnumItemAttributes(e *etree.Element, v *matter.EnumValue, valFormat string) {
 	name := zap.CleanName(v.Name)
-	name = cr.configurator.Errata.OverrideName(v, name)
 	e.CreateAttr("name", name)
 	patchNumberAttributeFormat(e, v.Value, "value", valFormat)
 }

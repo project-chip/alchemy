@@ -352,7 +352,6 @@ var apiTestShouldTrackFileAndLineInformationWithBlocksIfSourcemapOptionIsSet = &
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -401,7 +400,6 @@ var apiTestShouldAssignCorrectLinenoForMultiLineParagraphInsideAConditionalPrepr
 		&asciidoc.EndIf{
 			Attributes: nil,
 			Union:      0,
-			Open:       nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",

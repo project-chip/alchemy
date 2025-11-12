@@ -31,6 +31,14 @@ func (f *field) Parent() types.Entity {
 	return nil
 }
 
+func (f *field) Equals(e types.Entity) bool {
+	oe, ok := e.(*field)
+	if !ok {
+		return false
+	}
+	return f.Name == oe.Name
+}
+
 type fieldSet []*field
 
 func (fs fieldSet) getField(name string) *field {
@@ -623,7 +631,7 @@ var constraintTests = []constraintTest{
 	},
 }
 
-func TestSuite(t *testing.T) {
+func TestConstraints(t *testing.T) {
 	for _, ct := range constraintTests {
 		if ct.invalid {
 			c, err := TryParseString(ct.constraint)

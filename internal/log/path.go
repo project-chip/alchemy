@@ -24,6 +24,10 @@ func Origin(source Source) string {
 	return path.String()
 }
 
+func Address(name string, thingy any) slog.Attr {
+	return slog.String(name, fmt.Sprintf("%p", thingy))
+}
+
 func Path(name string, source Source) slog.Attr {
 	if source == nil {
 		return slog.String(name, "unknown")

@@ -102,7 +102,6 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 	}
 	ce.CreateAttr("code", c.ID.ShortHexString())
 	commandName := zap.CleanName(c.Name)
-	commandName = cr.configurator.Errata.OverrideName(c, commandName)
 	ce.CreateAttr("name", commandName)
 	if c.Access.IsFabricScoped() {
 		ce.CreateAttr("isFabricScoped", "true")
@@ -148,7 +147,7 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 		ce.Child = append([]etree.Token{de}, ce.Child...)
 	}
 	if len(c.Description) > 0 {
-		de.SetText(cr.configurator.Errata.OverrideDescription(c, c.Description))
+		de.SetText(c.Description)
 	}
 
 	needsAccess := c.Access.Invoke != matter.PrivilegeUnknown && c.Access.Invoke != matter.PrivilegeOperate && c.Direction != matter.InterfaceClient

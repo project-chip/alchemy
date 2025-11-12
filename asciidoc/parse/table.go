@@ -61,7 +61,7 @@ func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Elemen
 				if currentTableRow == nil || cellIndex >= table.ColumnCount {
 					currentTableRow = &asciidoc.TableRow{Parent: table}
 					currentTableRow.SetPosition(cell.Position())
-					currentTableRow.SetPath(cell.Path())
+					currentTableRow.SetDocument(cell.Document())
 					rows = append(rows, currentTableRow)
 					cellIndex = 0
 				}
@@ -78,7 +78,7 @@ func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Elemen
 				if cellIndex >= table.ColumnCount {
 					currentTableRow = &asciidoc.TableRow{}
 					currentTableRow.SetPosition(cell.Position())
-					currentTableRow.SetPath(cell.Path())
+					currentTableRow.SetDocument(cell.Document())
 					rows = append(rows, currentTableRow)
 					cellIndex = 0
 				}
@@ -270,25 +270,22 @@ func parseBlockCell(tc *asciidoc.TableCell) error {
 
 	line, col, offset := tc.Position()
 	col++
-	vals, err := Parse(tc.Path(), []byte(val), initialPosition(line, col, offset))
+	doc, err := Bytes(tc.Document().Path, []byte(val), initialPosition(line, col, offset))
 	if err != nil {
 		return err
 	}
-	els, ok := vals.(asciidoc.Elements)
-	if !ok {
-		return fmt.Errorf("unexpected type for table cell set: %T", vals)
-	}
-	if len(els) > 0 {
-		if _, ok := els[0].(*asciidoc.EmptyLine); ok {
+
+	if len(doc.Elements) > 0 {
+		if _, ok := doc.Elements[0].(*asciidoc.EmptyLine); ok {
 			// If the first character is a new line, the parser will interpret that as an empty line, since it thinks there's nothing before it
-			els[0] = &asciidoc.NewLine{}
+			doc.Elements[0] = &asciidoc.NewLine{}
 		}
 	}
-	els, err = coalesce(els)
+	doc.Elements, err = coalesce(doc.Elements)
 	if err != nil {
 		return err
 	}
-	tc.SetChildren(els)
+	tc.SetChildren(doc.Elements)
 	return nil
 }
 
