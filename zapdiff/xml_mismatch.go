@@ -8,8 +8,6 @@ const (
 	MismatchLevel1 XmlMismatchLevel = iota
 	MismatchLevel2
 	MismatchLevel3
-	MismatchLevel4
-	MismatchLevel5
 )
 
 func (l XmlMismatchLevel) String() string {
@@ -20,10 +18,6 @@ func (l XmlMismatchLevel) String() string {
 		return "L2"
 	case MismatchLevel3:
 		return "L3"
-	case MismatchLevel4:
-		return "L4"
-	case MismatchLevel5:
-		return "L5"
 
 	default:
 		return "UNKNOWN"
@@ -188,70 +182,70 @@ func (t XmlMismatchType) Level() XmlMismatchLevel {
 
 	// Enums
 	case XmlMismatchMissingEnum:
-		return MismatchLevel4
+		return MismatchLevel3
 	case XmlMismatchMissingEnumItem:
-		return MismatchLevel4
+		return MismatchLevel3
 	case XmlMismatchEnumItemMissingAttr:
 		return MismatchLevel1
 	case XmlMismatchEnumItemAttrValue:
-		return MismatchLevel4
+		return MismatchLevel3
 
 	// Structs
 	case XmlMismatchMissingStruct:
-		return MismatchLevel4
+		return MismatchLevel3
 	case XmlMismatchMissingStructItem:
-		return MismatchLevel4
+		return MismatchLevel3
 	case XmlMismatchStructItemMissingAttr:
 		return MismatchLevel1
 	case XmlMismatchStructItemAttrValue:
-		return MismatchLevel4
+		return MismatchLevel3
 
 	// Bitmaps
 	case XmlMismatchMissingBitmap:
-		return MismatchLevel4
+		return MismatchLevel3
 	case XmlMismatchMissingBitmapField:
-		return MismatchLevel4
+		return MismatchLevel3
 	case XmlMismatchBitmapMissingAttr:
 		return MismatchLevel1
 	case XmlMismatchBitmapAttrValue:
-		return MismatchLevel4
+		return MismatchLevel3
 	case XmlMismatchBitmapFieldMissingAttr:
 		return MismatchLevel1
 	case XmlMismatchBitmapFieldAttrValue:
-		return MismatchLevel4
+		return MismatchLevel3
 
 	// Clusters (Top Level)
 	case XmlMismatchMissingCluster:
-		return MismatchLevel4
+		return MismatchLevel3
 	case XmlMismatchClusterMissingAttr:
 		return MismatchLevel1
 	case XmlMismatchClusterAttrValue:
-		return MismatchLevel4
+		return MismatchLevel3
 
 	// Clusters
 	case XmlMismatchMissingClusterCommand:
-		return MismatchLevel4
+		return MismatchLevel3
 	case XmlMismatchClusterCommandMissingAttr:
 		return MismatchLevel1
 	case XmlMismatchClusterCommandAttrValue:
-		return MismatchLevel4
+		return MismatchLevel3
 	case XmlMismatchMissingClusterAttribute:
-		return MismatchLevel4
+		return MismatchLevel3
 	case XmlMismatchClusterAttributeMissingAttr:
 		return MismatchLevel1
 	case XmlMismatchClusterAttributeAttrValue:
-		return MismatchLevel4
+		return MismatchLevel3
 	case XmlMismatchMissingClusterEvent:
-		return MismatchLevel4
+		return MismatchLevel3
 	case XmlMismatchClusterEventMissingAttr:
 		return MismatchLevel1
 	case XmlMismatchClusterEventAttrValue:
-		return MismatchLevel4
+		return MismatchLevel3
 	case XmlMismatchMissingClusterFeature:
-		return MismatchLevel4
+		return MismatchLevel3
 
 	case XmlMismatchClusterDetails:
-		return MismatchLevel4
+		return MismatchLevel3
 
 	default:
 		return MismatchLevel1

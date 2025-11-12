@@ -8,26 +8,24 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/sdk"
 	"github.com/project-chip/alchemy/zapdiff"
 )
 
 type ZAPDiff struct {
-	spec.FilterOptions `embed:""`
-	SdkRoot1           string `default:"connectedhomeip" help:"the first clone of project-chip/connectedhomeip" group:"SDK Commands:"`
-	SdkRoot2           string `default:"connectedhomeip" help:"the second clone of project-chip/connectedhomeip" group:"SDK Commands:"`
-	Out                string `default:"." help:"path to output mismatch.csv file" group:"SDK Commands:"`
-	MismatchLevel      int    `default:"3" help:"The minimum mismatch level to report (1-5)" group:"SDK Commands:"`
+	SdkRoot1      string `default:"connectedhomeip" help:"the first clone of project-chip/connectedhomeip" group:"SDK Commands:"`
+	SdkRoot2      string `default:"connectedhomeip" help:"the second clone of project-chip/connectedhomeip" group:"SDK Commands:"`
+	Out           string `default:"." help:"path to output mismatch.csv file" group:"SDK Commands:"`
+	MismatchLevel int    `default:"3" help:"The minimum mismatch level to report (1-3)" group:"SDK Commands:"`
 }
 
 func (z *ZAPDiff) Run(cc *Context) (err error) {
 	var mismatchPrintLevel zapdiff.XmlMismatchLevel
-	if z.MismatchLevel < 1 || z.MismatchLevel > 5 {
-		slog.Warn("invalid mismatch level. must be between 1 and 5.", "level", z.MismatchLevel)
+	if z.MismatchLevel < 1 || z.MismatchLevel > 3 {
+		slog.Warn("invalid mismatch level. must be between 1 and 3.", "level", z.MismatchLevel)
 		mismatchPrintLevel = zapdiff.MismatchLevel3 // Default
 	} else {
-		mismatchPrintLevel = zapdiff.XmlMismatchLevel(z.MismatchLevel - 1) // Convert 1-5 to 0-4
+		mismatchPrintLevel = zapdiff.XmlMismatchLevel(z.MismatchLevel - 1) // Convert 1-3 to 0-2
 	}
 
 	err = sdk.CheckAlchemyVersion(z.SdkRoot1)
