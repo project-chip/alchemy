@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"log/slog"
 
 	"github.com/project-chip/alchemy/cmd/common"
@@ -29,7 +30,8 @@ func (m *MLE) Run(cc *Context) (err error) {
 
 	for _, vv := range violations {
 		for _, v := range vv {
-			slog.Warn(v.Text)
+			source := fmt.Sprintf("%s:%d", v.Path, v.Line)
+			slog.Warn(v.Text, slog.String("source", source))
 		}
 	}
 

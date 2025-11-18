@@ -49,13 +49,13 @@ func Process(root string, s *spec.Specification) (violations map[string][]spec.V
 		if ok {
 			if ci.Name != c.Name {
 				v := spec.Violation{Entity: c, Type: spec.ViolationMasterList, Text: fmt.Sprintf("This Cluster ID is present on Master List with another name. ID='%s' cluster name='%s' Name on master list='%s'", c.ID.HexString(), c.Name, ci.Name)}
-				v.Path, v.Line = c.Origin()
+				v.Path, v.Line = ci.row.Origin()
 				violations[v.Path] = append(violations[v.Path], v)
 
 			}
 			if ci.PICS != c.PICS {
 				v := spec.Violation{Entity: c, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Cluster PICS mismatch. Cluster='%s' PICS in data model='%s' PICS on master list='%s'", c.Name, c.PICS, ci.PICS)}
-				v.Path, v.Line = c.Origin()
+				v.Path, v.Line = ci.row.Origin()
 				violations[v.Path] = append(violations[v.Path], v)
 			}
 		} else {
@@ -79,7 +79,7 @@ func Process(root string, s *spec.Specification) (violations map[string][]spec.V
 		if ok {
 			if di.Name != dt.Name {
 				v := spec.Violation{Entity: dt, Type: spec.ViolationMasterList, Text: fmt.Sprintf("This Device Type ID is present on Master List with another name. ID='%s' device type name='%s' Name on master list='%s'", dt.ID.HexString(), dt.Name, di.Name)}
-				v.Path, v.Line = dt.Origin()
+				v.Path, v.Line = di.row.Origin()
 				violations[v.Path] = append(violations[v.Path], v)
 
 			}
@@ -96,6 +96,7 @@ type masterListInfo struct {
 	ID   *matter.Number
 	Name string
 	PICS string
+	row  *asciidoc.TableRow
 }
 
 func parseMasterList(filePath asciidoc.Path, idColumn matter.TableColumn, nameColumn matter.TableColumn, picsColumn matter.TableColumn) (masterList map[uint64]masterListInfo, reserveds map[uint64]log.Source, violations map[string][]spec.Violation, err error) {
@@ -197,6 +198,7 @@ func parseMasterList(filePath asciidoc.Path, idColumn matter.TableColumn, nameCo
 			ID:   id,
 			Name: name,
 			PICS: pics,
+			row:  row,
 		}
 		uniqueNames[name] = id
 	}
