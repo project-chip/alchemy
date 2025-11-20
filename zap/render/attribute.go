@@ -111,6 +111,11 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	} else {
 		ae.RemoveAttr("isNullable")
 	}
+	if attribute.Access.IsFabricSensitive() {
+		ae.CreateAttr("isFabricSensitive", "true")
+	} else {
+		ae.RemoveAttr("isFabricSensitive")
+	}
 	// This is a deprecated quality, so remove it if it exists
 	ae.RemoveAttr("reportable")
 	if attribute.Quality.Has(matter.QualityAtomicWrite) {

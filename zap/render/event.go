@@ -75,7 +75,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 
 	cr.setProvisional(eventElement, event)
 
-	if event.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
+	if event.Access.IsFabricSensitive() {
 		eventElement.CreateAttr("isFabricSensitive", "true")
 	} else {
 		eventElement.RemoveAttr("isFabricSensitive")
