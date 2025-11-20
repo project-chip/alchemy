@@ -10,6 +10,7 @@ import (
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func Process(root string, s *spec.Specification) (violations map[string][]spec.Violation, err error) {
@@ -130,6 +131,8 @@ func parseMasterList(filePath asciidoc.Path, idColumn matter.TableColumn, nameCo
 	for row := range listTable.Body() {
 		var id *matter.Number
 		var name, pics string
+		var entity types.Entity
+
 		id, err = listTable.ReadID(asciidoc.RawReader, row, idColumn)
 		if err != nil {
 			return
@@ -141,18 +144,32 @@ func parseMasterList(filePath asciidoc.Path, idColumn matter.TableColumn, nameCo
 		if err != nil {
 			return
 		}
+
+		switch idColumn {
+		case matter.TableColumnClusterID:
+			entity = &matter.Cluster{
+				ID:   id,
+				Name: name,
+			}
+		case matter.TableColumnDeviceID:
+			entity = &matter.DeviceType{
+				ID:   id,
+				Name: name,
+			}
+		}
+
 		switch name {
 		case "":
 			continue
 		case "Reserved":
 			if _, taken := reserveds[id.Value()]; taken {
-				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Duplicate reserved %s in Master List. ID='%s'", idColumn.String(), id.HexString())}
+				v := spec.Violation{Entity: entity, Type: spec.ViolationMasterList, Text: fmt.Sprintf("Duplicate reserved %s in Master List. ID='%s'", idColumn.String(), id.HexString())}
 				v.Path, v.Line = row.Origin()
 				violations[v.Path] = append(violations[v.Path], v)
 				continue
 			}
 			if _, taken := masterList[id.Value()]; taken {
-				v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("%s is both reserved and in use in Master List. ID='%s'", idColumn.String(), id.HexString())}
+				v := spec.Violation{Entity: entity, Type: spec.ViolationMasterList, Text: fmt.Sprintf("%s is both reserved and in use in Master List. ID='%s'", idColumn.String(), id.HexString())}
 				v.Path, v.Line = row.Origin()
 				violations[v.Path] = append(violations[v.Path], v)
 				continue
@@ -161,19 +178,19 @@ func parseMasterList(filePath asciidoc.Path, idColumn matter.TableColumn, nameCo
 			continue
 		}
 		if _, reserved := reserveds[id.Value()]; reserved {
-			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("%s is both reserved and in use in Master List. ID='%s'", idColumn.String(), id.HexString())}
+			v := spec.Violation{Entity: entity, Type: spec.ViolationMasterList, Text: fmt.Sprintf("%s is both reserved and in use in Master List. ID='%s'", idColumn.String(), id.HexString())}
 			v.Path, v.Line = row.Origin()
 			violations[v.Path] = append(violations[v.Path], v)
 			continue
 		}
 		if _, taken := masterList[id.Value()]; taken {
-			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("%s is duplicated on Master List. ID='%s'", idColumn.String(), id.HexString())}
+			v := spec.Violation{Entity: entity, Type: spec.ViolationMasterList, Text: fmt.Sprintf("%s is duplicated on Master List. ID='%s'", idColumn.String(), id.HexString())}
 			v.Path, v.Line = row.Origin()
 			violations[v.Path] = append(violations[v.Path], v)
 			continue
 		}
 		if _, taken := uniqueNames[name]; taken {
-			v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("%s is duplicated on Master List. name='%s'", nameColumn.String(), name)}
+			v := spec.Violation{Entity: entity, Type: spec.ViolationMasterList, Text: fmt.Sprintf("%s is duplicated on Master List. name='%s'", nameColumn.String(), name)}
 			v.Path, v.Line = row.Origin()
 			violations[v.Path] = append(violations[v.Path], v)
 			continue
@@ -185,7 +202,7 @@ func parseMasterList(filePath asciidoc.Path, idColumn matter.TableColumn, nameCo
 			}
 			if pics != "" {
 				if _, taken := uniquePics[pics]; taken {
-					v := spec.Violation{Entity: nil, Type: spec.ViolationMasterList, Text: fmt.Sprintf("%s is duplicated on Master List. PICS='%s'", picsColumn.String(), pics)}
+					v := spec.Violation{Entity: entity, Type: spec.ViolationMasterList, Text: fmt.Sprintf("%s is duplicated on Master List. PICS='%s'", picsColumn.String(), pics)}
 					v.Path, v.Line = row.Origin()
 					violations[v.Path] = append(violations[v.Path], v)
 					continue
