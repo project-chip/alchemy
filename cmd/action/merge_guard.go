@@ -162,7 +162,15 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 			slices.SortFunc(vs, func(a spec.Violation, b spec.Violation) int {
 				return a.Line - b.Line
 			})
-			vf := templates.ViolationFile{Path: path}
+
+			var relPath string
+			relPath, err = filepath.Rel(headRoot, path)
+			if err != nil {
+				err = fmt.Errorf("the relative path could not be determined. Path: %s, Root: %s", path, headRoot)
+				return
+			}
+
+			vf := templates.ViolationFile{Path: relPath}
 			for _, v := range vs {
 				vv := templates.Violation{}
 				vv.EntityName = matter.EntityName(v.Entity)
@@ -177,7 +185,7 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 					parent = parent.Parent()
 				}
 
-				pathHash := sha256.Sum256([]byte(path))
+				pathHash := sha256.Sum256([]byte(relPath))
 				vv.SourceLink = fmt.Sprintf("https://github.com/%s/%s/pull/%d/files#diff-%sR%d", owner, repo, pr.GetNumber(), hex.EncodeToString(pathHash[:]), v.Line)
 				vv.SourceLine = v.Line
 				if v.Type.Has(spec.ViolationTypeNonProvisional) {
