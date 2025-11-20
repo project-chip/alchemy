@@ -8,15 +8,16 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/project-chip/alchemy/sdk"
 	"github.com/project-chip/alchemy/zapdiff"
 )
 
 type ZAPDiff struct {
-	SdkRoot1      string `default:"connectedhomeip" help:"the first clone of project-chip/connectedhomeip" group:"SDK Commands:"`
-	SdkRoot2      string `default:"connectedhomeip" help:"the second clone of project-chip/connectedhomeip" group:"SDK Commands:"`
+	XmlRoot1      string `help:"root of first set of ZAP XMLs" group:"SDK Commands:" required:"true"`
+	XmlRoot2      string `help:"root of second set of ZAP XMLs" group:"SDK Commands:" required:"true"`
+	Label1        string `default:"ZapXML-1" help:"label for first set of ZAP XMLs" group:"SDK Commands:"`
+	Label2        string `default:"ZapXML-2" help:"label for second set of ZAP XMLs" group:"SDK Commands:"`
 	Out           string `default:"." help:"path to output mismatch.csv file" group:"SDK Commands:"`
-	MismatchLevel int    `default:"3" help:"The minimum mismatch level to report (1-3)" group:"SDK Commands:"`
+	MismatchLevel int    `default:"3" help:"the minimum mismatch level to report (1-3)" group:"SDK Commands:"`
 }
 
 func (z *ZAPDiff) Run(cc *Context) (err error) {
@@ -28,31 +29,19 @@ func (z *ZAPDiff) Run(cc *Context) (err error) {
 		mismatchPrintLevel = zapdiff.XmlMismatchLevel(z.MismatchLevel - 1) // Convert 1-3 to 0-2
 	}
 
-	err = sdk.CheckAlchemyVersion(z.SdkRoot1)
+	ff1, err := listXMLFiles(z.XmlRoot1)
 	if err != nil {
-		return
-	}
-
-	err = sdk.CheckAlchemyVersion(z.SdkRoot2)
-	if err != nil {
-		return
-	}
-
-	p1 := filepath.Join(z.SdkRoot1, "src", "app", "zap-templates", "zcl", "data-model", "chip")
-	ff1, err := listXMLFiles(p1)
-	if err != nil {
-		slog.Error("error listing files", "dir", p1, "error", err)
+		slog.Error("error listing files", "dir", z.XmlRoot1, "error", err)
 		return err
 	}
 
-	p2 := filepath.Join(z.SdkRoot2, "src", "app", "zap-templates", "zcl", "data-model", "chip")
-	ff2, err := listXMLFiles(p2)
+	ff2, err := listXMLFiles(z.XmlRoot2)
 	if err != nil {
-		slog.Error("error listing files", "dir", p2, "error", err)
+		slog.Error("error listing files", "dir", z.XmlRoot2, "error", err)
 		return err
 	}
 
-	mm := zapdiff.Pipeline(ff1, ff2, "sdk-1", "sdk-2")
+	mm := zapdiff.Pipeline(ff1, ff2, z.Label1, z.Label2)
 
 	csvOutputPath := filepath.Join(z.Out, "mismatches.csv")
 	err = writeMismatchesToCSV(csvOutputPath, mm, mismatchPrintLevel)
