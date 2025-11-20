@@ -173,16 +173,22 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 			vf := templates.ViolationFile{Path: relPath}
 			for _, v := range vs {
 				vv := templates.Violation{}
-				vv.EntityName = matter.EntityName(v.Entity)
-				vv.EntityType = entityTypeName(v.Entity)
 
-				parent := v.Entity.Parent()
-				for {
-					if parent == nil {
-						break
+				if v.Entity != nil {
+					vv.EntityName = matter.EntityName(v.Entity)
+					vv.EntityType = entityTypeName(v.Entity)
+
+					parent := v.Entity.Parent()
+					for {
+						if parent == nil {
+							break
+						}
+						vv.EntityName = matter.EntityName(parent) + "." + vv.EntityName
+						parent = parent.Parent()
 					}
-					vv.EntityName = matter.EntityName(parent) + "." + vv.EntityName
-					parent = parent.Parent()
+				} else {
+					vv.EntityName = "-"
+					vv.EntityType = "-"
 				}
 
 				pathHash := sha256.Sum256([]byte(relPath))
