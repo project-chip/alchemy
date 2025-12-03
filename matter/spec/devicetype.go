@@ -570,7 +570,7 @@ func validateDeviceTypes(spec *Specification) {
 			}
 			validateAccess(spec, der.ElementRequirement, der.ElementRequirement.Access)
 			validateElementRequirement(spec, der.DeviceType, der.ElementRequirement, referencedClusters)
-			cdercv.add(der.ElementRequirement, der.DeviceTypeRequirement.Conformance)
+			cdercv.add(der.ElementRequirement, der.ElementRequirement.Conformance)
 		}
 		cdercv.check(spec)
 	}
