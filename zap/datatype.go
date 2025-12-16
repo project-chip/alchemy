@@ -283,6 +283,8 @@ func DataTypeName(dataType *types.DataType) string {
 		return "tag"
 	case types.BaseDataTypeMessageID:
 		return "octet_string"
+	case types.BaseDataTypeStatus:
+		return "status"
 	}
 	return dataType.Name
 }
@@ -431,6 +433,8 @@ func ToBaseDataType(s string) types.BaseDataType {
 		return types.BaseDataTypeTag
 	case "array":
 		return types.BaseDataTypeList
+	case "status":
+		return types.BaseDataTypeStatus
 	}
 	if len(s) > 0 {
 		return types.BaseDataTypeCustom

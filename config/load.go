@@ -48,7 +48,6 @@ func loadConfigFile(specRoot string) []byte {
 		return nil
 	}
 	if !exists {
-		slog.Info("loading default configuration")
 		return nil
 	}
 	b, err := os.ReadFile(configPath)

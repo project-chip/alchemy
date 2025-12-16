@@ -64,6 +64,11 @@ func (c *Yaml2Python) Run(cc *Context) (err error) {
 		return
 	}
 
+	err = sdk.ApplyErrata(specification)
+	if err != nil {
+		return
+	}
+
 	var parser parse.TestYamlParser
 	parser, err = parse.NewTestYamlParser(c.SDKOptions.SdkRoot)
 	if err != nil {

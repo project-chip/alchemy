@@ -41,7 +41,7 @@ type Specification struct {
 
 	GlobalObjects types.EntitySet[*asciidoc.Document]
 
-	entities map[string]map[types.Entity]map[*matter.Cluster]struct{}
+	entitiesByID map[string]map[types.Entity]map[*matter.Cluster]struct{}
 
 	Docs       map[string]*asciidoc.Document
 	UnusedDocs []*asciidoc.Document
@@ -72,7 +72,7 @@ func newSpec(specRoot string, config *config.Config, errata *errata.Collection) 
 
 		GlobalObjects: make(types.EntitySet[*asciidoc.Document]),
 
-		entities:                   make(map[string]map[types.Entity]map[*matter.Cluster]struct{}),
+		entitiesByID:               make(map[string]map[types.Entity]map[*matter.Cluster]struct{}),
 		deviceTypeCompositionCache: make(map[*matter.DeviceType]*matter.DeviceTypeComposition),
 		libraryIndex:               make(map[*asciidoc.Document]*Library),
 	}
@@ -99,7 +99,7 @@ func newSpecEntityFinder(spec *Specification, cluster *matter.Cluster, inner ent
 }
 
 func (sef *specEntityFinder) findEntityByIdentifier(identifier string, source log.Source) types.Entity {
-	entities := sef.spec.entities[identifier]
+	entities := sef.spec.entitiesByID[identifier]
 	if len(entities) == 0 {
 		canonicalName := CanonicalName(identifier)
 		if canonicalName != identifier {
@@ -129,7 +129,7 @@ func (sef *specEntityFinder) findEntityByIdentifier(identifier string, source lo
 
 func (tf *specEntityFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
 	suggest.PossibleEntities(identifier, suggestions, func(yield func(string, types.Entity) bool) {
-		for identifier, entities := range tf.spec.entities {
+		for identifier, entities := range tf.spec.entitiesByID {
 			for e := range entities {
 				if e == tf.identity {
 					continue

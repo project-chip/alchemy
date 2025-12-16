@@ -232,6 +232,10 @@ func (c *Cluster) Cluster() *Cluster {
 	return c
 }
 
+func (c *Cluster) IterateDataTypes() DataTypeIterator {
+	return iterateOverDataTypes(c)
+}
+
 func findCluster(entity types.Entity) *Cluster {
 	switch e := entity.(type) {
 	case *Cluster:

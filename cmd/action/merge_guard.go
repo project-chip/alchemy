@@ -22,6 +22,7 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/mle"
 	"github.com/project-chip/alchemy/provisional"
 	"github.com/sethvargo/go-githubactions"
 )
@@ -121,7 +122,13 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 
 	var ve map[string][]spec.Violation = errdiff.ProcessComparison(&specs)
 
-	violations := spec.MergeViolations(vp, ve)
+	var vm map[string][]spec.Violation
+	vm, err = mle.Process(headRoot, specs.Head)
+	if err != nil {
+		return fmt.Errorf("failed checking Master List Enforcer status: %v", err)
+	}
+
+	violations := spec.MergeViolations(vp, ve, vm)
 
 	owner, repo := githubContext.Repo()
 
@@ -155,22 +162,36 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 			slices.SortFunc(vs, func(a spec.Violation, b spec.Violation) int {
 				return a.Line - b.Line
 			})
-			vf := templates.ViolationFile{Path: path}
+
+			var relPath string
+			relPath, err = filepath.Rel(headRoot, path)
+			if err != nil {
+				err = fmt.Errorf("the relative path could not be determined. Path: %s, Root: %s", path, headRoot)
+				return
+			}
+
+			vf := templates.ViolationFile{Path: relPath}
 			for _, v := range vs {
 				vv := templates.Violation{}
-				vv.EntityName = matter.EntityName(v.Entity)
-				vv.EntityType = entityTypeName(v.Entity)
 
-				parent := v.Entity.Parent()
-				for {
-					if parent == nil {
-						break
+				if v.Entity != nil {
+					vv.EntityName = matter.EntityName(v.Entity)
+					vv.EntityType = entityTypeName(v.Entity)
+
+					parent := v.Entity.Parent()
+					for {
+						if parent == nil {
+							break
+						}
+						vv.EntityName = matter.EntityName(parent) + "." + vv.EntityName
+						parent = parent.Parent()
 					}
-					vv.EntityName = matter.EntityName(parent) + "." + vv.EntityName
-					parent = parent.Parent()
+				} else {
+					vv.EntityName = "-"
+					vv.EntityType = "-"
 				}
 
-				pathHash := sha256.Sum256([]byte(path))
+				pathHash := sha256.Sum256([]byte(relPath))
 				vv.SourceLink = fmt.Sprintf("https://github.com/%s/%s/pull/%d/files#diff-%sR%d", owner, repo, pr.GetNumber(), hex.EncodeToString(pathHash[:]), v.Line)
 				vv.SourceLine = v.Line
 				if v.Type.Has(spec.ViolationTypeNonProvisional) {
@@ -181,6 +202,9 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 				}
 				if v.Type.Has(spec.ViolationNewParseError) {
 					vv.Violations = append(vv.Violations, "New Parse Error introduced by this PR: "+v.Text)
+				}
+				if v.Type.Has(spec.ViolationMasterList) {
+					vv.Violations = append(vv.Violations, "Incompatible with Master List: "+v.Text)
 				}
 				vf.Violations = append(vf.Violations, vv)
 			}

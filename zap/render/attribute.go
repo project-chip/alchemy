@@ -94,7 +94,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	cr.elementMap[ae] = attribute
 	patchNumberAttribute(ae, attribute.ID, "code")
 	ae.CreateAttr("side", "server")
-	xml.PrependAttribute(ae, "name", cr.configurator.Errata.OverrideName(attribute, attribute.Name), "side", "code")
+	xml.PrependAttribute(ae, "name", attribute.Name, "side", "code")
 	xml.RemoveElements(ae, "description")
 	define := getDefine(attribute.Name, clusterPrefix, cr.configurator.Errata)
 
@@ -110,6 +110,11 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 		ae.CreateAttr("isNullable", "true")
 	} else {
 		ae.RemoveAttr("isNullable")
+	}
+	if attribute.Access.IsFabricSensitive() {
+		ae.CreateAttr("isFabricSensitive", "true")
+	} else {
+		ae.RemoveAttr("isFabricSensitive")
 	}
 	// This is a deprecated quality, so remove it if it exists
 	ae.RemoveAttr("reportable")
@@ -188,7 +193,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 }
 
 func (cr *configuratorRenderer) setFieldFallback(e *etree.Element, field *matter.Field, fieldSet matter.FieldSet) {
-	fallback := cr.configurator.Errata.OverrideFallback(field)
+	fallback := field.Fallback
 	if !constraint.IsGenericLimit(fallback) && !constraint.IsBlankLimit(fallback) {
 		fallbackValue := zap.GetFallbackValue(matter.NewConstraintContext(field, fieldSet), fallback)
 		patchDataExtremeAttribute(e, "default", fallbackValue, field, types.DataExtremePurposeFallback)
@@ -201,8 +206,7 @@ func (cr *configuratorRenderer) writeAttributeDataType(x *etree.Element, fs matt
 	if f.Type == nil {
 		return
 	}
-	dts := zap.FieldToZapDataType(fs, f, cr.configurator.Errata.OverrideConstraint(f))
-	dts = cr.configurator.Errata.OverrideType(f, dts)
+	dts := zap.FieldToZapDataType(fs, f, matter.EntityConstraint(f))
 	if f.Type.IsArray() {
 		x.CreateAttr("type", "array")
 		x.CreateAttr("entryType", dts)

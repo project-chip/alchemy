@@ -1,6 +1,7 @@
 package matter
 
 import (
+	"iter"
 	"log/slog"
 	"strings"
 
@@ -155,4 +156,115 @@ func (adt *AssociatedDataTypes) AddConstants(constants ...*Constant) {
 func (adt *AssociatedDataTypes) MoveStruct(s *Struct) {
 	adt.Structs = append(adt.Structs, s)
 	s.parent = adt.parentEntity
+}
+
+type DataTypeIterator iter.Seq2[types.Entity, types.Entity]
+
+func iterateOverDataTypes(c *Cluster) DataTypeIterator {
+	return func(yield func(types.Entity, types.Entity) bool) {
+		if c.Features != nil {
+			if !yield(c, c.Features) {
+				return
+			}
+		}
+		for _, en := range c.Bitmaps {
+			if !yield(c, en) {
+				return
+			}
+		}
+		for _, en := range c.Enums {
+			if !yield(c, en) {
+				return
+			}
+		}
+		for _, en := range c.Structs {
+			if !yield(c, en) {
+				return
+			}
+			for _, f := range en.Fields {
+				for p, e := range iterateOverFieldDataTypes(f) {
+					if !yield(p, e) {
+						return
+					}
+				}
+			}
+		}
+		for _, cmd := range c.Commands {
+			if !yield(c, cmd) {
+				return
+			}
+			for _, f := range cmd.Fields {
+				for p, e := range iterateOverFieldDataTypes(f) {
+					if !yield(p, e) {
+						return
+					}
+				}
+			}
+			if cmd.Response != nil && cmd.Response.Entity != nil && cmd.Response.Name == "" {
+				if !yield(cmd, cmd.Response.Entity) {
+					return
+				}
+			}
+			for _, ev := range c.Events {
+				if !yield(c, ev) {
+					return
+				}
+				for _, f := range ev.Fields {
+					for p, e := range iterateOverFieldDataTypes(f) {
+						if !yield(p, e) {
+							return
+						}
+					}
+				}
+			}
+			for _, a := range c.Attributes {
+
+				if !yield(c, a) {
+					return
+				}
+				for p, e := range iterateOverFieldDataTypes(a) {
+					if !yield(p, e) {
+						return
+					}
+				}
+			}
+		}
+	}
+}
+
+func iterateOverFieldDataTypes(field *Field) DataTypeIterator {
+	return func(yield func(types.Entity, types.Entity) bool) {
+		if field.Type == nil {
+			return
+		}
+		var entity types.Entity
+		if field.Type.IsArray() {
+			if field.Type.EntryType == nil {
+				return
+			}
+			if field.Type.EntryType.Entity == nil {
+				return
+			}
+			entity = field.Type.EntryType.Entity
+		} else {
+			entity = field.Type.Entity
+		}
+		if entity == nil {
+			return
+		}
+		if !yield(field, entity) {
+			return
+		}
+		switch entity := entity.(type) {
+		case *Struct:
+			for _, f := range entity.Fields {
+				for p, e := range iterateOverFieldDataTypes(f) {
+					if !yield(p, e) {
+						return
+					}
+				}
+			}
+		}
+
+	}
 }
