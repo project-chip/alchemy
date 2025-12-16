@@ -50,6 +50,20 @@ func ToUnderlyingType(dt types.BaseDataType) types.BaseDataType {
 		return types.BaseDataTypeUInt8
 	case types.BaseDataTypePercentHundredths:
 		return types.BaseDataTypeUInt16
+	case types.BaseDataTypeFabricIndex, types.BaseDataTypePriority, types.BaseDataTypeStatus, types.BaseDataTypeActionID:
+		return types.BaseDataTypeUInt8
+	case types.BaseDataTypeGroupID, types.BaseDataTypeEndpointNumber, types.BaseDataTypeVendorID, types.BaseDataTypeEntryIndex:
+		return types.BaseDataTypeUInt16
+	case types.BaseDataTypeDeviceTypeID,
+		types.BaseDataTypeClusterID, types.BaseDataTypeAttributeID, types.BaseDataTypeFieldID, types.BaseDataTypeEventID, types.BaseDataTypeCommandID,
+		types.BaseDataTypeTransactionID, types.BaseDataTypeDataVersion:
+		return types.BaseDataTypeUInt32
+	case types.BaseDataTypeFabricID, types.BaseDataTypeNodeID, types.BaseDataTypeSubjectID, types.BaseDataTypeEventNumber:
+		return types.BaseDataTypeUInt64
+	case types.BaseDataTypeNamespaceID, types.BaseDataTypeTag:
+		return types.BaseDataTypeUInt8
+	case types.BaseDataTypeIPAddress, types.BaseDataTypeIPv4Address, types.BaseDataTypeIPv6Address, types.BaseDataTypeIPv6Prefix, types.BaseDataTypeHardwareAddress:
+		return types.BaseDataTypeOctStr
 	default:
 		return dt
 	}

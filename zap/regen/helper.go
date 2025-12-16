@@ -172,6 +172,9 @@ func maxValue(field matter.Field, fs matter.FieldSet) (max types.DataTypeExtreme
 		if field.Type.BaseType.IsSimple() {
 			return
 		}
+		if sdk.ToUnderlyingType(field.Type.BaseType).IsSimple() {
+			return
+		}
 	}
 	_, max = zap.GetMinMax(matter.NewConstraintContext(&field, fs), field.Constraint)
 	hasNumericMax := max.IsNumeric()
