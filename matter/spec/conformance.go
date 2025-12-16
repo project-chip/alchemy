@@ -117,7 +117,7 @@ func (sp *Builder) resolveBitmapConformances(cluster *matter.Cluster, finder ent
 		bitmapValueFinder := makeEntityFinder(bm, finder)
 		for _, bmv := range bm.Bits {
 			bitmapValueFinder.setIdentity(bmv)
-			sp.resolveEntityConformanceReferences(cluster, bitmapValueFinder, bm, bmv.Conformance())
+			sp.resolveEntityConformanceReferences(cluster, bitmapValueFinder, bmv, bmv.Conformance())
 		}
 	}
 }
@@ -127,7 +127,7 @@ func (sp *Builder) resolveEnumConformances(cluster *matter.Cluster, finder entit
 		enumValueFinder := makeEntityFinder(e, finder)
 		for _, ev := range e.Values {
 			enumValueFinder.setIdentity(ev)
-			sp.resolveEntityConformanceReferences(cluster, enumValueFinder, e, ev.Conformance)
+			sp.resolveEntityConformanceReferences(cluster, enumValueFinder, ev, ev.Conformance)
 		}
 	}
 }
