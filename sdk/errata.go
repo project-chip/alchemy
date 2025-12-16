@@ -12,10 +12,12 @@ import (
 )
 
 func ApplyErrata(spec *spec.Specification) (err error) {
+	var addedExtraEntities bool
 	for path, errata := range spec.Errata.All() {
 		typeOverrides := errata.SDK.Types
 		typeNames := errata.SDK.TypeNames
-		if typeOverrides == nil && len(typeNames) == 0 {
+		extraTypes := errata.SDK.ExtraTypes
+		if typeOverrides == nil && len(typeNames) == 0 && extraTypes == nil {
 			continue
 		}
 		doc, ok := spec.Docs[path]
@@ -40,6 +42,14 @@ func ApplyErrata(spec *spec.Specification) (err error) {
 				applyErrataToEvent(entity, typeNames, typeOverrides)
 			}
 		}
+		if extraTypes != nil {
+			addExtraTypes(extraTypes, entities)
+			addedExtraEntities = true
+		}
+	}
+	if addedExtraEntities {
+		spec.BuildDataTypeReferences()
+		spec.BuildClusterReferences()
 	}
 	return
 }
@@ -293,5 +303,94 @@ func overrideAccess(override *errata.SDKType, entityType types.EntityType, defau
 			return access
 		}
 		return defaultAccess
+	}
+}
+
+func addExtraTypes(extraTypes *errata.SDKTypes, entities []types.Entity) {
+	if extraTypes == nil {
+		return
+	}
+	var extraEntities []types.Entity
+	for name, eb := range extraTypes.Bitmaps {
+		bm := matter.NewBitmap(nil, nil)
+		bm.Name = name
+		bm.Type = types.ParseDataType(eb.Type, false)
+		bm.Description = eb.Description
+		for _, ef := range eb.Fields {
+			b := matter.NewBitmapBit(nil, ef.Bit, ef.Name, "", nil)
+			bm.Bits = append(bm.Bits, b)
+		}
+		extraEntities = append(extraEntities, bm)
+	}
+	for name, ee := range extraTypes.Enums {
+		e := matter.NewEnum(nil, nil)
+		e.Name = name
+		e.Type = types.ParseDataType(ee.Type, false)
+		e.Description = ee.Description
+		for _, ef := range ee.Fields {
+			ev := matter.NewEnumValue(nil, nil)
+			ev.Name = ef.Name
+			ev.Value = matter.ParseNumber(ef.Value)
+			e.Values = append(e.Values, ev)
+		}
+		extraEntities = append(extraEntities, e)
+	}
+	for name, es := range extraTypes.Structs {
+		s := matter.NewStruct(nil, nil)
+		s.Name = name
+		s.Description = es.Description
+		for i, ef := range es.Fields {
+			f := matter.NewField(nil, nil, types.EntityTypeStructField)
+			f.ID = matter.NewNumber(uint64(i))
+			f.Name = ef.Name
+			f.Type = types.ParseDataType(ef.Type, ef.List)
+			if ef.Constraint != "" {
+				f.Constraint = constraint.ParseString(ef.Constraint)
+			}
+			if ef.Conformance != "" {
+				f.Conformance = conformance.ParseConformance(ef.Conformance)
+			}
+			f.Conformance = conformance.Set{&conformance.Mandatory{}}
+			s.Fields = append(s.Fields, f)
+		}
+		extraEntities = append(extraEntities, s)
+	}
+	for _, e := range extraEntities {
+		for _, m := range entities {
+			switch v := m.(type) {
+			case *matter.ClusterGroup:
+				for _, cl := range v.Clusters {
+					addExtraEntity(cl, e)
+				}
+			case *matter.Cluster:
+				addExtraEntity(v, e)
+			}
+		}
+	}
+}
+
+func addExtraEntity(cluster *matter.Cluster, e types.Entity) {
+	switch e := e.(type) {
+	case *matter.Bitmap:
+		for _, bm := range cluster.Bitmaps {
+			if bm.Name == e.Name {
+				return
+			}
+		}
+		cluster.AddBitmaps(e)
+	case *matter.Enum:
+		for _, en := range cluster.Enums {
+			if en.Name == e.Name {
+				return
+			}
+		}
+		cluster.AddEnums(e)
+	case *matter.Struct:
+		for _, s := range cluster.Structs {
+			if s.Name == e.Name {
+				return
+			}
+		}
+		cluster.AddStructs(e)
 	}
 }
