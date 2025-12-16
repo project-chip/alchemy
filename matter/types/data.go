@@ -244,7 +244,7 @@ func ParseDataTypeName(typeName string) (baseType BaseDataType, name string) {
 }
 
 func (dt *DataType) Clone() *DataType {
-	ndt := &DataType{Name: dt.Name, BaseType: dt.BaseType}
+	ndt := &DataType{Name: dt.Name, BaseType: dt.BaseType, Source: dt.Source}
 	if dt.EntryType != nil {
 		ndt.EntryType = dt.EntryType.Clone()
 	}
