@@ -103,6 +103,10 @@ func (f *Field) Clone() *Field {
 	return nf
 }
 
+func (f *Field) IterateDataTypes() DataTypeIterator {
+	return iterateOverFieldDataTypes(f)
+}
+
 type FieldSet []*Field
 
 func (fs FieldSet) Get(name string) *Field {
