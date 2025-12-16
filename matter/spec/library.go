@@ -141,10 +141,10 @@ func (si *Specification) addEntity(entity types.Entity, cluster *matter.Cluster)
 }
 
 func (si *Specification) addEntityByName(name string, entity types.Entity, cluster *matter.Cluster) {
-	m, ok := si.entities[name]
+	m, ok := si.entitiesByID[name]
 	if !ok {
 		m = make(map[types.Entity]map[*matter.Cluster]struct{})
-		si.entities[name] = m
+		si.entitiesByID[name] = m
 	}
 	clusters, ok := m[entity]
 	if !ok {

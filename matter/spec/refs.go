@@ -30,6 +30,15 @@ func (cr *EntityRefs[T]) Add(c T, m types.Entity) {
 	cr.Unlock()
 }
 
+func (cr *EntityRefs[T]) Remove(c T, m types.Entity) {
+	cr.Lock()
+	cm, ok := cr.refs[m]
+	if ok {
+		cm.Delete(c)
+	}
+	cr.Unlock()
+}
+
 func (cr *EntityRefs[T]) Get(m types.Entity) (pipeline.Map[T, struct{}], bool) {
 	cr.RLock()
 	cm, ok := cr.refs[m]
