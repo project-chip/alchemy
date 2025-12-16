@@ -78,7 +78,6 @@ func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, 
 	}
 
 	if clusterGroup != nil {
-		//pc.addRootEntity(clusterGroup, section)
 		entity = clusterGroup
 
 		clusterGroup.AddDataTypes(dataTypes...)
@@ -94,7 +93,6 @@ func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, 
 		}
 	} else {
 		entity = clusters[0]
-		//pc.addRootEntity(clusters[0], section)
 	}
 
 	var description = library.getDescription(reader, d, clusters[0], section, reader.Children(section))

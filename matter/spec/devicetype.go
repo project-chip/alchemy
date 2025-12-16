@@ -164,14 +164,7 @@ func (library *Library) toBaseDeviceType(reader asciidoc.Reader, section *asciid
 		}
 		return parse.SearchShouldContinue
 	})
-
 	return
-	/*
-	   for top := range parse.Skim[*asciidoc.Section](reader, section, reader.Children(section)) {
-
-	   }
-	   return nil, fmt.Errorf("failed to find base device type")
-	*/
 }
 
 func (spec *Specification) associateDeviceTypeRequirements() (err error) {
