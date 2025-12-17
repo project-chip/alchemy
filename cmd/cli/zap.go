@@ -267,8 +267,8 @@ func (z *ZAPRegen) Run(cc *Context) (err error) {
 		return
 	}
 
-	writer := files.NewWriter[string]("Writing test scripts", z.OutputOptions)
+	writer := files.NewWriter[string]("Writing .matter files", z.OutputOptions)
 	err = writer.Write(cc, matterFiles, z.ProcessingOptions)
 
-	return nil
+	return
 }
