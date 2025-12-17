@@ -15,7 +15,7 @@ func (h *Host) indexStructs(cluster *matter.Cluster, parent *sectionInfo) {
 		} else {
 			row.values[matter.TableColumnScope] = ""
 		}
-		ei := &sectionInfo{id: h.nextID(structTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
+		ei := h.newSectionInfo(structTable, parent, row, s)
 		parent.children[structTable] = append(parent.children[structTable], ei)
 		for _, env := range s.Fields {
 			h.readField(env, ei, structField, types.EntityTypeStruct)

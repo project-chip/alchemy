@@ -18,7 +18,7 @@ func (h *Host) indexEventModels(cxt context.Context, parent *sectionInfo, cluste
 		if e.Conformance != nil {
 			row.values[matter.TableColumnConformance] = e.Conformance.ASCIIDocString()
 		}
-		ei := &sectionInfo{id: h.nextID(eventTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
+		ei := h.newSectionInfo(eventTable, parent, row, e)
 		parent.children[eventTable] = append(parent.children[eventTable], ei)
 		for _, ef := range e.Fields {
 			h.readField(ef, ei, eventFieldTable, types.EntityTypeEvent)

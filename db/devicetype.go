@@ -14,13 +14,13 @@ func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, de
 	deviceTypeRow.values[matter.TableColumnClass] = deviceType.Class
 	deviceTypeRow.values[matter.TableColumnScope] = deviceType.Scope
 
-	dti := &sectionInfo{id: h.nextID(deviceTypeTable), parent: parent, values: deviceTypeRow, children: make(map[string][]*sectionInfo)}
+	dti := h.newSectionInfo(deviceTypeTable, parent, deviceTypeRow, deviceType)
 
 	for _, r := range deviceType.Revisions {
 		revisionRow := newDBRow()
 		revisionRow.values[matter.TableColumnID] = r.Number
 		revisionRow.values[matter.TableColumnDescription] = r.Description
-		fci := &sectionInfo{id: h.nextID(deviceTypeRevisionTable), parent: dti, values: revisionRow}
+		fci := h.newSectionInfo(deviceTypeRevisionTable, dti, revisionRow, r)
 		dti.children[deviceTypeRevisionTable] = append(dti.children[deviceTypeRevisionTable], fci)
 
 	}
@@ -28,7 +28,7 @@ func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, de
 		revisionRow := newDBRow()
 		revisionRow.values[matter.TableColumnFeature] = c.Feature
 		revisionRow.values[matter.TableColumnDescription] = c.Description
-		fci := &sectionInfo{id: h.nextID(deviceTypeConditionTable), parent: dti, values: revisionRow}
+		fci := h.newSectionInfo(deviceTypeConditionTable, dti, revisionRow, c)
 		dti.children[deviceTypeConditionTable] = append(dti.children[deviceTypeConditionTable], fci)
 
 	}
@@ -50,7 +50,7 @@ func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, de
 			row.values[matter.TableColumnDirection] = "unknown"
 
 		}
-		fci := &sectionInfo{id: h.nextID(deviceTypeClusterRequirementTable), parent: dti, values: row}
+		fci := h.newSectionInfo(deviceTypeClusterRequirementTable, dti, row, c)
 		dti.children[deviceTypeClusterRequirementTable] = append(dti.children[deviceTypeClusterRequirementTable], fci)
 
 	}
@@ -67,7 +67,7 @@ func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, de
 			row.values[matter.TableColumnConstraint] = dr.Constraint.ASCIIDocString(nil)
 
 		}
-		fci := &sectionInfo{id: h.nextID(deviceTypeCompositionTable), parent: dti, values: row}
+		fci := h.newSectionInfo(deviceTypeCompositionTable, dti, row, dr)
 		dti.children[deviceTypeCompositionTable] = append(dti.children[deviceTypeCompositionTable], fci)
 
 	}

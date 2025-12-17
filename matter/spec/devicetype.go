@@ -66,7 +66,7 @@ func (library *Library) toDeviceTypes(reader asciidoc.Reader, d *asciidoc.Docume
 			case matter.SectionComposedDeviceTypeConditionRequirements:
 				dt.ConditionRequirements, err = library.toConditionRequirements(reader, d, s, dt)
 			case matter.SectionRevisionHistory:
-				dt.Revisions, err = readRevisionHistory(reader, d, s)
+				dt.Revisions, err = readRevisionHistory(reader, d, s, dt)
 			default:
 			}
 			if err != nil {
@@ -157,7 +157,7 @@ func (library *Library) toBaseDeviceType(reader asciidoc.Reader, section *asciid
 
 			baseDeviceType.Conditions = append(baseDeviceType.Conditions, conditions...)
 		case matter.SectionRevisionHistory:
-			baseDeviceType.Revisions, err = readRevisionHistory(reader, doc, sec)
+			baseDeviceType.Revisions, err = readRevisionHistory(reader, doc, sec, baseDeviceType)
 		}
 		if err != nil {
 			return parse.SearchShouldStop

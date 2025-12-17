@@ -30,7 +30,7 @@ func (h *Host) indexCommandModels(cxt context.Context, parent *sectionInfo, clus
 			row.values[matter.TableColumnConformance] = c.Conformance.ASCIIDocString()
 		}
 		row.values[matter.TableColumnQuality] = c.Quality
-		ci := &sectionInfo{id: h.nextID(commandTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
+		ci := h.newSectionInfo(commandTable, parent, row, c)
 		parent.children[commandTable] = append(parent.children[commandTable], ci)
 		for _, ef := range c.Fields {
 			h.readField(ef, ci, commandFieldTable, types.EntityTypeCommandField)
