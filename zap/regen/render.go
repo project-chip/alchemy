@@ -107,8 +107,8 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 		for _, clusterRef := range ep.Clusters {
 			cluster, ok := p.spec.ClustersByID[uint64(clusterRef.Code)]
 			if !ok {
-				//err = fmt.Errorf("unrecognized cluster id in %s: %d", input.Path, clusterId.Code)
-				return
+				slog.Warn("Unrecognized cluster code", slog.String("path", input.Path), slog.Int("clusterCode", clusterRef.Code))
+				continue
 			}
 			clusters[cluster] = struct{}{}
 			switch clusterRef.Side {
