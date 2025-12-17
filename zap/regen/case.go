@@ -13,6 +13,10 @@ func asUpperCamelCaseHelper(value string) raymond.SafeString {
 	return raymond.SafeString(caseify(value, false, true))
 }
 
+func asUpperCamelCaseIgnoreAcronymsHelper(value string) raymond.SafeString {
+	return raymond.SafeString(caseify(value, false, false))
+}
+
 func asLowerCamelCaseHelper(value string) raymond.SafeString {
 	if len(value) > 1 && text.IsUpperCase(value) {
 		return raymond.SafeString(strings.ToLower(value))
@@ -70,7 +74,7 @@ func caseify(s string, camelCase bool, preserveAcronyms bool) string {
 		}
 		result.WriteRune(processedFirstRune)
 
-		if len(runes) > 1 {
+		if len(runes) > 1 && !(isAllUpperCase && !preserveAcronyms) {
 			result.WriteString(string(runes[1:]))
 		} else {
 			result.WriteString(strings.ToLower(string(runes[1:])))

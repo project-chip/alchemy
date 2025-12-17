@@ -1,5 +1,5 @@
 {{descriptionComment cluster.Description ~}}
-cluster {{asUpperCamelCase cluster.Name}} = {{number cluster.ID}} {
+cluster {{asUpperCamelCaseIgnoreAcronyms cluster.Name}} = {{number cluster.ID}} {
   revision {{currentRevision cluster.Revisions}};
 {{#enums cluster.Enums}}
 

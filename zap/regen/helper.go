@@ -20,6 +20,7 @@ func (sp *IdlRenderer) registerIdlHelpers(t *raymond.Template, spec *spec.Specif
 	t.RegisterHelper("number", numberHelper)
 	t.RegisterHelper("currentRevision", currentRevisionHelper)
 	t.RegisterHelper("asUpperCamelCase", asUpperCamelCaseHelper)
+	t.RegisterHelper("asUpperCamelCaseIgnoreAcronyms", asUpperCamelCaseIgnoreAcronymsHelper)
 	t.RegisterHelper("asLowerCamelCase", asLowerCamelCaseHelper)
 	t.RegisterHelper("upperCamelCaseDiffers", upperCamelCaseDiffersHelper)
 	t.RegisterHelper("lowerCamelCaseDiffers", lowerCamelCaseDiffersHelper)
