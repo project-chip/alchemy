@@ -14,7 +14,7 @@ func (h *Host) indexDoc(ctx context.Context, spec *spec.Specification, doc *asci
 	if !ok {
 		return nil, fmt.Errorf("unable to find library for document %s", doc.Path.Relative)
 	}
-	ds := &sectionInfo{id: h.nextID(documentTable), values: &dbRow{}, children: make(map[string][]*sectionInfo)}
+	ds := h.newSectionInfo(documentTable, nil, &dbRow{}, nil)
 	dt, _ := library.DocType(doc)
 	dts := matter.DocTypeNames[dt]
 	ds.values.values = map[matter.TableColumn]any{matter.TableColumnName: doc.Path.Base(), matter.TableColumnType: dts}

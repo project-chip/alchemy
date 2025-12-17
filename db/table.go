@@ -9,6 +9,7 @@ import (
 	mms "github.com/dolthub/go-mysql-server/sql"
 	"github.com/dolthub/go-mysql-server/sql/types"
 	"github.com/iancoleman/strcase"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
@@ -129,9 +130,14 @@ func populateTable(cxt *mms.Context, t *memory.Table, tableName string, parentTa
 					case types.Int64:
 						switch val := v.(type) {
 						case matter.DocType:
+
 							v = int64(val)
 						case string:
-							v, err = parseNumber(val)
+							if val != "" {
+								v, err = parseNumber(val)
+							} else {
+								v = int64(0)
+							}
 						case *matter.Number:
 							if val.Valid() {
 								v = int64(val.Value())
@@ -144,7 +150,11 @@ func populateTable(cxt *mms.Context, t *memory.Table, tableName string, parentTa
 						}
 					}
 					if err != nil {
-						slog.Warn("error encoding row", slog.String("column", col.String()), slog.Any("value", v), slog.Any("error", err))
+						logArgs := []any{slog.String("column", col.String()), slog.Any("value", v), slog.Any("error", err)}
+						if si.source != nil {
+							logArgs = append(logArgs, log.Path("source", si.source))
+						}
+						slog.Warn("error encoding row", logArgs...)
 						v = nil
 					}
 					row = append(row, v)
