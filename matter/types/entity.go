@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"iter"
 
 	"github.com/project-chip/alchemy/asciidoc"
 )
@@ -104,6 +105,16 @@ func Filter[T Entity](list []Entity) (out []T) {
 }
 
 type EntitySet[S any] map[Entity]S
+
+func (es EntitySet[S]) Iterate() iter.Seq[Entity] {
+	return func(yield func(Entity) bool) {
+		for e := range es {
+			if !yield(e) {
+				return
+			}
+		}
+	}
+}
 
 func FilterSet[T Entity, S any](set EntitySet[S]) (out []T) {
 	for e := range set {

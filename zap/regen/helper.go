@@ -2,7 +2,6 @@ package regen
 
 import (
 	"fmt"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -35,6 +34,7 @@ func (sp *IdlRenderer) registerIdlHelpers(t *raymond.Template, spec *spec.Specif
 	t.RegisterHelper("responseName", responseNameHelper)
 	t.RegisterHelper("attributes", clusterAttributesHelper(sp.spec, sp.commonAttributes))
 	t.RegisterHelper("bitmaps", clusterBitmapsHelper(sp.spec))
+	t.RegisterHelper("bitmapBits", bitmapBitsHelper(sp.spec))
 	t.RegisterHelper("structFields", structFieldsHelper(sp.spec))
 	t.RegisterHelper("eventFields", eventFieldsHelper(sp.spec))
 	t.RegisterHelper("commandFields", commandFieldsHelper(sp.spec))
@@ -100,48 +100,6 @@ func enumerateHelper[T any](list []T, spec *spec.Specification, options *raymond
 		result.WriteString(options.FnCtxData(en, df))
 	}
 	return raymond.SafeString(result.String())
-}
-
-func enumsHelper(spec *spec.Specification) func(enums matter.EnumSet, options *raymond.Options) raymond.SafeString {
-	return func(enums matter.EnumSet, options *raymond.Options) raymond.SafeString {
-		sortedEnums := make(matter.EnumSet, len(enums))
-		copy(sortedEnums, enums)
-		slices.SortStableFunc(sortedEnums, func(a *matter.Enum, b *matter.Enum) int {
-			return strings.Compare(a.Name, b.Name)
-		})
-		return enumerateEntitiesHelper(sortedEnums, spec, options)
-	}
-}
-
-func ifHasValidFieldsHelper(fs matter.FieldSet, options *raymond.Options) string {
-	if len(filterFields(fs)) > 0 {
-		return options.Fn()
-	} else {
-		return options.Inverse()
-	}
-}
-
-func structFieldsHelper(spec *spec.Specification) func(s matter.Struct, options *raymond.Options) raymond.SafeString {
-	return func(s matter.Struct, options *raymond.Options) raymond.SafeString {
-		fields := filterFields(s.Fields)
-		if s.FabricScoping == matter.FabricScopingScoped {
-			fabricIndex := &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, false), Conformance: conformance.Set{&conformance.Mandatory{}}}
-			fabricIndex.SetParent(&s)
-			fields = append(fields, fabricIndex)
-		}
-		return enumerateEntitiesHelper(fields, spec, options)
-
-	}
-}
-
-func eventFieldsHelper(spec *spec.Specification) func(e matter.Event, options *raymond.Options) raymond.SafeString {
-	return func(e matter.Event, options *raymond.Options) raymond.SafeString {
-		fields := filterFields(e.Fields)
-		if e.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
-			fields = append(fields, &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, false), Conformance: conformance.Set{&conformance.Mandatory{}}})
-		}
-		return enumerateEntitiesHelper(fields, spec, options)
-	}
 }
 
 func ifFabricScopedHelper(a matter.FabricScoping, options *raymond.Options) string {

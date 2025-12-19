@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/mailgun/raymond/v2"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/handlebars"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
@@ -90,7 +91,7 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 	}
 
 	var endpoints []Endpoint
-	clusters := make(map[*matter.Cluster]struct{})
+	clusters := make(map[*matter.Cluster]*ClusterInfo)
 
 	for _, endpoint := range input.Content.Endpoints {
 		if endpoint.EndpointTypeIndex > len(input.Content.EndpointTypes)-1 {
@@ -105,31 +106,32 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 		ep := Endpoint{ID: endpoint.EndpointId, EndpointType: endpointType}
 		ep.DeviceType = deviceType
 		for _, clusterRef := range ep.Clusters {
-			cluster, ok := p.spec.ClustersByID[uint64(clusterRef.Code)]
+			c, ok := p.spec.ClustersByID[uint64(clusterRef.Code)]
 			if !ok {
 				slog.Warn("Unrecognized cluster code", slog.String("path", input.Path), slog.Int("clusterCode", clusterRef.Code))
 				continue
 			}
-			clusters[cluster] = struct{}{}
+			ci := &ClusterInfo{Cluster: c}
+			clusters[c] = ci
 			switch clusterRef.Side {
 			case "server":
-				ep.Servers = append(ep.Servers, cluster)
+				ep.Servers = append(ep.Servers, ci)
 			case "client":
-				ep.Clients = append(ep.Clients, cluster)
+				ep.Clients = append(ep.Clients, ci)
 			}
 		}
 		endpoints = append(endpoints, ep)
 	}
 
-	clusterList := make([]*matter.Cluster, 0, len(clusters))
-	clusterEntities := make(map[*matter.Cluster][]types.Entity)
+	clusterList := make([]*ClusterInfo, 0, len(clusters))
+	clusterEntities := make(map[*matter.Cluster]map[types.Entity]struct{})
 	globalEntities := make(map[types.Entity]bool)
-	for cluster := range clusters {
-		clusterList = append(clusterList, cluster)
-		clusterEntities[cluster] = []types.Entity{}
+	for cluster, ci := range clusters {
+		clusterList = append(clusterList, ci)
+		clusterEntities[cluster] = make(map[types.Entity]struct{})
 	}
 
-	slices.SortFunc(clusterList, func(a *matter.Cluster, b *matter.Cluster) int {
+	slices.SortFunc(clusterList, func(a *ClusterInfo, b *ClusterInfo) int {
 		return a.ID.Compare(b.ID)
 	})
 
@@ -137,18 +139,22 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 	var globalStructs []*matter.Struct
 	var globalBitmaps []*matter.Bitmap
 
-	spec.IterateOverDataTypes(p.spec, func(cluster *matter.Cluster, parent, entity types.Entity) {
-		if cluster == nil {
+	spec.TraverseEntities(p.spec, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
+		if parentCluster == nil {
 			_, ok := globalEntities[entity]
 			if ok {
 				globalEntities[entity] = true
 			}
-			return
+			return parse.SearchShouldContinue
 		}
-		ce, ok := clusterEntities[cluster]
+		ce, ok := clusterEntities[parentCluster]
 		if !ok {
-			return
+			return parse.SearchShouldSkip
 		}
+		if !entityShouldBeIncluded(entity) || !entityShouldBeIncluded(parent) {
+			return parse.SearchShouldSkip
+		}
+		_, isDirectChildOfCluster := parent.(*matter.Cluster)
 		switch entity := entity.(type) {
 		case *matter.Namespace:
 			field, ok := parent.(*matter.Field)
@@ -157,12 +163,18 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 				entity.Name = field.Name
 				globalEntities[entity] = true
 			}
-			return
+			return parse.SearchShouldContinue
+		case *matter.Bitmap, *matter.Enum, *matter.Struct:
+			if isDirectChildOfCluster && !forceIncludeEntity(p.spec, parentCluster, entity) {
+				// We won't include these entities if they're only referenced by the cluster itself, not any of its attributes, commands or events
+				return parse.SearchShouldSkip
+			}
 		}
-		clusterEntities[cluster] = append(ce, entity)
+		ce[entity] = struct{}{}
 		globalEntities[entity] = false
-
+		return parse.SearchShouldContinue
 	})
+
 	for entity, isGlobal := range globalEntities {
 		if !isGlobal {
 			continue
@@ -185,6 +197,27 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 				ns.Values = append(ns.Values, nst)
 			}
 			globalEnums = append(globalEnums, ns)
+		}
+	}
+
+	for _, clusterInfo := range clusterList {
+		ce, ok := clusterEntities[clusterInfo.Cluster]
+		if !ok {
+			continue
+		}
+		for e := range ce {
+			isGlobal := globalEntities[e]
+			if isGlobal {
+				continue
+			}
+			switch e := e.(type) {
+			case *matter.Bitmap:
+				clusterInfo.ReferencedBitmaps = append(clusterInfo.ReferencedBitmaps, e)
+			case *matter.Enum:
+				clusterInfo.ReferencedEnums = append(clusterInfo.ReferencedEnums, e)
+			case *matter.Struct:
+				clusterInfo.ReferencedStructs = append(clusterInfo.ReferencedStructs, e)
+			}
 		}
 	}
 
@@ -230,4 +263,35 @@ func (sp *IdlRenderer) loadTemplate(spec *spec.Specification) (*raymond.Template
 		return nil, err
 	}
 	return t.Clone(), nil
+}
+
+func forceIncludeEntity(spec *spec.Specification, cluster *matter.Cluster, e types.Entity) bool {
+	if e, ok := e.(*matter.Enum); ok {
+		if strings.EqualFold(e.Name, "StatusCode") || strings.EqualFold(e.Name, "StatusCodeEnum") || strings.EqualFold(e.Name, "ModeTag") {
+			return true
+		}
+	}
+	doc, ok := spec.DocRefs[cluster]
+	if !ok {
+		return false
+	}
+	errata := spec.Errata.Get(doc.Path.Relative)
+	if errata == nil || errata.SDK.ExtraTypes == nil {
+		return false
+	}
+	switch e := e.(type) {
+	case *matter.Bitmap:
+		if _, ok := errata.SDK.ExtraTypes.Bitmaps[e.Name]; ok {
+			return true
+		}
+	case *matter.Enum:
+		if _, ok := errata.SDK.ExtraTypes.Enums[e.Name]; ok {
+			return true
+		}
+	case *matter.Struct:
+		if _, ok := errata.SDK.ExtraTypes.Structs[e.Name]; ok {
+			return true
+		}
+	}
+	return false
 }

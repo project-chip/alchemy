@@ -9,6 +9,14 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
+type ClusterInfo struct {
+	*matter.Cluster
+
+	ReferencedBitmaps matter.BitmapSet
+	ReferencedEnums   matter.EnumSet
+	ReferencedStructs matter.StructSet
+}
+
 func clusterAttributesHelper(spec *spec.Specification, commonAttributes matter.FieldSet) func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
 	return func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
 		cas := make(matter.FieldSet, 0, len(commonAttributes))
@@ -17,7 +25,7 @@ func clusterAttributesHelper(spec *spec.Specification, commonAttributes matter.F
 			ca.SetParent(&cluster)
 			cas = append(cas, ca)
 		}
-		attributes := filterFields(cluster.Attributes, cas)
+		attributes := filterEntities(cluster.Attributes, cas)
 		slices.SortStableFunc(attributes, func(a *matter.Field, b *matter.Field) int {
 			return a.ID.Compare(b.ID)
 		})
@@ -27,8 +35,7 @@ func clusterAttributesHelper(spec *spec.Specification, commonAttributes matter.F
 
 func clusterStructsHelper(spec *spec.Specification) func(s matter.StructSet, options *raymond.Options) raymond.SafeString {
 	return func(s matter.StructSet, options *raymond.Options) raymond.SafeString {
-		structs := make(matter.StructSet, len(s))
-		copy(structs, s)
+		structs := filterEntities(s)
 		slices.SortStableFunc(structs, func(a *matter.Struct, b *matter.Struct) int {
 			if a.FabricScoping != b.FabricScoping {
 				if a.FabricScoping == matter.FabricScopingScoped {

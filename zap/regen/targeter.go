@@ -13,6 +13,7 @@ func Targeter(sdkRoot string) func(cxt context.Context) ([]string, error) {
 }
 
 func getZapPaths(sdkRoot string) (zapPaths []string, err error) {
+	zapPaths = append(zapPaths, filepath.Join(sdkRoot, "src/controller/data_model/controller-clusters.zap"))
 	srcRoot := filepath.Join(sdkRoot, "/examples/")
 	err = filepath.WalkDir(srcRoot, func(path string, d fs.DirEntry, err error) error {
 		if filepath.Ext(path) == ".zap" {

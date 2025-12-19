@@ -1,5 +1,6 @@
 {{#if provisional}}provisional {{/if ~}}
 {{#ifFabricScoped struct.FabricScoping}}fabric_scoped {{/ifFabricScoped ~}}
+{{#if shared}}shared {{/if ~}}
 struct {{asUpperCamelCase struct.Name}} {
 {{#structFields struct}}
   {{> field cluster=cluster struct=struct field=this fieldset=struct.Fields}}

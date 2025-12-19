@@ -1,35 +1,35 @@
 {{descriptionComment cluster.Description ~}}
 cluster {{asUpperCamelCaseIgnoreAcronyms cluster.Name}} = {{number cluster.ID}} {
   revision {{currentRevision cluster.Revisions}};
-{{#enums cluster.Enums}}
+{{#enums cluster.ReferencedEnums}}
 
-  {{> enum cluter=cluster shared=@shared enum=this provisional=@provisional}}
+  {{> enum cluster=cluster.Cluster shared=@shared enum=this provisional=@provisional}}
 {{/enums}}
-{{#bitmaps cluster}}
+{{#bitmaps cluster }}
 
-  {{> bitmap cluter=cluster bitmap=this provisional=@provisional}}
+  {{> bitmap cluster=cluster.Cluster bitmap=this provisional=@provisional}}
 {{/bitmaps}}
-{{#structs cluster.Structs}}
+{{#structs cluster.ReferencedStructs}}
 
-  {{> struct cluter=cluster struct=this provisional=@provisional}}
+  {{> struct cluster=cluster.Cluster struct=this provisional=@provisional}}
 {{/structs}}
-{{#events cluster}}
+{{#events cluster.Cluster}}
 
-  {{> event cluter=cluster event=this provisional=@provisional }}
+  {{> event cluster=cluster.Cluster event=this provisional=@provisional }}
 {{/events}}
 
-{{#attributes cluster}}
+{{#attributes cluster.Cluster}}
   {{> attribute cluster=cluster  attribute=this provisional=@provisional}}
 {{/attributes}}
 {{#commands cluster.Commands}}
 {{#ifRequest this ~}}
 {{#ifHasValidFields this.Fields}}
 
-  {{> request cluster=cluster command=this provisional=@provisional}}
+  {{> request cluster=cluster.Cluster command=this provisional=@provisional}}
 {{/ifHasValidFields}}
 {{else}}
 
-  {{> response cluster=cluster command=this provisional=@provisional}}
+  {{> response cluster=cluster.Cluster command=this provisional=@provisional}}
 {{/ifRequest}}
 {{/commands}}
 {{#if cluster.Commands}}

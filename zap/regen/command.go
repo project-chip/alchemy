@@ -13,8 +13,13 @@ import (
 
 func commandsHelper(spec *spec.Specification) func(commands matter.CommandSet, options *raymond.Options) raymond.SafeString {
 	return func(commands matter.CommandSet, options *raymond.Options) raymond.SafeString {
-		sortedCommands := make(matter.CommandSet, len(commands))
-		copy(sortedCommands, commands)
+		var sortedCommands matter.CommandSet
+		for _, cmd := range commands {
+			if !entityShouldBeIncluded(cmd) {
+				continue
+			}
+			sortedCommands = append(sortedCommands, cmd)
+		}
 		slices.SortStableFunc(sortedCommands, func(a *matter.Command, b *matter.Command) int {
 			cmp := a.ID.Compare(b.ID)
 			if cmp != 0 {
@@ -26,32 +31,6 @@ func commandsHelper(spec *spec.Specification) func(commands matter.CommandSet, o
 				return 0
 			}
 		})
-		/*var requests []*matter.Command
-		responses := make(map[*matter.Command]struct{})
-		for _, command := range commands {
-			switch command.Direction {
-			case matter.InterfaceServer:
-				requests = append(requests, command)
-			case matter.InterfaceClient:
-				responses[command] = struct{}{}
-			}
-		}
-		slices.SortStableFunc(requests, func(a *matter.Command, b *matter.Command) int {
-			return a.ID.Compare(b.ID)
-		})
-		for _, req := range requests {
-			sortedCommands = append(sortedCommands, req)
-			if req.Response != nil {
-				switch response := req.Response.Entity.(type) {
-				case *matter.Command:
-					if _, unused := responses[response]; unused {
-						sortedCommands = append(sortedCommands, response)
-						delete(responses, response)
-					}
-				case nil:
-				}
-			}
-		}*/
 		return enumerateEntitiesHelper(sortedCommands, spec, options)
 	}
 
@@ -59,7 +38,7 @@ func commandsHelper(spec *spec.Specification) func(commands matter.CommandSet, o
 
 func commandFieldsHelper(spec *spec.Specification) func(matter.Command, *raymond.Options) raymond.SafeString {
 	return func(cmd matter.Command, options *raymond.Options) raymond.SafeString {
-		fields := filterFields(cmd.Fields)
+		fields := filterEntities(cmd.Fields)
 		if cmd.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
 			fields = append(fields, &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, false), Conformance: conformance.Set{&conformance.Mandatory{}}})
 		}

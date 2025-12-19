@@ -2,7 +2,6 @@ package regen
 
 import (
 	"github.com/mailgun/raymond/v2"
-	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/zap"
 )
@@ -11,8 +10,8 @@ type Endpoint struct {
 	ID int
 	zap.EndpointType
 
-	Servers []*matter.Cluster
-	Clients []*matter.Cluster
+	Servers []*ClusterInfo
+	Clients []*ClusterInfo
 }
 
 func endpointServersHelper(spec *spec.Specification) func(Endpoint, *raymond.Options) raymond.SafeString {

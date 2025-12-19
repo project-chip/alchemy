@@ -314,7 +314,19 @@ func addExtraTypes(extraTypes *errata.SDKTypes, entities []types.Entity) {
 	for name, eb := range extraTypes.Bitmaps {
 		bm := matter.NewBitmap(nil, nil)
 		bm.Name = name
-		bm.Type = types.ParseDataType(eb.Type, false)
+		typeName := eb.Type
+		// This is a workaround for the errata file using the ZAP type name for bitmaps
+		switch typeName {
+		case "bitmap8":
+			typeName = "map8"
+		case "bitmap16":
+			typeName = "map16"
+		case "bitmap32":
+			typeName = "map32"
+		case "bitmap64":
+			typeName = "map64"
+		}
+		bm.Type = types.ParseDataType(typeName, false)
 		bm.Description = eb.Description
 		for _, ef := range eb.Fields {
 			b := matter.NewBitmapBit(nil, ef.Bit, ef.Name, "", nil)

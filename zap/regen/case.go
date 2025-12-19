@@ -44,20 +44,28 @@ var (
 	cleanupPattern      = regexp.MustCompile(`[^A-Za-z0-9_]`)
 )
 
+func isUpperCase(s string) bool {
+	// This is how ZAP tests for upper case
+	return s == strings.ToUpper(s)
+}
+
 func caseify(s string, camelCase bool, preserveAcronyms bool) string {
 	cleanedLabel := invalidCharsPattern.ReplaceAllString(s, "")
 	tokens := wordPattern.Split(cleanedLabel, -1)
 
 	var result strings.Builder
 	for index, token := range tokens {
+		if token == "PERSONAL" {
+			// Some of the WPA stuff has "Personal" rendered as "PERSONAL", so this is special-cased in ZAP
+			token = "Personal"
+		}
 		runes := []rune(token)
 
 		if len(runes) == 0 {
 			continue
 		}
 
-		// Some of the WPA stuff has "Personal" rendered as "PERSONAL", so this is special-cased in ZAP
-		isAllUpperCase := text.IsUpperCase(token) && token != "PERSONAL"
+		isAllUpperCase := isUpperCase(token)
 
 		if isAllUpperCase && preserveAcronyms {
 			result.WriteString(token)
@@ -74,16 +82,18 @@ func caseify(s string, camelCase bool, preserveAcronyms bool) string {
 		}
 		result.WriteRune(processedFirstRune)
 
-		if len(runes) > 1 && !(isAllUpperCase && !preserveAcronyms) {
-			result.WriteString(string(runes[1:]))
-		} else {
-			result.WriteString(strings.ToLower(string(runes[1:])))
+		if len(runes) > 1 {
+			if !isAllUpperCase {
+				result.WriteString(string(runes[1:]))
+			} else {
+				result.WriteString(strings.ToLower(string(runes[1:])))
+			}
 		}
 	}
 
 	str := result.String()
 
-	if camelCase {
+	if camelCase && preserveAcronyms {
 		originalRunes := []rune(s)
 		if !wordPattern.MatchString(s) &&
 			len(originalRunes) > 1 &&

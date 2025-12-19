@@ -3,6 +3,7 @@ package matter
 import (
 	"encoding/json"
 	"fmt"
+	"iter"
 	"regexp"
 	"slices"
 	"strings"
@@ -151,6 +152,16 @@ func (bs BitmapSet) Identifier(name string) (types.Entity, bool) {
 		}
 	}
 	return nil, false
+}
+
+func (bs BitmapSet) Iterate() iter.Seq[types.Entity] {
+	return func(yield func(types.Entity) bool) {
+		for _, bm := range bs {
+			if !yield(bm) {
+				return
+			}
+		}
+	}
 }
 
 type Bit interface {
@@ -318,6 +329,16 @@ func (bs BitSet) Identifier(name string) (types.Entity, bool) {
 		}
 	}
 	return nil, false
+}
+
+func (bs BitSet) Iterate() iter.Seq[types.Entity] {
+	return func(yield func(types.Entity) bool) {
+		for _, b := range bs {
+			if !yield(b) {
+				return
+			}
+		}
+	}
 }
 
 type AnonymousBitmap struct {

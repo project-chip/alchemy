@@ -269,10 +269,11 @@ func (sp *Builder) readEntities(spec *Specification, libraries []*Library) (basi
 }
 
 func (spec *Specification) BuildClusterReferences() {
-	IterateOverDataTypes(spec, func(cluster *matter.Cluster, parent, entity types.Entity) {
-		if cluster != nil {
-			spec.ClusterRefs.Add(cluster, entity)
+	TraverseEntities(spec, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
+		if parentCluster != nil {
+			spec.ClusterRefs.Add(parentCluster, entity)
 		}
+		return parse.SearchShouldContinue
 	})
 }
 

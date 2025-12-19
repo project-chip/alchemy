@@ -7,19 +7,28 @@ import (
 
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/zap"
 )
 
-func clusterBitmapsHelper(spec *spec.Specification) func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
-	return func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
-		bitmaps := make(matter.BitmapSet, 0, len(cluster.Bitmaps))
-		bitmaps = append(bitmaps, cluster.Bitmaps...)
+func clusterBitmapsHelper(spec *spec.Specification) func(clusterInfo ClusterInfo, options *raymond.Options) raymond.SafeString {
+	return func(clusterInfo ClusterInfo, options *raymond.Options) raymond.SafeString {
+		bitmaps := make(matter.BitmapSet, 0, len(clusterInfo.ReferencedBitmaps))
+		for _, bm := range clusterInfo.ReferencedBitmaps {
+			if len(filterBits(bm)) > 0 {
+				bitmaps = append(bitmaps, bm)
+			}
+		}
+		cluster := clusterInfo.Cluster
 		if cluster.Features != nil {
-			features := cluster.Features.Bitmap.Clone()
-			// ZAP renames this for some reason
-			features.Name = "Feature"
-			bitmaps = append(bitmaps, features)
+			if len(filterBits(&cluster.Features.Bitmap)) > 0 {
+				features := cluster.Features.Bitmap.Clone()
+				// ZAP renames this for some reason
+				features.Name = "Feature"
+				bitmaps = append(bitmaps, features)
+			}
 		}
 		slices.SortStableFunc(bitmaps, func(a *matter.Bitmap, b *matter.Bitmap) int {
 			return strings.Compare(a.Name, b.Name)
@@ -73,5 +82,21 @@ func bitMaskHelper(bit any) raymond.SafeString {
 		return raymond.SafeString(fmt.Sprintf("0x%X", mask))
 	default:
 		return raymond.SafeString(fmt.Sprintf("unexpected bitName type: %T", bit))
+	}
+}
+
+func filterBits(bm *matter.Bitmap) (bits matter.BitSet) {
+	for _, b := range bm.Bits {
+		if conformance.IsZigbee(b.Conformance()) || zap.IsDisallowed(b, b.Conformance()) || conformance.IsDeprecated(b.Conformance()) {
+			continue
+		}
+		bits = append(bits, b)
+	}
+	return
+}
+
+func bitmapBitsHelper(spec *spec.Specification) func(bm matter.Bitmap, options *raymond.Options) raymond.SafeString {
+	return func(bm matter.Bitmap, options *raymond.Options) raymond.SafeString {
+		return enumerateEntitiesHelper(filterBits(&bm), spec, options)
 	}
 }
