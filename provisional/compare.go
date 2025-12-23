@@ -105,7 +105,7 @@ func isNil[T any](val T) bool {
 	}
 }
 
-func checkProvisionality(s *spec.Specification, e types.Entity) (violationType spec.ViolationType) {
+func checkProvisionalityOfNewEntity(s *spec.Specification, e types.Entity) (violationType spec.ViolationType) {
 	switch e.(type) {
 	case *matter.Cluster,
 		*matter.DeviceType,
