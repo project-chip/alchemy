@@ -35,7 +35,7 @@ func compareGlobalEntities[Parent ComparableEntity, Child ComparableEntity](pull
 			continue
 		}
 		if novelty.IsNew() {
-			violationType := checkProvisionality(pullRequest.HeadInProgress, state.HeadInProgress)
+			violationType := checkProvisionalityOfNewEntity(pullRequest.HeadInProgress, state.HeadInProgress)
 			if !novelty.IsIfDefd() {
 				violationType |= spec.ViolationTypeNotIfDefd
 			}
