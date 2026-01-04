@@ -10,11 +10,29 @@ import (
 )
 
 type ClusterInfo struct {
-	*matter.Cluster
+	Cluster *matter.Cluster
 
 	ReferencedBitmaps matter.BitmapSet
 	ReferencedEnums   matter.EnumSet
 	ReferencedStructs matter.StructSet
+}
+
+func clustersHelper(spec *spec.Specification) func(clusterInfos []*ClusterInfo, options *raymond.Options) raymond.SafeString {
+	return func(clusterInfos []*ClusterInfo, options *raymond.Options) raymond.SafeString {
+		var result strings.Builder
+		for i, en := range clusterInfos {
+			df := options.DataFrame().Copy()
+			df.Set("index", i)
+			df.Set("key", nil)
+			df.Set("first", i == 0)
+			df.Set("last", i == len(clusterInfos)-1)
+			if spec != nil {
+				df.Set("provisional", isProvisional(spec, en.Cluster))
+			}
+			result.WriteString(options.FnCtxData(*en, df))
+		}
+		return raymond.SafeString(result.String())
+	}
 }
 
 func clusterAttributesHelper(spec *spec.Specification, commonAttributes matter.FieldSet) func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {

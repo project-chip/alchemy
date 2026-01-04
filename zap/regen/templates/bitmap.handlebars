@@ -1,3 +1,4 @@
+{{#if provisional}}provisional {{/if ~}}
 bitmap {{asUpperCamelCase bitmap.Name}} : {{bitmapType bitmap}} {
 {{#bitmapBits bitmap}}
   {{> bitmap_bit cluster=cluster bitmap=bitmap bit=this}}

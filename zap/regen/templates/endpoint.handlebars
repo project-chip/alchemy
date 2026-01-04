@@ -3,7 +3,7 @@ endpoint {{endpoint.ID}} {
 {{#if endpoint.Clients}}
 
 {{#each endpoint.Clients}}
-  binding cluster {{asUpperCamelCaseIgnoreAcronyms this.Name}};
+  binding cluster {{asUpperCamelCaseIgnoreAcronyms this.Cluster.Name}};
 {{/each}}
 {{/if}}
 {{#endpointServers endpoint}}

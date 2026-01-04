@@ -1,40 +1,41 @@
-{{descriptionComment cluster.Description ~}}
-cluster {{asUpperCamelCaseIgnoreAcronyms cluster.Name}} = {{number cluster.ID}} {
-  revision {{currentRevision cluster.Revisions}};
-{{#enums cluster.ReferencedEnums}}
+{{descriptionComment clusterInfo.Cluster.Description ~}}
+{{#if provisional}}provisional {{/if ~}}
+cluster {{asUpperCamelCaseIgnoreAcronyms clusterInfo.Cluster.Name}} = {{number clusterInfo.Cluster.ID}} {
+  revision {{currentRevision clusterInfo.Cluster.Revisions}};
+{{#enums clusterInfo.ReferencedEnums}}
 
-  {{> enum cluster=cluster.Cluster shared=@shared enum=this provisional=@provisional}}
+  {{> enum cluster=clusterInfo.Cluster shared=@shared enum=this provisional=@provisional shared=@shared}}
 {{/enums}}
-{{#bitmaps cluster }}
+{{#bitmaps clusterInfo }}
 
-  {{> bitmap cluster=cluster.Cluster bitmap=this provisional=@provisional}}
+  {{> bitmap cluster=clusterInfo.Cluster bitmap=this provisional=@provisional shared=@shared}}
 {{/bitmaps}}
-{{#structs cluster.ReferencedStructs}}
+{{#structs clusterInfo.ReferencedStructs}}
 
-  {{> struct cluster=cluster.Cluster struct=this provisional=@provisional}}
+  {{> struct cluster=clusterInfo.Cluster struct=this provisional=@provisional shared=@shared}}
 {{/structs}}
-{{#events cluster.Cluster}}
+{{#events clusterInfo.Cluster}}
 
-  {{> event cluster=cluster.Cluster event=this provisional=@provisional }}
+  {{> event cluster=clusterInfo.Cluster event=this provisional=@provisional }}
 {{/events}}
 
-{{#attributes cluster.Cluster}}
+{{#attributes clusterInfo.Cluster}}
   {{> attribute cluster=cluster  attribute=this provisional=@provisional}}
 {{/attributes}}
-{{#commands cluster.Commands}}
+{{#commands clusterInfo.Cluster.Commands}}
 {{#ifRequest this ~}}
 {{#ifHasValidFields this.Fields}}
 
-  {{> request cluster=cluster.Cluster command=this provisional=@provisional}}
+  {{> request cluster=clusterInfo.Cluster command=this provisional=@provisional}}
 {{/ifHasValidFields}}
 {{else}}
 
-  {{> response cluster=cluster.Cluster command=this provisional=@provisional}}
+  {{> response cluster=clusterInfo.Cluster command=this provisional=@provisional}}
 {{/ifRequest}}
 {{/commands}}
-{{#if cluster.Commands}}
+{{#if clusterInfo.Cluster.Commands}}
 
-{{#requests cluster.Commands}}
+{{#requests clusterInfo.Cluster.Commands}}
   {{> command cluster=cluster command=this provisional=@provisional}}
 {{/requests}}
 {{/if}}

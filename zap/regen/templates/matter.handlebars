@@ -13,10 +13,10 @@
 
 {{> struct struct=this shared=shared provisional=@provisional}}
 {{/structs}}
-{{#each clusters}}
+{{#clusters clusters}}
 
-{{> cluster cluster=this  provisional=@provisional}}
-{{/each}}
+{{> cluster clusterInfo=this  provisional=@provisional}}
+{{/clusters}}
 
 {{#each endpoints}}
 {{> endpoint endpoint=this  provisional=@provisional}}

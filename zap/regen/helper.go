@@ -24,6 +24,7 @@ func (sp *IdlRenderer) registerIdlHelpers(t *raymond.Template, spec *spec.Specif
 	t.RegisterHelper("upperCamelCaseDiffers", upperCamelCaseDiffersHelper)
 	t.RegisterHelper("lowerCamelCaseDiffers", lowerCamelCaseDiffersHelper)
 	t.RegisterHelper("descriptionComment", descriptionCommentHelper)
+	t.RegisterHelper("clusters", clustersHelper(spec))
 	t.RegisterHelper("enums", enumsHelper(sp.spec))
 	t.RegisterHelper("structs", clusterStructsHelper(sp.spec))
 	t.RegisterHelper("events", clusterEventsHelper(sp.spec))

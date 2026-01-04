@@ -132,7 +132,7 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 	}
 
 	slices.SortFunc(clusterList, func(a *ClusterInfo, b *ClusterInfo) int {
-		return a.ID.Compare(b.ID)
+		return a.Cluster.ID.Compare(b.Cluster.ID)
 	})
 
 	var globalEnums []*matter.Enum
