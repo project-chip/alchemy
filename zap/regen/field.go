@@ -57,7 +57,10 @@ func eventFieldsHelper(spec *spec.Specification) func(e matter.Event, options *r
 	return func(e matter.Event, options *raymond.Options) raymond.SafeString {
 		fields := filterEntities(e.Fields)
 		if e.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
-			fields = append(fields, &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, false), Conformance: conformance.Set{&conformance.Mandatory{}}})
+			fabricIndex := &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, false), Conformance: conformance.Set{&conformance.Mandatory{}}}
+			fabricIndex.SetParent(&e)
+
+			fields = append(fields, fabricIndex)
 		}
 		return enumerateEntitiesHelper(fields, spec, options)
 	}
