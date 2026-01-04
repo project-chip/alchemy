@@ -62,6 +62,11 @@ func isProvisional(spec *spec.Specification, entity types.Entity) bool {
 		if entity.Name == "Feature" {
 			return false
 		}
+	case *matter.Enum:
+		if strings.HasSuffix(entity.Name, "Tag") {
+			// This is a hacky workaround for namespaces being represented as enumerations in .matter files, but not being provisional
+			return false
+		}
 	case nil:
 		return false
 	}

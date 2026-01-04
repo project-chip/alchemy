@@ -84,12 +84,6 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 
 	slog.Info("converting zap path", "path", input.Path, "matter", path)
 
-	var t *raymond.Template
-	t, err = p.loadTemplate(p.spec)
-	if err != nil {
-		return
-	}
-
 	var endpoints []Endpoint
 	clusters := make(map[*matter.Cluster]*ClusterInfo)
 
@@ -138,12 +132,16 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 	var globalEnums []*matter.Enum
 	var globalStructs []*matter.Struct
 	var globalBitmaps []*matter.Bitmap
+	namespaces := make(map[string]*matter.Namespace)
 
 	spec.TraverseEntities(p.spec, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
 		if parentCluster == nil {
-			_, ok := globalEntities[entity]
-			if ok {
-				globalEntities[entity] = true
+			switch entity := entity.(type) {
+			case *matter.Bitmap, *matter.Command, *matter.Enum, *matter.Struct:
+				_, ok := globalEntities[entity]
+				if ok {
+					globalEntities[entity] = true
+				}
 			}
 			return parse.SearchShouldContinue
 		}
@@ -159,9 +157,10 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 		case *matter.Namespace:
 			field, ok := parent.(*matter.Field)
 			if ok {
-				entity = entity.Clone()
-				entity.Name = field.Name
-				globalEntities[entity] = true
+				_, existing := namespaces[field.Name]
+				if !existing {
+					namespaces[field.Name] = entity
+				}
 			}
 			return parse.SearchShouldContinue
 		case *matter.Bitmap, *matter.Enum, *matter.Struct:
@@ -186,18 +185,23 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 			globalEnums = append(globalEnums, entity)
 		case *matter.Struct:
 			globalStructs = append(globalStructs, entity)
-		case *matter.Namespace:
-			ns := matter.NewEnum(entity.Source(), entity.Parent())
-			ns.Name = entity.Name + "Tag"
-			ns.Type = types.NewDataType(types.BaseDataTypeEnum8, false)
-			for _, tag := range entity.SemanticTags {
-				nst := matter.NewEnumValue(tag.Source(), ns)
-				nst.Name = tag.Name
-				nst.Value = tag.ID
-				ns.Values = append(ns.Values, nst)
-			}
-			globalEnums = append(globalEnums, ns)
+
+		default:
+			slog.Warn("Unexpected entity in global entities", matter.LogEntity("entity", entity))
 		}
+	}
+
+	for fieldName, ns := range namespaces {
+		en := matter.NewEnum(ns.Source(), ns.Parent())
+		en.Name = fieldName + "Tag"
+		en.Type = types.NewDataType(types.BaseDataTypeEnum8, false)
+		for _, tag := range ns.SemanticTags {
+			nst := matter.NewEnumValue(tag.Source(), ns)
+			nst.Name = tag.Name
+			nst.Value = tag.ID
+			en.Values = append(en.Values, nst)
+		}
+		globalEnums = append(globalEnums, en)
 	}
 
 	for _, clusterInfo := range clusterList {
@@ -228,6 +232,13 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 		"clusters":  clusterList,
 		"endpoints": endpoints,
 	}
+
+	var t *raymond.Template
+	t, err = p.loadTemplate(p.spec)
+	if err != nil {
+		return
+	}
+
 	var out string
 	out, err = t.Exec(tc)
 	if err != nil {
