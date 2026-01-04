@@ -84,6 +84,16 @@ func makeTestContext(args ...any) *conformanceTestContext {
 }
 
 var conformanceTests = []conformanceTestSuite{
+
+	{
+		Conformance: "P, [CMAFInterface == Interface2HLS]",
+		Tests: []conformanceTest{
+			{Context: makeTestContext("Revision", Revision(1)), Expected: ConformanceState{State: StateProvisional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(2)), Expected: ConformanceState{State: StateProvisional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Revision", Revision(3)), Expected: ConformanceState{State: StateProvisional, Confidence: ConfidenceDefinite}},
+			{Context: makeTestContext("Matter", true), Expected: ConformanceState{State: StateProvisional, Confidence: ConfidenceDefinite}},
+		},
+	},
 	{
 		Conformance: "[v2 < Rev]",
 		Tests: []conformanceTest{
