@@ -255,14 +255,14 @@ func (sp *IdlRenderer) loadTemplate(spec *spec.Specification) (*raymond.Template
 
 		handlebars.RegisterCommonHelpers(t)
 
-		sp.registerIdlHelpers(t, spec)
-
 		return t, nil
 	})
 	if err != nil {
 		return nil, err
 	}
-	return t.Clone(), nil
+	t = t.Clone()
+	sp.registerIdlHelpers(t, spec)
+	return t, nil
 }
 
 func forceIncludeEntity(spec *spec.Specification, cluster *matter.Cluster, e types.Entity) bool {
