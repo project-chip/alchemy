@@ -72,7 +72,7 @@ func (library *Library) toBitmap(reader asciidoc.Reader, d *asciidoc.Document, s
 			if len(name) == 0 && len(summary) > 0 {
 				name = matter.Case(summary)
 			}
-			bv := matter.NewBitmapBit(section, bit, CanonicalName(name), summary, conf)
+			bv := matter.NewBitmapBit(section, bm, bit, CanonicalName(name), summary, conf)
 			bm.AddBit(bv)
 		}
 	}

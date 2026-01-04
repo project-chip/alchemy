@@ -329,7 +329,7 @@ func addExtraTypes(extraTypes *errata.SDKTypes, entities []types.Entity) {
 		bm.Type = types.ParseDataType(typeName, false)
 		bm.Description = eb.Description
 		for _, ef := range eb.Fields {
-			b := matter.NewBitmapBit(nil, ef.Bit, ef.Name, "", nil)
+			b := matter.NewBitmapBit(nil, bm, ef.Bit, ef.Name, "", nil)
 			bm.Bits = append(bm.Bits, b)
 		}
 		extraEntities = append(extraEntities, bm)
@@ -340,7 +340,7 @@ func addExtraTypes(extraTypes *errata.SDKTypes, entities []types.Entity) {
 		e.Type = types.ParseDataType(ee.Type, false)
 		e.Description = ee.Description
 		for _, ef := range ee.Fields {
-			ev := matter.NewEnumValue(nil, nil)
+			ev := matter.NewEnumValue(nil, e)
 			ev.Name = ef.Name
 			ev.Value = matter.ParseNumber(ef.Value)
 			e.Values = append(e.Values, ev)
@@ -352,7 +352,7 @@ func addExtraTypes(extraTypes *errata.SDKTypes, entities []types.Entity) {
 		s.Name = name
 		s.Description = es.Description
 		for i, ef := range es.Fields {
-			f := matter.NewField(nil, nil, types.EntityTypeStructField)
+			f := matter.NewField(nil, s, types.EntityTypeStructField)
 			f.ID = matter.NewNumber(uint64(i))
 			f.Name = ef.Name
 			f.Type = types.ParseDataType(ef.Type, ef.List)
@@ -389,6 +389,7 @@ func addExtraEntity(cluster *matter.Cluster, e types.Entity) {
 				return
 			}
 		}
+		e.SetParent(cluster)
 		cluster.AddBitmaps(e)
 	case *matter.Enum:
 		for _, en := range cluster.Enums {
@@ -396,6 +397,7 @@ func addExtraEntity(cluster *matter.Cluster, e types.Entity) {
 				return
 			}
 		}
+		e.SetParent(cluster)
 		cluster.AddEnums(e)
 	case *matter.Struct:
 		for _, s := range cluster.Structs {
@@ -403,6 +405,7 @@ func addExtraEntity(cluster *matter.Cluster, e types.Entity) {
 				return
 			}
 		}
+		e.SetParent(cluster)
 		cluster.AddStructs(e)
 	}
 }

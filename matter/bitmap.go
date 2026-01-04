@@ -191,8 +191,8 @@ type BitmapBit struct {
 	conformance conformance.Set
 }
 
-func NewBitmapBit(source asciidoc.Element, bit string, name string, summary string, conformance conformance.Set) *BitmapBit {
-	return &BitmapBit{entity: entity{source: source}, bit: bit, name: name, summary: summary, conformance: conformance}
+func NewBitmapBit(source asciidoc.Element, parent types.Entity, bit string, name string, summary string, conformance conformance.Set) *BitmapBit {
+	return &BitmapBit{entity: entity{source: source, parent: parent}, bit: bit, name: name, summary: summary, conformance: conformance}
 }
 
 func (bmb *BitmapBit) EntityType() types.EntityType {
