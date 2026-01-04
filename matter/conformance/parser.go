@@ -2531,8 +2531,8 @@ var g = &grammar{
 				run: (*parser).callonLowercase1,
 				expr: &charClassMatcher{
 					pos:        position{line: 498, col: 14, offset: 13495},
-					val:        "[a-z]",
-					ranges:     []rune{'a', 'z'},
+					val:        "[a-z0-9]",
+					ranges:     []rune{'a', 'z', '0', '9'},
 					ignoreCase: false,
 					inverted:   false,
 				},
@@ -2540,14 +2540,14 @@ var g = &grammar{
 		},
 		{
 			name: "SameLineString",
-			pos:  position{line: 502, col: 1, offset: 13538},
+			pos:  position{line: 502, col: 1, offset: 13541},
 			expr: &actionExpr{
-				pos: position{line: 502, col: 19, offset: 13556},
+				pos: position{line: 502, col: 19, offset: 13559},
 				run: (*parser).callonSameLineString1,
 				expr: &oneOrMoreExpr{
-					pos: position{line: 502, col: 19, offset: 13556},
+					pos: position{line: 502, col: 19, offset: 13559},
 					expr: &charClassMatcher{
-						pos:        position{line: 502, col: 19, offset: 13556},
+						pos:        position{line: 502, col: 19, offset: 13559},
 						val:        "[^\\r\\n]",
 						chars:      []rune{'\r', '\n'},
 						ignoreCase: false,
@@ -2559,11 +2559,11 @@ var g = &grammar{
 		{
 			name:        "_",
 			displayName: "\"whitespace\"",
-			pos:         position{line: 506, col: 1, offset: 13605},
+			pos:         position{line: 506, col: 1, offset: 13608},
 			expr: &zeroOrMoreExpr{
-				pos: position{line: 506, col: 19, offset: 13623},
+				pos: position{line: 506, col: 19, offset: 13626},
 				expr: &charClassMatcher{
-					pos:        position{line: 506, col: 19, offset: 13623},
+					pos:        position{line: 506, col: 19, offset: 13626},
 					val:        "[ \\t\\r\\n]",
 					chars:      []rune{' ', '\t', '\r', '\n'},
 					ignoreCase: false,
@@ -2573,9 +2573,9 @@ var g = &grammar{
 		},
 		{
 			name: "Comma",
-			pos:  position{line: 508, col: 1, offset: 13635},
+			pos:  position{line: 508, col: 1, offset: 13638},
 			expr: &litMatcher{
-				pos:        position{line: 508, col: 10, offset: 13644},
+				pos:        position{line: 508, col: 10, offset: 13647},
 				val:        ",",
 				ignoreCase: false,
 				want:       "\",\"",
@@ -2583,11 +2583,11 @@ var g = &grammar{
 		},
 		{
 			name: "EOF",
-			pos:  position{line: 510, col: 1, offset: 13650},
+			pos:  position{line: 510, col: 1, offset: 13653},
 			expr: &notExpr{
-				pos: position{line: 510, col: 8, offset: 13657},
+				pos: position{line: 510, col: 8, offset: 13660},
 				expr: &anyMatcher{
-					line: 510, col: 9, offset: 13658,
+					line: 510, col: 9, offset: 13661,
 				},
 			},
 		},

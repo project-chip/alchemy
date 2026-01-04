@@ -16,7 +16,7 @@ Uppercase <- [A-Z] {
 	return string(c.text), nil
 }
 
-Lowercase <- [a-z] {
+Lowercase <- [a-z0-9] {
     //debug("matched lowercase %s\n", string(c.text))
 	return string(c.text), nil
 }
