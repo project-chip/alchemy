@@ -132,24 +132,20 @@ func getGlobalTestEntites(entityType types.EntityType) (testEntities []types.Ent
 			},
 		})
 	case types.EntityTypeEnum:
-		testEntities = append(testEntities, &matter.Enum{
-			Name: "TestGlobalEnum",
-			Type: types.NewDataType(types.BaseDataTypeEnum8, false),
-			Values: matter.EnumValueSet{
-				&matter.EnumValue{
-					Value: matter.NewNumber(0x0),
-					Name:  "SomeValue",
-				},
-				&matter.EnumValue{
-					Value: matter.NewNumber(0x1),
-					Name:  "SomeOtherValue",
-				},
-				&matter.EnumValue{
-					Value: matter.NewNumber(0x2),
-					Name:  "FinalValue",
-				},
-			},
-		})
+		testGlobalEnum := matter.NewEnum(nil, nil)
+		testGlobalEnum.Name = "TestGlobalEnum"
+		testGlobalEnum.Type = types.NewDataType(types.BaseDataTypeEnum8, false)
+		someValue := matter.NewEnumValue(nil, testGlobalEnum)
+		someValue.Name = "SomeValue"
+		someValue.Value = matter.NewNumber(0x0)
+		someOtherValue := matter.NewEnumValue(nil, testGlobalEnum)
+		someOtherValue.Name = "SomeOtherValue"
+		someOtherValue.Value = matter.NewNumber(0x1)
+		finalValue := matter.NewEnumValue(nil, testGlobalEnum)
+		finalValue.Name = "FinalValue"
+		finalValue.Value = matter.NewNumber(0x2)
+		testGlobalEnum.Values = matter.EnumValueSet{someValue, someOtherValue, finalValue}
+		testEntities = append(testEntities, testGlobalEnum)
 	case types.EntityTypeStruct:
 		testEntities = append(testEntities, &matter.Struct{
 			Name: "TestGlobalStruct",
