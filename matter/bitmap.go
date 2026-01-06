@@ -3,6 +3,7 @@ package matter
 import (
 	"encoding/json"
 	"fmt"
+	"iter"
 	"regexp"
 	"slices"
 	"strings"
@@ -151,6 +152,16 @@ func (bs BitmapSet) Identifier(name string) (types.Entity, bool) {
 		}
 	}
 	return nil, false
+}
+
+func (bs BitSet) Iterate() iter.Seq[types.Entity] {
+	return func(yield func(types.Entity) bool) {
+		for _, b := range bs {
+			if !yield(b) {
+				return
+			}
+		}
+	}
 }
 
 type Bit interface {

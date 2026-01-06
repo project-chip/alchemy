@@ -21,6 +21,10 @@ type SDK struct {
 	SeparateBitmaps UniqueStringList `yaml:"separate-bitmaps,omitempty"`
 	SeparateEnums   UniqueStringList `yaml:"separate-enums,omitempty"`
 
+	SharedBitmaps UniqueStringList `yaml:"shared-bitmaps,omitempty"`
+	SharedEnums   UniqueStringList `yaml:"shared-enums,omitempty"`
+	SharedStructs UniqueStringList `yaml:"shared-structs,omitempty"`
+
 	TemplatePath string `yaml:"template-path,omitempty"`
 
 	ClusterSplit map[string]string `yaml:"cluster-split,omitempty"`
@@ -40,6 +44,31 @@ func (s *SDK) HasSpecPatch() bool {
 		return true
 	}
 	if s.ExtraTypes != nil {
+		return true
+	}
+	return false
+}
+
+func (sdk *SDK) HasSdkPatch() bool {
+	if sdk == nil {
+		return false
+	}
+	if sdk.Types != nil {
+		return true
+	}
+	if len(sdk.TypeNames) > 0 {
+		return true
+	}
+	if sdk.ExtraTypes != nil {
+		return true
+	}
+	if len(sdk.SharedBitmaps) > 0 {
+		return true
+	}
+	if len(sdk.SharedEnums) > 0 {
+		return true
+	}
+	if len(sdk.SharedStructs) > 0 {
 		return true
 	}
 	return false

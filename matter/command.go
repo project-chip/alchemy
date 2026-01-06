@@ -1,6 +1,8 @@
 package matter
 
 import (
+	"iter"
+
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
@@ -94,4 +96,14 @@ func (cs CommandSet) ToEntities() []types.Entity {
 		es = append(es, c)
 	}
 	return es
+}
+
+func (cs CommandSet) Iterate() iter.Seq[types.Entity] {
+	return func(yield func(types.Entity) bool) {
+		for _, c := range cs {
+			if !yield(c) {
+				return
+			}
+		}
+	}
 }

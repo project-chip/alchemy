@@ -73,6 +73,16 @@ func (fs *Features) FeatureBits() iter.Seq[*Feature] {
 	}
 }
 
+func (es Features) Iterate() iter.Seq[types.Entity] {
+	return func(yield func(types.Entity) bool) {
+		for en := range es.FeatureBits() {
+			if !yield(en) {
+				return
+			}
+		}
+	}
+}
+
 type Feature struct {
 	BitmapBit
 	Code string

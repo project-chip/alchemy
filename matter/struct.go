@@ -1,6 +1,8 @@
 package matter
 
 import (
+	"iter"
+
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -60,4 +62,14 @@ func (ss StructSet) Identifier(name string) (types.Entity, bool) {
 		}
 	}
 	return nil, false
+}
+
+func (ss StructSet) Iterate() iter.Seq[types.Entity] {
+	return func(yield func(types.Entity) bool) {
+		for _, s := range ss {
+			if !yield(s) {
+				return
+			}
+		}
+	}
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -14,12 +13,12 @@ import (
 func ApplyErrata(spec *spec.Specification) (err error) {
 	var addedExtraEntities bool
 	for path, errata := range spec.Errata.All() {
+		if !errata.SDK.HasSdkPatch() {
+			continue
+		}
 		typeOverrides := errata.SDK.Types
 		typeNames := errata.SDK.TypeNames
 		extraTypes := errata.SDK.ExtraTypes
-		if typeOverrides == nil && len(typeNames) == 0 && extraTypes == nil {
-			continue
-		}
 		doc, ok := spec.Docs[path]
 		if !ok {
 			slog.Warn("Errata refers to unknown document", "path", path)
@@ -29,7 +28,7 @@ func ApplyErrata(spec *spec.Specification) (err error) {
 		for _, entity := range entities {
 			switch entity := entity.(type) {
 			case *matter.Cluster:
-				applyErrataToCluster(entity, typeNames, typeOverrides)
+				applyErrataToCluster(spec, entity, errata.SDK)
 			case *matter.Bitmap:
 				applyErrataToBitmap(entity, typeNames, typeOverrides)
 			case *matter.Enum:
@@ -52,133 +51,6 @@ func ApplyErrata(spec *spec.Specification) (err error) {
 		spec.BuildClusterReferences()
 	}
 	return
-}
-
-func applyErrataToCluster(cluster *matter.Cluster, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
-	if typeOverrides != nil {
-		ac, ok := typeOverrides.Clusters[cluster.Name]
-		if ok {
-			if ac.Domain != "" {
-				cluster.Domain = ac.Domain
-			}
-			if ac.Description != "" {
-				cluster.Description = ac.Description
-			}
-		}
-		for _, a := range cluster.Attributes {
-			ao, ok := typeOverrides.Attributes[a.Name]
-			if !ok {
-				continue
-			}
-			applyErrataToField(a, ao)
-		}
-		if cluster.Features != nil {
-			fc, ok := typeOverrides.Bitmaps["Features"]
-			if ok {
-				for _, feature := range cluster.Features.Bits {
-					for _, f := range fc.Fields {
-						if feature.Name() == f.Name {
-							if f.OverrideName != "" {
-								feature.SetName(f.OverrideName)
-							}
-							break
-						}
-					}
-				}
-			}
-		}
-	}
-
-	for _, bm := range cluster.Bitmaps {
-		applyErrataToBitmap(bm, typeNames, typeOverrides)
-	}
-	for _, en := range cluster.Enums {
-		applyErrataToEnum(en, typeNames, typeOverrides)
-	}
-	for _, s := range cluster.Structs {
-		applyErrataToStruct(s, typeNames, typeOverrides)
-	}
-	for _, cmd := range cluster.Commands {
-		applyErrataToCommand(cmd, typeNames, typeOverrides)
-	}
-	for _, ev := range cluster.Events {
-		applyErrataToEvent(ev, typeNames, typeOverrides)
-	}
-}
-
-func applyErrataToBitmap(bitmap *matter.Bitmap, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
-	if typeOverrides != nil {
-		override, ok := typeOverrides.Bitmaps[bitmap.Name]
-
-		if ok {
-			if override.OverrideName != "" {
-				bitmap.Name = override.OverrideName
-			}
-			if override.OverrideType != "" {
-				bitmap.Type = types.ParseDataType(override.OverrideType, false)
-			}
-			if len(override.Fields) == 0 {
-				return
-			}
-			for _, f := range override.Fields {
-				for _, b := range bitmap.Bits {
-					if b.Name() == f.Name {
-						if f.OverrideName != "" {
-							b.SetName(f.OverrideName)
-						}
-						break
-					}
-				}
-			}
-		}
-	}
-	bitmap.Name = applyTypeName(typeNames, bitmap.Name)
-}
-
-func applyErrataToEnum(en *matter.Enum, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
-	if typeOverrides != nil {
-		override, ok := typeOverrides.Enums[en.Name]
-		if ok {
-			if override.OverrideName != "" {
-				en.Name = override.OverrideName
-			}
-			if override.OverrideType != "" {
-				en.Type = types.ParseDataType(override.OverrideType, false)
-			}
-			if len(override.Fields) == 0 {
-				return
-			}
-			for _, f := range override.Fields {
-				for _, ev := range en.Values {
-					if ev.Name == f.Name {
-						if f.OverrideName != "" {
-							ev.Name = f.OverrideName
-						}
-						if f.Conformance != "" {
-							ev.Conformance = conformance.ParseConformance(f.Conformance)
-						}
-						break
-					}
-				}
-			}
-		}
-	}
-	en.Name = applyTypeName(typeNames, en.Name)
-}
-
-func applyErrataToStruct(st *matter.Struct, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
-	if typeOverrides != nil {
-		ast, ok := typeOverrides.Structs[st.Name]
-		if !ok {
-			return
-		}
-		if ast.OverrideName != "" {
-			st.Name = ast.OverrideName
-		}
-		applyErrataToFields(st.Fields, ast)
-	}
-	st.Name = applyTypeName(typeNames, st.Name)
-
 }
 
 func applyErrataToCommand(st *matter.Command, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
@@ -223,39 +95,6 @@ func applyErrataToEvent(ev *matter.Event, typeNames map[string]string, typeOverr
 	}
 	ev.Name = applyTypeName(typeNames, ev.Name)
 
-}
-
-func applyErrataToFields(fs matter.FieldSet, override *errata.SDKType) {
-	if len(override.Fields) != 0 {
-		for _, f := range override.Fields {
-			for _, field := range fs {
-				if field.Name == f.Name {
-					applyErrataToField(field, f)
-					break
-				}
-			}
-		}
-	}
-}
-
-func applyErrataToField(field *matter.Field, override *errata.SDKType) {
-	if override.OverrideName != "" {
-		field.Name = override.OverrideName
-	}
-	if override.OverrideType != "" {
-		field.Type = types.ParseDataType(override.OverrideType, false)
-	}
-	if override.Conformance != "" {
-		field.Conformance = conformance.ParseConformance(override.Conformance)
-	}
-	if override.Constraint != "" {
-		field.Constraint = constraint.ParseString(override.Constraint)
-	}
-	if override.Fallback != "" {
-		field.Fallback = constraint.ParseLimit(override.Fallback)
-	}
-	field.Quality = overrideQuality(override, field.Quality)
-	field.Access = overrideAccess(override, field.EntityType(), field.Access)
 }
 
 func applyErrataToDeviceType(deviceType *matter.DeviceType, typeOverrides *errata.SDKTypes) {
@@ -303,106 +142,5 @@ func overrideAccess(override *errata.SDKType, entityType types.EntityType, defau
 			return access
 		}
 		return defaultAccess
-	}
-}
-
-func addExtraTypes(extraTypes *errata.SDKTypes, entities []types.Entity) {
-	if extraTypes == nil {
-		return
-	}
-	var extraEntities []types.Entity
-	for name, eb := range extraTypes.Bitmaps {
-		bm := matter.NewBitmap(nil, nil)
-		bm.Name = name
-		typeName := eb.Type
-		// This is a workaround for the errata file using the ZAP type name for bitmaps
-		switch typeName {
-		case "bitmap8":
-			typeName = "map8"
-		case "bitmap16":
-			typeName = "map16"
-		case "bitmap32":
-			typeName = "map32"
-		case "bitmap64":
-			typeName = "map64"
-		}
-		bm.Type = types.ParseDataType(typeName, false)
-		bm.Description = eb.Description
-		for _, ef := range eb.Fields {
-			b := matter.NewBitmapBit(nil, ef.Bit, ef.Name, "", nil)
-			bm.Bits = append(bm.Bits, b)
-		}
-		extraEntities = append(extraEntities, bm)
-	}
-	for name, ee := range extraTypes.Enums {
-		e := matter.NewEnum(nil, nil)
-		e.Name = name
-		e.Type = types.ParseDataType(ee.Type, false)
-		e.Description = ee.Description
-		for _, ef := range ee.Fields {
-			ev := matter.NewEnumValue(nil, nil)
-			ev.Name = ef.Name
-			ev.Value = matter.ParseNumber(ef.Value)
-			e.Values = append(e.Values, ev)
-		}
-		extraEntities = append(extraEntities, e)
-	}
-	for name, es := range extraTypes.Structs {
-		s := matter.NewStruct(nil, nil)
-		s.Name = name
-		s.Description = es.Description
-		for i, ef := range es.Fields {
-			f := matter.NewField(nil, nil, types.EntityTypeStructField)
-			f.ID = matter.NewNumber(uint64(i))
-			f.Name = ef.Name
-			f.Type = types.ParseDataType(ef.Type, ef.List)
-			if ef.Constraint != "" {
-				f.Constraint = constraint.ParseString(ef.Constraint)
-			}
-			if ef.Conformance != "" {
-				f.Conformance = conformance.ParseConformance(ef.Conformance)
-			}
-			f.Conformance = conformance.Set{&conformance.Mandatory{}}
-			s.Fields = append(s.Fields, f)
-		}
-		extraEntities = append(extraEntities, s)
-	}
-	for _, e := range extraEntities {
-		for _, m := range entities {
-			switch v := m.(type) {
-			case *matter.ClusterGroup:
-				for _, cl := range v.Clusters {
-					addExtraEntity(cl, e)
-				}
-			case *matter.Cluster:
-				addExtraEntity(v, e)
-			}
-		}
-	}
-}
-
-func addExtraEntity(cluster *matter.Cluster, e types.Entity) {
-	switch e := e.(type) {
-	case *matter.Bitmap:
-		for _, bm := range cluster.Bitmaps {
-			if bm.Name == e.Name {
-				return
-			}
-		}
-		cluster.AddBitmaps(e)
-	case *matter.Enum:
-		for _, en := range cluster.Enums {
-			if en.Name == e.Name {
-				return
-			}
-		}
-		cluster.AddEnums(e)
-	case *matter.Struct:
-		for _, s := range cluster.Structs {
-			if s.Name == e.Name {
-				return
-			}
-		}
-		cluster.AddStructs(e)
 	}
 }
