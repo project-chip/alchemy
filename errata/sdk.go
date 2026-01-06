@@ -15,8 +15,11 @@ type SDK struct {
 	ClusterAliases               map[string][]string `yaml:"cluster-aliases,omitempty"`
 	ClusterListKeys              map[string]string   `yaml:"cluster-list-keys,omitempty"`
 
-	WritePrivilegeAsRole bool            `yaml:"write-privilege-as-role,omitempty"`
-	SeparateStructs      SeparateStructs `yaml:"separate-structs,omitempty"`
+	WritePrivilegeAsRole bool `yaml:"write-privilege-as-role,omitempty"`
+
+	SeparateStructs UniqueStringList `yaml:"separate-structs,omitempty"`
+	SeparateBitmaps UniqueStringList `yaml:"separate-bitmaps,omitempty"`
+	SeparateEnums   UniqueStringList `yaml:"separate-enums,omitempty"`
 
 	TemplatePath string `yaml:"template-path,omitempty"`
 
@@ -102,9 +105,9 @@ func (zap *SDK) OverrideDeviceType(deviceType *matter.DeviceType, defaultTypeNam
 	return defaultTypeName
 }
 
-type SeparateStructs map[string]struct{}
+type UniqueStringList map[string]struct{}
 
-func (i SeparateStructs) MarshalYAML() ([]byte, error) {
+func (i UniqueStringList) MarshalYAML() ([]byte, error) {
 	structs := make([]string, 0, len(i))
 	for s := range i {
 		structs = append(structs, s)
@@ -112,8 +115,8 @@ func (i SeparateStructs) MarshalYAML() ([]byte, error) {
 	return yaml.Marshal(structs)
 }
 
-func (i *SeparateStructs) UnmarshalYAML(b []byte) error {
-	*i = make(SeparateStructs)
+func (i *UniqueStringList) UnmarshalYAML(b []byte) error {
+	*i = make(UniqueStringList)
 	var structs []string
 	err := yaml.Unmarshal(b, &structs)
 	if err != nil {

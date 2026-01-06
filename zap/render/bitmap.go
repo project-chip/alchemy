@@ -14,7 +14,7 @@ import (
 )
 
 func (cr *configuratorRenderer) generateBitmaps(bitmaps map[*matter.Bitmap][]*matter.Number, parent *etree.Element) (err error) {
-
+	errata := cr.configurator.Errata
 	for _, eve := range parent.SelectElements("bitmap") {
 
 		nameAttr := eve.SelectAttr("name")
@@ -50,6 +50,14 @@ func (cr *configuratorRenderer) generateBitmaps(bitmaps map[*matter.Bitmap][]*ma
 			slog.Warn("Removing unrecognized bitmap from ZAP XML", slog.String("path", cr.configurator.OutPath), slog.String("bitmapName", name))
 			parent.RemoveChild(eve)
 			continue
+		}
+		if errata != nil && errata.SeparateBitmaps != nil {
+			if _, ok := errata.SeparateBitmaps[name]; ok {
+				amendedClusterCodes, remainingClusterIds := amendExistingClusterCodes(eve, matchingBitmap, clusterIds)
+				cr.populateBitmap(eve, matchingBitmap, amendedClusterCodes)
+				bitmaps[matchingBitmap] = remainingClusterIds
+				continue
+			}
 		}
 		err = cr.populateBitmap(eve, matchingBitmap, clusterIds)
 		if err != nil {
