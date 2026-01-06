@@ -31,6 +31,25 @@ type Configurator struct {
 	ExternalEntities map[types.Entity]struct{}
 }
 
+func (c *Configurator) IsEmpty() bool {
+	if len(c.Clusters) > 0 {
+		return false
+	}
+	if len(c.Features) > 0 {
+		return false
+	}
+	if len(c.Bitmaps) > 0 {
+		return false
+	}
+	if len(c.Enums) > 0 {
+		return false
+	}
+	if len(c.Structs) > 0 {
+		return false
+	}
+	return true
+}
+
 func NewConfigurator(spec *spec.Specification, docs []*asciidoc.Document, entities []types.Entity, outPath string, errata *errata.SDK, global bool) (*Configurator, error) {
 	c := &Configurator{
 		Spec:    spec,
