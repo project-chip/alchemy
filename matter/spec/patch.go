@@ -2,10 +2,13 @@ package spec
 
 import (
 	"log/slog"
+	"slices"
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 // patchSpecForSdk is a grab bag of oddities in the spec that need to be corrected for use in the SDK
@@ -13,6 +16,7 @@ func patchSpecForSdk(spec *Specification) error {
 	patchScenesCluster(spec)
 	patchLabelCluster(spec)
 	patchLevelControlCluster(spec)
+	patchContentLaunchCluster(spec)
 
 	return nil
 }
@@ -59,6 +63,55 @@ func patchScenesCluster(spec *Specification) {
 	}
 }
 
+func patchContentLaunchCluster(spec *Specification) {
+	/*
+		Another hacky workaround: the spec defines CharacteristicEnum under Media Playback, and Content Launcher
+		just has a reference to it; by default, we would share the enums, but the hand-coded ZAP XML has its own copy of the
+		enum. This function makes a copy of the enum and updates references
+	*/
+	contentLaunchCluster, ok := spec.ClustersByName["Content Launcher"]
+	if !ok {
+		slog.Warn("Could not find Content Launch cluster for patching")
+		return
+	}
+	mediaPlaybackCluster, ok := spec.ClustersByName["Media Playback"]
+	if !ok {
+		slog.Warn("Could not find Media Playback cluster for patching")
+		return
+	}
+	for _, s := range mediaPlaybackCluster.Enums {
+		if s.Name != "CharacteristicEnum" {
+			continue
+		}
+		spec.ClusterRefs.Remove(contentLaunchCluster, s)
+		clone := s.Clone()
+		contentLaunchCluster.MoveEnum(clone)
+		spec.ClusterRefs.Add(contentLaunchCluster, clone)
+		// Update any references to the enum on the Content Launch cluster
+		contentLaunchCluster.TraverseDataTypes(func(parent, entity types.Entity) parse.SearchShould {
+			if entity == s {
+				switch parent := parent.(type) {
+				case *matter.Field:
+					fieldType := parent.Type
+					if fieldType == nil {
+						return parse.SearchShouldContinue
+					}
+					if fieldType.IsArray() {
+						fieldType = fieldType.EntryType
+					}
+					if fieldType == nil {
+						return parse.SearchShouldContinue
+					}
+					fieldType.Entity = clone
+				}
+			}
+			return parse.SearchShouldContinue
+		})
+		break
+
+	}
+}
+
 func patchLabelCluster(spec *Specification) {
 	/*
 		Another hacky workaround: the spec defines LabelStruct under a base cluster called Label Cluster, but the
@@ -74,10 +127,11 @@ func patchLabelCluster(spec *Specification) {
 		slog.Warn("Could not find Label cluster")
 		return
 	}
-	for _, s := range labelCluster.Structs {
+	for i, s := range labelCluster.Structs {
 		if s.Name == "LabelStruct" {
 			fixedLabelCluster.MoveStruct(s)
 			spec.DataTypeRefs.Add(fixedLabelCluster, s)
+			labelCluster.Structs = slices.Delete(labelCluster.Structs, i, i+1)
 			break
 		}
 	}

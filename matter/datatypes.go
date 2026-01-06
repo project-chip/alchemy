@@ -153,6 +153,12 @@ func (adt *AssociatedDataTypes) AddConstants(constants ...*Constant) {
 }
 
 // This really exists to allow patching ZAP
+func (adt *AssociatedDataTypes) MoveEnum(en *Enum) {
+	adt.Enums = append(adt.Enums, en)
+	en.parent = adt.parentEntity
+}
+
+// This really exists to allow patching ZAP
 func (adt *AssociatedDataTypes) MoveStruct(s *Struct) {
 	adt.Structs = append(adt.Structs, s)
 	s.parent = adt.parentEntity
