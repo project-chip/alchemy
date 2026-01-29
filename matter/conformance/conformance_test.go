@@ -457,6 +457,18 @@ var conformanceTests = []conformanceTestSuite{
 		InvalidConformance: true,
 	},
 	{
+		Conformance:        "AA, P",
+		InvalidConformance: true,
+	},
+	{
+		Conformance:        "D",
+		InvalidConformance: true,
+	},
+	{
+		Conformance:        "AA, D, [BB]",
+		InvalidConformance: true,
+	},
+	{
 		Conformance: "AA, [BB]",
 		Tests: []conformanceTest{
 			{Context: makeTestContext("AA", true), Expected: ConformanceState{State: StateMandatory, Confidence: ConfidenceDefinite}},
