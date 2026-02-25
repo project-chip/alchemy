@@ -24962,7 +24962,7 @@ var tablesTestConvertsSimpleDsvTable = &asciidoc.Document{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Paragraph{
+		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "width",
@@ -24983,10 +24983,8 @@ var tablesTestConvertsSimpleDsvTable = &asciidoc.Document{
 					Quote: 2,
 				},
 			},
+			ColumnCount: 0,
 			Elements: asciidoc.Elements{
-				&asciidoc.String{
-					Value: "|===",
-				},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "root:x:0:0:root:/root:/bin/bash",
@@ -25011,13 +25009,7 @@ var tablesTestConvertsSimpleDsvTable = &asciidoc.Document{
 				&asciidoc.String{
 					Value: "nobody:x:99:99:Nobody:/:/sbin/nologin",
 				},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "|===",
-				},
-				&asciidoc.NewLine{},
 			},
-			Admonition: 0,
 		},
 	},
 }
@@ -25296,7 +25288,7 @@ var tablesTestMixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrap
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Paragraph{
+		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "format",
@@ -25317,10 +25309,8 @@ var tablesTestMixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrap
 					Quote: 2,
 				},
 			},
+			ColumnCount: 0,
 			Elements: asciidoc.Elements{
-				&asciidoc.String{
-					Value: "|===",
-				},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "Year,Make,Model,Description,Price",
@@ -25353,13 +25343,7 @@ var tablesTestMixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrap
 				&asciidoc.String{
 					Value: "2000,Toyota,Tundra,\"Check it, \"\"this one's gonna to blow you're socks off\"\", per the sticker\",10000.00",
 				},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "|===",
-				},
-				&asciidoc.NewLine{},
 			},
-			Admonition: 0,
 		},
 	},
 }
@@ -25466,7 +25450,7 @@ var tablesTestCustomCsvSeparator = &asciidoc.Document{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Paragraph{
+		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "format",
@@ -25487,10 +25471,8 @@ var tablesTestCustomCsvSeparator = &asciidoc.Document{
 					Quote: 0,
 				},
 			},
+			ColumnCount: 0,
 			Elements: asciidoc.Elements{
-				&asciidoc.String{
-					Value: "|===",
-				},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "a;b;c",
@@ -25499,13 +25481,7 @@ var tablesTestCustomCsvSeparator = &asciidoc.Document{
 				&asciidoc.String{
 					Value: "1;2;3",
 				},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "|===",
-				},
-				&asciidoc.NewLine{},
 			},
-			Admonition: 0,
 		},
 	},
 }

@@ -1,0 +1,68 @@
+[options="header"]
+|===
+| Scenario 1: Normal Text Only
+a|
+Normal Text Only
+|===
+
+[options="header"]
+|===
+| Scenario 2: Normal Text + IfDef
+a|
+Normal Text before +
+ifdef::test-flag[]
+Inside IfDef
+endif::[]
+|===
+
+[options="header"]
+|===
+| Scenario 3: IfDef + Normal Text (Unwrapped)
+a|
+ifdef::test-flag[]
+Inside IfDef
+endif::[]
+Normal Text after
+|===
+
+[options="header"]
+|===
+| Scenario 4: IfDef + Middle Text + IfDef (Unwrapped)
+a|
+ifdef::test-flag[]
+Start Content +
+endif::[]
+Middle Text +
+ifdef::test-flag[]
+End Content +
+endif::[]
+|===
+
+[options="header"]
+|===
+| Scenario 5: List + IfDef + List + IfDef (Unwrapped)
+a|
+* List Item 1
+ifdef::test-flag[]
+* List Item 2
+endif::[]
+* List Item 3
+ifdef::test-flag[]
+* List Item 4
+endif::[]
+|===
+
+[options="header"]
+|===
+| Scenario 6: Table Row Wrapped in IfDef
+  | Column 1        | Column2      | Column3
+  | Value 1         | Value 2     a|
+An ordered list
+
+* Item 1
+* Item 2
+
+ifdef::in-progress[]
+| Value 1       | Value 2     | Value 3
+endif::[]
+|===

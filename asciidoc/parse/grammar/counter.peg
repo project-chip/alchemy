@@ -2,11 +2,11 @@
 Counter = CounterIncrement / CounterSilentIncrement
 
 CounterIncrement = !"\\" "{counter:" name:AttributeEntryName initialValue:(CounterInitialValue)? "}" {
-    return populatePosition(c, asciidoc.NewCounter(name.(string), initialValue, true)), nil
+    return populatePosition(c, asciidoc.NewCounter(name.(string), initialValue, asciidoc.CounterVisibilityVisible)), nil
 }
 
 CounterSilentIncrement = !"\\" "{counter2:" name:AttributeEntryName initialValue:(CounterInitialValue)? "}" {
-    return populatePosition(c, asciidoc.NewCounter(name.(string), initialValue, false)), nil
+    return populatePosition(c, asciidoc.NewCounter(name.(string), initialValue, asciidoc.CounterVisibilityHidden)), nil
 }
 
 CounterInitialValue = ":" initializer:(CounterInitializer) {

@@ -16,6 +16,7 @@ TableElement = (
         / TableMacros
         / TableFileInclude
         / TableRow
+        / TableContinuedContent
         ) 
 
 IncludedTableElements = content:(IncludedTableElement)* EndOfFile {
@@ -267,7 +268,10 @@ BlockTableElement = !InitialTableCellDelimiter AnySpaces  element:(BlockElement)
     return element, nil
 }
 
-
+TableContinuedContent = !TableEnd nl:NewLine content:InlineTableElements &EndOfLine {
+    debugPosition(c, "TABLE: matched continued content: %s\n", string(c.text))
+    return append(asciidoc.Elements{nl.(*asciidoc.NewLine)}, content.(asciidoc.Elements)...), nil
+}
 NakedInlineTableCellText = (!URLScheme !LinkMacro !InlineImageDelimiter !CrossReferenceMacroStart [A-Za-z ] !TableCellDelimiter !TableEnd)+ { 
     debugPosition(c, "TABLE: matched naked inline table cell text: %s\n", string(c.text))
     return asciidoc.NewString(string(c.text)), nil
@@ -286,7 +290,7 @@ CharacterClassTableCell = !TableCellDelimiter ("\\|" / [^|\r\n])  {
 
 // First table cell format in a row just needs to follow a new line
 InitialTableCellDelimiter = !TableEnd (BeginningOfFile / NewLine) AnySpaces format:(TableCellFormat)? !"\\" "|"  {
-    debugPosition(c, "TABLE: matched initial table cell delimiter %s\n", string(c.text))
+    debugPosition(c, "TABLE: matched initial table cell delimiter %s (Next char: %s)\n", string(c.text), string(c.text))
     if format != nil {
         return format, nil
     }

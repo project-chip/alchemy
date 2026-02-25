@@ -54,9 +54,30 @@ func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Elemen
 	cellIndex := 0
 	var currentTableRow *asciidoc.TableRow
 	colSkip := make(map[int]int)
+
+	// Flatten elements first to make processing easier
+	var flatElements []any
 	for _, el := range elements {
+		if methodElements, ok := el.(asciidoc.Elements); ok {
+			for _, e := range methodElements {
+				flatElements = append(flatElements, e)
+			}
+			continue
+		}
+		flatElements = append(flatElements, el)
+	}
+
+	var inlineDepth int
+
+	for i := 0; i < len(flatElements); i++ {
+		el := flatElements[i]
 		switch el := el.(type) {
 		case []*asciidoc.TableCell:
+			if inlineDepth > 0 {
+				// Actually, the PEG grammar for TableInlineIfDef does NOT allow TableRow (starts with |).
+				// It allows InlineTableLines.
+				// So we should be safe.
+			}
 			for _, cell := range el {
 				if currentTableRow == nil || cellIndex >= table.ColumnCount {
 					currentTableRow = &asciidoc.TableRow{Parent: table}
@@ -104,6 +125,70 @@ func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Elemen
 				}
 			}
 		case asciidoc.Element:
+			if ifDef, ok := el.(*asciidoc.IfDef); ok && !ifDef.Inline {
+				isRowWrapper := false
+				// Peek ahead skipping EmptyLine/NewLine/Comment
+			peekLoop:
+				for j := i + 1; j < len(flatElements); j++ {
+					switch flatElements[j].(type) {
+					case []*asciidoc.TableCell:
+						isRowWrapper = true
+						break peekLoop
+					case *asciidoc.EmptyLine, *asciidoc.NewLine, *asciidoc.SingleLineComment, *asciidoc.MultiLineComment:
+						continue
+					default:
+						// Found something else (String, etc.), likely cell content
+						break peekLoop
+					}
+				}
+				if !isRowWrapper {
+					ifDef.Inline = true
+				}
+			}
+
+			// Check if we are in an inline block or starting one
+			isInlineStart := false
+			if ifDef, ok := el.(*asciidoc.IfDef); ok && ifDef.Inline {
+				inlineDepth++
+				isInlineStart = true
+			} else if _, ok := el.(*asciidoc.EndIf); ok {
+				if inlineDepth > 0 {
+					inlineDepth--
+					// Ensure we append the EndIf to the cell if we were in inline mode
+					if currentTableRow != nil {
+						cells := currentTableRow.TableCells()
+						if len(cells) > 0 {
+							lastCell := cells[len(cells)-1]
+							lastCell.Append(el)
+							continue
+						}
+					}
+					// If no cell, fallback to append to rows (shouldn't happen for valid inline)
+				}
+			}
+
+			if inlineDepth > 0 || (isInlineStart && inlineDepth == 1) { // isInlineStart check handles the *start* of the block
+				if currentTableRow != nil {
+					cells := currentTableRow.TableCells()
+					if len(cells) > 0 {
+						cells[len(cells)-1].Append(el)
+					}
+				} else {
+					// No current row, just append the element to the table elements (e.g. DSV or loose text)
+					rows = append(rows, el)
+				}
+			}
+
+            // Fallback for loose content (String, etc.) if we have an active row/cell
+            if _, ok := el.(*asciidoc.String); ok && currentTableRow != nil {
+                 cells := currentTableRow.TableCells()
+                 if len(cells) > 0 {
+                    lastCell := cells[len(cells)-1]
+                    lastCell.Append(el)
+                    continue
+                 }
+            }
+
 			rows = append(rows, el)
 		case asciidoc.Elements:
 			rows = append(rows, el...)
@@ -185,7 +270,9 @@ func getColumnCount(table *asciidoc.Table, els []any) (columnCount int, err erro
 			return
 		}
 	}
-	err = fmt.Errorf("unable to determine column count")
+	// If we can't find standard rows, maybe it's just loose text (DSV or similar). 
+	// Don't error, just return 0 (or 1?).
+	// err = fmt.Errorf("unable to determine column count")
 	return
 }
 
