@@ -106,9 +106,10 @@ type SDKType struct {
 	Conformance string `yaml:"conformance,omitempty"`
 	Fallback    string `yaml:"fallback,omitempty"`
 
-	Quality   string `yaml:"quality,omitempty"`
-	Access    string `yaml:"access,omitempty"`
-	Direction string `yaml:"direction,omitempty"`
+	Quality       string `yaml:"quality,omitempty"`
+	Access        string `yaml:"access,omitempty"`
+	Direction     string `yaml:"direction,omitempty"`
+	FabricScoping string `yaml:"fabric-scoping,omitempty"`
 
 	Attributes map[string]*SDKType `yaml:"attributes,omitempty"`
 	Commands   map[string]*SDKType `yaml:"commands,omitempty"`
