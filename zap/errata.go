@@ -1,6 +1,8 @@
 package zap
 
 import (
+	"log/slog"
+
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -55,8 +57,14 @@ func (c *Configurator) addExtraTypesForCluster(cluster *matter.Cluster, extraTyp
 }
 
 func (c *Configurator) addExtraAttributes(cluster *matter.Cluster, extra *errata.SDKType) {
+	existingAttributes := make(map[string]struct{}, len(cluster.Attributes))
+	for _, attr := range cluster.Attributes {
+		existingAttributes[attr.Name] = struct{}{}
+	}
+
 	for name, a := range extra.Attributes {
-		if cluster.Attributes.Get(name) != nil {
+		if _, ok := existingAttributes[name]; ok {
+			slog.Warn("extra attribute already exists", slog.String("cluster", cluster.Name), slog.String("attribute", name))
 			continue
 		}
 		field := matter.NewAttribute(nil, cluster)
@@ -71,7 +79,11 @@ func (c *Configurator) addExtraAttributes(cluster *matter.Cluster, extra *errata
 			}
 		}
 		if a.Access != "" {
-			field.Access, _ = spec.ParseAccess(a.Access, types.EntityTypeAttribute)
+			var parsed bool
+			field.Access, parsed = spec.ParseAccess(a.Access, types.EntityTypeAttribute)
+			if !parsed {
+				slog.Warn("failed to parse access string for extra attribute", slog.String("cluster", cluster.Name), slog.String("attribute", name), slog.String("access", a.Access))
+			}
 		}
 		if a.Conformance != "" {
 			field.Conformance = conformance.ParseConformance(a.Conformance)
@@ -85,8 +97,14 @@ func (c *Configurator) addExtraAttributes(cluster *matter.Cluster, extra *errata
 }
 
 func (c *Configurator) addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) {
+	existingCommands := make(map[string]struct{}, len(cluster.Commands))
+	for _, cmd := range cluster.Commands {
+		existingCommands[cmd.Name] = struct{}{}
+	}
+
 	for name, cmd := range extra.Commands {
-		if _, ok := cluster.Commands.Identifier(name); ok {
+		if _, ok := existingCommands[name]; ok {
+			slog.Warn("extra command already exists", slog.String("cluster", cluster.Name), slog.String("command", name))
 			continue
 		}
 		command := matter.NewCommand(nil, cluster)
@@ -95,7 +113,11 @@ func (c *Configurator) addExtraCommands(cluster *matter.Cluster, extra *errata.S
 			command.ID = matter.ParseNumber(cmd.Value)
 		}
 		if cmd.Access != "" {
-			command.Access, _ = spec.ParseAccess(cmd.Access, types.EntityTypeCommand)
+			var parsed bool
+			command.Access, parsed = spec.ParseAccess(cmd.Access, types.EntityTypeCommand)
+			if !parsed {
+				slog.Warn("failed to parse access string for extra command", slog.String("cluster", cluster.Name), slog.String("command", name), slog.String("access", cmd.Access))
+			}
 		}
 		if cmd.Conformance != "" {
 			command.Conformance = conformance.ParseConformance(cmd.Conformance)
@@ -106,6 +128,8 @@ func (c *Configurator) addExtraCommands(cluster *matter.Cluster, extra *errata.S
 				command.Direction = matter.InterfaceClient
 			case "server":
 				command.Direction = matter.InterfaceServer
+			default:
+				slog.Warn("unknown direction for extra command", slog.String("cluster", cluster.Name), slog.String("command", name), slog.String("direction", cmd.Direction))
 			}
 		}
 		cluster.Commands = append(cluster.Commands, command)

@@ -1,6 +1,8 @@
 package sdk
 
 import (
+	"log/slog"
+
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -26,25 +28,25 @@ func applyBitmapOverride(bitmap *matter.Bitmap, override *errata.SDKType) {
 		bitmap.Type = types.ParseDataType(override.OverrideType, types.DataTypeRankScalar)
 	}
 
+	existingBits := make(map[string]struct{}, len(bitmap.Bits))
+	for _, b := range bitmap.Bits {
+		existingBits[b.Name()] = struct{}{}
+	}
+
 	for _, f := range override.Fields {
-		for _, b := range bitmap.Bits {
-			if b.Name() == f.Name {
-				if f.OverrideName != "" {
-					b.SetName(f.OverrideName)
+		if _, found := existingBits[f.Name]; found {
+			for _, b := range bitmap.Bits {
+				if b.Name() == f.Name {
+					if f.OverrideName != "" {
+						b.SetName(f.OverrideName)
+					}
+					break
 				}
-				break
 			}
 		}
 	}
 	for _, f := range override.ExtraFields {
-		var found bool
-		for _, b := range bitmap.Bits {
-			if b.Name() == f.Name {
-				found = true
-				break
-			}
-		}
-		if !found {
+		if _, found := existingBits[f.Name]; !found {
 			bit := f.Bit
 			if bit == "" {
 				bit = f.Value
@@ -62,6 +64,8 @@ func applyBitmapOverride(bitmap *matter.Bitmap, override *errata.SDKType) {
 			} else {
 				bitmap.AddBit(matter.NewBitmapBit(nil, bitmap, bit, f.Name, f.Description, conf))
 			}
+		} else {
+			slog.Warn("extra bitmap field already exists", slog.String("bitmap", bitmap.Name), slog.String("field", f.Name))
 		}
 	}
 }
