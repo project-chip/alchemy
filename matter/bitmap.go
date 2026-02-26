@@ -70,8 +70,8 @@ func (bm *Bitmap) Size() int {
 	}
 }
 
-func (bm *Bitmap) AddBit(b *BitmapBit) {
-	b.parent = bm
+func (bm *Bitmap) AddBit(b Bit) {
+	b.SetParent(bm)
 	bm.Bits = append(bm.Bits, b)
 }
 
@@ -173,6 +173,7 @@ type Bit interface {
 	SetName(name string)
 	Summary() string
 	Conformance() conformance.Set
+	SetParent(parent types.Entity)
 
 	Inherit(parent Bit) error
 	Clone() Bit
