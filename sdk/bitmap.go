@@ -68,5 +68,8 @@ func applyBitmapOverride(bitmap *matter.Bitmap, override *errata.SDKType) {
 			slog.Warn("extra bitmap field already exists", slog.String("bitmap", bitmap.Name), slog.String("field", f.Name))
 		}
 	}
-}
 
+	if len(override.ExtraFields) > 0 {
+		matter.SortBits(bitmap.Bits)
+	}
+}
