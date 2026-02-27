@@ -180,6 +180,30 @@ func (p *ZclPatcher) patchAttributeAccessInterfaceAttributes(o *internal.JSONMap
 				oa = append(oa, as)
 			}
 		}
+
+		for _, ca := range cluster.Attributes {
+			if ca.Type != nil && ca.Type.Entity != nil && ca.Type.Entity.EntityType() == types.EntityTypeStruct {
+				if conformance.IsZigbee(ca.Conformance) || zap.IsDisallowed(ca, ca.Conformance) {
+					continue
+				}
+
+				if matter.NonGlobalIDInvalidForEntity(ca.ID, types.EntityTypeAttribute) {
+					continue
+				}
+
+				found := false
+				for _, existing := range oa {
+					if existing == ca.Name {
+						found = true
+						break
+					}
+				}
+				if !found {
+					oa = append(oa, ca.Name)
+				}
+			}
+		}
+
 		om.Set(clusterName, oa)
 	}
 }
