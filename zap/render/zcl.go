@@ -181,6 +181,11 @@ func (p *ZclPatcher) patchAttributeAccessInterfaceAttributes(o *internal.JSONMap
 			}
 		}
 
+		existingMap := make(map[string]struct{}, len(oa))
+		for _, existing := range oa {
+			existingMap[existing] = struct{}{}
+		}
+
 		for _, ca := range cluster.Attributes {
 			if ca.Type != nil && ca.Type.Entity != nil && ca.Type.Entity.EntityType() == types.EntityTypeStruct {
 				if conformance.IsZigbee(ca.Conformance) || zap.IsDisallowed(ca, ca.Conformance) {
@@ -191,15 +196,9 @@ func (p *ZclPatcher) patchAttributeAccessInterfaceAttributes(o *internal.JSONMap
 					continue
 				}
 
-				found := false
-				for _, existing := range oa {
-					if existing == ca.Name {
-						found = true
-						break
-					}
-				}
-				if !found {
+				if _, exists := existingMap[ca.Name]; !exists {
 					oa = append(oa, ca.Name)
+					existingMap[ca.Name] = struct{}{}
 				}
 			}
 		}
