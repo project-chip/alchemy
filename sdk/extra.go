@@ -162,6 +162,9 @@ func addExtraAttributes(cluster *matter.Cluster, extra *errata.SDKType) {
 			field.Conformance = conformance.ParseConformance(a.Conformance)
 			resolveExtraConformance(cluster, field.Conformance)
 		}
+		if a.Constraint != "" {
+			field.Constraint = constraint.ParseString(a.Constraint)
+		}
 		if a.Fallback != "" {
 			field.Fallback = constraint.ParseLimit(a.Fallback)
 		}
