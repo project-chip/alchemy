@@ -1,10 +1,13 @@
 package sdk
 
 import (
+	"log/slog"
+
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -12,6 +15,7 @@ func addExtraTypes(extraTypes *errata.SDKTypes, entities []types.Entity) {
 	if extraTypes == nil {
 		return
 	}
+
 	var extraEntities []types.Entity
 	for name, eb := range extraTypes.Bitmaps {
 		bm := matter.NewBitmap(nil, nil)
@@ -73,14 +77,18 @@ func addExtraTypes(extraTypes *errata.SDKTypes, entities []types.Entity) {
 		}
 		extraEntities = append(extraEntities, s)
 	}
-	for _, e := range extraEntities {
-		for _, m := range entities {
-			switch v := m.(type) {
-			case *matter.ClusterGroup:
-				for _, cl := range v.Clusters {
+	for _, m := range entities {
+		switch v := m.(type) {
+		case *matter.ClusterGroup:
+			for _, cl := range v.Clusters {
+				addExtraAttributesAndCommandsToCluster(cl, extraTypes)
+				for _, e := range extraEntities {
 					addExtraEntity(cl, e)
 				}
-			case *matter.Cluster:
+			}
+		case *matter.Cluster:
+			addExtraAttributesAndCommandsToCluster(v, extraTypes)
+			for _, e := range extraEntities {
 				addExtraEntity(v, e)
 			}
 		}
@@ -113,5 +121,166 @@ func addExtraEntity(cluster *matter.Cluster, e types.Entity) {
 		}
 		e.SetParent(cluster)
 		cluster.AddStructs(e)
+	}
+}
+
+func addExtraAttributesAndCommandsToCluster(cluster *matter.Cluster, extraTypes *errata.SDKTypes) {
+	if override, ok := extraTypes.Clusters[cluster.Name]; ok {
+		addExtraAttributes(cluster, override)
+		addExtraCommands(cluster, override)
+	}
+	if len(extraTypes.Attributes) > 0 {
+		addExtraAttributes(cluster, &errata.SDKType{Attributes: extraTypes.Attributes})
+	}
+	if len(extraTypes.Commands) > 0 {
+		addExtraCommands(cluster, &errata.SDKType{Commands: extraTypes.Commands})
+	}
+}
+
+func addExtraAttributes(cluster *matter.Cluster, extra *errata.SDKType) {
+	existingAttributes := make(map[string]struct{}, len(cluster.Attributes))
+	for _, f := range cluster.Attributes {
+		existingAttributes[f.Name] = struct{}{}
+	}
+
+	for name, a := range extra.Attributes {
+		if _, exists := existingAttributes[name]; exists {
+			continue
+		}
+		field := matter.NewAttribute(nil, cluster)
+		field.Name = name
+		if a.Value != "" {
+			field.ID = matter.ParseNumber(a.Value)
+		}
+		if a.Type != "" {
+			field.Type = types.ParseDataType(a.Type, types.DataTypeRankScalar)
+		}
+		if a.Access != "" {
+			var parsed bool
+			field.Access, parsed = spec.ParseAccess(a.Access, types.EntityTypeAttribute)
+			if !parsed {
+				slog.Warn("failed to parse access string for extra attribute from errata", slog.String("cluster", cluster.Name), slog.String("attribute", name), slog.String("access", a.Access))
+			}
+		}
+		if a.Conformance != "" {
+			field.Conformance = conformance.ParseConformance(a.Conformance)
+			resolveExtraConformance(cluster, field.Conformance)
+		}
+		if a.Constraint != "" {
+			field.Constraint = constraint.ParseString(a.Constraint)
+		}
+		if a.Fallback != "" {
+			field.Fallback = constraint.ParseLimit(a.Fallback)
+		}
+		if a.Quality != "" {
+			field.Quality = matter.ParseQuality(a.Quality)
+		}
+		field.SetParent(cluster)
+		cluster.Attributes = append(cluster.Attributes, field)
+	}
+}
+
+func addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) {
+	existingCommands := make(map[string]struct{}, len(cluster.Commands))
+	for _, cmd := range cluster.Commands {
+		existingCommands[cmd.Name] = struct{}{}
+	}
+
+	for name, cmd := range extra.Commands {
+		if _, ok := existingCommands[name]; ok {
+			continue
+		}
+		command := matter.NewCommand(nil, cluster)
+		command.Name = name
+		if cmd.Value != "" {
+			command.ID = matter.ParseNumber(cmd.Value)
+		}
+		if cmd.Access != "" {
+			var parsed bool
+			command.Access, parsed = spec.ParseAccess(cmd.Access, types.EntityTypeCommand)
+			if !parsed {
+				slog.Warn("failed to parse access string for extra command from errata", slog.String("cluster", cluster.Name), slog.String("command", name), slog.String("access", cmd.Access))
+			}
+		}
+		if cmd.Conformance != "" {
+			command.Conformance = conformance.ParseConformance(cmd.Conformance)
+			resolveExtraConformance(cluster, command.Conformance)
+		}
+		if cmd.Direction != "" {
+			switch cmd.Direction {
+			case "client":
+				command.Direction = matter.InterfaceClient
+			case "server":
+				command.Direction = matter.InterfaceServer
+			}
+		}
+		for i, f := range cmd.Fields {
+			field := matter.NewField(nil, command, types.EntityTypeCommandField)
+			field.Name = f.Name
+			if f.Value != "" {
+				field.ID = matter.ParseNumber(f.Value)
+			} else {
+				field.ID = matter.NewNumber(uint64(i))
+			}
+			var rank types.DataTypeRank
+			if f.List {
+				rank = types.DataTypeRankList
+			}
+			field.Type = types.ParseDataType(f.Type, rank)
+			if f.Constraint != "" {
+				field.Constraint = constraint.ParseString(f.Constraint)
+			}
+			if f.Conformance != "" {
+				field.Conformance = conformance.ParseConformance(f.Conformance)
+				resolveExtraConformance(cluster, field.Conformance)
+			}
+			if f.Fallback != "" {
+				field.Fallback = constraint.ParseLimit(f.Fallback)
+			}
+			command.Fields = append(command.Fields, field)
+		}
+		command.SetParent(cluster)
+		cluster.Commands = append(cluster.Commands, command)
+	}
+}
+
+func resolveExtraConformance(cluster *matter.Cluster, conf conformance.Conformance) {
+	if conf == nil {
+		return
+	}
+	switch c := conf.(type) {
+	case conformance.Set:
+		for _, cx := range c {
+			resolveExtraConformance(cluster, cx)
+		}
+	case *conformance.Mandatory:
+		resolveExtraConformanceExpression(cluster, c.Expression)
+	case *conformance.Optional:
+		resolveExtraConformanceExpression(cluster, c.Expression)
+	}
+}
+
+func resolveExtraConformanceExpression(cluster *matter.Cluster, expr conformance.Expression) {
+	if expr == nil {
+		return
+	}
+	switch e := expr.(type) {
+	case *conformance.EqualityExpression:
+		resolveExtraConformanceExpression(cluster, e.Left)
+		resolveExtraConformanceExpression(cluster, e.Right)
+	case *conformance.LogicalExpression:
+		resolveExtraConformanceExpression(cluster, e.Left)
+		for _, re := range e.Right {
+			resolveExtraConformanceExpression(cluster, re)
+		}
+	case *conformance.IdentifierExpression:
+		if e.Entity == nil && cluster.Features != nil {
+			for f := range cluster.Features.FeatureBits() {
+				if f.Code == e.ID || f.Name() == e.ID {
+					e.Entity = f
+					break
+				}
+			}
+		}
 	}
 }
