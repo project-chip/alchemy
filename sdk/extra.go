@@ -1,6 +1,8 @@
 package sdk
 
 import (
+	"log/slog"
+
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -156,7 +158,9 @@ func addExtraAttributes(cluster *matter.Cluster, extra *errata.SDKType) {
 		if a.Access != "" {
 			var parsed bool
 			field.Access, parsed = spec.ParseAccess(a.Access, types.EntityTypeAttribute)
-			_ = parsed
+			if !parsed {
+				slog.Warn("failed to parse access string for extra attribute from errata", slog.String("cluster", cluster.Name), slog.String("attribute", name), slog.String("access", a.Access))
+			}
 		}
 		if a.Conformance != "" {
 			field.Conformance = conformance.ParseConformance(a.Conformance)
@@ -167,9 +171,6 @@ func addExtraAttributes(cluster *matter.Cluster, extra *errata.SDKType) {
 		}
 		if a.Fallback != "" {
 			field.Fallback = constraint.ParseLimit(a.Fallback)
-		}
-		if a.Default != "" {
-			field.Fallback = constraint.ParseLimit(a.Default)
 		}
 		if a.Quality != "" {
 			field.Quality = matter.ParseQuality(a.Quality)
@@ -197,7 +198,9 @@ func addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) {
 		if cmd.Access != "" {
 			var parsed bool
 			command.Access, parsed = spec.ParseAccess(cmd.Access, types.EntityTypeCommand)
-			_ = parsed
+			if !parsed {
+				slog.Warn("failed to parse access string for extra command from errata", slog.String("cluster", cluster.Name), slog.String("command", name), slog.String("access", cmd.Access))
+			}
 		}
 		if cmd.Conformance != "" {
 			command.Conformance = conformance.ParseConformance(cmd.Conformance)
@@ -233,9 +236,6 @@ func addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) {
 			}
 			if f.Fallback != "" {
 				field.Fallback = constraint.ParseLimit(f.Fallback)
-			}
-			if f.Default != "" {
-				field.Fallback = constraint.ParseLimit(f.Default)
 			}
 			command.Fields = append(command.Fields, field)
 		}
