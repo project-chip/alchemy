@@ -105,7 +105,6 @@ type SDKType struct {
 	Constraint  string `yaml:"constraint,omitempty"`
 	Conformance string `yaml:"conformance,omitempty"`
 	Fallback    string `yaml:"fallback,omitempty"`
-	Default     string `yaml:"default,omitempty"`
 
 	Quality   string `yaml:"quality,omitempty"`
 	Access    string `yaml:"access,omitempty"`
