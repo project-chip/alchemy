@@ -460,14 +460,16 @@ var conformanceTests = []conformanceTestSuite{
 		Conformance:        "AA, P",
 		InvalidConformance: true,
 	},
-	{
-		Conformance:        "D",
-		InvalidConformance: true,
-	},
-	{
-		Conformance:        "AA, D, [BB]",
-		InvalidConformance: true,
-	},
+	/*
+		Disabled until spec is cleared of these uses of deprecated
+		{
+			Conformance:        "D",
+			InvalidConformance: true,
+		},
+		{
+			Conformance:        "AA, D, [BB]",
+			InvalidConformance: true,
+		},*/
 	{
 		Conformance: "AA, [BB]",
 		Tests: []conformanceTest{

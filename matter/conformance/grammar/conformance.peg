@@ -29,7 +29,8 @@ Input <- conf:Conformance+ EOF {
                 }
             case *Deprecated:
                 if i == 0 || i != len(cs) - 1 {
-                    return nil, fmt.Errorf("deprecation set at index %d; deprecation annotations must be the last element in a set of conformances", i)
+                    // Disabled until the spec is completely clear of D elements by themselves 
+                    // return nil, fmt.Errorf("deprecation set at index %d; deprecation annotations must be the last element in a set of conformances", i)
                 }
             case *Obsolete:
                 if i != len(cs) - 1 {
@@ -68,7 +69,6 @@ Conformance <-  '[' i:LogicalExpression ']' choice:Choice? ConformanceSeparator 
     return &Disallowed{}, nil
 } / 'Z'  ConformanceSeparator {
     return &Obsolete{}, nil
-}
 } / "desc"  ConformanceSeparator { 
      return &Described{}, nil
 } / eq:LogicalExpression ConformanceSeparator {
