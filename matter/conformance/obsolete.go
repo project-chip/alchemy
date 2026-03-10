@@ -5,7 +5,7 @@ type Obsolete struct {
 }
 
 func (d *Obsolete) Type() Type {
-	return TypeDeprecated
+	return TypeObsolete
 }
 
 func (d *Obsolete) RawText() string {

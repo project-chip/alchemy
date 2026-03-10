@@ -171,7 +171,7 @@ func (sp *Builder) resolveEntityConformanceReferences(cluster *matter.Cluster, f
 		for _, c := range con {
 			sp.resolveEntityConformanceReferences(cluster, finder, source, c)
 		}
-	case *conformance.Disallowed, *conformance.Provisional, *conformance.Described, *conformance.Deprecated:
+	case *conformance.Disallowed, *conformance.Provisional, *conformance.Described, *conformance.Deprecated, *conformance.Obsolete:
 	case *conformance.Generic:
 		if !conformance.IsBlank(con) {
 			slog.Warn("Can not resolve entities on generic conformance", slog.String("conformance", con.RawText()), log.Path("source", source))
