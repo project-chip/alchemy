@@ -129,7 +129,7 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 	}
 
 	type deviceTypeRequirements struct {
-		deviceRequirements []*matter.DeviceTypeRequirement
+		deviceRequirements  []*matter.DeviceTypeRequirement
 		clusterRequirements []*matter.DeviceTypeClusterRequirement
 		elementRequirements map[*matter.Cluster][]*matter.ElementRequirement
 	}
@@ -140,6 +140,7 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 		if dr.DeviceType == nil {
 			continue
 		}
+
 		dtr, ok := dtrs[dr.DeviceType]
 		if !ok {
 			dtr = &deviceTypeRequirements{}
@@ -205,13 +206,15 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 				dte.CreateAttr("deviceTypeId", dt.ID.HexString())
 			}
 			dte.CreateAttr("deviceTypeName", dt.Name)
-			err = renderConformanceElement(dtr.deviceRequirements[0].Conformance, dte, nil)
-			if err != nil {
-				return
-			}
-			err = renderConstraintElement(dtr.deviceRequirements[0].Constraint, nil, dte, nil)
-			if err != nil {
-				return
+			if len(dtr.deviceRequirements) > 0 {
+				err = renderConformanceElement(dtr.deviceRequirements[0].Conformance, dte, nil)
+				if err != nil {
+					return
+				}
+				err = renderConstraintElement(dtr.deviceRequirements[0].Constraint, nil, dte, nil)
+				if err != nil {
+					return
+				}
 			}
 			if len(dtr.clusterRequirements) > 0 {
 				crx := dte.CreateElement("clusterRequirements")
@@ -238,34 +241,6 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 			}
 		}
 
-	}
-
-	if len(deviceType.ComposedDeviceTypeClusterRequirements) > 0 {
-		cx := c.CreateElement("composedDeviceTypes")
-		reqs := make([]*matter.ClusterRequirement, len(deviceType.ClusterRequirements))
-		copy(reqs, deviceType.ClusterRequirements)
-		slices.SortStableFunc(reqs, sortClusterRequirements)
-		for _, cr := range reqs {
-			clx := cx.CreateElement("cluster")
-			clx.CreateAttr("id", cr.ClusterID.HexString())
-			clx.CreateAttr("name", cr.ClusterName)
-			switch cr.Interface {
-			case matter.InterfaceClient:
-				clx.CreateAttr("side", "client")
-			case matter.InterfaceServer:
-				clx.CreateAttr("side", "server")
-			}
-			renderQuality(clx, cr.Quality)
-			err = renderConformanceElement(cr.Conformance, clx, nil)
-			if err != nil {
-				return
-			}
-			err = renderElementRequirements(deviceType, cr, clx)
-			if err != nil {
-				return
-			}
-
-		}
 	}
 
 	x.Indent(2)
