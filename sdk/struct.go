@@ -17,6 +17,12 @@ func applyErrataToStruct(st *matter.Struct, typeNames map[string]string, typeOve
 		if ast.OverrideName != "" {
 			st.Name = ast.OverrideName
 		}
+		switch ast.FabricScoping {
+		case "none":
+			st.FabricScoping = matter.FabricScopingUnscoped
+		case "fabric-scoped":
+			st.FabricScoping = matter.FabricScopingScoped
+		}
 		applyErrataToFields(st.Fields, ast)
 	}
 	st.Name = applyTypeName(typeNames, st.Name)

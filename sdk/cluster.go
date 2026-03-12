@@ -32,16 +32,7 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 		if cluster.Features != nil {
 			fc, ok := errata.Types.Bitmaps["Features"]
 			if ok {
-				for _, feature := range cluster.Features.Bits {
-					for _, f := range fc.Fields {
-						if feature.Name() == f.Name {
-							if f.OverrideName != "" {
-								feature.SetName(f.OverrideName)
-							}
-							break
-						}
-					}
-				}
+				applyBitmapOverride(&cluster.Features.Bitmap, fc)
 			}
 		}
 	}

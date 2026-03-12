@@ -85,15 +85,8 @@ func (library *Library) findEnumValues(reader asciidoc.Reader, doc *asciidoc.Doc
 			}
 			ev.Name = matter.StripTypeSuffixes(ev.Name)
 			if len(ev.Name) == 0 {
-				ev.Name, err = ti.ReadValue(reader, row, matter.TableColumnSummary)
-				if err != nil {
-					return nil, err
-				}
-				ev.Name = matter.StripTypeSuffixes(ev.Name)
-				if len(ev.Name) == 0 {
-					slog.Debug("skipping enum with no name", slog.String("path", doc.Path.String()), slog.String("section", library.SectionName(s)))
-					continue
-				}
+				slog.Warn("skipping enum value with no name", log.Path("source", ev), slog.String("section", library.SectionName(s)))
+				continue
 			}
 			ev.Name = CanonicalName(ev.Name)
 			ev.Summary, err = ti.ReadValue(reader, row, matter.TableColumnSummary, matter.TableColumnDescription)

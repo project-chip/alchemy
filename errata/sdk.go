@@ -93,19 +93,26 @@ type SDKType struct {
 	List         bool   `yaml:"list,omitempty"`
 
 	Fields      []*SDKType `yaml:"fields,omitempty"`
+	ExtraFields []*SDKType `yaml:"extra-fields,omitempty"`
 	Domain      string     `yaml:"domain,omitempty"`
 	Priority    string     `yaml:"priority,omitempty"`
 	Description string     `yaml:"description,omitempty"`
 
 	Bit   string `yaml:"bit,omitempty"`
+	Code  string `yaml:"code,omitempty"`
 	Value string `yaml:"value,omitempty"`
 
 	Constraint  string `yaml:"constraint,omitempty"`
 	Conformance string `yaml:"conformance,omitempty"`
 	Fallback    string `yaml:"fallback,omitempty"`
 
-	Quality string `yaml:"quality,omitempty"`
-	Access  string `yaml:"access,omitempty"`
+	Quality       string `yaml:"quality,omitempty"`
+	Access        string `yaml:"access,omitempty"`
+	Direction     string `yaml:"direction,omitempty"`
+	FabricScoping string `yaml:"fabric-scoping,omitempty"`
+
+	Attributes map[string]*SDKType `yaml:"attributes,omitempty"`
+	Commands   map[string]*SDKType `yaml:"commands,omitempty"`
 }
 
 type SDKTypeCollection map[string]*SDKType
