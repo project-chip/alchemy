@@ -123,17 +123,17 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 			}
 			remove = true
 		case *asciidoc.IfDef:
-			suppressStack.Push(&conditionalBlock{suppress: suppress, open: el})
+			suppressStack.Push(&conditionalBlock{suppress: suppress, open: el, addToCell: addToCell})
 			suppress = suppress || !el.Eval(pps)
 			remove = true
-			addToCell = el.Inline
+			addToCell = el.Inline || isContentIfDef(pps, el, parent, index)
 		case *asciidoc.IfNDef:
-			suppressStack.Push(&conditionalBlock{suppress: suppress, open: el})
+			suppressStack.Push(&conditionalBlock{suppress: suppress, open: el, addToCell: addToCell})
 			suppress = suppress || !el.Eval(pps)
 			remove = true
-			addToCell = el.Inline
+			addToCell = el.Inline || isContentIfDef(pps, el, parent, index)
 		case *asciidoc.IfEval:
-			suppressStack.Push(&conditionalBlock{suppress: suppress, open: el})
+			suppressStack.Push(&conditionalBlock{suppress: suppress, open: el, addToCell: addToCell})
 			if !suppress {
 				var include bool
 				include, err = el.Eval(pps)
@@ -144,7 +144,7 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 				suppress = !include
 			}
 			remove = true
-			addToCell = el.Inline
+			addToCell = el.Inline || isContentIfDef(pps, el, parent, index)
 		case *asciidoc.IfDefBlock, *asciidoc.IfNDefBlock, *asciidoc.IfEvalBlock:
 			err = fmt.Errorf("unexpected type in preparse: %T", el)
 			should = parse.SearchShouldStop
@@ -163,7 +163,7 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 			}
 			suppress = cb.suppress
 			remove = true
-			addToCell = false
+			addToCell = cb.addToCell
 		case *asciidoc.InlineIfDef:
 			if !suppress {
 				if el.Eval(pps) {
@@ -364,4 +364,27 @@ func parseLevelOffset(el asciidoc.Parent, elements asciidoc.Elements) (leveloffs
 	}
 	leveloffset, relative, err = text.ParseRelativeNumber(val)
 	return
+}
+
+func isContentIfDef(pps *overlayFileState, el asciidoc.Element, parent asciidoc.ParentElement, index int) bool {
+	if _, ok := parent.(*asciidoc.Table); !ok {
+		return false
+	}
+	children := parent.Children()
+	depth := 0
+	for i := index + 1; i < len(children); i++ {
+		child := children[i]
+		switch child.(type) {
+		case *asciidoc.IfDef, *asciidoc.IfNDef, *asciidoc.IfEval:
+			depth++
+		case *asciidoc.EndIf:
+			if depth == 0 {
+				return true
+			}
+			depth--
+		case *asciidoc.TableRow:
+			return false
+		}
+	}
+	return false
 }
