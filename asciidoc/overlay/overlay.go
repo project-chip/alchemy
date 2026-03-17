@@ -126,12 +126,12 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 			suppressStack.Push(&conditionalBlock{suppress: suppress, open: el, addToCell: addToCell})
 			suppress = suppress || !el.Eval(pps)
 			remove = true
-			addToCell = el.Inline || isContentIfDef(pps, el, parent, index)
+			addToCell = el.Inline || isContentIfDef(parent, index)
 		case *asciidoc.IfNDef:
 			suppressStack.Push(&conditionalBlock{suppress: suppress, open: el, addToCell: addToCell})
 			suppress = suppress || !el.Eval(pps)
 			remove = true
-			addToCell = el.Inline || isContentIfDef(pps, el, parent, index)
+			addToCell = el.Inline || isContentIfDef(parent, index)
 		case *asciidoc.IfEval:
 			suppressStack.Push(&conditionalBlock{suppress: suppress, open: el, addToCell: addToCell})
 			if !suppress {
@@ -144,7 +144,7 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 				suppress = !include
 			}
 			remove = true
-			addToCell = el.Inline || isContentIfDef(pps, el, parent, index)
+			addToCell = el.Inline || isContentIfDef(parent, index)
 		case *asciidoc.IfDefBlock, *asciidoc.IfNDefBlock, *asciidoc.IfEvalBlock:
 			err = fmt.Errorf("unexpected type in preparse: %T", el)
 			should = parse.SearchShouldStop
@@ -366,7 +366,7 @@ func parseLevelOffset(el asciidoc.Parent, elements asciidoc.Elements) (leveloffs
 	return
 }
 
-func isContentIfDef(pps *overlayFileState, el asciidoc.Element, parent asciidoc.ParentElement, index int) bool {
+func isContentIfDef(parent asciidoc.ParentElement, index int) bool {
 	if _, ok := parent.(*asciidoc.Table); !ok {
 		return false
 	}
