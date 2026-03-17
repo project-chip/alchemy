@@ -178,9 +178,6 @@ func (ti *TableInfo) ReadValue(reader asciidoc.Reader, row *asciidoc.TableRow, c
 func (ti *TableInfo) ReadValueByIndex(reader asciidoc.Reader, row *asciidoc.TableRow, offset int) (string, error) {
 	cell := row.Cell(offset)
 	cellElements := reader.Children(cell)
-	if len(cellElements) == 0 {
-		return "", nil
-	}
 	var value strings.Builder
 	err := readRowCellValueElements(reader, row, cell, cellElements, &value)
 	if err != nil {
