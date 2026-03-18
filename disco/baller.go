@@ -151,11 +151,10 @@ func (b *Baller) discoBallTopLevelSection(dc *discoContext, top *asciidoc.Sectio
 			ae := asciidoc.NewAttributeEntry("xrefstyle")
 			ae.Elements = asciidoc.Elements{asciidoc.NewString("basic")}
 			if topIndex != -1 {
-				newElements := make(asciidoc.Elements, 0, len(dc.doc.Elements)+2)
-				newElements = append(newElements, dc.doc.Elements[:topIndex]...)
-				newElements = append(newElements, ae, &asciidoc.NewLine{})
-				newElements = append(newElements, dc.doc.Elements[topIndex:]...)
-				dc.doc.Elements = newElements
+				dc.doc.Elements = append(dc.doc.Elements, nil, nil)
+				copy(dc.doc.Elements[topIndex+2:], dc.doc.Elements[topIndex:])
+				dc.doc.Elements[topIndex] = ae
+				dc.doc.Elements[topIndex+1] = &asciidoc.NewLine{}
 			} else {
 				dc.doc.Elements = append(asciidoc.Elements{ae, &asciidoc.NewLine{}}, dc.doc.Elements...)
 			}
