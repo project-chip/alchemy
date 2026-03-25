@@ -40,6 +40,9 @@ func applyBitmapOverride(bitmap *matter.Bitmap, override *errata.SDKType) {
 					if f.OverrideName != "" {
 						b.SetName(f.OverrideName)
 					}
+					if f.Conformance != "" {
+						b.SetConformance(conformance.ParseConformance(f.Conformance))
+					}
 					break
 				}
 			}

@@ -52,6 +52,7 @@ func ApplyErrata(spec *spec.Specification) (err error) {
 		spec.BuildDataTypeReferences()
 		spec.BuildClusterReferences()
 	}
+	spec.ResolveConformances()
 	return
 }
 
@@ -69,6 +70,9 @@ func applyErrataToCommand(st *matter.Command, typeNames map[string]string, typeO
 		}
 		if override.Conformance != "" {
 			st.Conformance = conformance.ParseConformance(override.Conformance)
+		}
+		if override.Response != "" {
+			st.Response = types.ParseDataType(override.Response, types.DataTypeRankScalar)
 		}
 		applyErrataToFields(st.Fields, override)
 	}
@@ -92,6 +96,18 @@ func applyErrataToEvent(ev *matter.Event, typeNames map[string]string, typeOverr
 		}
 		if override.Conformance != "" {
 			ev.Conformance = conformance.ParseConformance(override.Conformance)
+		}
+		switch override.FabricScoping {
+		case "none":
+			ev.Access.FabricScoping = matter.FabricScopingUnscoped
+		case "fabric-scoped":
+			ev.Access.FabricScoping = matter.FabricScopingScoped
+		}
+		switch override.FabricSensitivity {
+		case "none":
+			ev.Access.FabricSensitivity = matter.FabricSensitivityInsensitive
+		case "fabric-sensitive":
+			ev.Access.FabricSensitivity = matter.FabricSensitivitySensitive
 		}
 		applyErrataToFields(ev.Fields, override)
 	}
