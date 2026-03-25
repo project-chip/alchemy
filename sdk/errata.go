@@ -103,6 +103,12 @@ func applyErrataToEvent(ev *matter.Event, typeNames map[string]string, typeOverr
 		case "fabric-scoped":
 			ev.Access.FabricScoping = matter.FabricScopingScoped
 		}
+		switch override.FabricSensitivity {
+		case "none":
+			ev.Access.FabricSensitivity = matter.FabricSensitivityInsensitive
+		case "fabric-sensitive":
+			ev.Access.FabricSensitivity = matter.FabricSensitivitySensitive
+		}
 		applyErrataToFields(ev.Fields, override)
 	}
 	ev.Name = applyTypeName(typeNames, ev.Name)
