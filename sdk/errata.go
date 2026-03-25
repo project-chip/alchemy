@@ -52,6 +52,7 @@ func ApplyErrata(spec *spec.Specification) (err error) {
 		spec.BuildDataTypeReferences()
 		spec.BuildClusterReferences()
 	}
+	spec.ResolveConformances()
 	return
 }
 

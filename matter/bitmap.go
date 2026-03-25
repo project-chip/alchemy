@@ -177,6 +177,7 @@ type Bit interface {
 	SetName(name string)
 	Summary() string
 	Conformance() conformance.Set
+	SetConformance(conformance conformance.Set)
 	SetParent(parent types.Entity)
 
 	Inherit(parent Bit) error
@@ -238,6 +239,10 @@ func (bmb *BitmapBit) Summary() string {
 
 func (bmb *BitmapBit) Conformance() conformance.Set {
 	return bmb.conformance
+}
+
+func (bmb *BitmapBit) SetConformance(conformance conformance.Set) {
+	bmb.conformance = conformance
 }
 
 func (bmb *BitmapBit) Clone() Bit {
