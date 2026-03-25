@@ -214,6 +214,9 @@ func addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) {
 				command.Direction = matter.InterfaceServer
 			}
 		}
+		if cmd.Response != "" {
+			command.Response = types.ParseDataType(cmd.Response, types.DataTypeRankScalar)
+		}
 		for i, f := range cmd.Fields {
 			field := matter.NewField(nil, command, types.EntityTypeCommandField)
 			field.Name = f.Name

@@ -70,6 +70,9 @@ func applyErrataToCommand(st *matter.Command, typeNames map[string]string, typeO
 		if override.Conformance != "" {
 			st.Conformance = conformance.ParseConformance(override.Conformance)
 		}
+		if override.Response != "" {
+			st.Response = types.ParseDataType(override.Response, types.DataTypeRankScalar)
+		}
 		applyErrataToFields(st.Fields, override)
 	}
 	st.Name = applyTypeName(typeNames, st.Name)

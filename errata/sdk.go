@@ -109,6 +109,7 @@ type SDKType struct {
 	Quality       string `yaml:"quality,omitempty"`
 	Access        string `yaml:"access,omitempty"`
 	Direction     string `yaml:"direction,omitempty"`
+	Response      string `yaml:"response,omitempty"`
 	FabricScoping string `yaml:"fabric-scoping,omitempty"`
 
 	Attributes map[string]*SDKType `yaml:"attributes,omitempty"`
