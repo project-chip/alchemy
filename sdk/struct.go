@@ -58,6 +58,9 @@ func applyErrataToField(field *matter.Field, override *errata.SDKType) {
 	if override.Fallback != "" {
 		field.Fallback = constraint.ParseLimit(override.Fallback)
 	}
+	if override.Value != "" {
+		field.ID = matter.ParseNumber(override.Value)
+	}
 	field.Quality = overrideQuality(override, field.Quality)
 	field.Access = overrideAccess(override, field.EntityType(), field.Access)
 }
