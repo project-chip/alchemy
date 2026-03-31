@@ -20,8 +20,24 @@ Input <- conf:Conformance+ EOF {
     cs := conf.([]interface{})
 
     var set Set
-    for _, i := range cs {
-        con := i.(Conformance)
+    for i, e := range cs {
+        con := e.(Conformance)
+        switch con.(type) {
+            case *Provisional:
+                if i != 0 {
+                    return nil, fmt.Errorf("provisionality set at index %d; provisional annotations must be the first element of conformance", i)
+                }
+            case *Deprecated:
+                if i == 0 || i != len(cs) - 1 {
+                    // Disabled until the spec is completely clear of D elements by themselves 
+                    // return nil, fmt.Errorf("deprecation set at index %d; deprecation annotations must be the last element in a set of conformances", i)
+                }
+            case *Obsolete:
+                if i != len(cs) - 1 {
+                    return nil, fmt.Errorf("obsolete set at index %d; obsolete annotations must appear alone, or be the last element in a set of conformances", i)
+                }
+            
+        }
         set = append(set, con)
     }
     return set, nil
@@ -29,7 +45,7 @@ Input <- conf:Conformance+ EOF {
 
 ConformanceSeparator <- (_ Comma _) / &EOF
 
-Conformance <-  '[' i:Expression ']' choice:Choice? ConformanceSeparator {
+Conformance <-  '[' i:LogicalExpression ']' choice:Choice? ConformanceSeparator {
     exp := i.(Expression)
     o := &Optional{Expression:exp}
     if choice != nil {
@@ -51,14 +67,14 @@ Conformance <-  '[' i:Expression ']' choice:Choice? ConformanceSeparator {
     return &Deprecated{}, nil
 } / 'X'  ConformanceSeparator {
     return &Disallowed{}, nil
+} / 'Z'  ConformanceSeparator {
+    return &Obsolete{}, nil
 } / "desc"  ConformanceSeparator { 
      return &Described{}, nil
-} / eq:Expression ConformanceSeparator {
+} / eq:LogicalExpression ConformanceSeparator {
     exp := eq.(Expression)
     return &Mandatory{Expression:exp}, nil
 }
-
-Expression <- LogicalExpression 
 
 
 
