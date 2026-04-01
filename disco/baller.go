@@ -133,7 +133,7 @@ func (b *Baller) disco(cxt context.Context, doc *asciidoc.Document) error {
 }
 
 func (b *Baller) discoBallTopLevelSection(dc *discoContext, top *asciidoc.Section, docType matter.DocType) error {
-	if b.options.AddXrefstyle {
+	if b.options.AddXrefstyle && dc.doc == dc.library.Root {
 		var xrefstyleEntry *asciidoc.AttributeEntry
 		var topIndex int = -1
 
