@@ -130,8 +130,8 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeEventField) {
 				continue
 			}
-			fe.CreateAttr("id", f.ID.IntString())
-			cr.setFieldAttributes(fe, types.EntityTypeEvent, event.Name, f, event.Fields)
+			fe.CreateAttr("fieldId", f.ID.IntString())
+			cr.setFieldAttributes(fe, types.EntityTypeEvent, f, event.Fields, false)
 			break
 		}
 	}
@@ -149,8 +149,8 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 			return
 		}
 		fe := etree.NewElement("field")
-		fe.CreateAttr("id", f.ID.IntString())
-		cr.setFieldAttributes(fe, types.EntityTypeEvent, event.Name, f, event.Fields)
+		fe.CreateAttr("fieldId", f.ID.IntString())
+		cr.setFieldAttributes(fe, types.EntityTypeEvent, f, event.Fields, true)
 		xml.AppendElement(eventElement, fe, "access")
 	}
 

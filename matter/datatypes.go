@@ -154,6 +154,12 @@ func (adt *AssociatedDataTypes) AddConstants(constants ...*Constant) {
 }
 
 // This really exists to allow patching ZAP
+func (adt *AssociatedDataTypes) MoveEnum(en *Enum) {
+	adt.Enums = append(adt.Enums, en)
+	en.parent = adt.parentEntity
+}
+
+// This really exists to allow patching ZAP
 func (adt *AssociatedDataTypes) MoveStruct(s *Struct) {
 	adt.Structs = append(adt.Structs, s)
 	s.parent = adt.parentEntity
@@ -169,78 +175,6 @@ func iterateOverEntities(c *Cluster) EntityIterator {
 			}
 			return parse.SearchShouldContinue
 		})
-	}
-}
-
-func iterateOverDataTypesOld(c *Cluster) EntityIterator {
-	return func(yield func(types.Entity, types.Entity) bool) {
-		if c.Features != nil {
-			if !yield(c, c.Features) {
-				return
-			}
-		}
-		for _, en := range c.Bitmaps {
-			if !yield(c, en) {
-				return
-			}
-		}
-		for _, en := range c.Enums {
-			if !yield(c, en) {
-				return
-			}
-		}
-		for _, en := range c.Structs {
-			if !yield(c, en) {
-				return
-			}
-			for _, f := range en.Fields {
-				for p, e := range iterateOverFieldDataTypes(f) {
-					if !yield(p, e) {
-						return
-					}
-				}
-			}
-		}
-		for _, cmd := range c.Commands {
-			if !yield(c, cmd) {
-				return
-			}
-			for _, f := range cmd.Fields {
-				for p, e := range iterateOverFieldDataTypes(f) {
-					if !yield(p, e) {
-						return
-					}
-				}
-			}
-			if cmd.Response != nil && cmd.Response.Entity != nil && cmd.Response.Name == "" {
-				if !yield(cmd, cmd.Response.Entity) {
-					return
-				}
-			}
-			for _, ev := range c.Events {
-				if !yield(c, ev) {
-					return
-				}
-				for _, f := range ev.Fields {
-					for p, e := range iterateOverFieldDataTypes(f) {
-						if !yield(p, e) {
-							return
-						}
-					}
-				}
-			}
-			for _, a := range c.Attributes {
-
-				if !yield(c, a) {
-					return
-				}
-				for p, e := range iterateOverFieldDataTypes(a) {
-					if !yield(p, e) {
-						return
-					}
-				}
-			}
-		}
 	}
 }
 
@@ -342,22 +276,6 @@ func traverseEntities(c *Cluster, callback EntityCallback) parse.SearchShould {
 		}
 		return true
 	}
-
-	/*yieldFields := func(parent types.Entity, fields FieldSet) bool {
-		switch callback(c, parent) {
-		case parse.SearchShouldContinue:
-			for _, f := range fields {
-				switch traverseFieldDataTypes(f, callback) {
-				case parse.SearchShouldStop:
-					return false
-				}
-			}
-		case parse.SearchShouldSkip:
-		case parse.SearchShouldStop:
-			return false
-		}
-		return true
-	}*/
 
 	if c.Features != nil {
 		if !traverseYieldEntity(c, c.Features, callback) {

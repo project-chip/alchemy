@@ -15,8 +15,15 @@ type SDK struct {
 	ClusterAliases               map[string][]string `yaml:"cluster-aliases,omitempty"`
 	ClusterListKeys              map[string]string   `yaml:"cluster-list-keys,omitempty"`
 
-	WritePrivilegeAsRole bool            `yaml:"write-privilege-as-role,omitempty"`
-	SeparateStructs      SeparateStructs `yaml:"separate-structs,omitempty"`
+	WritePrivilegeAsRole bool `yaml:"write-privilege-as-role,omitempty"`
+
+	SeparateStructs UniqueStringList `yaml:"separate-structs,omitempty"`
+	SeparateBitmaps UniqueStringList `yaml:"separate-bitmaps,omitempty"`
+	SeparateEnums   UniqueStringList `yaml:"separate-enums,omitempty"`
+
+	SharedBitmaps UniqueStringList `yaml:"shared-bitmaps,omitempty"`
+	SharedEnums   UniqueStringList `yaml:"shared-enums,omitempty"`
+	SharedStructs UniqueStringList `yaml:"shared-structs,omitempty"`
 
 	TemplatePath string `yaml:"template-path,omitempty"`
 
@@ -42,6 +49,31 @@ func (s *SDK) HasSpecPatch() bool {
 	return false
 }
 
+func (sdk *SDK) HasSdkPatch() bool {
+	if sdk == nil {
+		return false
+	}
+	if sdk.Types != nil {
+		return true
+	}
+	if len(sdk.TypeNames) > 0 {
+		return true
+	}
+	if sdk.ExtraTypes != nil {
+		return true
+	}
+	if len(sdk.SharedBitmaps) > 0 {
+		return true
+	}
+	if len(sdk.SharedEnums) > 0 {
+		return true
+	}
+	if len(sdk.SharedStructs) > 0 {
+		return true
+	}
+	return false
+}
+
 type SDKTypes struct {
 	Attributes  map[string]*SDKType `yaml:"attributes,omitempty"`
 	Clusters    map[string]*SDKType `yaml:"clusters,omitempty"`
@@ -61,19 +93,28 @@ type SDKType struct {
 	List         bool   `yaml:"list,omitempty"`
 
 	Fields      []*SDKType `yaml:"fields,omitempty"`
+	ExtraFields []*SDKType `yaml:"extra-fields,omitempty"`
 	Domain      string     `yaml:"domain,omitempty"`
 	Priority    string     `yaml:"priority,omitempty"`
 	Description string     `yaml:"description,omitempty"`
 
 	Bit   string `yaml:"bit,omitempty"`
+	Code  string `yaml:"code,omitempty"`
 	Value string `yaml:"value,omitempty"`
 
 	Constraint  string `yaml:"constraint,omitempty"`
 	Conformance string `yaml:"conformance,omitempty"`
 	Fallback    string `yaml:"fallback,omitempty"`
 
-	Quality string `yaml:"quality,omitempty"`
-	Access  string `yaml:"access,omitempty"`
+	Quality           string `yaml:"quality,omitempty"`
+	Access            string `yaml:"access,omitempty"`
+	Direction         string `yaml:"direction,omitempty"`
+	Response          string `yaml:"response,omitempty"`
+	FabricScoping     string `yaml:"fabric-scoping,omitempty"`
+	FabricSensitivity string `yaml:"fabric-sensitivity,omitempty"`
+
+	Attributes map[string]*SDKType `yaml:"attributes,omitempty"`
+	Commands   map[string]*SDKType `yaml:"commands,omitempty"`
 }
 
 type SDKTypeCollection map[string]*SDKType
@@ -102,9 +143,9 @@ func (zap *SDK) OverrideDeviceType(deviceType *matter.DeviceType, defaultTypeNam
 	return defaultTypeName
 }
 
-type SeparateStructs map[string]struct{}
+type UniqueStringList map[string]struct{}
 
-func (i SeparateStructs) MarshalYAML() ([]byte, error) {
+func (i UniqueStringList) MarshalYAML() ([]byte, error) {
 	structs := make([]string, 0, len(i))
 	for s := range i {
 		structs = append(structs, s)
@@ -112,8 +153,8 @@ func (i SeparateStructs) MarshalYAML() ([]byte, error) {
 	return yaml.Marshal(structs)
 }
 
-func (i *SeparateStructs) UnmarshalYAML(b []byte) error {
-	*i = make(SeparateStructs)
+func (i *UniqueStringList) UnmarshalYAML(b []byte) error {
+	*i = make(UniqueStringList)
 	var structs []string
 	err := yaml.Unmarshal(b, &structs)
 	if err != nil {

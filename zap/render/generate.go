@@ -103,6 +103,10 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*a
 			extra = append(extra, pipeline.NewData(externalDoc.Path.Absolute, externalDoc))
 		}
 
+		if configurator.IsEmpty() {
+			continue
+		}
+
 		tg.buildClusterAliases(configurator)
 
 		result, err = tg.renderZapTemplate(configurator, doc)

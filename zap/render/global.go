@@ -44,16 +44,13 @@ func (p GlobalObjectsRenderer) Process(cxt context.Context, inputs []*pipeline.D
 	globalEntities := make(map[types.EntityType][]types.Entity)
 	for _, input := range inputs {
 		entities := p.spec.EntitiesForDocument(input.Content)
-		if err != nil {
-			return
-		}
 		for _, entity := range entities {
 			et := entity.EntityType()
 			switch et {
 			case types.EntityTypeStruct, types.EntityTypeBitmap, types.EntityTypeEnum:
 				globalEntities[entity.EntityType()] = append(globalEntities[entity.EntityType()], entity)
 			default:
-				slog.Warn("Skipping currently unsupported global entity type", matter.LogEntity("entity", entity))
+				slog.Warn("Skipping global entity type currently unsupported in ZAP", matter.LogEntity("entity", entity))
 			}
 		}
 	}
@@ -124,15 +121,14 @@ func getGlobalTestEntites(entityType types.EntityType) (testEntities []types.Ent
 	switch entityType {
 	case types.EntityTypeBitmap:
 		testGlobalBitmap := matter.NewBitmap(nil, nil)
-		testGlobalBitmap.Name = "TestGlobalBitmap"
-		testGlobalBitmap.Type = types.NewDataType(types.BaseDataTypeMap32, false)
-		testGlobalBitmap.Bits = append(testGlobalBitmap.Bits, matter.NewBitmapBit(nil, testGlobalBitmap, "0x01", "FirstBit", "", nil))
-		testGlobalBitmap.Bits = append(testGlobalBitmap.Bits, matter.NewBitmapBit(nil, testGlobalBitmap, "0x02", "SecondBit", "", nil))
+		firstBit := matter.NewBitmapBit(nil, testGlobalBitmap, "0x01", "FirstBit", "", nil)
+		secondBit := matter.NewBitmapBit(nil, testGlobalBitmap, "0x02", "SecondBit", "", nil)
+		testGlobalBitmap.Bits = append(testGlobalBitmap.Bits, firstBit, secondBit)
 		testEntities = append(testEntities, testGlobalBitmap)
 	case types.EntityTypeEnum:
 		testGlobalEnum := matter.NewEnum(nil, nil)
 		testGlobalEnum.Name = "TestGlobalEnum"
-		testGlobalEnum.Type = types.NewDataType(types.BaseDataTypeEnum8, false)
+		testGlobalEnum.Type = types.NewDataType(types.BaseDataTypeEnum8, types.DataTypeRankScalar)
 		someValue := matter.NewEnumValue(nil, testGlobalEnum)
 		someValue.Name = "SomeValue"
 		someValue.Value = matter.NewNumber(0x0)
@@ -143,33 +139,31 @@ func getGlobalTestEntites(entityType types.EntityType) (testEntities []types.Ent
 		finalValue.Name = "FinalValue"
 		finalValue.Value = matter.NewNumber(0x2)
 		testGlobalEnum.Values = matter.EnumValueSet{someValue, someOtherValue, finalValue}
+		testEntities = append(testEntities, testGlobalEnum)
 	case types.EntityTypeStruct:
 		testGlobalStruct := matter.NewStruct(nil, nil)
 		testGlobalStruct.Name = "TestGlobalStruct"
 		nameField := matter.NewField(nil, testGlobalStruct, types.EntityTypeStructField)
 		nameField.ID = matter.NewNumber(0)
 		nameField.Name = "Name"
-		nameField.Type = types.NewDataType(types.BaseDataTypeString, false)
+		nameField.Type = types.NewDataType(types.BaseDataTypeString, types.DataTypeRankScalar)
 		nameField.Constraint = &constraint.MaxConstraint{
 			Maximum: &constraint.IntLimit{Value: 128},
 		}
 		nameField.Conformance = conformance.Set{&conformance.Mandatory{}}
-
 		myBitmapField := matter.NewField(nil, testGlobalStruct, types.EntityTypeStructField)
 		myBitmapField.ID = matter.NewNumber(1)
 		myBitmapField.Name = "MyBitmap"
-		myBitmapField.Type = types.NewCustomDataType("TestGlobalBitmap", false)
+		myBitmapField.Type = types.NewCustomDataType("TestGlobalBitmap", types.DataTypeRankScalar)
 		myBitmapField.Quality = matter.QualityNullable
 		myBitmapField.Conformance = conformance.Set{&conformance.Mandatory{}}
-
 		myEnumField := matter.NewField(nil, testGlobalStruct, types.EntityTypeStructField)
 		myEnumField.ID = matter.NewNumber(2)
 		myEnumField.Name = "MyEnum"
-		myEnumField.Type = types.NewCustomDataType("TestGlobalEnum", false)
+		myEnumField.Type = types.NewCustomDataType("TestGlobalEnum", types.DataTypeRankScalar)
 		myEnumField.Quality = matter.QualityNullable
 		myEnumField.Conformance = conformance.Set{&conformance.Mandatory{}}
-
-		testGlobalStruct.Fields = matter.FieldSet{nameField, myBitmapField, myEnumField}
+		testGlobalStruct.Fields = append(testGlobalStruct.Fields, nameField, myBitmapField, myEnumField)
 		testEntities = append(testEntities, testGlobalStruct)
 	}
 	return

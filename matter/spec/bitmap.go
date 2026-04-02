@@ -21,7 +21,7 @@ func (library *Library) toBitmap(reader asciidoc.Reader, d *asciidoc.Document, s
 		return nil, newGenericParseError(section, "error parsing bitmap data type: %v", err)
 	}
 	if dt == nil {
-		dt = types.NewDataType(types.BaseDataTypeMap8, false)
+		dt = types.NewDataType(types.BaseDataTypeMap8, types.DataTypeRankScalar)
 		slog.Warn("Bitmap does not declare its derived data type; assuming map8", log.Element("source", d.Path, section), slog.String("bitmap", name))
 	} else if !dt.IsMap() {
 		return nil, newGenericParseError(section, "unknown bitmap data type: %s", dt.Name)

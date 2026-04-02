@@ -3,7 +3,7 @@ package render
 import "github.com/project-chip/alchemy/asciidoc"
 
 func renderFormattedText(cxt Target, el asciidoc.BlockElement, wrapper string) (err error) {
-	err = renderAttributes(cxt, el.Attributes(), true)
+	err = renderAttributes(cxt, el.Attributes(), attributeRenderTypeInline)
 	if err != nil {
 		return
 	}

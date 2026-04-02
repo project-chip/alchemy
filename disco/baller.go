@@ -133,6 +133,34 @@ func (b *Baller) disco(cxt context.Context, doc *asciidoc.Document) error {
 }
 
 func (b *Baller) discoBallTopLevelSection(dc *discoContext, top *asciidoc.Section, docType matter.DocType) error {
+	if b.options.AddXrefstyle {
+		var xrefstyleEntry *asciidoc.AttributeEntry
+		var topIndex int = -1
+
+		for i, el := range dc.doc.Elements {
+			if el == top {
+				topIndex = i
+				break
+			}
+			if ae, ok := el.(*asciidoc.AttributeEntry); ok && ae.Name == "xrefstyle" {
+				xrefstyleEntry = ae
+			}
+		}
+
+		if xrefstyleEntry == nil {
+			ae := asciidoc.NewAttributeEntry("xrefstyle")
+			ae.Elements = asciidoc.Elements{asciidoc.NewString("basic")}
+			if topIndex != -1 {
+				dc.doc.Elements = append(dc.doc.Elements, nil, nil)
+				copy(dc.doc.Elements[topIndex+2:], dc.doc.Elements[topIndex:])
+				dc.doc.Elements[topIndex] = ae
+				dc.doc.Elements[topIndex+1] = &asciidoc.NewLine{}
+			} else {
+				dc.doc.Elements = append(asciidoc.Elements{ae, &asciidoc.NewLine{}}, dc.doc.Elements...)
+			}
+		}
+	}
+
 	if b.options.ReorderSections {
 		sectionOrder, ok := matter.TopLevelSectionOrders[docType]
 		if !ok {

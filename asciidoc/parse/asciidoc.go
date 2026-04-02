@@ -16518,7 +16518,7 @@ func (p *parser) callonMultiLineCommentLine1() (any, error) {
 }
 
 func (c *current) onCounterIncrement1(name, initialValue any) (any, error) {
-	return populatePosition(c, asciidoc.NewCounter(name.(string), initialValue, true)), nil
+	return populatePosition(c, asciidoc.NewCounter(name.(string), initialValue, asciidoc.CounterVisibilityVisible)), nil
 }
 
 func (p *parser) callonCounterIncrement1() (any, error) {
@@ -16528,7 +16528,7 @@ func (p *parser) callonCounterIncrement1() (any, error) {
 }
 
 func (c *current) onCounterSilentIncrement1(name, initialValue any) (any, error) {
-	return populatePosition(c, asciidoc.NewCounter(name.(string), initialValue, false)), nil
+	return populatePosition(c, asciidoc.NewCounter(name.(string), initialValue, asciidoc.CounterVisibilityHidden)), nil
 }
 
 func (p *parser) callonCounterSilentIncrement1() (any, error) {
