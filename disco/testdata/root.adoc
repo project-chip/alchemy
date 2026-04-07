@@ -1,5 +1,0 @@
-= Root Doc
-
-include::include.adoc[]
-
-This is a root document.

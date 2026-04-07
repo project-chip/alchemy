@@ -1,3 +1,0 @@
-= Include Document
-
-This is an include document.
