@@ -34,35 +34,35 @@ func NewIdlRenderer(spec *spec.Specification) (IdlRenderer, error) {
 		&matter.Field{
 			Name:        "GeneratedCommandList",
 			ID:          matter.NewNumber(65528),
-			Type:        types.NewDataType(types.BaseDataTypeCommandID, true),
+			Type:        types.NewDataType(types.BaseDataTypeCommandID, types.DataTypeRankList),
 			Access:      matter.Access{Read: matter.PrivilegeView},
 			Conformance: conformance.Set{&conformance.Mandatory{}},
 		},
 		&matter.Field{
 			Name:        "AcceptedCommandList",
 			ID:          matter.NewNumber(65529),
-			Type:        types.NewDataType(types.BaseDataTypeCommandID, true),
+			Type:        types.NewDataType(types.BaseDataTypeCommandID, types.DataTypeRankList),
 			Access:      matter.Access{Read: matter.PrivilegeView},
 			Conformance: conformance.Set{&conformance.Mandatory{}},
 		},
 		&matter.Field{
 			Name:        "AttributeList",
 			ID:          matter.NewNumber(65531),
-			Type:        types.NewDataType(types.BaseDataTypeAttributeID, true),
+			Type:        types.NewDataType(types.BaseDataTypeAttributeID, types.DataTypeRankList),
 			Access:      matter.Access{Read: matter.PrivilegeView},
 			Conformance: conformance.Set{&conformance.Mandatory{}},
 		},
 		&matter.Field{
 			Name:        "FeatureMap",
 			ID:          matter.NewNumber(65532),
-			Type:        types.NewDataType(types.BaseDataTypeMap32, false),
+			Type:        types.NewDataType(types.BaseDataTypeMap32, types.DataTypeRankScalar),
 			Access:      matter.Access{Read: matter.PrivilegeView},
 			Conformance: conformance.Set{&conformance.Mandatory{}},
 		},
 		&matter.Field{
 			Name:        "ClusterRevision",
 			ID:          matter.NewNumber(65533),
-			Type:        types.NewDataType(types.BaseDataTypeUInt16, false),
+			Type:        types.NewDataType(types.BaseDataTypeUInt16, types.DataTypeRankScalar),
 			Access:      matter.Access{Read: matter.PrivilegeView},
 			Conformance: conformance.Set{&conformance.Mandatory{}},
 		},
@@ -194,7 +194,7 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 	for fieldName, ns := range namespaces {
 		en := matter.NewEnum(ns.Source(), ns.Parent())
 		en.Name = fieldName + "Tag"
-		en.Type = types.NewDataType(types.BaseDataTypeEnum8, false)
+		en.Type = types.NewDataType(types.BaseDataTypeEnum8, types.DataTypeRankScalar)
 		for _, tag := range ns.SemanticTags {
 			nst := matter.NewEnumValue(tag.Source(), ns)
 			nst.Name = tag.Name

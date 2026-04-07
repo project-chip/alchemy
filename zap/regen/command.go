@@ -40,7 +40,7 @@ func commandFieldsHelper(spec *spec.Specification) func(matter.Command, *raymond
 	return func(cmd matter.Command, options *raymond.Options) raymond.SafeString {
 		fields := filterEntities(cmd.Fields)
 		if cmd.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
-			fields = append(fields, &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, false), Conformance: conformance.Set{&conformance.Mandatory{}}})
+			fields = append(fields, &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, types.DataTypeRankScalar), Conformance: conformance.Set{&conformance.Mandatory{}}})
 		}
 		return enumerateEntitiesHelper(fields, spec, options)
 	}

@@ -144,7 +144,7 @@ func maxValue(field matter.Field, fs matter.FieldSet) (max types.DataTypeExtreme
 
 	var maxDueToNullable bool
 	if hasNumericMax {
-		maxDueToNullable = types.Max(sdk.ToUnderlyingType(sdk.FindBaseType(field.Type)), true).ValueEquals(max)
+		maxDueToNullable = types.Max(sdk.ToUnderlyingType(sdk.FindBaseType(field.Type)), types.NullabilityNullable).ValueEquals(max)
 	}
 	if maxDueToNullable {
 		return
