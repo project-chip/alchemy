@@ -1,24 +1,26 @@
-package tests
+package disco
 
 import (
 	"bytes"
+	"context"
 	"os"
 	"strings"
 	"testing"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
-	"github.com/project-chip/alchemy/disco"
+	"github.com/project-chip/alchemy/config"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
-
 func TestXrefStyleOnlyInRootWithFile(t *testing.T) {
-	b := disco.NewBaller(nil, disco.DiscoOptions{XrefStyleOnlyInRoot: true})
+	b := NewBaller(nil, DiscoOptions{XrefStyleOnlyInRoot: true})
 
 	// Test Case 1: Root doc without xrefstyle (should add it)
 	{
-		path := asciidoc.Path{Relative: "../disco/testdata/root_without_xref.adoc"}
-		in, err := os.ReadFile("../disco/testdata/root_without_xref.adoc")
+		path := asciidoc.Path{Relative: "testdata/root_without_xref.adoc"}
+		in, err := os.ReadFile("testdata/root_without_xref.adoc")
 		if err != nil {
 			t.Fatalf("error reading file: %v", err)
 		}
@@ -28,7 +30,17 @@ func TestXrefStyleOnlyInRootWithFile(t *testing.T) {
 			t.Fatalf("error parsing file: %v", err)
 		}
 
-		err = b.TestHelperDiscoBall(doc, true)
+		lib := spec.NewLibrary(doc, config.Library{}, nil, nil)
+		lib.Reader = asciidoc.RawReader
+		dc := &discoContext{
+			Context:            context.Background(),
+			doc:                doc,
+			library:            lib,
+			potentialDataTypes: make(map[string][]*DataTypeEntry),
+		}
+
+		top := parse.FindFirst[*asciidoc.Section](doc, asciidoc.RawReader, doc)
+		err = b.discoBallTopLevelSection(dc, top, matter.DocTypeCluster)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -36,8 +48,9 @@ func TestXrefStyleOnlyInRootWithFile(t *testing.T) {
 		// Verify added after Copyright Notice
 		found := false
 		for i, el := range doc.Elements {
-			if s, ok := el.(*asciidoc.Section); ok && len(s.Title) > 0 {
-				if str, ok := s.Title[0].(*asciidoc.String); ok && strings.Contains(str.Value, "Copyright Notice") {
+			if s, ok := el.(*asciidoc.Section); ok {
+				name := lib.SectionName(s)
+				if strings.Contains(strings.ToLower(name), "copyright notice") {
 					// Check next element
 					if i+1 < len(doc.Elements) {
 						if _, ok := doc.Elements[i+1].(*asciidoc.NewLine); ok {
@@ -59,8 +72,8 @@ func TestXrefStyleOnlyInRootWithFile(t *testing.T) {
 
 	// Test Case 2: Non-Root doc with xrefstyle (should remove it)
 	{
-		path := asciidoc.Path{Relative: "../disco/testdata/non_root_with_xref.adoc"}
-		in, err := os.ReadFile("../disco/testdata/non_root_with_xref.adoc")
+		path := asciidoc.Path{Relative: "testdata/non_root_with_xref.adoc"}
+		in, err := os.ReadFile("testdata/non_root_with_xref.adoc")
 		if err != nil {
 			t.Fatalf("error reading file: %v", err)
 		}
@@ -70,7 +83,17 @@ func TestXrefStyleOnlyInRootWithFile(t *testing.T) {
 			t.Fatalf("error parsing file: %v", err)
 		}
 
-		err = b.TestHelperDiscoBall(doc, false)
+		lib := spec.NewLibrary(nil, config.Library{}, nil, nil) // Root is nil, so doc is not root
+		lib.Reader = asciidoc.RawReader
+		dc := &discoContext{
+			Context:            context.Background(),
+			doc:                doc,
+			library:            lib,
+			potentialDataTypes: make(map[string][]*DataTypeEntry),
+		}
+
+		top := parse.FindFirst[*asciidoc.Section](doc, asciidoc.RawReader, doc)
+		err = b.discoBallTopLevelSection(dc, top, matter.DocTypeCluster)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -90,8 +113,8 @@ func TestXrefStyleOnlyInRootWithFile(t *testing.T) {
 
 	// Test Case 3: Root doc with xrefstyle (should do nothing)
 	{
-		path := asciidoc.Path{Relative: "../disco/testdata/root_with_xref.adoc"}
-		in, err := os.ReadFile("../disco/testdata/root_with_xref.adoc")
+		path := asciidoc.Path{Relative: "testdata/root_with_xref.adoc"}
+		in, err := os.ReadFile("testdata/root_with_xref.adoc")
 		if err != nil {
 			t.Fatalf("error reading file: %v", err)
 		}
@@ -99,6 +122,15 @@ func TestXrefStyleOnlyInRootWithFile(t *testing.T) {
 		doc, err := parse.Reader(path, bytes.NewReader(in))
 		if err != nil {
 			t.Fatalf("error parsing file: %v", err)
+		}
+
+		lib := spec.NewLibrary(doc, config.Library{}, nil, nil)
+		lib.Reader = asciidoc.RawReader
+		dc := &discoContext{
+			Context:            context.Background(),
+			doc:                doc,
+			library:            lib,
+			potentialDataTypes: make(map[string][]*DataTypeEntry),
 		}
 
 		// Count existing xrefstyle
@@ -109,7 +141,8 @@ func TestXrefStyleOnlyInRootWithFile(t *testing.T) {
 			}
 		}
 
-		err = b.TestHelperDiscoBall(doc, true)
+		top := parse.FindFirst[*asciidoc.Section](doc, asciidoc.RawReader, doc)
+		err = b.discoBallTopLevelSection(dc, top, matter.DocTypeCluster)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}

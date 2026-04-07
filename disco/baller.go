@@ -158,12 +158,7 @@ func (b *Baller) discoBallTopLevelSection(dc *discoContext, top *asciidoc.Sectio
 						if topIndex == -1 {
 							topIndex = i
 						}
-						name := ""
-						if len(s.Title) > 0 {
-							if str, ok := s.Title[0].(*asciidoc.String); ok {
-								name = str.Value
-							}
-						}
+						name := dc.library.SectionName(s)
 						if strings.Contains(strings.ToLower(name), "copyright notice") {
 							copyrightIndex = i
 							break
@@ -172,26 +167,38 @@ func (b *Baller) discoBallTopLevelSection(dc *discoContext, top *asciidoc.Sectio
 				}
 
 				if copyrightIndex != -1 {
-					dc.doc.Elements = append(dc.doc.Elements[:copyrightIndex+1], append([]asciidoc.Element{&asciidoc.NewLine{}, ae}, dc.doc.Elements[copyrightIndex+1:]...)...)
+					index := copyrightIndex + 1
+					dc.doc.Elements = append(dc.doc.Elements, nil, nil) // grow by 2
+					copy(dc.doc.Elements[index+2:], dc.doc.Elements[index:])
+					dc.doc.Elements[index] = &asciidoc.NewLine{}
+					dc.doc.Elements[index+1] = ae
 				} else if topIndex != -1 {
-					dc.doc.Elements = append(dc.doc.Elements[:topIndex], append([]asciidoc.Element{ae, &asciidoc.NewLine{}}, dc.doc.Elements[topIndex:]...)...)
+					index := topIndex
+					dc.doc.Elements = append(dc.doc.Elements, nil, nil) // grow by 2
+					copy(dc.doc.Elements[index+2:], dc.doc.Elements[index:])
+					dc.doc.Elements[index] = ae
+					dc.doc.Elements[index+1] = &asciidoc.NewLine{}
 				} else {
 					dc.doc.Elements = append(asciidoc.Elements{ae, &asciidoc.NewLine{}}, dc.doc.Elements...)
 				}
 			}
 		} else {
+			newElements := make(asciidoc.Elements, 0, len(dc.doc.Elements))
 			for i := 0; i < len(dc.doc.Elements); i++ {
 				el := dc.doc.Elements[i]
 				if ae, ok := el.(*asciidoc.AttributeEntry); ok && ae.Name == "xrefstyle" {
-					dc.doc.Elements = append(dc.doc.Elements[:i], dc.doc.Elements[i+1:]...)
-					i--
+					// Skip this element
+					// Also skip following NewLine if present
 					if i+1 < len(dc.doc.Elements) {
 						if _, ok := dc.doc.Elements[i+1].(*asciidoc.NewLine); ok {
-							dc.doc.Elements = append(dc.doc.Elements[:i+1], dc.doc.Elements[i+2:]...)
+							i++
 						}
 					}
+					continue
 				}
+				newElements = append(newElements, el)
 			}
+			dc.doc.Elements = newElements
 		}
 	}
 
@@ -226,18 +233,4 @@ func (b *Baller) discoBallTopLevelSection(dc *discoContext, top *asciidoc.Sectio
 	return nil
 }
 
-func (b *Baller) TestHelperDiscoBall(doc *asciidoc.Document, isRoot bool) error {
-	lib := &spec.Library{}
-	if isRoot {
-		lib.Root = doc
-	}
-	dc := &discoContext{
-		Context:            context.Background(),
-		doc:                doc,
-		library:            lib,
-		potentialDataTypes: make(map[string][]*DataTypeEntry),
-	}
-	docType := matter.DocTypeCluster
-	top := parse.FindFirst[*asciidoc.Section](doc, asciidoc.RawReader, doc)
-	return b.discoBallTopLevelSection(dc, top, docType)
-}
+
