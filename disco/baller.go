@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
@@ -133,30 +134,63 @@ func (b *Baller) disco(cxt context.Context, doc *asciidoc.Document) error {
 }
 
 func (b *Baller) discoBallTopLevelSection(dc *discoContext, top *asciidoc.Section, docType matter.DocType) error {
-	if b.options.AddXrefstyle && dc.doc == dc.library.Root {
-		var xrefstyleEntry *asciidoc.AttributeEntry
-		var topIndex int = -1
+	if b.options.XrefStyleOnlyInRoot {
+		// Logic:
+		// 1. For non-root, no xrefstyle at all anywhere in doc.
+		// 2. For root, if it is present somewhere in file, it's ok. If not present, add it after Copyright Notice or before first section.
 
-		for i, el := range dc.doc.Elements {
-			if el == top {
-				topIndex = i
-				break
+		if dc.doc == dc.library.Root {
+			found := false
+			for _, el := range dc.doc.Elements {
+				if ae, ok := el.(*asciidoc.AttributeEntry); ok && ae.Name == "xrefstyle" {
+					found = true
+					break
+				}
 			}
-			if ae, ok := el.(*asciidoc.AttributeEntry); ok && ae.Name == "xrefstyle" {
-				xrefstyleEntry = ae
-			}
-		}
+			if !found {
+				ae := asciidoc.NewAttributeEntry("xrefstyle")
+				ae.Elements = asciidoc.Elements{asciidoc.NewString("basic")}
 
-		if xrefstyleEntry == nil {
-			ae := asciidoc.NewAttributeEntry("xrefstyle")
-			ae.Elements = asciidoc.Elements{asciidoc.NewString("basic")}
-			if topIndex != -1 {
-				dc.doc.Elements = append(dc.doc.Elements, nil, nil)
-				copy(dc.doc.Elements[topIndex+2:], dc.doc.Elements[topIndex:])
-				dc.doc.Elements[topIndex] = ae
-				dc.doc.Elements[topIndex+1] = &asciidoc.NewLine{}
-			} else {
-				dc.doc.Elements = append(asciidoc.Elements{ae, &asciidoc.NewLine{}}, dc.doc.Elements...)
+				copyrightIndex := -1
+				topIndex := -1
+				for i, el := range dc.doc.Elements {
+					if s, ok := el.(*asciidoc.Section); ok {
+						if topIndex == -1 {
+							topIndex = i
+						}
+						name := ""
+						if len(s.Title) > 0 {
+							if str, ok := s.Title[0].(*asciidoc.String); ok {
+								name = str.Value
+							}
+						}
+						if strings.Contains(strings.ToLower(name), "copyright notice") {
+							copyrightIndex = i
+							break
+						}
+					}
+				}
+
+				if copyrightIndex != -1 {
+					dc.doc.Elements = append(dc.doc.Elements[:copyrightIndex+1], append([]asciidoc.Element{&asciidoc.NewLine{}, ae}, dc.doc.Elements[copyrightIndex+1:]...)...)
+				} else if topIndex != -1 {
+					dc.doc.Elements = append(dc.doc.Elements[:topIndex], append([]asciidoc.Element{ae, &asciidoc.NewLine{}}, dc.doc.Elements[topIndex:]...)...)
+				} else {
+					dc.doc.Elements = append(asciidoc.Elements{ae, &asciidoc.NewLine{}}, dc.doc.Elements...)
+				}
+			}
+		} else {
+			for i := 0; i < len(dc.doc.Elements); i++ {
+				el := dc.doc.Elements[i]
+				if ae, ok := el.(*asciidoc.AttributeEntry); ok && ae.Name == "xrefstyle" {
+					dc.doc.Elements = append(dc.doc.Elements[:i], dc.doc.Elements[i+1:]...)
+					i--
+					if i+1 < len(dc.doc.Elements) {
+						if _, ok := dc.doc.Elements[i+1].(*asciidoc.NewLine); ok {
+							dc.doc.Elements = append(dc.doc.Elements[:i+1], dc.doc.Elements[i+2:]...)
+						}
+					}
+				}
 			}
 		}
 	}
@@ -190,4 +224,20 @@ func (b *Baller) discoBallTopLevelSection(dc *discoContext, top *asciidoc.Sectio
 	b.ensureTableOptions(dc.doc, top)
 	b.postCleanUpStrings(dc.doc, top)
 	return nil
+}
+
+func (b *Baller) TestHelperDiscoBall(doc *asciidoc.Document, isRoot bool) error {
+	lib := &spec.Library{}
+	if isRoot {
+		lib.Root = doc
+	}
+	dc := &discoContext{
+		Context:            context.Background(),
+		doc:                doc,
+		library:            lib,
+		potentialDataTypes: make(map[string][]*DataTypeEntry),
+	}
+	docType := matter.DocTypeCluster
+	top := parse.FindFirst[*asciidoc.Section](doc, asciidoc.RawReader, doc)
+	return b.discoBallTopLevelSection(dc, top, docType)
 }
