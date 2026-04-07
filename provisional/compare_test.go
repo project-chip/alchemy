@@ -12,7 +12,6 @@ import (
 )
 
 func TestCompareProvisional_FileBased_Cases(t *testing.T) {
-	// Set debug level to error
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelError})))
 
 	cxt := context.Background()
