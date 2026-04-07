@@ -22,7 +22,7 @@ type DiscoOptions struct {
 	NormalizeAnchors              bool `default:"false" aliases:"normalizeAnchors" help:"rewrite anchors and references without labels" group:"Discoballing:"`
 	RemoveMandatoryFallbacks      bool `default:"true" aliases:"removeMandatoryFallbacks" help:"remove fallback values for mandatory fields" group:"Discoballing:"`
 	RenameSections                bool `default:"false" help:"rename sections to disco-ball standard names" group:"Discoballing:"`
-	AddXrefstyle                  bool `default:"true" aliases:"addXrefstyle" help:"add xrefstyle attribute before the first section" group:"Discoballing:"`
+	XrefStyleOnlyInRoot           bool `default:"true" aliases:"xrefStyleOnlyInRoot" help:"enforce xrefstyle: basic only in root" group:"Discoballing:"`
 }
 
 var DefaultOptions = DiscoOptions{
@@ -45,5 +45,5 @@ var DefaultOptions = DiscoOptions{
 	NormalizeAnchors:              false,
 	RemoveMandatoryFallbacks:      true,
 	RenameSections:                false,
-	AddXrefstyle:                  true,
+	XrefStyleOnlyInRoot:           true,
 }
