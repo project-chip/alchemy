@@ -61,8 +61,11 @@ func compare(specs spec.SpecPullRequest) (violationsByPath map[string][]spec.Vio
 		}
 
 		// When an ancestor is provisional, we don't need to report non-provisional violations for this entity
-		if (violationType == spec.ViolationTypeNonProvisional) && (parent != nil) {
-			continue
+		if parent != nil {
+			violationType &= ^spec.ViolationTypeNonProvisional
+			if violationType == spec.ViolationTypeNone {
+				continue
+			}
 		}
 
 		v := spec.Violation{Entity: entity, Type: violationType}
