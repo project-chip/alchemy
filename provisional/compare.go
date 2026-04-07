@@ -60,6 +60,11 @@ func compare(specs spec.SpecPullRequest) (violationsByPath map[string][]spec.Vio
 			parent = parent.Parent()
 		}
 
+		// When an ancestor is provisional, we don't need to report violations for this entity
+		if parent != nil {
+			continue
+		}
+
 		v := spec.Violation{Entity: entity, Type: violationType}
 		v.Path, v.Line = entity.Origin()
 		violationsByPath[v.Path] = append(violationsByPath[v.Path], v)
