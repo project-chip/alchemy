@@ -13,6 +13,7 @@ const (
 	TypeOptional
 	TypeProvisional
 	TypeDeprecated
+	TypeObsolete
 	TypeDisallowed
 	TypeDescribed
 	TypeGeneric
@@ -25,6 +26,7 @@ var TypeNames = map[Type]string{
 	TypeOptional:    "optional",
 	TypeProvisional: "provisional",
 	TypeDeprecated:  "deprecated",
+	TypeObsolete:    "obsolete",
 	TypeDisallowed:  "disallowed",
 	TypeDescribed:   "described",
 	TypeGeneric:     "generic",
