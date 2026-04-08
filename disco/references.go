@@ -96,6 +96,9 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *asciidoc.Document) {
 }
 
 func removeCrossReferenceStutter(library *spec.Library, doc *asciidoc.Document, icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) {
+	if parent == nil {
+		return
+	}
 	if len(icr.Elements) > 0 {
 		return
 	}
