@@ -129,11 +129,25 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 	}
 
 	type deviceTypeRequirements struct {
+		deviceRequirements  []*matter.DeviceTypeRequirement
 		clusterRequirements []*matter.DeviceTypeClusterRequirement
 		elementRequirements map[*matter.Cluster][]*matter.ElementRequirement
 	}
 
 	dtrs := make(map[*matter.DeviceType]*deviceTypeRequirements)
+
+	for _, dr := range deviceType.DeviceTypeRequirements {
+		if dr.DeviceType == nil {
+			continue
+		}
+
+		dtr, ok := dtrs[dr.DeviceType]
+		if !ok {
+			dtr = &deviceTypeRequirements{}
+			dtrs[dr.DeviceType] = dtr
+		}
+		dtr.deviceRequirements = append(dtr.deviceRequirements, dr)
+	}
 
 	for _, cr := range deviceType.ComposedDeviceTypeClusterRequirements {
 		if cr.DeviceType == nil {
@@ -173,7 +187,11 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 		cx := c.CreateElement("composedDeviceTypes")
 		deviceTypes := make([]*matter.DeviceType, 0, len(dtrs))
 		for _, dtr := range dtrs {
-			deviceTypes = append(deviceTypes, dtr.clusterRequirements[0].DeviceType)
+			if len(dtr.clusterRequirements) > 0 {
+				deviceTypes = append(deviceTypes, dtr.clusterRequirements[0].DeviceType)
+			} else if len(dtr.deviceRequirements) > 0 {
+				deviceTypes = append(deviceTypes, dtr.deviceRequirements[0].DeviceType)
+			}
 		}
 		slices.SortStableFunc(deviceTypes, func(a, b *matter.DeviceType) int {
 			return strings.Compare(a.Name, b.Name)
@@ -188,6 +206,16 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 				dte.CreateAttr("deviceTypeId", dt.ID.HexString())
 			}
 			dte.CreateAttr("deviceTypeName", dt.Name)
+			if len(dtr.deviceRequirements) > 0 {
+				err = renderConformanceElement(dtr.deviceRequirements[0].Conformance, dte, nil)
+				if err != nil {
+					return
+				}
+				err = renderConstraintElement(dtr.deviceRequirements[0].Constraint, nil, dte, nil)
+				if err != nil {
+					return
+				}
+			}
 			if len(dtr.clusterRequirements) > 0 {
 				crx := dte.CreateElement("clusterRequirements")
 				reqs := make([]*matter.DeviceTypeClusterRequirement, len(dtr.clusterRequirements))
@@ -213,34 +241,6 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 			}
 		}
 
-	}
-
-	if len(deviceType.ComposedDeviceTypeClusterRequirements) > 0 {
-		cx := c.CreateElement("composedDeviceTypes")
-		reqs := make([]*matter.ClusterRequirement, len(deviceType.ClusterRequirements))
-		copy(reqs, deviceType.ClusterRequirements)
-		slices.SortStableFunc(reqs, sortClusterRequirements)
-		for _, cr := range reqs {
-			clx := cx.CreateElement("cluster")
-			clx.CreateAttr("id", cr.ClusterID.HexString())
-			clx.CreateAttr("name", cr.ClusterName)
-			switch cr.Interface {
-			case matter.InterfaceClient:
-				clx.CreateAttr("side", "client")
-			case matter.InterfaceServer:
-				clx.CreateAttr("side", "server")
-			}
-			renderQuality(clx, cr.Quality)
-			err = renderConformanceElement(cr.Conformance, clx, nil)
-			if err != nil {
-				return
-			}
-			err = renderElementRequirements(deviceType, cr, clx)
-			if err != nil {
-				return
-			}
-
-		}
 	}
 
 	x.Indent(2)
