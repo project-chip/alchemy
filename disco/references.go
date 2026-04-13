@@ -53,11 +53,19 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *asciidoc.Document) {
 			}
 			continue
 		}
-		anchorLabel := labelText(anchor.LabelElements)
+		var anchorLabel string
+		if an.options.NormalizeAnchors {
+			if _, isSection := anchor.Element.(*asciidoc.Section); isSection {
+				anchorLabel = library.SectionName(anchor.Element.(*asciidoc.Section))
+			}
+		}
 		if anchorLabel == "" {
-			section, isSection := anchor.Element.(*asciidoc.Section)
-			if isSection {
-				anchorLabel = library.SectionName(section)
+			anchorLabel = labelText(anchor.LabelElements)
+			if anchorLabel == "" {
+				section, isSection := anchor.Element.(*asciidoc.Section)
+				if isSection {
+					anchorLabel = library.SectionName(section)
+				}
 			}
 		}
 		// We're going to be modifying the underlying array, so we need to make a copy of the slice
