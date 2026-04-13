@@ -1,6 +1,8 @@
 package matter
 
 import (
+	"iter"
+
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
@@ -89,4 +91,14 @@ func (es EventSet) ToEntities() []types.Entity {
 		evs = append(evs, e)
 	}
 	return evs
+}
+
+func (es EventSet) Iterate() iter.Seq[types.Entity] {
+	return func(yield func(types.Entity) bool) {
+		for _, ev := range es {
+			if !yield(ev) {
+				return
+			}
+		}
+	}
 }

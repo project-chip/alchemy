@@ -51,10 +51,6 @@ func Execute() {
 		handleError(k, err)
 	}
 
-	if logHadErrors {
-		os.Exit(1)
-	}
-
 	if !commands.SuppressVersionCheck {
 		select {
 		case version := <-versionChan:
@@ -63,6 +59,9 @@ func Execute() {
 		}
 	}
 
+	if logHadErrors || (commands.ErrorExitCode && err != nil) {
+		os.Exit(1)
+	}
 }
 
 var logHadErrors bool

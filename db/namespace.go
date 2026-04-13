@@ -14,13 +14,13 @@ func (h *Host) indexNamepsace(cxt context.Context, parent *sectionInfo, namespac
 	namespaceRow.values[matter.TableColumnID] = namespace.ID.IntString()
 	namespaceRow.values[matter.TableColumnName] = namespace.Name
 
-	ci := &sectionInfo{id: h.nextID(namespaceTable), parent: parent, values: namespaceRow, children: make(map[string][]*sectionInfo)}
+	ci := h.newSectionInfo(namespaceTable, parent, namespaceRow, namespace)
 
 	for _, t := range namespace.SemanticTags {
 		tagRow := newDBRow()
 		tagRow.values[matter.TableColumnID] = t.ID.IntString()
 		tagRow.values[matter.TableColumnName] = t.Name
-		fci := &sectionInfo{id: h.nextID(tagTable), parent: ci, values: tagRow}
+		fci := h.newSectionInfo(tagTable, ci, tagRow, t)
 		ci.children[tagTable] = append(ci.children[tagTable], fci)
 
 	}

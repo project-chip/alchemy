@@ -252,7 +252,7 @@ func (library *Library) findAnonymousBitmap(reader asciidoc.Reader, doc *asciido
 			name = matter.Case(summary)
 		}
 
-		bv := matter.NewBitmapBit(s, bit, name, summary, conf)
+		bv := matter.NewBitmapBit(s, bm, bit, name, summary, conf)
 		bm.Bits = append(bm.Bits, bv)
 	}
 	if len(bm.Bits) > 0 {

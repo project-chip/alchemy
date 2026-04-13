@@ -68,6 +68,10 @@ func LogEntity(key string, en types.Entity) slog.Attr {
 		args = append(args, slog.String("type", "feature"))
 		args = append(args, slog.String("name", entity.Code))
 		args = append(args, log.Path("source", entity))
+	case *Namespace:
+		args = append(args, slog.String("type", "namespace"))
+		args = append(args, slog.String("name", entity.Name))
+		args = append(args, log.Path("source", entity))
 	case Bit:
 		args = append(args, slog.String("type", "bit"))
 		args = append(args, slog.String("name", entity.Name()))
@@ -78,6 +82,15 @@ func LogEntity(key string, en types.Entity) slog.Attr {
 		args = append(args, slog.String("clusterName", entity.ClusterName))
 		args = append(args, slog.String("interface", entity.Interface.String()))
 		args = append(args, log.Path("source", entity))
+	case *Constant:
+		args = append(args, slog.String("type", "constant"))
+		args = append(args, slog.String("name", entity.Name))
+		args = append(args, slog.Any("value", entity.Value))
+		args = append(args, log.Path("source", entity))
+	case nil:
+		args = append(args, slog.String("type", "nil"))
+	default:
+		args = append(args, log.Type("unknownEntityType", en))
 	}
 	if en != nil {
 		parent := en.Parent()

@@ -31,6 +31,25 @@ type Configurator struct {
 	ExternalEntities map[types.Entity]struct{}
 }
 
+func (c *Configurator) IsEmpty() bool {
+	if len(c.Clusters) > 0 {
+		return false
+	}
+	if len(c.Features) > 0 {
+		return false
+	}
+	if len(c.Bitmaps) > 0 {
+		return false
+	}
+	if len(c.Enums) > 0 {
+		return false
+	}
+	if len(c.Structs) > 0 {
+		return false
+	}
+	return true
+}
+
 func NewConfigurator(spec *spec.Specification, docs []*asciidoc.Document, entities []types.Entity, outPath string, errata *errata.SDK, global bool) (*Configurator, error) {
 	c := &Configurator{
 		Spec:    spec,
@@ -77,6 +96,11 @@ func NewConfigurator(spec *spec.Specification, docs []*asciidoc.Document, entiti
 }
 
 func (c *Configurator) addCluster(parentEntity types.Entity, v *matter.Cluster) {
+	for _, name := range c.Errata.ClusterSkip {
+		if name == v.Name {
+			return
+		}
+	}
 	c.addTypes(parentEntity, v.Attributes)
 	if v.Features != nil {
 		c.addEntityType(parentEntity, v.Features)
@@ -97,10 +121,20 @@ func (c *Configurator) addCluster(parentEntity types.Entity, v *matter.Cluster) 
 		if strings.EqualFold(e.Name, "StatusCode") || strings.EqualFold(e.Name, "StatusCodeEnum") || strings.EqualFold(e.Name, "ModeTag") {
 			c.Enums[e] = append(c.Enums[e], v.ID)
 		}
+		if c.Errata != nil && c.Errata.SeparateEnums != nil {
+			if _, ok := c.Errata.SeparateEnums[e.Name]; ok {
+				c.Enums[e] = append(c.Enums[e], v.ID)
+			}
+		}
 	}
-	for _, name := range c.Errata.ClusterSkip {
-		if name == v.Name {
-			return
+	if c.Errata != nil {
+		if len(c.Errata.SeparateBitmaps) > 0 {
+			for _, b := range v.Bitmaps {
+				if _, ok := c.Errata.SeparateBitmaps[b.Name]; ok {
+					c.Bitmaps[b] = append(c.Bitmaps[b], v.ID)
+				}
+			}
+
 		}
 	}
 	c.Clusters[v] = false

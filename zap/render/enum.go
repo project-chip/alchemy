@@ -15,7 +15,7 @@ import (
 )
 
 func (cr *configuratorRenderer) generateEnums(enums map[*matter.Enum][]*matter.Number, ce *etree.Element) (err error) {
-
+	errata := cr.configurator.Errata
 	for _, eve := range ce.SelectElements("enum") {
 
 		nameAttr := eve.SelectAttr("name")
@@ -46,6 +46,14 @@ func (cr *configuratorRenderer) generateEnums(enums map[*matter.Enum][]*matter.N
 			slog.Warn("Removing unrecognized enum from ZAP XML", slog.String("path", cr.configurator.OutPath), slog.String("enumName", name))
 			ce.RemoveChild(eve)
 			continue
+		}
+		if errata != nil && errata.SeparateEnums != nil {
+			if _, ok := errata.SeparateEnums[name]; ok {
+				amendedClusterCodes, remainingClusterIds := amendExistingClusterCodes(eve, matchingEnum, clusterIds)
+				cr.populateEnum(eve, matchingEnum, amendedClusterCodes)
+				enums[matchingEnum] = remainingClusterIds
+				continue
+			}
 		}
 		err = cr.populateEnum(eve, matchingEnum, clusterIds)
 		if err != nil {

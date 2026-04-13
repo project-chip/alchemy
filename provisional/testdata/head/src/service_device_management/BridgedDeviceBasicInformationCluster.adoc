@@ -1,0 +1,25 @@
+[[ref_BridgedDeviceBasicInformationCluster, Bridged Device Basic Information Cluster]]
+= Bridged Device Basic Information Cluster
+
+== Classification
+
+|===
+| Hierarchy | Role        | Scope    | PICS Code
+| Base      | Application | Endpoint | BDBIS
+|===
+
+== Cluster Identifiers
+
+[options="header",valign="middle"]
+|===
+| Identification     | Name
+| 0x0039             | Bridged Device Basic Information
+|===
+
+== Revision History
+
+[options="header",valign="middle"]
+|===
+| Revision | Description
+| 1        | Initial Release
+|===

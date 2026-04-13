@@ -36,7 +36,7 @@ func EntityConformance(entity types.Entity) conformance.Set {
 		return entity.Conformance
 	case *ElementRequirement:
 		return entity.Conformance
-	case *Struct, *Enum, *Bitmap, *Features:
+	case *Struct, *Enum, *Bitmap, *Features, *Namespace, *TypeDef:
 		return nil
 	case nil:
 		slog.Warn("Unexpected nil entity fetching conformance")

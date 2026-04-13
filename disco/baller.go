@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
@@ -133,6 +134,74 @@ func (b *Baller) disco(cxt context.Context, doc *asciidoc.Document) error {
 }
 
 func (b *Baller) discoBallTopLevelSection(dc *discoContext, top *asciidoc.Section, docType matter.DocType) error {
+	if b.options.XrefStyleOnlyInRoot {
+		// Logic:
+		// 1. For non-root, no xrefstyle at all anywhere in doc.
+		// 2. For root, if it is present somewhere in file, it's ok. If not present, add it after Copyright Notice or before first section.
+
+		if dc.doc == dc.library.Root {
+			found := false
+			for _, el := range dc.doc.Elements {
+				if ae, ok := el.(*asciidoc.AttributeEntry); ok && ae.Name == "xrefstyle" {
+					found = true
+					break
+				}
+			}
+			if !found {
+				ae := asciidoc.NewAttributeEntry("xrefstyle")
+				ae.Elements = asciidoc.Elements{asciidoc.NewString("basic")}
+
+				copyrightIndex := -1
+				topIndex := -1
+				for i, el := range dc.doc.Elements {
+					if s, ok := el.(*asciidoc.Section); ok {
+						if topIndex == -1 {
+							topIndex = i
+						}
+						name := dc.library.SectionName(s)
+						if strings.Contains(strings.ToLower(name), "copyright notice") {
+							copyrightIndex = i
+							break
+						}
+					}
+				}
+
+				if copyrightIndex != -1 {
+					index := copyrightIndex + 1
+					dc.doc.Elements = append(dc.doc.Elements, nil, nil) // grow by 2
+					copy(dc.doc.Elements[index+2:], dc.doc.Elements[index:])
+					dc.doc.Elements[index] = &asciidoc.NewLine{}
+					dc.doc.Elements[index+1] = ae
+				} else if topIndex != -1 {
+					index := topIndex
+					dc.doc.Elements = append(dc.doc.Elements, nil, nil) // grow by 2
+					copy(dc.doc.Elements[index+2:], dc.doc.Elements[index:])
+					dc.doc.Elements[index] = ae
+					dc.doc.Elements[index+1] = &asciidoc.NewLine{}
+				} else {
+					dc.doc.Elements = append(asciidoc.Elements{ae, &asciidoc.NewLine{}}, dc.doc.Elements...)
+				}
+			}
+		} else {
+			newElements := make(asciidoc.Elements, 0, len(dc.doc.Elements))
+			for i := 0; i < len(dc.doc.Elements); i++ {
+				el := dc.doc.Elements[i]
+				if ae, ok := el.(*asciidoc.AttributeEntry); ok && ae.Name == "xrefstyle" {
+					// Skip this element
+					// Also skip following NewLine if present
+					if i+1 < len(dc.doc.Elements) {
+						if _, ok := dc.doc.Elements[i+1].(*asciidoc.NewLine); ok {
+							i++
+						}
+					}
+					continue
+				}
+				newElements = append(newElements, el)
+			}
+			dc.doc.Elements = newElements
+		}
+	}
+
 	if b.options.ReorderSections {
 		sectionOrder, ok := matter.TopLevelSectionOrders[docType]
 		if !ok {
@@ -163,3 +232,5 @@ func (b *Baller) discoBallTopLevelSection(dc *discoContext, top *asciidoc.Sectio
 	b.postCleanUpStrings(dc.doc, top)
 	return nil
 }
+
+

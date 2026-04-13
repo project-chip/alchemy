@@ -340,15 +340,13 @@ To query, use you favorite MySQL client. On the command line, for example:
 
 
 ```console
-mysql -h 127.0.0.1 --skip-ssl
+mysql -h 127.0.0.1 --skip-ssl MatterSpec
 ```
 
 The `--skip-ssl` is because `alchemy-db` runs locally without SSL certificates, as a debug tool, yet modern MySQL versions require SSL on the connection unless otherwise specified.
 
 ##### Semantic tags used across multiple Namespaces
 ```sql
-USE MatterSpec;
-
 SELECT
     t.name AS tag,
     ns.name AS namespace,
@@ -409,4 +407,29 @@ WHERE
             data_type IN 
         (SELECT NAME FROM LargeEnums)
     );  
+```
+
+##### Export full list of semantic tags
+```sql
+
+SELECT
+    n.id AS namespace_id,
+    t.id AS tag_id,    
+    t.name AS tag_name,
+    n.name AS namespace_name,
+    d.name AS source_name
+FROM
+    tag AS t
+INNER JOIN
+    namespace AS n ON t.namespace_id = n.namespace_id
+INNER JOIN
+    document AS d ON n.document_id = d.document_id
+ORDER BY
+    namespace_id ASC, tag_id ASC;
+```
+
+An export as CSV of this query can be done directly like this:
+
+```console
+mysql -h 127.0.0.1 --skip-ssl --batch -e "SELECT n.id AS namespace_id, t.id AS tag_id, t.name AS tag_name, n.name AS namespace_name, d.name AS source_name FROM tag AS t INNER JOIN namespace AS n ON t.namespace_id = n.namespace_id INNER JOIN document AS d ON n.document_id = d.document_id ORDER BY namespace_id ASC, tag_id ASC;" MatterSpec | sed 's/\t/,/g' > namespaces.csv
 ```

@@ -4,7 +4,7 @@ import "github.com/project-chip/alchemy/asciidoc"
 
 func renderParagraph(cxt Target, p *asciidoc.Paragraph) (err error) {
 	cxt.FlushWrap()
-	err = renderAttributes(cxt, p.Attributes(), false)
+	err = renderAttributes(cxt, p.Attributes(), attributeRenderTypeBlock)
 	if err != nil {
 		return
 	}

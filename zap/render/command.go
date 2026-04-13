@@ -189,8 +189,8 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeCommandField) {
 				continue
 			}
-			xml.PrependAttribute(fe, "id", f.ID.IntString())
-			cr.setFieldAttributes(fe, types.EntityTypeCommand, c.Name, f, c.Fields)
+			xml.PrependAttribute(fe, "fieldId", f.ID.IntString())
+			cr.setFieldAttributes(fe, types.EntityTypeCommand, f, c.Fields, false)
 			break
 		}
 	}
@@ -208,8 +208,8 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 			return
 		}
 		fe := ce.CreateElement("arg")
-		fe.CreateAttr("id", f.ID.IntString())
-		cr.setFieldAttributes(fe, types.EntityTypeCommand, c.Name, f, c.Fields)
+		fe.CreateAttr("fieldId", f.ID.IntString())
+		cr.setFieldAttributes(fe, types.EntityTypeCommand, f, c.Fields, true)
 		xml.AppendElement(ce, fe)
 	}
 

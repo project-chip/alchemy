@@ -164,7 +164,7 @@ func Describe(el Element) string {
 		if el.InitialValue != "" {
 			s += fmt.Sprintf(" (initial value: %s)", el.InitialValue)
 		}
-		if el.Display {
+		if el.Display.Visible() {
 			s += " (display)"
 		}
 		return s

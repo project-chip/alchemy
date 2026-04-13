@@ -6,10 +6,10 @@ type Counter struct {
 
 	Name         string
 	InitialValue string
-	Display      bool
+	Display      CounterVisibility
 }
 
-func NewCounter(name string, initialValue any, display bool) *Counter {
+func NewCounter(name string, initialValue any, display CounterVisibility) *Counter {
 	iv, _ := initialValue.(string)
 	return &Counter{Name: name, InitialValue: iv, Display: display}
 }
@@ -43,6 +43,17 @@ const (
 	CounterTypeUpperCase
 	CounterTypeLowerCase
 )
+
+type CounterVisibility uint8
+
+const (
+	CounterVisibilityHidden CounterVisibility = iota
+	CounterVisibilityVisible
+)
+
+func (cb CounterVisibility) Visible() bool {
+	return cb == CounterVisibilityVisible
+}
 
 type CounterState struct {
 	CounterType CounterType

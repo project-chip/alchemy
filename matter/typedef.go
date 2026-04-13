@@ -1,6 +1,8 @@
 package matter
 
 import (
+	"iter"
+
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -45,11 +47,21 @@ func (td *TypeDef) Inherit(parent *TypeDef) {
 
 type TypeDefSet []*TypeDef
 
-func (ss TypeDefSet) Identifier(name string) (types.Entity, bool) {
-	for _, e := range ss {
+func (tds TypeDefSet) Identifier(name string) (types.Entity, bool) {
+	for _, e := range tds {
 		if e.Name == name {
 			return e, true
 		}
 	}
 	return nil, false
+}
+
+func (tds TypeDefSet) Iterate() iter.Seq[types.Entity] {
+	return func(yield func(types.Entity) bool) {
+		for _, td := range tds {
+			if !yield(td) {
+				return
+			}
+		}
+	}
 }

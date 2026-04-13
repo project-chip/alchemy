@@ -500,9 +500,12 @@ func GetMinMax(cc *matter.ConstraintContext, c constraint.Constraint) (from type
 
 	if cc.Field.Access.Write != matter.PrivilegeUnknown {
 		// Writable fields get default min/max
-		isNullable := cc.Field.Quality.Has(matter.QualityNullable)
-		from = cc.Field.Type.Min(isNullable)
-		to = cc.Field.Type.Max(isNullable)
+		var nullability types.Nullability
+		if cc.Field.Quality.Has(matter.QualityNullable) {
+			nullability = types.NullabilityNullable
+		}
+		from = cc.Field.Type.Min(nullability)
+		to = cc.Field.Type.Max(nullability)
 
 	}
 	return

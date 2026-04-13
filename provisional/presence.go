@@ -29,7 +29,7 @@ func (p Presence) String() string {
 			if ps.Len() > 0 {
 				ps.WriteRune(',')
 			}
-			switch p {
+			switch op {
 			case PresenceBase:
 				ps.WriteString("base")
 			case PresenceBaseInProgress:

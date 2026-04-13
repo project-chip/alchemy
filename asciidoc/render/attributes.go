@@ -30,12 +30,19 @@ const (
 	AttributeFilterFloat
 )
 
+type attributeRenderType uint8
+
+const (
+	attributeRenderTypeBlock attributeRenderType = iota
+	attributeRenderTypeInline
+)
+
 func shouldRenderAttributeType(at AttributeFilter, include AttributeFilter, exclude AttributeFilter) bool {
 	return ((at & include) == at) && ((at & exclude) != at)
 }
 
-func renderAttributes(cxt Target, attributes []asciidoc.Attribute, inline bool) error {
-	_, err := renderSelectAttributes(cxt, attributes, AttributeFilterAll, AttributeFilterNone, inline)
+func renderAttributes(cxt Target, attributes []asciidoc.Attribute, renderType attributeRenderType) error {
+	_, err := renderSelectAttributes(cxt, attributes, AttributeFilterAll, AttributeFilterNone, renderType)
 	return err
 }
 
@@ -67,12 +74,12 @@ func getAttributeType(name asciidoc.AttributeName) AttributeFilter {
 	return AttributeFilterNone
 }
 
-func renderSelectAttributes(cxt Target, attributes []asciidoc.Attribute, include AttributeFilter, exclude AttributeFilter, inline bool) (n int, err error) {
+func renderSelectAttributes(cxt Target, attributes []asciidoc.Attribute, include AttributeFilter, exclude AttributeFilter, renderType attributeRenderType) (n int, err error) {
 	if len(attributes) == 0 {
 		return
 	}
 
-	type attributeClass uint32
+	type attributeClass uint8
 
 	const (
 		attributeClassNone attributeClass = iota
@@ -136,7 +143,7 @@ func renderSelectAttributes(cxt Target, attributes []asciidoc.Attribute, include
 				continue
 			}
 			for _, ta := range anchors {
-				err = renderAttributeAnchor(cxt, ta, include, exclude, inline)
+				err = renderAttributeAnchor(cxt, ta, include, exclude, renderType)
 				if err != nil {
 					return
 				}
@@ -170,7 +177,7 @@ func renderSelectAttributes(cxt Target, attributes []asciidoc.Attribute, include
 			if len(filtered) == 0 {
 				continue
 			}
-			if !inline {
+			if renderType != attributeRenderTypeInline {
 				cxt.EnsureNewLine()
 			}
 			cxt.FlushWrap()
@@ -216,7 +223,7 @@ func renderSelectAttributes(cxt Target, attributes []asciidoc.Attribute, include
 				n++
 			}
 			cxt.WriteString("]")
-			if !inline {
+			if renderType != attributeRenderTypeInline {
 				cxt.WriteString("\n")
 			}
 			cxt.EndBlock()
@@ -229,10 +236,10 @@ func renderSelectAttributes(cxt Target, attributes []asciidoc.Attribute, include
 	return
 }
 
-func renderAttributeAnchor(cxt Target, anchor *asciidoc.AnchorAttribute, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
+func renderAttributeAnchor(cxt Target, anchor *asciidoc.AnchorAttribute, include AttributeFilter, exclude AttributeFilter, renderType attributeRenderType) (err error) {
 	id := anchor.ID
 	if len(id) > 0 && shouldRenderAttributeType(AttributeFilterID, include, exclude) {
-		if !inline {
+		if renderType != attributeRenderTypeInline {
 			cxt.EnsureNewLine()
 		}
 		cxt.FlushWrap()
@@ -255,7 +262,7 @@ func renderAttributeAnchor(cxt Target, anchor *asciidoc.AnchorAttribute, include
 			}
 		}
 		cxt.WriteString("]]")
-		if !inline {
+		if renderType != attributeRenderTypeInline {
 			cxt.WriteRune('\n')
 		}
 		cxt.EndBlock()
