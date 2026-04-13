@@ -134,6 +134,29 @@ func (b *Baller) disco(cxt context.Context, doc *asciidoc.Document) error {
 }
 
 func (b *Baller) discoBallTopLevelSection(dc *discoContext, top *asciidoc.Section, docType matter.DocType) error {
+	if b.options.AddDiscoballed {
+		var existingIndex = -1
+		var existingAE *asciidoc.AttributeEntry
+		for i, el := range dc.doc.Elements {
+			if ae, ok := el.(*asciidoc.AttributeEntry); ok && ae.Name == "alchemy-discoballed" {
+				existingIndex = i
+				existingAE = ae
+				break
+			}
+		}
+
+		if existingIndex > 0 {
+			// Remove it
+			dc.doc.Elements = append(dc.doc.Elements[:existingIndex], dc.doc.Elements[existingIndex+1:]...)
+			// Prepend it
+			dc.doc.Elements = append(asciidoc.Elements{existingAE, &asciidoc.NewLine{}}, dc.doc.Elements...)
+		} else if existingIndex == -1 {
+			// Create and prepend
+			ae := asciidoc.NewAttributeEntry("alchemy-discoballed")
+			dc.doc.Elements = append(asciidoc.Elements{ae, &asciidoc.NewLine{}}, dc.doc.Elements...)
+		}
+	}
+
 	if b.options.XrefStyleOnlyInRoot {
 		// Logic:
 		// 1. For non-root, no xrefstyle at all anywhere in doc.
