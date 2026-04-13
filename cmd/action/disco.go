@@ -77,7 +77,7 @@ func (c *Disco) Run(cc *cli.Context) (err error) {
 				fileEnforcementLevel[path] = EnforcementOptional
 				continue
 			}
-			if strings.Contains(string(b), ":alchemy-discoballed:") {
+			if strings.Contains(string(b), "\n:alchemy-discoballed:") || strings.HasPrefix(string(b), ":alchemy-discoballed:") {
 				fileEnforcementLevel[path] = EnforcementMandatory
 			} else {
 				fileEnforcementLevel[path] = EnforcementOptional
@@ -152,7 +152,7 @@ func (c *Disco) Run(cc *cli.Context) (err error) {
 
 	if hasMandatory {
 		slog.Info("Setting mandatory patch outputs")
-		err = os.WriteFile("disco-mandatory.patch", outMandatory.Bytes(), os.ModeAppend|0644)
+		err = os.WriteFile("disco-mandatory.patch", outMandatory.Bytes(), 0644)
 		if err != nil {
 			return fmt.Errorf("failed saving mandatory patch: %v", err)
 		}
@@ -162,7 +162,7 @@ func (c *Disco) Run(cc *cli.Context) (err error) {
 
 	if hasOptional {
 		slog.Info("Setting optional patch outputs")
-		err = os.WriteFile("disco-optional.patch", outOptional.Bytes(), os.ModeAppend|0644)
+		err = os.WriteFile("disco-optional.patch", outOptional.Bytes(), 0644)
 		if err != nil {
 			return fmt.Errorf("failed saving optional patch: %v", err)
 		}

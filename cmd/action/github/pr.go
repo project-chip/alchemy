@@ -85,11 +85,11 @@ func GetPRChangedFilesWithStatus(cxt context.Context, githubContext *githubactio
 			return
 		}
 		for _, file := range files {
-			if *file.Status == "deleted" {
+			if file.GetStatus() == "deleted" {
 				continue
 			}
-			slog.Info("changed file", "file", *file.Filename, "status", *file.Status)
-			changedFiles[*file.Filename] = FileStatus(*file.Status)
+			slog.Info("changed file", "file", file.GetFilename(), "status", file.GetStatus())
+			changedFiles[file.GetFilename()] = FileStatus(file.GetStatus())
 		}
 		if resp.NextPage == 0 {
 			break
