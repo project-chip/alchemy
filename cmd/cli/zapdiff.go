@@ -16,7 +16,8 @@ type ZAPDiff struct {
 	XmlRoot2      string `help:"root of second set of ZAP XMLs" group:"SDK Commands:" required:"true"`
 	Label1        string `default:"ZapXML-1" help:"label for first set of ZAP XMLs" group:"SDK Commands:"`
 	Label2        string `default:"ZapXML-2" help:"label for second set of ZAP XMLs" group:"SDK Commands:"`
-	Out           string `default:"." help:"path to output mismatch.csv file" group:"SDK Commands:"`
+	Out           string `default:"." help:"path to output mismatch files" group:"SDK Commands:"`
+	Format        string `default:"both" help:"output format: csv, html, or both" group:"SDK Commands:"`
 	MismatchLevel int    `default:"3" help:"the minimum mismatch level to report (1-3)" group:"SDK Commands:"`
 }
 
@@ -44,10 +45,31 @@ func (z *ZAPDiff) Run(cc *Context) (err error) {
 
 	mm := zapdiff.Pipeline(ff1, ff2, z.Label1, z.Label2)
 
-	csvOutputPath := filepath.Join(z.Out, "mismatches.csv")
-	err = writeMismatchesToCSV(csvOutputPath, mm, mismatchPrintLevel)
-	if err != nil {
-		slog.Error("Failed to write CSV output", "error", err)
+	generateCSV := z.Format == "csv" || z.Format == "both" || z.Format == ""
+	generateHTML := z.Format == "html" || z.Format == "both" || z.Format == ""
+
+	if generateCSV {
+		csvOutputPath := filepath.Join(z.Out, "mismatches.csv")
+		err = writeMismatchesToCSV(csvOutputPath, mm, mismatchPrintLevel)
+		if err != nil {
+			slog.Error("Failed to write CSV output", "error", err)
+		}
+	}
+
+	if generateHTML {
+		htmlOutputPath := filepath.Join(z.Out, "mismatches.html")
+		f, err := os.Create(htmlOutputPath)
+		if err != nil {
+			slog.Error("failed to create HTML file", "path", htmlOutputPath, "error", err)
+			return err
+		}
+		defer f.Close()
+		err = zapdiff.WriteMismatchesToHTML(f, mm, mismatchPrintLevel)
+		if err != nil {
+			slog.Error("Failed to write HTML output", "error", err)
+		} else {
+			slog.Info("Successfully wrote mismatches to HTML", "dir", htmlOutputPath)
+		}
 	}
 
 	return
