@@ -5,8 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"path/filepath"
+	"strings"
 
 	"github.com/mailgun/raymond/v2"
+	"github.com/pmezard/go-difflib/difflib"
 	"github.com/project-chip/alchemy/internal/handlebars"
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
@@ -20,6 +23,8 @@ type jsonMismatch struct {
 	File    string `json:"file"`
 	XPath   string `json:"xpath"`
 	Details string `json:"details"`
+	Diff    string `json:"diff"`
+	HasDiff bool   `json:"hasDiff"`
 }
 
 var htmlReportTemplate pipeline.Once[*raymond.Template]
@@ -39,16 +44,56 @@ func LoadHTMLReportTemplate() (*raymond.Template, error) {
 	return t.Clone(), nil
 }
 
-func WriteMismatchesToHTML(w io.Writer, mm []XmlMismatch, l XmlMismatchLevel) error {
+func getParentID(id string) string {
+	i := strings.LastIndex(id, "/")
+	if i < 0 {
+		return ""
+	}
+	return id[:i]
+}
+
+func WriteMismatchesToHTML(w io.Writer, mm []XmlMismatch, l XmlMismatchLevel, root1, root2 string) error {
 	var jmm []jsonMismatch
 	for _, m := range mm {
 		if m.Level() >= l {
+			path1 := filepath.Join(root1, m.Path)
+			path2 := filepath.Join(root2, m.Path)
+
+			idToUse := m.EntityUniqueIdentifier
+			parentID := getParentID(m.EntityUniqueIdentifier)
+			if parentID != "" {
+				idToUse = parentID
+			}
+
+			lines1, _ := findElementLines(path1, idToUse)
+			lines2, _ := findElementLines(path2, idToUse)
+
+			hasDiff := len(lines1) > 0 && len(lines2) > 0
+
+			diffStr := ""
+			if hasDiff {
+				diff := difflib.UnifiedDiff{
+					A:        lines1,
+					B:        lines2,
+					FromFile: "Ref",
+					ToFile:   "Generated",
+					Context:  3,
+				}
+				var err error
+				diffStr, err = difflib.GetUnifiedDiffString(diff)
+				if err != nil {
+					diffStr = fmt.Sprintf("Failed to generate diff: %v", err)
+				}
+			}
+
 			jmm = append(jmm, jsonMismatch{
 				Level:   m.Level().String(),
 				Type:    m.Type.String(),
 				File:    m.Path,
 				XPath:   m.EntityUniqueIdentifier,
 				Details: m.Details,
+				Diff:    diffStr,
+				HasDiff: hasDiff,
 			})
 		}
 	}

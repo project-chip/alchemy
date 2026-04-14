@@ -112,7 +112,7 @@
             display: none;
             position: absolute;
             top: 100%;
-            right: 0;
+            left: 0;
             background: white;
             border: 1px solid var(--border-color);
             border-radius: 6px;
@@ -182,6 +182,82 @@
         .dropdown-footer button:hover {
             text-decoration: underline;
         }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        /* Diff Styles */
+        .diff-container {
+            font-family: monospace;
+            white-space: pre;
+            background-color: #f8fafc;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            max-height: 400px;
+        }
+        .diff-line {
+            display: block;
+            padding: 0.125rem 0.5rem;
+        }
+        .diff-line.added {
+            background-color: #e6ffed;
+            color: #22863a;
+        }
+        .diff-line.removed {
+            background-color: #ffeef0;
+            color: #cb2431;
+        }
+        .diff-line.header {
+            background-color: #eaf5ff;
+            color: #0366d6;
+            font-weight: bold;
+        }
+        .view-diff-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+        .view-diff-btn:hover {
+            background-color: #2563eb;
+        }
     </style>
 </head>
 <body>
@@ -249,6 +325,9 @@
                     </div>
                 </th>
                 
+                <!-- Diff -->
+                <th>Diff</th>
+                
                 <!-- XPath -->
                 <th onclick="handleSort('xpath')">
                     <div class="th-content">
@@ -291,15 +370,27 @@
         xpath: { contains: '', selected: [] }
     };
 
+    // Add unique ID to rawData
+    rawData.forEach((item, index) => item.id = index);
+
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
         data.forEach(item => {
             const row = document.createElement('tr');
+            
+            let diffCell = '';
+            if (item.hasDiff) {
+                diffCell = `<td><button class="view-diff-btn" onclick="showDiffById(${item.id})">View</button></td>`;
+            } else {
+                diffCell = `<td><span style="text-decoration: line-through; color: #94a3b8;">Diff</span></td>`;
+            }
+
             row.innerHTML = `
                 <td>${item.level}</td>
                 <td>${item.type}</td>
                 <td>${item.file}</td>
+                ${diffCell}
                 <td>${item.xpath}</td>
                 <td class="details">${item.details}</td>
             `;
@@ -430,12 +521,11 @@
         const searchInput = document.querySelector(`#dropdown-${field} input`);
         if (searchInput) searchInput.value = '';
         
-        // Reset checkboxes
-        const values = [...new Set(rawData.map(item => item[field]))];
-        filters[field].selected = [...values];
+        // Reset checkboxes to NONE selected
+        filters[field].selected = [];
         
         const checkboxes = document.querySelectorAll(`#checkboxes-${field} input`);
-        checkboxes.forEach(cb => cb.checked = true);
+        checkboxes.forEach(cb => cb.checked = false);
         
         applyAllFilters();
     }
@@ -455,7 +545,60 @@
 
     populateAllFilters();
     renderTable(currentData);
+
+    function showDiffById(id) {
+        const item = rawData.find(item => item.id === id);
+        if (item) {
+            showDiff(item.diff);
+        }
+    }
+
+    function showDiff(diffText) {
+        const modal = document.getElementById('diffModal');
+        const content = document.getElementById('diffContent');
+        
+        if (!diffText) {
+            content.innerHTML = 'No diff available for this item.';
+        } else {
+            const lines = diffText.split('\n');
+            content.innerHTML = lines.map(line => {
+                let className = 'diff-line';
+                if (line.startsWith('+')) className += ' added';
+                else if (line.startsWith('-')) className += ' removed';
+                else if (line.startsWith('@@')) className += ' header';
+                return `<span class="${className}">${escapeHtml(line)}</span>`;
+            }).join('');
+        }
+        
+        modal.style.display = "block";
+    }
+    
+    function closeModal() {
+        document.getElementById('diffModal').style.display = "none";
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    window.onclick = function(event) {
+        const modal = document.getElementById('diffModal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
 </script>
+
+<!-- The Modal -->
+<div id="diffModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2>Diff View</h2>
+    <div id="diffContent" class="diff-container"></div>
+  </div>
+</div>
 
 </body>
 </html>

@@ -70,7 +70,7 @@ func (z *ZAPDiff) Run(cc *Context) (err error) {
 			return err
 		}
 		defer f.Close()
-		err = zapdiff.WriteMismatchesToHTML(f, mm, mismatchPrintLevel)
+		err = zapdiff.WriteMismatchesToHTML(f, mm, mismatchPrintLevel, z.XmlRoot1, z.XmlRoot2)
 		if err != nil {
 			slog.Error("Failed to write HTML output", "error", err)
 		} else {
