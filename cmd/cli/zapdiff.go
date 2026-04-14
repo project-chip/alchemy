@@ -21,6 +21,7 @@ type ZAPDiff struct {
 }
 
 func (z *ZAPDiff) Run(cc *Context) (err error) {
+
 	var mismatchPrintLevel zapdiff.XmlMismatchLevel
 	if z.MismatchLevel < 1 || z.MismatchLevel > 3 {
 		slog.Warn("invalid mismatch level. must be between 1 and 3.", "level", z.MismatchLevel)
@@ -53,6 +54,13 @@ func (z *ZAPDiff) Run(cc *Context) (err error) {
 }
 
 func listXMLFiles(p string) (paths []string, err error) {
+	fi, err := os.Stat(p)
+	if err != nil {
+		return nil, err
+	}
+	if !fi.IsDir() {
+		return []string{p}, nil
+	}
 	var entries []os.DirEntry
 	entries, err = os.ReadDir(p)
 	if err != nil {
