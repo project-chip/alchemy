@@ -34,10 +34,16 @@ func getEntityUniqueIdentifier(e *etree.Element) string {
 		"/configurator/bitmap/field",
 		"/configurator/cluster/command",
 		"/configurator/cluster/command/arg",
-		"/configurator/cluster/attribute",
 		"/configurator/cluster/event",
 		"/configurator/cluster/event/field",
 		"/configurator/cluster/features/feature":
+		return parentAndSelfAttr(e, "name")
+	case "/configurator/cluster/attribute":
+		code := e.SelectAttrValue("code", "")
+		if code != "" {
+			parentID := getEntityUniqueIdentifier(e.Parent())
+			return fmt.Sprintf("%s/%s[@code='%s']", parentID, e.Tag, code)
+		}
 		return parentAndSelfAttr(e, "name")
 	case "/configurator/enum/cluster",
 		"/configurator/struct/cluster":
