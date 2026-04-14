@@ -170,85 +170,85 @@ func (t XmlMismatchType) Level() XmlMismatchLevel {
 	switch t {
 	// File
 	case XmlMismatchNewFile:
-		return MismatchLevel1
+		return MismatchLevel3
 
 	// Generic
 	case XmlMismatchMissingTag:
 		return MismatchLevel2
 	case XmlMismatchMissingAttr:
-		return MismatchLevel1
+		return MismatchLevel3
 	case XmlMismatchAttrValue:
 		return MismatchLevel2
 
 	// Enums
 	case XmlMismatchMissingEnum:
-		return MismatchLevel3
-	case XmlMismatchMissingEnumItem:
-		return MismatchLevel3
-	case XmlMismatchEnumItemMissingAttr:
 		return MismatchLevel1
-	case XmlMismatchEnumItemAttrValue:
+	case XmlMismatchMissingEnumItem:
+		return MismatchLevel1
+	case XmlMismatchEnumItemMissingAttr:
 		return MismatchLevel3
+	case XmlMismatchEnumItemAttrValue:
+		return MismatchLevel1
 
 	// Structs
 	case XmlMismatchMissingStruct:
-		return MismatchLevel3
-	case XmlMismatchMissingStructItem:
-		return MismatchLevel3
-	case XmlMismatchStructItemMissingAttr:
 		return MismatchLevel1
-	case XmlMismatchStructItemAttrValue:
+	case XmlMismatchMissingStructItem:
+		return MismatchLevel1
+	case XmlMismatchStructItemMissingAttr:
 		return MismatchLevel3
+	case XmlMismatchStructItemAttrValue:
+		return MismatchLevel1
 
 	// Bitmaps
 	case XmlMismatchMissingBitmap:
-		return MismatchLevel3
+		return MismatchLevel1
 	case XmlMismatchMissingBitmapField:
-		return MismatchLevel3
+		return MismatchLevel1
 	case XmlMismatchBitmapMissingAttr:
-		return MismatchLevel1
+		return MismatchLevel3
 	case XmlMismatchBitmapAttrValue:
-		return MismatchLevel3
-	case XmlMismatchBitmapFieldMissingAttr:
 		return MismatchLevel1
-	case XmlMismatchBitmapFieldAttrValue:
+	case XmlMismatchBitmapFieldMissingAttr:
 		return MismatchLevel3
+	case XmlMismatchBitmapFieldAttrValue:
+		return MismatchLevel1
 
 	// Clusters (Top Level)
 	case XmlMismatchMissingCluster:
-		return MismatchLevel3
-	case XmlMismatchClusterMissingAttr:
 		return MismatchLevel1
-	case XmlMismatchClusterAttrValue:
+	case XmlMismatchClusterMissingAttr:
 		return MismatchLevel3
+	case XmlMismatchClusterAttrValue:
+		return MismatchLevel1
 
 	// Clusters
 	case XmlMismatchMissingClusterCommand:
-		return MismatchLevel3
+		return MismatchLevel1
 	case XmlMismatchClusterCommandMissingAttr:
-		return MismatchLevel1
+		return MismatchLevel3
 	case XmlMismatchClusterCommandAttrValue:
-		return MismatchLevel3
+		return MismatchLevel1
 	case XmlMismatchMissingClusterAttribute:
-		return MismatchLevel3
+		return MismatchLevel1
 	case XmlMismatchClusterAttributeMissingAttr:
-		return MismatchLevel1
+		return MismatchLevel3
 	case XmlMismatchClusterAttributeAttrValue:
-		return MismatchLevel3
-	case XmlMismatchMissingClusterEvent:
-		return MismatchLevel3
-	case XmlMismatchClusterEventMissingAttr:
 		return MismatchLevel1
+	case XmlMismatchMissingClusterEvent:
+		return MismatchLevel1
+	case XmlMismatchClusterEventMissingAttr:
+		return MismatchLevel3
 	case XmlMismatchClusterEventAttrValue:
-		return MismatchLevel3
+		return MismatchLevel1
 	case XmlMismatchMissingClusterFeature:
-		return MismatchLevel3
+		return MismatchLevel1
 
 	case XmlMismatchClusterDetails:
-		return MismatchLevel3
+		return MismatchLevel1
 
 	default:
-		return MismatchLevel1
+		return MismatchLevel3
 	}
 }
 
