@@ -59,16 +59,20 @@ func WriteMismatchesToHTML(w io.Writer, mm []XmlMismatch, l XmlMismatchLevel, ro
 			path1 := filepath.Join(root1, m.Path)
 			path2 := filepath.Join(root2, m.Path)
 
-			idToUse := m.EntityUniqueIdentifier
-			parentID := getParentID(m.EntityUniqueIdentifier)
-			if parentID != "" {
-				idToUse = parentID
-			}
-
-			lines1, _ := findElementLines(path1, idToUse)
-			lines2, _ := findElementLines(path2, idToUse)
+			lines1, _ := findElementLines(path1, m.EntityUniqueIdentifier)
+			lines2, _ := findElementLines(path2, m.EntityUniqueIdentifier)
 
 			hasDiff := len(lines1) > 0 && len(lines2) > 0
+
+			if !hasDiff {
+				// Fallback to parent if not found by specific ID in both files
+				parentID := getParentID(m.EntityUniqueIdentifier)
+				if parentID != "" {
+					lines1, _ = findElementLines(path1, parentID)
+					lines2, _ = findElementLines(path2, parentID)
+					hasDiff = len(lines1) > 0 && len(lines2) > 0
+				}
+			}
 
 			diffStr := ""
 			if hasDiff {
