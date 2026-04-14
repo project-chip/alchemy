@@ -84,82 +84,82 @@ func (t XmlMismatchType) String() string {
 
 	// File
 	case XmlMismatchNewFile:
-		return "FileNotFound"
+		return "File: Not Found"
 
 	// Generic
 	case XmlMismatchMissingTag:
-		return "MissingTag"
+		return "Tag: Missing"
 	case XmlMismatchMissingAttr:
-		return "MissingAttr"
+		return "Attribute: Missing"
 	case XmlMismatchAttrValue:
-		return "AttrValue"
+		return "Attribute: Value Mismatch"
 
 	// Enums
 	case XmlMismatchMissingEnum:
-		return "MissingEnum"
+		return "Enum: Missing"
 	case XmlMismatchMissingEnumItem:
-		return "MissingEnumItem"
+		return "Enum Item: Missing"
 	case XmlMismatchEnumItemMissingAttr:
-		return "EnumItemMissingAttr"
+		return "Enum Item: Missing Attribute"
 	case XmlMismatchEnumItemAttrValue:
-		return "EnumItemAttrValue"
+		return "Enum Item: Attribute Value Mismatch"
 
 	// Structs
 	case XmlMismatchMissingStruct:
-		return "MissingStruct"
+		return "Struct: Missing"
 	case XmlMismatchMissingStructItem:
-		return "MissingStructItem"
+		return "Struct Item: Missing"
 	case XmlMismatchStructItemMissingAttr:
-		return "StructItemMissingAttr"
+		return "Struct Item: Missing Attribute"
 	case XmlMismatchStructItemAttrValue:
-		return "StructItemAttrValue"
+		return "Struct Item: Attribute Value Mismatch"
 
 	// Bitmaps
 	case XmlMismatchMissingBitmap:
-		return "MissingBitmap"
+		return "Bitmap: Missing"
 	case XmlMismatchMissingBitmapField:
-		return "MissingBitmapField"
+		return "Bitmap Field: Missing"
 	case XmlMismatchBitmapMissingAttr:
-		return "BitmapMissingAttr"
+		return "Bitmap: Missing Attribute"
 	case XmlMismatchBitmapAttrValue:
-		return "BitmapAttrValue"
+		return "Bitmap: Attribute Value Mismatch"
 	case XmlMismatchBitmapFieldMissingAttr:
-		return "BitmapFieldMissingAttr"
+		return "Bitmap Field: Missing Attribute"
 	case XmlMismatchBitmapFieldAttrValue:
-		return "BitmapFieldAttrValue"
+		return "Bitmap Field: Attribute Value Mismatch"
 
 	// Clusters (Top Level)
 	case XmlMismatchMissingCluster:
-		return "MissingCluster"
+		return "Cluster: Missing"
 	case XmlMismatchClusterMissingAttr:
-		return "ClusterMissingAttr"
+		return "Cluster: Missing Attribute"
 	case XmlMismatchClusterAttrValue:
-		return "ClusterAttrValue"
+		return "Cluster: Attribute Value Mismatch"
 
 	// Clusters
 	case XmlMismatchMissingClusterCommand:
-		return "MissingClusterCommand"
+		return "Cluster Command: Missing"
 	case XmlMismatchClusterCommandMissingAttr:
-		return "ClusterCommandMissingAttr"
+		return "Cluster Command: Missing Attribute"
 	case XmlMismatchClusterCommandAttrValue:
-		return "ClusterCommandAttrValue"
+		return "Cluster Command: Attribute Value Mismatch"
 	case XmlMismatchMissingClusterAttribute:
-		return "MissingClusterAttribute"
+		return "Cluster Attribute: Missing"
 	case XmlMismatchClusterAttributeMissingAttr:
-		return "ClusterAttributeMissingAttr"
+		return "Cluster Attribute: Missing Attribute"
 	case XmlMismatchClusterAttributeAttrValue:
-		return "ClusterAttributeAttrValue"
+		return "Cluster Attribute: Attribute Value Mismatch"
 	case XmlMismatchMissingClusterEvent:
-		return "MissingClusterEvent"
+		return "Cluster Event: Missing"
 	case XmlMismatchClusterEventMissingAttr:
-		return "ClusterEventMissingAttr"
+		return "Cluster Event: Missing Attribute"
 	case XmlMismatchClusterEventAttrValue:
-		return "ClusterEventAttrValue"
+		return "Cluster Event: Attribute Value Mismatch"
 	case XmlMismatchMissingClusterFeature:
-		return "MissingClusterFeature"
+		return "Cluster Feature: Missing"
 
 	case XmlMismatchClusterDetails:
-		return "ClusterDetails"
+		return "Cluster: Details Mismatch"
 
 	default:
 		return "Unknown Mismatch"
