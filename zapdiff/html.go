@@ -74,6 +74,24 @@ func getCustomDiffLines(path string, targetID string) ([]string, int, error) {
 	return customLines, parentStartLine, nil
 }
 
+func getMajorParentID(id string) string {
+	// IDs look like: configurator/cluster[name='...']/attribute[@code='...']/description
+	// We want to truncate to the major parent: cluster, attribute, command, event, feature.
+	
+	segments := strings.Split(id, "/")
+	for i := len(segments) - 1; i >= 0; i-- {
+		seg := segments[i]
+		if strings.HasPrefix(seg, "cluster[") || 
+		   strings.HasPrefix(seg, "attribute[") || 
+		   strings.HasPrefix(seg, "command[") || 
+		   strings.HasPrefix(seg, "event[") || 
+		   strings.HasPrefix(seg, "feature[") {
+			return strings.Join(segments[:i+1], "/")
+		}
+	}
+	return id
+}
+
 func WriteMismatchesToHTML(w io.Writer, mm []XmlMismatch, l XmlMismatchLevel, root1, root2 string) error {
 	var jmm []jsonMismatch
 	for _, m := range mm {
@@ -81,8 +99,10 @@ func WriteMismatchesToHTML(w io.Writer, mm []XmlMismatch, l XmlMismatchLevel, ro
 			path1 := filepath.Join(root1, m.Path)
 			path2 := filepath.Join(root2, m.Path)
 
-			lines1, start1, _ := getCustomDiffLines(path1, m.EntityUniqueIdentifier)
-			lines2, start2, _ := getCustomDiffLines(path2, m.EntityUniqueIdentifier)
+			targetID := getMajorParentID(m.EntityUniqueIdentifier)
+
+			lines1, start1, _ := getCustomDiffLines(path1, targetID)
+			lines2, start2, _ := getCustomDiffLines(path2, targetID)
 
 			hasDiff := len(lines1) > 0 && len(lines2) > 0
 

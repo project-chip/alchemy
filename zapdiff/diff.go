@@ -74,6 +74,14 @@ func findElementLines(path string, id string) ([]string, int, error) {
 		}
 		seg := segments[segIdx]
 
+		// Boundary check: if we are looking for a child segment, and we see the parent close tag, we fail!
+		if segIdx > 0 {
+			parentTag := segments[segIdx-1].tag
+			if strings.Contains(line, "</"+parentTag+">") {
+				return nil, 0, nil // Not found within parent boundary
+			}
+		}
+
 		if seg.attr != "" && !seg.isAttr {
 			// Child element filter
 			if !foundParent {
