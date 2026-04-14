@@ -27,6 +27,7 @@
         }
         .table-container {
             max-height: calc(100vh - 150px);
+            min-height: 300px;
             overflow-y: auto;
             background: white;
             border-radius: 8px;
@@ -268,6 +269,7 @@
     <table id="mismatchTable">
         <thead>
             <tr>
+                <th>Row</th>
                 <!-- Level -->
                 <th onclick="handleSort('level')">
                     <div class="th-content">
@@ -376,7 +378,7 @@
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
-        data.forEach(item => {
+        data.forEach((item, index) => {
             const row = document.createElement('tr');
             
             let diffCell = '';
@@ -387,6 +389,7 @@
             }
 
             row.innerHTML = `
+                <td>${index + 1}</td>
                 <td>${item.level}</td>
                 <td>${item.type}</td>
                 <td>${item.file}</td>

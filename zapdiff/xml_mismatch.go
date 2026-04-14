@@ -5,9 +5,9 @@ import "fmt"
 type XmlMismatchLevel uint8
 
 const (
-	MismatchLevel1 XmlMismatchLevel = iota
+	MismatchLevel3 XmlMismatchLevel = iota
 	MismatchLevel2
-	MismatchLevel3
+	MismatchLevel1
 )
 
 func (l XmlMismatchLevel) String() string {
