@@ -1,11 +1,9 @@
 package cli
 
 import (
-	"encoding/csv"
 	"log/slog"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"github.com/project-chip/alchemy/zapdiff"
@@ -50,9 +48,17 @@ func (z *ZAPDiff) Run(cc *Context) (err error) {
 
 	if generateCSV {
 		csvOutputPath := filepath.Join(z.Out, "mismatches.csv")
-		err = writeMismatchesToCSV(csvOutputPath, mm, mismatchPrintLevel)
+		f, err := os.Create(csvOutputPath)
+		if err != nil {
+			slog.Error("failed to create CSV file", "path", csvOutputPath, "error", err)
+			return err
+		}
+		defer f.Close()
+		err = zapdiff.WriteMismatchesToCSV(f, mm, mismatchPrintLevel)
 		if err != nil {
 			slog.Error("Failed to write CSV output", "error", err)
+		} else {
+			slog.Info("Successfully wrote mismatches to CSV", "dir", csvOutputPath)
 		}
 	}
 
@@ -98,58 +104,3 @@ func listXMLFiles(p string) (paths []string, err error) {
 	return
 }
 
-func writeMismatchesToCSV(p string, mm []zapdiff.XmlMismatch, l zapdiff.XmlMismatchLevel) (err error) {
-	f, err := os.Create(p)
-	if err != nil {
-		slog.Error("failed to create file", "path", p, "error", err)
-		return err
-	}
-	defer f.Close()
-
-	w := csv.NewWriter(f)
-	defer w.Flush()
-
-	// Write header
-	header := []string{"Level", "Type", "File", "Element Xpath", "Details"}
-	if err = w.Write(header); err != nil {
-		slog.Error("failed to write CSV header", "error", err)
-		return
-	}
-
-	sort.Slice(mm, func(i, j int) bool {
-		// Level (Descending), Path, Type, ElementID, Details
-		if mm[i].Level() != mm[j].Level() {
-			return mm[i].Level() > mm[j].Level()
-		}
-		if mm[i].Path != mm[j].Path {
-			return mm[i].Path < mm[j].Path
-		}
-		if mm[i].Type != mm[j].Type {
-			return mm[i].Type.String() < mm[j].Type.String()
-		}
-		if mm[i].ElementID != mm[j].ElementID {
-			return mm[i].ElementID < mm[j].ElementID
-		}
-		return mm[i].Details < mm[j].Details
-	})
-
-	// Write mismatches
-	for _, m := range mm {
-		if m.Level() >= l {
-			row := []string{
-				m.Level().String(),
-				m.Type.String(),
-				m.Path,
-				m.ElementID,
-				m.Details,
-			}
-			if err = w.Write(row); err != nil {
-				slog.Error("Warning: failed to write row to CSV", "err", err)
-				return
-			}
-		}
-	}
-
-	slog.Info("Successfully wrote mismatches to CSV", "dir", p)
-	return
-}

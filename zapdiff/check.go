@@ -12,22 +12,22 @@ func checkMismatches(ep elementPair, baseName string, n1, n2 string) (mm []XmlMi
 	mm = make([]XmlMismatch, 0)
 
 	for _, c1 := range ep.e1.ChildElements() {
-		id := getElementID(c1)
+		id := getEntityUniqueIdentifier(c1)
 		e1Children[id] = c1
 	}
 
 	for _, c2 := range ep.e2.ChildElements() {
-		id := getElementID(c2)
+		id := getEntityUniqueIdentifier(c2)
 		e2Children[id] = c2
 	}
 
 	for id, e1 := range e1Children {
 		if _, ok := e2Children[id]; !ok {
 			m := XmlMismatch{
-				Path:      baseName,
-				Type:      getMismatchMissingType(e1),
-				Details:   fmt.Sprintf("Only found in %s", n1),
-				ElementID: id,
+				Path:                   baseName,
+				Type:                   getMismatchMissingType(e1),
+				Details:                fmt.Sprintf("Only found in %s", n1),
+				EntityUniqueIdentifier: id,
 			}
 			mm = append(mm, m)
 		}
@@ -36,10 +36,10 @@ func checkMismatches(ep elementPair, baseName string, n1, n2 string) (mm []XmlMi
 	for id, e2 := range e2Children {
 		if _, ok := e1Children[id]; !ok {
 			m := XmlMismatch{
-				Path:      baseName,
-				Type:      getMismatchMissingType(e2),
-				Details:   fmt.Sprintf("Only found in %s", n2),
-				ElementID: id,
+				Path:                   baseName,
+				Type:                   getMismatchMissingType(e2),
+				Details:                fmt.Sprintf("Only found in %s", n2),
+				EntityUniqueIdentifier: id,
 			}
 			mm = append(mm, m)
 		}
@@ -76,18 +76,18 @@ func checkAttributes(ep elementPair, id string, baseName string, n1, n2 string) 
 	for k, v1 := range e1Attrs {
 		if v2, ok := e2Attrs[k]; !ok {
 			m := XmlMismatch{
-				Path:      baseName,
-				Type:      getMismatchMissingAttrType(ep.e1),
-				Details:   fmt.Sprintf("Attribute [%s] only found in %s", k, n1),
-				ElementID: id,
+				Path:                   baseName,
+				Type:                   getMismatchMissingAttrType(ep.e1),
+				Details:                fmt.Sprintf("Attribute [%s] only found in %s", k, n1),
+				EntityUniqueIdentifier: id,
 			}
 			mm = append(mm, m)
 		} else if v1 != v2 {
 			m := XmlMismatch{
-				Path:      baseName,
-				Type:      getMismatchAttrValueType(ep.e1),
-				Details:   fmt.Sprintf("Attribute [%s] has different values: '%s' in %s, '%s' in %s", k, v1, n1, v2, n2),
-				ElementID: id,
+				Path:                   baseName,
+				Type:                   getMismatchAttrValueType(ep.e1),
+				Details:                fmt.Sprintf("Attribute [%s] has different values: '%s' in %s, '%s' in %s", k, v1, n1, v2, n2),
+				EntityUniqueIdentifier: id,
 			}
 			mm = append(mm, m)
 		}
@@ -96,10 +96,10 @@ func checkAttributes(ep elementPair, id string, baseName string, n1, n2 string) 
 	for k := range e2Attrs {
 		if _, ok := e1Attrs[k]; !ok {
 			m := XmlMismatch{
-				Path:      baseName,
-				Type:      getMismatchMissingAttrType(ep.e2),
-				Details:   fmt.Sprintf("Attribute [%s] only found in %s", k, n2),
-				ElementID: id,
+				Path:                   baseName,
+				Type:                   getMismatchMissingAttrType(ep.e2),
+				Details:                fmt.Sprintf("Attribute [%s] only found in %s", k, n2),
+				EntityUniqueIdentifier: id,
 			}
 			mm = append(mm, m)
 		}

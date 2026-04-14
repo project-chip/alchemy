@@ -253,10 +253,10 @@ func (t XmlMismatchType) Level() XmlMismatchLevel {
 }
 
 type XmlMismatch struct {
-	Path      string
-	Details   string
-	Type      XmlMismatchType
-	ElementID string
+	Path                   string
+	Details                string
+	Type                   XmlMismatchType
+	EntityUniqueIdentifier string
 }
 
 func (m XmlMismatch) Level() XmlMismatchLevel {

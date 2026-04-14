@@ -7,16 +7,16 @@ import (
 )
 
 func parentAndSelfAttr(e *etree.Element, attr string) string {
-	parentID := getElementID(e.Parent())
+	parentID := getEntityUniqueIdentifier(e.Parent())
 	return fmt.Sprintf("%s/%s[@%s='%s']", parentID, e.Tag, attr, e.SelectAttrValue(attr, ""))
 }
 
 func parentAndSelfText(e *etree.Element) string {
-	parentID := getElementID(e.Parent())
+	parentID := getEntityUniqueIdentifier(e.Parent())
 	return fmt.Sprintf("%s[%s='%s']/%s", parentID, e.Tag, e.Text(), e.Tag)
 }
 
-func getElementID(e *etree.Element) string {
+func getEntityUniqueIdentifier(e *etree.Element) string {
 	if e == nil {
 		return ""
 	}
@@ -43,7 +43,7 @@ func getElementID(e *etree.Element) string {
 		"/configurator/struct/cluster":
 		return parentAndSelfAttr(e, "code")
 	case "/configurator/cluster":
-		parentID := getElementID(e.Parent())
+		parentID := getEntityUniqueIdentifier(e.Parent())
 		code := e.SelectAttrValue("code", "")
 		if code != "" {
 			return fmt.Sprintf("%s/%s[@code='%s']", parentID, e.Tag, code)
@@ -65,7 +65,7 @@ func getElementID(e *etree.Element) string {
 		return parentAndSelfText(e)
 
 	default:
-		parentID := getElementID(e.Parent())
+		parentID := getEntityUniqueIdentifier(e.Parent())
 		selfSegment := getElementXPathSegment(e)
 		return fmt.Sprintf("%s/%s", parentID, selfSegment)
 	}

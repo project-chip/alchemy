@@ -47,7 +47,7 @@ func WriteMismatchesToHTML(w io.Writer, mm []XmlMismatch, l XmlMismatchLevel) er
 				Level:   m.Level().String(),
 				Type:    m.Type.String(),
 				File:    m.Path,
-				XPath:   m.ElementID,
+				XPath:   m.EntityUniqueIdentifier,
 				Details: m.Details,
 			})
 		}
