@@ -18,13 +18,13 @@ import (
 var templateFiles embed.FS
 
 type jsonMismatch struct {
-	Level   string `json:"level"`
-	Type    string `json:"type"`
-	File    string `json:"file"`
-	XPath   string `json:"xpath"`
-	Details string `json:"details"`
-	Diff    string `json:"diff"`
-	HasDiff bool   `json:"hasDiff"`
+	Level   string   `json:"level"`
+	Type    string   `json:"type"`
+	File    string   `json:"file"`
+	XPath   string   `json:"xpath"`
+	Details string   `json:"details"`
+	Diff    string   `json:"diff"`
+	HasDiff bool     `json:"hasDiff"`
 }
 
 var htmlReportTemplate pipeline.Once[*raymond.Template]
@@ -52,6 +52,28 @@ func getParentID(id string) string {
 	return id[:i]
 }
 
+func getCustomDiffLines(path string, targetID string) ([]string, int, error) {
+	lines, startLine, err := findElementLines(path, targetID)
+	if err != nil {
+		return nil, 0, err
+	}
+	parentID := getParentID(targetID)
+	if parentID == "" || parentID == "configurator" {
+		return lines, startLine, nil
+	}
+	parentLines, parentStartLine, err := findElementLines(path, parentID)
+	if err != nil || len(parentLines) == 0 {
+		return lines, startLine, nil
+	}
+
+	var customLines []string
+	customLines = append(customLines, parentLines[0])
+	customLines = append(customLines, lines...)
+	customLines = append(customLines, parentLines[len(parentLines)-1])
+
+	return customLines, parentStartLine, nil
+}
+
 func WriteMismatchesToHTML(w io.Writer, mm []XmlMismatch, l XmlMismatchLevel, root1, root2 string) error {
 	var jmm []jsonMismatch
 	for _, m := range mm {
@@ -59,20 +81,10 @@ func WriteMismatchesToHTML(w io.Writer, mm []XmlMismatch, l XmlMismatchLevel, ro
 			path1 := filepath.Join(root1, m.Path)
 			path2 := filepath.Join(root2, m.Path)
 
-			lines1, _ := findElementLines(path1, m.EntityUniqueIdentifier)
-			lines2, _ := findElementLines(path2, m.EntityUniqueIdentifier)
+			lines1, start1, _ := getCustomDiffLines(path1, m.EntityUniqueIdentifier)
+			lines2, start2, _ := getCustomDiffLines(path2, m.EntityUniqueIdentifier)
 
 			hasDiff := len(lines1) > 0 && len(lines2) > 0
-
-			if !hasDiff {
-				// Fallback to parent if not found by specific ID in both files
-				parentID := getParentID(m.EntityUniqueIdentifier)
-				if parentID != "" {
-					lines1, _ = findElementLines(path1, parentID)
-					lines2, _ = findElementLines(path2, parentID)
-					hasDiff = len(lines1) > 0 && len(lines2) > 0
-				}
-			}
 
 			diffStr := ""
 			if hasDiff {
@@ -81,12 +93,19 @@ func WriteMismatchesToHTML(w io.Writer, mm []XmlMismatch, l XmlMismatchLevel, ro
 					B:        lines2,
 					FromFile: "Ref",
 					ToFile:   "Generated",
-					Context:  3,
+					Context:  5,
 				}
 				var err error
 				diffStr, err = difflib.GetUnifiedDiffString(diff)
 				if err != nil {
 					diffStr = fmt.Sprintf("Failed to generate diff: %v", err)
+				} else {
+					// Replace header with correct line numbers
+					lines := strings.Split(diffStr, "\n")
+					if len(lines) > 2 && strings.HasPrefix(lines[2], "@@") {
+						lines[2] = fmt.Sprintf("@@ -%d,%d +%d,%d @@", start1, len(lines1), start2, len(lines2))
+						diffStr = strings.Join(lines, "\n")
+					}
 				}
 			}
 

@@ -198,7 +198,7 @@
         }
         .modal-content {
             background-color: #fefefe;
-            margin: 10% auto;
+            margin: 5% auto;
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
@@ -228,7 +228,8 @@
             border-radius: 6px;
             border: 1px solid var(--border-color);
             overflow-x: auto;
-            max-height: 400px;
+            max-height: 70vh;
+            overflow-y: auto;
         }
         .diff-line {
             display: block;
@@ -563,14 +564,31 @@
         if (!diffText) {
             content.innerHTML = 'No diff available for this item.';
         } else {
+            content.innerHTML = '';
+            diffText = diffText.trim();
+            
+            const pre = document.createElement('pre');
+            pre.style.margin = '0';
+            pre.style.fontFamily = 'monospace';
+            
             const lines = diffText.split('\n');
-            content.innerHTML = lines.map(line => {
-                let className = 'diff-line';
-                if (line.startsWith('+')) className += ' added';
-                else if (line.startsWith('-')) className += ' removed';
-                else if (line.startsWith('@@')) className += ' header';
-                return `<span class="${className}">${escapeHtml(line)}</span>`;
-            }).join('');
+            lines.forEach(line => {
+                const span = document.createElement('span');
+                span.className = 'diff-line';
+                span.textContent = line;
+                
+                if (line.startsWith('+')) {
+                    span.classList.add('added');
+                } else if (line.startsWith('-')) {
+                    span.classList.add('removed');
+                } else if (line.startsWith('@@')) {
+                    span.classList.add('header');
+                }
+                
+                pre.appendChild(span);
+            });
+            
+            content.appendChild(pre);
         }
         
         modal.style.display = "block";

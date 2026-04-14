@@ -41,15 +41,15 @@ func parseEntityUniqueIdentifier(id string) ([]xpathSegment, error) {
 }
 
 // findElementLines searches for the element identified by id in the file at path and returns its lines.
-func findElementLines(path string, id string) ([]string, error) {
+func findElementLines(path string, id string) ([]string, int, error) {
 	segments, err := parseEntityUniqueIdentifier(id)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	f, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer f.Close()
 
@@ -59,7 +59,7 @@ func findElementLines(path string, id string) ([]string, error) {
 		allLines = append(allLines, scanner.Text()+"\n")
 	}
 	if err := scanner.Err(); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	segIdx := 0
@@ -115,13 +115,13 @@ func findElementLines(path string, id string) ([]string, error) {
 	}
 
 	if segIdx < len(segments) || startLine == -1 {
-		return nil, nil // Not found
+		return nil, 0, nil // Not found
 	}
 
 	targetTag := segments[len(segments)-1].tag
 	
 	if strings.Contains(allLines[startLine], "/>") {
-		return []string{allLines[startLine]}, nil
+		return []string{allLines[startLine]}, startLine + 1, nil
 	}
 
 	endLine := startLine
@@ -133,5 +133,5 @@ func findElementLines(path string, id string) ([]string, error) {
 		}
 	}
 
-	return allLines[startLine : endLine+1], nil
+	return allLines[startLine : endLine+1], startLine + 1, nil
 }

@@ -26,7 +26,7 @@ func (z *ZAPDiff) Run(cc *Context) (err error) {
 		slog.Warn("invalid mismatch level. must be between 1 and 3.", "level", z.MismatchLevel)
 		mismatchPrintLevel = zapdiff.MismatchLevel3 // Default
 	} else {
-		mismatchPrintLevel = zapdiff.XmlMismatchLevel(3 - z.MismatchLevel) // Invert mapping: 1->2, 2->1, 3->0
+		mismatchPrintLevel = zapdiff.XmlMismatchLevel(3 - z.MismatchLevel)
 	}
 
 	ff1, err := listXMLFiles(z.XmlRoot1)

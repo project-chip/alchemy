@@ -26,6 +26,7 @@ type ZAPDiff struct {
 	SDKLabel         string `name:"sdk-label" help:"Label for SDK" default:"SDK"`
 	SpecLabel        string `name:"spec-label" help:"Label for Spec" default:"Spec"`
 	GenAttributes    string `name:"gen-attributes" help:"Zap generation attributes"`
+	MismatchLevel    int    `name:"mismatch-level" help:"Mismatch level to report (1-3)" default:"3"`
 }
 
 func (z *ZAPDiff) Run(cc *cli.Context) (err error) {
@@ -37,6 +38,7 @@ func (z *ZAPDiff) Run(cc *cli.Context) (err error) {
 		zapCmd.Attribute = []string{z.GenAttributes}
 		zapCmd.FeatureXML = true
 		zapCmd.ConformanceXML = true
+		zapCmd.NoProgress = true
 		err = zapCmd.Run(cc)
 		if err != nil {
 			slog.Error("ZAP generation failed", "error", err)
@@ -50,7 +52,7 @@ func (z *ZAPDiff) Run(cc *cli.Context) (err error) {
 	diffCmd.XmlRoot2 = z.GeneratedXMLDir
 	diffCmd.Label1 = z.SDKLabel
 	diffCmd.Label2 = z.SpecLabel
-	diffCmd.MismatchLevel = 1
+	diffCmd.MismatchLevel = z.MismatchLevel
 
 	err = diffCmd.Run(cc)
 	if err != nil {
