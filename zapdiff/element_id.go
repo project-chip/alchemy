@@ -8,12 +8,20 @@ import (
 
 func parentAndSelfAttr(e *etree.Element, attr string) string {
 	parentID := getElementID(e.Parent())
-	return fmt.Sprintf("%s/%s[@%s='%s']", parentID, e.Tag, attr, e.SelectAttrValue(attr, ""))
+	a := e.SelectAttr(attr)
+	if a == nil {
+		return fmt.Sprintf("%s/%s", parentID, getElementXPathSegment(e))
+	}
+	return fmt.Sprintf("%s/%s[@%s='%s']", parentID, e.Tag, attr, a.Value)
 }
 
 func parentAndSelfText(e *etree.Element) string {
 	parentID := getElementID(e.Parent())
-	return fmt.Sprintf("%s[%s='%s']/%s", parentID, e.Tag, e.Text(), e.Tag)
+	text := e.Text()
+	if text == "" {
+		return fmt.Sprintf("%s/%s", parentID, getElementXPathSegment(e))
+	}
+	return fmt.Sprintf("%s/%s[text()='%s']", parentID, e.Tag, text)
 }
 
 func getElementID(e *etree.Element) string {
