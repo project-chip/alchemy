@@ -5,7 +5,7 @@ import "github.com/project-chip/alchemy/asciidoc"
 func renderDelimitedLines(cxt Target, el asciidoc.HasLines, delimiter asciidoc.Delimiter) (err error) {
 	cxt.FlushWrap()
 	if ae, ok := el.(asciidoc.Attributable); ok {
-		err = renderAttributes(cxt, ae.Attributes(), false)
+		err = renderAttributes(cxt, ae.Attributes(), attributeRenderTypeBlock)
 		if err != nil {
 			return
 		}
@@ -24,7 +24,7 @@ func renderDelimitedLines(cxt Target, el asciidoc.HasLines, delimiter asciidoc.D
 func renderDelimitedElements(cxt Target, el asciidoc.ParentElement, delimiter asciidoc.Delimiter) (err error) {
 	cxt.FlushWrap()
 	if ae, ok := el.(asciidoc.Attributable); ok {
-		err = renderAttributes(cxt, ae.Attributes(), false)
+		err = renderAttributes(cxt, ae.Attributes(), attributeRenderTypeBlock)
 		if err != nil {
 			return
 		}
@@ -44,7 +44,7 @@ func renderDelimitedElements(cxt Target, el asciidoc.ParentElement, delimiter as
 
 func renderFencedBlock(cxt Target, el *asciidoc.FencedBlock) (err error) {
 	cxt.FlushWrap()
-	err = renderAttributes(cxt, el.Attributes(), false)
+	err = renderAttributes(cxt, el.Attributes(), attributeRenderTypeBlock)
 	if err != nil {
 		return
 	}

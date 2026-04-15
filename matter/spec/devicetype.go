@@ -63,10 +63,10 @@ func (library *Library) toDeviceTypes(reader asciidoc.Reader, d *asciidoc.Docume
 				dt.ComposedDeviceTypeClusterRequirements = append(dt.ComposedDeviceTypeClusterRequirements, extraComposedDeviceClusterRequirements...)
 			case matter.SectionComposedDeviceTypeSemanticTagRequirements:
 				dt.ComposedDeviceTagRequirements, err = library.toDeviceTypeTagRequirements(reader, d, s, dt)
-			case matter.SectionComposedDeviceTypeConditionRequirements:
+			case matter.SectionConditionRequirements:
 				dt.ConditionRequirements, err = library.toConditionRequirements(reader, d, s, dt)
 			case matter.SectionRevisionHistory:
-				dt.Revisions, err = readRevisionHistory(reader, d, s)
+				dt.Revisions, err = readRevisionHistory(reader, d, s, dt)
 			default:
 			}
 			if err != nil {
@@ -157,21 +157,14 @@ func (library *Library) toBaseDeviceType(reader asciidoc.Reader, section *asciid
 
 			baseDeviceType.Conditions = append(baseDeviceType.Conditions, conditions...)
 		case matter.SectionRevisionHistory:
-			baseDeviceType.Revisions, err = readRevisionHistory(reader, doc, sec)
+			baseDeviceType.Revisions, err = readRevisionHistory(reader, doc, sec, baseDeviceType)
 		}
 		if err != nil {
 			return parse.SearchShouldStop
 		}
 		return parse.SearchShouldContinue
 	})
-
 	return
-	/*
-	   for top := range parse.Skim[*asciidoc.Section](reader, section, reader.Children(section)) {
-
-	   }
-	   return nil, fmt.Errorf("failed to find base device type")
-	*/
 }
 
 func (spec *Specification) associateDeviceTypeRequirements() (err error) {
@@ -570,7 +563,7 @@ func validateDeviceTypes(spec *Specification) {
 			}
 			validateAccess(spec, der.ElementRequirement, der.ElementRequirement.Access)
 			validateElementRequirement(spec, der.DeviceType, der.ElementRequirement, referencedClusters)
-			cdercv.add(der.ElementRequirement, der.DeviceTypeRequirement.Conformance)
+			cdercv.add(der.ElementRequirement, der.ElementRequirement.Conformance)
 		}
 		cdercv.check(spec)
 	}

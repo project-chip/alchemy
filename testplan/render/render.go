@@ -13,8 +13,8 @@ import (
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
+	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
-	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -67,10 +67,10 @@ func (sp *Renderer) Process(cxt context.Context, input *pipeline.Data[*asciidoc.
 	}
 
 	for newPath, cluster := range destinations {
-
-		_, err = os.ReadFile(newPath)
-		if (err == nil || !errors.Is(err, os.ErrNotExist)) && !sp.options.Overwrite {
-			slog.InfoContext(cxt, "Skipping existing test plan", slog.String("path", newPath))
+		var existingFile bool
+		existingFile, err = files.Exists(newPath)
+		if (err == nil || !errors.Is(err, os.ErrNotExist)) && existingFile && !sp.options.Overwrite {
+			slog.WarnContext(cxt, "Skipping existing test plan; to replace test plan, use --overwrite", slog.String("path", newPath))
 			continue
 		}
 
@@ -113,24 +113,6 @@ func (sp *Renderer) Process(cxt context.Context, input *pipeline.Data[*asciidoc.
 
 func getTestPlanPath(testplanRoot string, name string) string {
 	return filepath.Join(testplanRoot, "src/cluster/", name+".adoc")
-}
-
-func testPlanName(path string, entities []types.Entity) string {
-
-	path = filepath.Base(path)
-	name := text.TrimCaseInsensitiveSuffix(path, filepath.Ext(path))
-
-	var suffix string
-	for _, m := range entities {
-		switch m.(type) {
-		case *matter.Cluster:
-			suffix = "Cluster"
-		}
-	}
-	if !strings.HasSuffix(name, suffix) {
-		name += " " + suffix
-	}
-	return strcase.ToKebab(name)
 }
 
 func buildDestinations(testplanRoot string, entities []types.Entity, errata errata.TestPlan) (destinations map[string]*matter.Cluster) {

@@ -1,0 +1,24 @@
+[[ref_TestCluster, Test Cluster]]
+= Test Cluster
+
+== Classification
+
+|===
+| Hierarchy | Role        | Scope    | PICS Code
+| Base      | Application | Endpoint | TEST
+|===
+
+== Cluster Identifiers
+
+[options="header",valign="middle"]
+|===
+| Identification     | Name
+| 0xFFFE             | Test Cluster
+|===
+
+== Commands
+[options="header",valign="middle"]
+|===
+| ID     | Name           | Direction        | Response      | Access | Conformance
+| 0x00  s| TestCommand    | client => server | Y                 | O      | P
+|===

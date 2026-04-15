@@ -62,11 +62,11 @@ func (cc *constraintTestContext) child(field *field, fields fieldSet) *constrain
 	}
 }
 
-func (cc *constraintTestContext) Nullable() bool {
-	if cc.field != nil {
-		return cc.field.Nullable
+func (cc *constraintTestContext) Nullability() types.Nullability {
+	if cc.field != nil && cc.field.Nullable {
+		return types.NullabilityNullable
 	}
-	return false
+	return types.NullabilityNonNull
 }
 
 func (cc *constraintTestContext) DataType() *types.DataType {

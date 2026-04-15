@@ -16,6 +16,10 @@ func (e entity) Parent() types.Entity {
 	return e.parent
 }
 
+func (e *entity) SetParent(parent types.Entity) {
+	e.parent = parent
+}
+
 func (e entity) Source() asciidoc.Element {
 	return e.source
 }

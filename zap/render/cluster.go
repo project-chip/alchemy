@@ -36,7 +36,7 @@ func (cr *configuratorRenderer) renderClusters(ce *etree.Element) (err error) {
 
 				if cluster == nil {
 					// We don't have this cluster in the spec; leave it here for now
-					slog.Warn("unknown code ID in cluster", slog.String("path", configurator.OutPath), slog.String("id", clusterID.Text()))
+					slog.Warn("unknown code ID in cluster", slog.String("path", configurator.OutPath), slog.String("clusterId", clusterID.Text()))
 					continue
 				}
 			}
@@ -219,7 +219,7 @@ func setClusterGlobalAttribute(parent *etree.Element, globalAttribute *etree.Ele
 		slog.Warn("Removing redundant feature global attribute", slog.String("clusterName", cluster.Name))
 		parent.RemoveChild(globalAttribute)
 	default:
-		slog.Warn("Unrecognized global attribute", slog.String("id", id.HexString()))
+		slog.Warn("Unrecognized global attribute", slog.String("clusterId", id.HexString()))
 	}
 }
 

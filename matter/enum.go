@@ -1,6 +1,7 @@
 package matter
 
 import (
+	"iter"
 	"slices"
 
 	"github.com/project-chip/alchemy/asciidoc"
@@ -106,6 +107,16 @@ func (es EnumSet) Identifier(name string) (types.Entity, bool) {
 	return nil, false
 }
 
+func (es EnumSet) Iterate() iter.Seq[types.Entity] {
+	return func(yield func(types.Entity) bool) {
+		for _, en := range es {
+			if !yield(en) {
+				return
+			}
+		}
+	}
+}
+
 type EnumValue struct {
 	entity
 	Value       *Number         `json:"value,omitempty"`
@@ -156,6 +167,16 @@ func (es EnumValueSet) Identifier(name string) (types.Entity, bool) {
 		}
 	}
 	return nil, false
+}
+
+func (evs EnumValueSet) Iterate() iter.Seq[types.Entity] {
+	return func(yield func(types.Entity) bool) {
+		for _, ev := range evs {
+			if !yield(ev) {
+				return
+			}
+		}
+	}
 }
 
 func NewAnonymousEnum(source asciidoc.Element, parent types.Entity) *AnonymousEnum {

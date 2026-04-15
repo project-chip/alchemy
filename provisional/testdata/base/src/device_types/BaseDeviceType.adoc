@@ -1,0 +1,16 @@
+[[ref_BaseDeviceType, Base Device Type]]
+= Base Device Type
+
+== Classification
+[options="header",valign="middle"]
+|===
+| Device Name      | Device Type ID | Device Type Revision
+| Base Device Type | 0xFFFE         | 1
+|===
+
+== Cluster Requirements
+[options="header",valign="middle"]
+|===
+| Cluster | Client/Server | Conformance
+| Basic Information | Server | M
+|===

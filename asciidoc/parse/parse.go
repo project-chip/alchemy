@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"os"
 	"time"
 
 	"github.com/project-chip/alchemy/asciidoc"
@@ -29,6 +30,16 @@ func Bytes(path asciidoc.Path, b []byte, opts ...Option) (*asciidoc.Document, er
 	buildDoc(d, elements)
 
 	return d, nil
+}
+
+func File(path asciidoc.Path, opts ...Option) (*asciidoc.Document, error) {
+
+	file, err := os.Open(path.Absolute)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	return Reader(path, file, opts...)
 }
 
 func parseBytes(document *asciidoc.Document, b []byte, opts ...Option) (elements asciidoc.Elements, err error) {

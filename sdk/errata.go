@@ -6,18 +6,19 @@ import (
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
 func ApplyErrata(spec *spec.Specification) (err error) {
+	var addedExtraEntities bool
 	for path, errata := range spec.Errata.All() {
-		typeOverrides := errata.SDK.Types
-		typeNames := errata.SDK.TypeNames
-		if typeOverrides == nil && len(typeNames) == 0 {
+		if !errata.SDK.HasSdkPatch() {
 			continue
 		}
+		typeOverrides := errata.SDK.Types
+		typeNames := errata.SDK.TypeNames
+		extraTypes := errata.SDK.ExtraTypes
 		doc, ok := spec.Docs[path]
 		if !ok {
 			slog.Warn("Errata refers to unknown document", "path", path)
@@ -27,7 +28,7 @@ func ApplyErrata(spec *spec.Specification) (err error) {
 		for _, entity := range entities {
 			switch entity := entity.(type) {
 			case *matter.Cluster:
-				applyErrataToCluster(entity, typeNames, typeOverrides)
+				applyErrataToCluster(spec, entity, errata.SDK)
 			case *matter.Bitmap:
 				applyErrataToBitmap(entity, typeNames, typeOverrides)
 			case *matter.Enum:
@@ -38,137 +39,21 @@ func ApplyErrata(spec *spec.Specification) (err error) {
 				applyErrataToCommand(entity, typeNames, typeOverrides)
 			case *matter.Event:
 				applyErrataToEvent(entity, typeNames, typeOverrides)
+			case *matter.DeviceType:
+				applyErrataToDeviceType(entity, typeOverrides)
 			}
 		}
+		if extraTypes != nil {
+			addExtraTypes(extraTypes, entities)
+			addedExtraEntities = true
+		}
 	}
+	if addedExtraEntities {
+		spec.BuildDataTypeReferences()
+		spec.BuildClusterReferences()
+	}
+	spec.ResolveConformances()
 	return
-}
-
-func applyErrataToCluster(cluster *matter.Cluster, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
-	if typeOverrides != nil {
-		ac, ok := typeOverrides.Clusters[cluster.Name]
-		if ok {
-			if ac.Domain != "" {
-				cluster.Domain = ac.Domain
-			}
-			if ac.Description != "" {
-				cluster.Description = ac.Description
-			}
-		}
-		for _, a := range cluster.Attributes {
-			ao, ok := typeOverrides.Attributes[a.Name]
-			if !ok {
-				continue
-			}
-			applyErrataToField(a, ao)
-		}
-		if cluster.Features != nil {
-			fc, ok := typeOverrides.Bitmaps["Features"]
-			if ok {
-				for _, feature := range cluster.Features.Bits {
-					for _, f := range fc.Fields {
-						if feature.Name() == f.Name {
-							if f.OverrideName != "" {
-								feature.SetName(f.OverrideName)
-							}
-							break
-						}
-					}
-				}
-			}
-		}
-	}
-
-	for _, bm := range cluster.Bitmaps {
-		applyErrataToBitmap(bm, typeNames, typeOverrides)
-	}
-	for _, en := range cluster.Enums {
-		applyErrataToEnum(en, typeNames, typeOverrides)
-	}
-	for _, s := range cluster.Structs {
-		applyErrataToStruct(s, typeNames, typeOverrides)
-	}
-	for _, cmd := range cluster.Commands {
-		applyErrataToCommand(cmd, typeNames, typeOverrides)
-	}
-	for _, ev := range cluster.Events {
-		applyErrataToEvent(ev, typeNames, typeOverrides)
-	}
-}
-
-func applyErrataToBitmap(bitmap *matter.Bitmap, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
-	if typeOverrides != nil {
-		override, ok := typeOverrides.Bitmaps[bitmap.Name]
-
-		if ok {
-			if override.OverrideName != "" {
-				bitmap.Name = override.OverrideName
-			}
-			if override.OverrideType != "" {
-				bitmap.Type = types.ParseDataType(override.OverrideType, false)
-			}
-			if len(override.Fields) == 0 {
-				return
-			}
-			for _, f := range override.Fields {
-				for _, b := range bitmap.Bits {
-					if b.Name() == f.Name {
-						if f.OverrideName != "" {
-							b.SetName(f.OverrideName)
-						}
-						break
-					}
-				}
-			}
-		}
-	}
-	bitmap.Name = applyTypeName(typeNames, bitmap.Name)
-}
-
-func applyErrataToEnum(en *matter.Enum, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
-	if typeOverrides != nil {
-		override, ok := typeOverrides.Enums[en.Name]
-		if ok {
-			if override.OverrideName != "" {
-				en.Name = override.OverrideName
-			}
-			if override.OverrideType != "" {
-				en.Type = types.ParseDataType(override.OverrideType, false)
-			}
-			if len(override.Fields) == 0 {
-				return
-			}
-			for _, f := range override.Fields {
-				for _, ev := range en.Values {
-					if ev.Name == f.Name {
-						if f.OverrideName != "" {
-							ev.Name = f.OverrideName
-						}
-						if f.Conformance != "" {
-							ev.Conformance = conformance.ParseConformance(f.Conformance)
-						}
-						break
-					}
-				}
-			}
-		}
-	}
-	en.Name = applyTypeName(typeNames, en.Name)
-}
-
-func applyErrataToStruct(st *matter.Struct, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
-	if typeOverrides != nil {
-		ast, ok := typeOverrides.Structs[st.Name]
-		if !ok {
-			return
-		}
-		if ast.OverrideName != "" {
-			st.Name = ast.OverrideName
-		}
-		applyErrataToFields(st.Fields, ast)
-	}
-	st.Name = applyTypeName(typeNames, st.Name)
-
 }
 
 func applyErrataToCommand(st *matter.Command, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
@@ -185,6 +70,9 @@ func applyErrataToCommand(st *matter.Command, typeNames map[string]string, typeO
 		}
 		if override.Conformance != "" {
 			st.Conformance = conformance.ParseConformance(override.Conformance)
+		}
+		if override.Response != "" {
+			st.Response = types.ParseDataType(override.Response, types.DataTypeRankScalar)
 		}
 		applyErrataToFields(st.Fields, override)
 	}
@@ -209,43 +97,22 @@ func applyErrataToEvent(ev *matter.Event, typeNames map[string]string, typeOverr
 		if override.Conformance != "" {
 			ev.Conformance = conformance.ParseConformance(override.Conformance)
 		}
+		switch override.FabricScoping {
+		case "none":
+			ev.Access.FabricScoping = matter.FabricScopingUnscoped
+		case "fabric-scoped":
+			ev.Access.FabricScoping = matter.FabricScopingScoped
+		}
+		switch override.FabricSensitivity {
+		case "none":
+			ev.Access.FabricSensitivity = matter.FabricSensitivityInsensitive
+		case "fabric-sensitive":
+			ev.Access.FabricSensitivity = matter.FabricSensitivitySensitive
+		}
 		applyErrataToFields(ev.Fields, override)
 	}
 	ev.Name = applyTypeName(typeNames, ev.Name)
 
-}
-
-func applyErrataToFields(fs matter.FieldSet, override *errata.SDKType) {
-	if len(override.Fields) != 0 {
-		for _, f := range override.Fields {
-			for _, field := range fs {
-				if field.Name == f.Name {
-					applyErrataToField(field, f)
-					break
-				}
-			}
-		}
-	}
-}
-
-func applyErrataToField(field *matter.Field, override *errata.SDKType) {
-	if override.OverrideName != "" {
-		field.Name = override.OverrideName
-	}
-	if override.OverrideType != "" {
-		field.Type = types.ParseDataType(override.OverrideType, false)
-	}
-	if override.Conformance != "" {
-		field.Conformance = conformance.ParseConformance(override.Conformance)
-	}
-	if override.Constraint != "" {
-		field.Constraint = constraint.ParseString(override.Constraint)
-	}
-	if override.Fallback != "" {
-		field.Fallback = constraint.ParseLimit(override.Fallback)
-	}
-	field.Quality = overrideQuality(override, field.Quality)
-	field.Access = overrideAccess(override, field.EntityType(), field.Access)
 }
 
 func applyErrataToDeviceType(deviceType *matter.DeviceType, typeOverrides *errata.SDKTypes) {

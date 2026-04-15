@@ -1,6 +1,8 @@
 package matter
 
 import (
+	"iter"
+
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -41,11 +43,21 @@ func (s *Constant) Inherit(parent *Constant) {
 
 type ConstantSet []*Constant
 
-func (ss ConstantSet) Identifier(name string) (types.Entity, bool) {
-	for _, e := range ss {
+func (cs ConstantSet) Identifier(name string) (types.Entity, bool) {
+	for _, e := range cs {
 		if e.Name == name {
 			return e, true
 		}
 	}
 	return nil, false
+}
+
+func (cs ConstantSet) Iterate() iter.Seq[types.Entity] {
+	return func(yield func(types.Entity) bool) {
+		for _, c := range cs {
+			if !yield(c) {
+				return
+			}
+		}
+	}
 }

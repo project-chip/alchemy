@@ -26,7 +26,7 @@ func compareClusters(specs spec.SpecPullRequest, violations entityViolations) {
 			continue
 		}
 		if novelty.IsNew() {
-			violationType := checkProvisionality(specs.HeadInProgress, state.HeadInProgress)
+			violationType := checkProvisionalityOfNewEntity(specs.HeadInProgress, state.HeadInProgress)
 			if !novelty.IsIfDefd() {
 				violationType |= spec.ViolationTypeNotIfDefd
 			}
@@ -59,7 +59,7 @@ func compareChildEntity[Parent ComparableEntity, Child ComparableEntity](s *spec
 	if !novelty.IsNew() {
 		return
 	}
-	violationType := checkProvisionality(s, entity)
+	violationType := checkProvisionalityOfNewEntity(s, entity)
 
 	if !novelty.IsIfDefd() {
 		violationType |= spec.ViolationTypeNotIfDefd
@@ -76,7 +76,7 @@ func compareClusterParentEntity[Parent ComparableEntity, Child ComparableEntity]
 			continue
 		}
 		if novelty.IsNew() {
-			violationType := checkProvisionality(s, clusterState.HeadInProgress)
+			violationType := checkProvisionalityOfNewEntity(s, entityState.HeadInProgress)
 			if !novelty.IsIfDefd() {
 				violationType |= spec.ViolationTypeNotIfDefd
 			}

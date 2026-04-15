@@ -162,7 +162,7 @@ func (b *Baller) parseDoc(library *spec.Library, doc *asciidoc.Document, docType
 			if err == nil {
 				dp.events = append(dp.events, events)
 			}
-		case matter.SectionComposedDeviceTypeConditionRequirements:
+		case matter.SectionConditionRequirements:
 			var conditionRequirements *subSection
 			conditionRequirements, err = newSubSection(dp, section)
 			if err == nil {

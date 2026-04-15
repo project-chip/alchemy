@@ -78,7 +78,6 @@ func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, 
 	}
 
 	if clusterGroup != nil {
-		//pc.addRootEntity(clusterGroup, section)
 		entity = clusterGroup
 
 		clusterGroup.AddDataTypes(dataTypes...)
@@ -94,7 +93,6 @@ func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, 
 		}
 	} else {
 		entity = clusters[0]
-		//pc.addRootEntity(clusters[0], section)
 	}
 
 	var description = library.getDescription(reader, d, clusters[0], section, reader.Children(section))
@@ -128,7 +126,7 @@ func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, 
 			case matter.SectionCommands:
 				c.Commands, err = library.toCommands(spec, reader, d, s, parentEntity)
 			case matter.SectionRevisionHistory:
-				c.Revisions, err = readRevisionHistory(reader, d, s)
+				c.Revisions, err = readRevisionHistory(reader, d, s, c)
 			case matter.SectionDerivedClusterNamespace:
 				err = library.parseDerivedCluster(reader, d, s, c)
 			case matter.SectionClusterID:
@@ -165,7 +163,7 @@ func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, 
 	return
 }
 
-func readRevisionHistory(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section) (revisions []*matter.Revision, err error) {
+func readRevisionHistory(reader asciidoc.Reader, doc *asciidoc.Document, section *asciidoc.Section, parent types.Entity) (revisions []*matter.Revision, err error) {
 	var ti *TableInfo
 	ti, err = parseFirstTable(reader, doc, section)
 	if err != nil {
@@ -173,7 +171,7 @@ func readRevisionHistory(reader asciidoc.Reader, doc *asciidoc.Document, section
 		return
 	}
 	for row := range ti.ContentRows() {
-		rev := &matter.Revision{}
+		rev := matter.NewRevision(parent, row)
 		var number string
 		number, err = ti.ReadString(reader, row, matter.TableColumnRevision)
 		if err != nil {

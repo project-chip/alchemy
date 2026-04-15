@@ -60,6 +60,14 @@ func compare(specs spec.SpecPullRequest) (violationsByPath map[string][]spec.Vio
 			parent = parent.Parent()
 		}
 
+		// When an ancestor is provisional, we don't need to report non-provisional violations for this entity
+		if parent != nil {
+			violationType &= ^spec.ViolationTypeNonProvisional
+			if violationType == spec.ViolationTypeNone {
+				continue
+			}
+		}
+
 		v := spec.Violation{Entity: entity, Type: violationType}
 		v.Path, v.Line = entity.Origin()
 		violationsByPath[v.Path] = append(violationsByPath[v.Path], v)
@@ -105,7 +113,7 @@ func isNil[T any](val T) bool {
 	}
 }
 
-func checkProvisionality(s *spec.Specification, e types.Entity) (violationType spec.ViolationType) {
+func checkProvisionalityOfNewEntity(s *spec.Specification, e types.Entity) (violationType spec.ViolationType) {
 	switch e.(type) {
 	case *matter.Cluster,
 		*matter.DeviceType,
