@@ -5,9 +5,9 @@ import "fmt"
 type XmlMismatchLevel uint8
 
 const (
-	MismatchLevel1 XmlMismatchLevel = iota
+	MismatchLevel3 XmlMismatchLevel = iota
 	MismatchLevel2
-	MismatchLevel3
+	MismatchLevel1
 )
 
 func (l XmlMismatchLevel) String() string {
@@ -84,82 +84,82 @@ func (t XmlMismatchType) String() string {
 
 	// File
 	case XmlMismatchNewFile:
-		return "FileNotFound"
+		return "File: Not Found"
 
 	// Generic
 	case XmlMismatchMissingTag:
-		return "MissingTag"
+		return "Tag: Missing"
 	case XmlMismatchMissingAttr:
-		return "MissingAttr"
+		return "Attribute: Missing"
 	case XmlMismatchAttrValue:
-		return "AttrValue"
+		return "Attribute: Value Mismatch"
 
 	// Enums
 	case XmlMismatchMissingEnum:
-		return "MissingEnum"
+		return "Enum: Missing"
 	case XmlMismatchMissingEnumItem:
-		return "MissingEnumItem"
+		return "Enum Item: Missing"
 	case XmlMismatchEnumItemMissingAttr:
-		return "EnumItemMissingAttr"
+		return "Enum Item: Missing Attribute"
 	case XmlMismatchEnumItemAttrValue:
-		return "EnumItemAttrValue"
+		return "Enum Item: Attribute Value Mismatch"
 
 	// Structs
 	case XmlMismatchMissingStruct:
-		return "MissingStruct"
+		return "Struct: Missing"
 	case XmlMismatchMissingStructItem:
-		return "MissingStructItem"
+		return "Struct Item: Missing"
 	case XmlMismatchStructItemMissingAttr:
-		return "StructItemMissingAttr"
+		return "Struct Item: Missing Attribute"
 	case XmlMismatchStructItemAttrValue:
-		return "StructItemAttrValue"
+		return "Struct Item: Attribute Value Mismatch"
 
 	// Bitmaps
 	case XmlMismatchMissingBitmap:
-		return "MissingBitmap"
+		return "Bitmap: Missing"
 	case XmlMismatchMissingBitmapField:
-		return "MissingBitmapField"
+		return "Bitmap Field: Missing"
 	case XmlMismatchBitmapMissingAttr:
-		return "BitmapMissingAttr"
+		return "Bitmap: Missing Attribute"
 	case XmlMismatchBitmapAttrValue:
-		return "BitmapAttrValue"
+		return "Bitmap: Attribute Value Mismatch"
 	case XmlMismatchBitmapFieldMissingAttr:
-		return "BitmapFieldMissingAttr"
+		return "Bitmap Field: Missing Attribute"
 	case XmlMismatchBitmapFieldAttrValue:
-		return "BitmapFieldAttrValue"
+		return "Bitmap Field: Attribute Value Mismatch"
 
 	// Clusters (Top Level)
 	case XmlMismatchMissingCluster:
-		return "MissingCluster"
+		return "Cluster: Missing"
 	case XmlMismatchClusterMissingAttr:
-		return "ClusterMissingAttr"
+		return "Cluster: Missing Attribute"
 	case XmlMismatchClusterAttrValue:
-		return "ClusterAttrValue"
+		return "Cluster: Attribute Value Mismatch"
 
 	// Clusters
 	case XmlMismatchMissingClusterCommand:
-		return "MissingClusterCommand"
+		return "Cluster Command: Missing"
 	case XmlMismatchClusterCommandMissingAttr:
-		return "ClusterCommandMissingAttr"
+		return "Cluster Command: Missing Attribute"
 	case XmlMismatchClusterCommandAttrValue:
-		return "ClusterCommandAttrValue"
+		return "Cluster Command: Attribute Value Mismatch"
 	case XmlMismatchMissingClusterAttribute:
-		return "MissingClusterAttribute"
+		return "Cluster Attribute: Missing"
 	case XmlMismatchClusterAttributeMissingAttr:
-		return "ClusterAttributeMissingAttr"
+		return "Cluster Attribute: Missing Attribute"
 	case XmlMismatchClusterAttributeAttrValue:
-		return "ClusterAttributeAttrValue"
+		return "Cluster Attribute: Attribute Value Mismatch"
 	case XmlMismatchMissingClusterEvent:
-		return "MissingClusterEvent"
+		return "Cluster Event: Missing"
 	case XmlMismatchClusterEventMissingAttr:
-		return "ClusterEventMissingAttr"
+		return "Cluster Event: Missing Attribute"
 	case XmlMismatchClusterEventAttrValue:
-		return "ClusterEventAttrValue"
+		return "Cluster Event: Attribute Value Mismatch"
 	case XmlMismatchMissingClusterFeature:
-		return "MissingClusterFeature"
+		return "Cluster Feature: Missing"
 
 	case XmlMismatchClusterDetails:
-		return "ClusterDetails"
+		return "Cluster: Details Mismatch"
 
 	default:
 		return "Unknown Mismatch"
@@ -170,93 +170,93 @@ func (t XmlMismatchType) Level() XmlMismatchLevel {
 	switch t {
 	// File
 	case XmlMismatchNewFile:
-		return MismatchLevel1
+		return MismatchLevel3
 
 	// Generic
 	case XmlMismatchMissingTag:
 		return MismatchLevel2
 	case XmlMismatchMissingAttr:
-		return MismatchLevel1
+		return MismatchLevel3
 	case XmlMismatchAttrValue:
 		return MismatchLevel2
 
 	// Enums
 	case XmlMismatchMissingEnum:
-		return MismatchLevel3
-	case XmlMismatchMissingEnumItem:
-		return MismatchLevel3
-	case XmlMismatchEnumItemMissingAttr:
 		return MismatchLevel1
-	case XmlMismatchEnumItemAttrValue:
+	case XmlMismatchMissingEnumItem:
+		return MismatchLevel1
+	case XmlMismatchEnumItemMissingAttr:
 		return MismatchLevel3
+	case XmlMismatchEnumItemAttrValue:
+		return MismatchLevel1
 
 	// Structs
 	case XmlMismatchMissingStruct:
-		return MismatchLevel3
-	case XmlMismatchMissingStructItem:
-		return MismatchLevel3
-	case XmlMismatchStructItemMissingAttr:
 		return MismatchLevel1
-	case XmlMismatchStructItemAttrValue:
+	case XmlMismatchMissingStructItem:
+		return MismatchLevel1
+	case XmlMismatchStructItemMissingAttr:
 		return MismatchLevel3
+	case XmlMismatchStructItemAttrValue:
+		return MismatchLevel1
 
 	// Bitmaps
 	case XmlMismatchMissingBitmap:
-		return MismatchLevel3
+		return MismatchLevel1
 	case XmlMismatchMissingBitmapField:
-		return MismatchLevel3
+		return MismatchLevel1
 	case XmlMismatchBitmapMissingAttr:
-		return MismatchLevel1
+		return MismatchLevel3
 	case XmlMismatchBitmapAttrValue:
-		return MismatchLevel3
-	case XmlMismatchBitmapFieldMissingAttr:
 		return MismatchLevel1
-	case XmlMismatchBitmapFieldAttrValue:
+	case XmlMismatchBitmapFieldMissingAttr:
 		return MismatchLevel3
+	case XmlMismatchBitmapFieldAttrValue:
+		return MismatchLevel1
 
 	// Clusters (Top Level)
 	case XmlMismatchMissingCluster:
-		return MismatchLevel3
-	case XmlMismatchClusterMissingAttr:
 		return MismatchLevel1
-	case XmlMismatchClusterAttrValue:
+	case XmlMismatchClusterMissingAttr:
 		return MismatchLevel3
+	case XmlMismatchClusterAttrValue:
+		return MismatchLevel1
 
 	// Clusters
 	case XmlMismatchMissingClusterCommand:
-		return MismatchLevel3
+		return MismatchLevel1
 	case XmlMismatchClusterCommandMissingAttr:
-		return MismatchLevel1
+		return MismatchLevel3
 	case XmlMismatchClusterCommandAttrValue:
-		return MismatchLevel3
+		return MismatchLevel1
 	case XmlMismatchMissingClusterAttribute:
-		return MismatchLevel3
+		return MismatchLevel1
 	case XmlMismatchClusterAttributeMissingAttr:
-		return MismatchLevel1
+		return MismatchLevel3
 	case XmlMismatchClusterAttributeAttrValue:
-		return MismatchLevel3
-	case XmlMismatchMissingClusterEvent:
-		return MismatchLevel3
-	case XmlMismatchClusterEventMissingAttr:
 		return MismatchLevel1
+	case XmlMismatchMissingClusterEvent:
+		return MismatchLevel1
+	case XmlMismatchClusterEventMissingAttr:
+		return MismatchLevel3
 	case XmlMismatchClusterEventAttrValue:
-		return MismatchLevel3
+		return MismatchLevel1
 	case XmlMismatchMissingClusterFeature:
-		return MismatchLevel3
+		return MismatchLevel1
 
 	case XmlMismatchClusterDetails:
-		return MismatchLevel3
+		return MismatchLevel1
 
 	default:
-		return MismatchLevel1
+		return MismatchLevel3
 	}
 }
 
 type XmlMismatch struct {
-	Path      string
-	Details   string
-	Type      XmlMismatchType
-	ElementID string
+	Path                   string
+	Details                string
+	Type                   XmlMismatchType
+	EntityUniqueIdentifier string
 }
 
 func (m XmlMismatch) Level() XmlMismatchLevel {

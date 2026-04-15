@@ -1,11 +1,10 @@
 package cli
 
 import (
-	"encoding/csv"
+	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"github.com/project-chip/alchemy/zapdiff"
@@ -16,17 +15,19 @@ type ZAPDiff struct {
 	XmlRoot2      string `help:"root of second set of ZAP XMLs" group:"SDK Commands:" required:"true"`
 	Label1        string `default:"ZapXML-1" help:"label for first set of ZAP XMLs" group:"SDK Commands:"`
 	Label2        string `default:"ZapXML-2" help:"label for second set of ZAP XMLs" group:"SDK Commands:"`
-	Out           string `default:"." help:"path to output mismatch.csv file" group:"SDK Commands:"`
+	Out           string `default:"." help:"path to output mismatch files" group:"SDK Commands:"`
+	Format        string `default:"both" help:"output format: csv, html, or both" group:"SDK Commands:"`
 	MismatchLevel int    `default:"3" help:"the minimum mismatch level to report (1-3)" group:"SDK Commands:"`
 }
 
 func (z *ZAPDiff) Run(cc *Context) (err error) {
+
 	var mismatchPrintLevel zapdiff.XmlMismatchLevel
 	if z.MismatchLevel < 1 || z.MismatchLevel > 3 {
 		slog.Warn("invalid mismatch level. must be between 1 and 3.", "level", z.MismatchLevel)
 		mismatchPrintLevel = zapdiff.MismatchLevel3 // Default
 	} else {
-		mismatchPrintLevel = zapdiff.XmlMismatchLevel(z.MismatchLevel - 1) // Convert 1-3 to 0-2
+		mismatchPrintLevel = zapdiff.XmlMismatchLevel(3 - z.MismatchLevel)
 	}
 
 	ff1, err := listXMLFiles(z.XmlRoot1)
@@ -43,16 +44,37 @@ func (z *ZAPDiff) Run(cc *Context) (err error) {
 
 	mm := zapdiff.Pipeline(ff1, ff2, z.Label1, z.Label2)
 
-	csvOutputPath := filepath.Join(z.Out, "mismatches.csv")
-	err = writeMismatchesToCSV(csvOutputPath, mm, mismatchPrintLevel)
-	if err != nil {
-		slog.Error("Failed to write CSV output", "error", err)
+	generateCSV := z.Format == "csv" || z.Format == "both" || z.Format == ""
+	if generateCSV {
+		err = writeMismatchesFile(z.Out, "mismatches.csv", "CSV", func(w io.Writer) error {
+			return zapdiff.WriteMismatchesToCSV(w, mm, mismatchPrintLevel)
+		})
+		if err != nil {
+			return err
+		}
 	}
 
-	return
+	generateHTML := z.Format == "html" || z.Format == "both" || z.Format == ""
+	if generateHTML {
+		err = writeMismatchesFile(z.Out, "mismatches.html", "HTML", func(w io.Writer) error {
+			return zapdiff.WriteMismatchesToHTML(w, mm, mismatchPrintLevel, z.XmlRoot1, z.XmlRoot2)
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func listXMLFiles(p string) (paths []string, err error) {
+	fi, err := os.Stat(p)
+	if err != nil {
+		return nil, err
+	}
+	if !fi.IsDir() {
+		return []string{p}, nil
+	}
 	var entries []os.DirEntry
 	entries, err = os.ReadDir(p)
 	if err != nil {
@@ -68,63 +90,19 @@ func listXMLFiles(p string) (paths []string, err error) {
 	return
 }
 
-func writeMismatchesToCSV(p string, mm []zapdiff.XmlMismatch, l zapdiff.XmlMismatchLevel) (err error) {
-	f, err := os.Create(p)
+func writeMismatchesFile(outDir string, filename string, formatName string, writeFn func(io.Writer) error) error {
+	outputPath := filepath.Join(outDir, filename)
+	f, err := os.Create(outputPath)
 	if err != nil {
-		slog.Error("failed to create file", "path", p, "error", err)
+		slog.Error("failed to create "+formatName+" file", "path", outputPath, "error", err)
 		return err
 	}
 	defer f.Close()
-
-	w := csv.NewWriter(f)
-	defer func() {
-		w.Flush()
-		if err == nil {
-			err = w.Error()
-		}
-	}()
-
-	// Write header
-	header := []string{"Level", "Type", "File", "Element Xpath", "Details"}
-	if err = w.Write(header); err != nil {
-		slog.Error("failed to write CSV header", "error", err)
-		return
+	err = writeFn(f)
+	if err != nil {
+		slog.Error("Failed to write "+formatName+" output", "error", err)
+	} else {
+		slog.Info("Successfully wrote mismatches to "+formatName, "dir", outputPath)
 	}
-
-	sort.Slice(mm, func(i, j int) bool {
-		// Level (Descending), Path, Type, ElementID, Details
-		if mm[i].Level() != mm[j].Level() {
-			return mm[i].Level() > mm[j].Level()
-		}
-		if mm[i].Path != mm[j].Path {
-			return mm[i].Path < mm[j].Path
-		}
-		if mm[i].Type != mm[j].Type {
-			return mm[i].Type.String() < mm[j].Type.String()
-		}
-		if mm[i].ElementID != mm[j].ElementID {
-			return mm[i].ElementID < mm[j].ElementID
-		}
-		return mm[i].Details < mm[j].Details
-	})
-
-	// Write mismatches
-	for _, m := range mm {
-		if m.Level() >= l {
-			row := []string{
-				m.Level().String(),
-				m.Type.String(),
-				m.Path,
-				m.ElementID,
-				m.Details,
-			}
-			if err = w.Write(row); err != nil {
-				slog.Error("Warning: failed to write row to CSV", "err", err)
-				return
-			}
-		}
-	}
-
-	slog.Info("Successfully wrote mismatches to CSV", "dir", p)
-	return
+	return nil
 }

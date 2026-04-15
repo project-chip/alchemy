@@ -7,7 +7,7 @@ import (
 )
 
 func parentAndSelfAttr(e *etree.Element, attr string) string {
-	parentID := getElementID(e.Parent())
+	parentID := getEntityUniqueIdentifier(e.Parent())
 	a := e.SelectAttr(attr)
 	if a == nil {
 		return fmt.Sprintf("%s/%s", parentID, getElementXPathSegment(e))
@@ -16,7 +16,7 @@ func parentAndSelfAttr(e *etree.Element, attr string) string {
 }
 
 func parentAndSelfText(e *etree.Element) string {
-	parentID := getElementID(e.Parent())
+	parentID := getEntityUniqueIdentifier(e.Parent())
 	text := e.Text()
 	if text == "" {
 		return fmt.Sprintf("%s/%s", parentID, getElementXPathSegment(e))
@@ -24,7 +24,7 @@ func parentAndSelfText(e *etree.Element) string {
 	return fmt.Sprintf("%s/%s[text()='%s']", parentID, e.Tag, text)
 }
 
-func getElementID(e *etree.Element) string {
+func getEntityUniqueIdentifier(e *etree.Element) string {
 	if e == nil {
 		return ""
 	}
@@ -42,16 +42,22 @@ func getElementID(e *etree.Element) string {
 		"/configurator/bitmap/field",
 		"/configurator/cluster/command",
 		"/configurator/cluster/command/arg",
-		"/configurator/cluster/attribute",
 		"/configurator/cluster/event",
 		"/configurator/cluster/event/field",
 		"/configurator/cluster/features/feature":
+		return parentAndSelfAttr(e, "name")
+	case "/configurator/cluster/attribute":
+		code := e.SelectAttrValue("code", "")
+		if code != "" {
+			parentID := getEntityUniqueIdentifier(e.Parent())
+			return fmt.Sprintf("%s/%s[@code='%s']", parentID, e.Tag, code)
+		}
 		return parentAndSelfAttr(e, "name")
 	case "/configurator/enum/cluster",
 		"/configurator/struct/cluster":
 		return parentAndSelfAttr(e, "code")
 	case "/configurator/cluster":
-		parentID := getElementID(e.Parent())
+		parentID := getEntityUniqueIdentifier(e.Parent())
 		code := e.SelectAttrValue("code", "")
 		if code != "" {
 			return fmt.Sprintf("%s/%s[@code='%s']", parentID, e.Tag, code)
@@ -73,7 +79,7 @@ func getElementID(e *etree.Element) string {
 		return parentAndSelfText(e)
 
 	default:
-		parentID := getElementID(e.Parent())
+		parentID := getEntityUniqueIdentifier(e.Parent())
 		selfSegment := getElementXPathSegment(e)
 		return fmt.Sprintf("%s/%s", parentID, selfSegment)
 	}

@@ -67,10 +67,10 @@ func fileListDiff(ff1, ff2 []string, n1, n2 string) (mm []XmlMismatch) {
 	for b1 := range map1 {
 		if _, ok := map2[b1]; !ok {
 			m := XmlMismatch{
-				Path:      b1,
-				Type:      XmlMismatchNewFile,
-				Details:   fmt.Sprintf("Only found in %s, or the file is not alchemy-generated.", n1),
-				ElementID: b1,
+				Path:                   b1,
+				Type:                   XmlMismatchNewFile,
+				Details:                fmt.Sprintf("Only found in %s, or the file is not alchemy-generated.", n1),
+				EntityUniqueIdentifier: b1,
 			}
 			mm = append(mm, m)
 		}
@@ -79,10 +79,10 @@ func fileListDiff(ff1, ff2 []string, n1, n2 string) (mm []XmlMismatch) {
 	for b2 := range map2 {
 		if _, ok := map1[b2]; !ok {
 			m := XmlMismatch{
-				Path:      b2,
-				Type:      XmlMismatchNewFile,
-				Details:   fmt.Sprintf("Only found in %s, or the file is not alchemy-generated.", n2),
-				ElementID: b2,
+				Path:                   b2,
+				Type:                   XmlMismatchNewFile,
+				Details:                fmt.Sprintf("Only found in %s, or the file is not alchemy-generated.", n2),
+				EntityUniqueIdentifier: b2,
 			}
 			mm = append(mm, m)
 		}
