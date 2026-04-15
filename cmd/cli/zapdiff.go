@@ -77,7 +77,12 @@ func writeMismatchesToCSV(p string, mm []zapdiff.XmlMismatch, l zapdiff.XmlMisma
 	defer f.Close()
 
 	w := csv.NewWriter(f)
-	defer w.Flush()
+	defer func() {
+		w.Flush()
+		if err == nil {
+			err = w.Error()
+		}
+	}()
 
 	// Write header
 	header := []string{"Level", "Type", "File", "Element Xpath", "Details"}

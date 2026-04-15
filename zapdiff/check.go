@@ -7,8 +7,8 @@ import (
 )
 
 func checkMismatches(ep elementPair, baseName string, n1, n2 string) (mm []XmlMismatch) {
-	e1Children := make(map[string]*etree.Element)
-	e2Children := make(map[string]*etree.Element)
+	e1Children := make(map[string]*etree.Element, len(ep.e1.ChildElements()))
+	e2Children := make(map[string]*etree.Element, len(ep.e2.ChildElements()))
 	mm = make([]XmlMismatch, 0)
 
 	for _, c1 := range ep.e1.ChildElements() {
@@ -63,8 +63,8 @@ func checkMismatches(ep elementPair, baseName string, n1, n2 string) (mm []XmlMi
 
 func checkAttributes(ep elementPair, id string, baseName string, n1, n2 string) (mm []XmlMismatch) {
 	mm = make([]XmlMismatch, 0)
-	e1Attrs := make(map[string]string)
-	e2Attrs := make(map[string]string)
+	e1Attrs := make(map[string]string, len(ep.e1.Attr))
+	e2Attrs := make(map[string]string, len(ep.e2.Attr))
 
 	for _, a := range ep.e1.Attr {
 		e1Attrs[a.Key] = a.Value
