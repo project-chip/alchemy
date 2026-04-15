@@ -103,4 +103,3 @@ func listXMLFiles(p string) (paths []string, err error) {
 
 	return
 }
-

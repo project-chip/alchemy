@@ -19,7 +19,6 @@ func getElementXPathSegment(e *etree.Element) (s string) {
 			cnt++
 			if sib == e {
 				idx = cnt
-				break
 			}
 		}
 	}

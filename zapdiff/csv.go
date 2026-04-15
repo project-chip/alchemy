@@ -10,7 +10,12 @@ import (
 // WriteMismatchesToCSV writes the given mismatches to the writer in CSV format.
 func WriteMismatchesToCSV(w io.Writer, mm []XmlMismatch, l XmlMismatchLevel) (err error) {
 	csvWriter := csv.NewWriter(w)
-	defer csvWriter.Flush()
+	defer func() {
+		csvWriter.Flush()
+		if err == nil {
+			err = csvWriter.Error()
+		}
+	}()
 
 	// Write header
 	header := []string{"Level", "Type", "File", "Element Xpath", "Details"}
