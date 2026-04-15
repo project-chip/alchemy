@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -44,41 +45,26 @@ func (z *ZAPDiff) Run(cc *Context) (err error) {
 	mm := zapdiff.Pipeline(ff1, ff2, z.Label1, z.Label2)
 
 	generateCSV := z.Format == "csv" || z.Format == "both" || z.Format == ""
-	generateHTML := z.Format == "html" || z.Format == "both" || z.Format == ""
-
 	if generateCSV {
-		csvOutputPath := filepath.Join(z.Out, "mismatches.csv")
-		f, err := os.Create(csvOutputPath)
+		err = writeMismatchesFile(z.Out, "mismatches.csv", "CSV", func(w io.Writer) error {
+			return zapdiff.WriteMismatchesToCSV(w, mm, mismatchPrintLevel)
+		})
 		if err != nil {
-			slog.Error("failed to create CSV file", "path", csvOutputPath, "error", err)
 			return err
-		}
-		defer f.Close()
-		err = zapdiff.WriteMismatchesToCSV(f, mm, mismatchPrintLevel)
-		if err != nil {
-			slog.Error("Failed to write CSV output", "error", err)
-		} else {
-			slog.Info("Successfully wrote mismatches to CSV", "dir", csvOutputPath)
 		}
 	}
 
+	generateHTML := z.Format == "html" || z.Format == "both" || z.Format == ""
 	if generateHTML {
-		htmlOutputPath := filepath.Join(z.Out, "mismatches.html")
-		f, err := os.Create(htmlOutputPath)
+		err = writeMismatchesFile(z.Out, "mismatches.html", "HTML", func(w io.Writer) error {
+			return zapdiff.WriteMismatchesToHTML(w, mm, mismatchPrintLevel, z.XmlRoot1, z.XmlRoot2)
+		})
 		if err != nil {
-			slog.Error("failed to create HTML file", "path", htmlOutputPath, "error", err)
 			return err
-		}
-		defer f.Close()
-		err = zapdiff.WriteMismatchesToHTML(f, mm, mismatchPrintLevel, z.XmlRoot1, z.XmlRoot2)
-		if err != nil {
-			slog.Error("Failed to write HTML output", "error", err)
-		} else {
-			slog.Info("Successfully wrote mismatches to HTML", "dir", htmlOutputPath)
 		}
 	}
 
-	return
+	return nil
 }
 
 func listXMLFiles(p string) (paths []string, err error) {
@@ -102,4 +88,21 @@ func listXMLFiles(p string) (paths []string, err error) {
 	}
 
 	return
+}
+
+func writeMismatchesFile(outDir string, filename string, formatName string, writeFn func(io.Writer) error) error {
+	outputPath := filepath.Join(outDir, filename)
+	f, err := os.Create(outputPath)
+	if err != nil {
+		slog.Error("failed to create "+formatName+" file", "path", outputPath, "error", err)
+		return err
+	}
+	defer f.Close()
+	err = writeFn(f)
+	if err != nil {
+		slog.Error("Failed to write "+formatName+" output", "error", err)
+	} else {
+		slog.Info("Successfully wrote mismatches to "+formatName, "dir", outputPath)
+	}
+	return nil
 }

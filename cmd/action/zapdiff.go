@@ -23,27 +23,25 @@ type ZAPDiff struct {
 	BaselineXMLDir   string `name:"baseline-xml" help:"Path to baseline XML file or directory" required:"true"`
 	GeneratedXMLDir  string `name:"generated-xml" help:"Path to generated XML file or directory" required:"true"`
 	GeneratedSDKRoot string `name:"sdk-root" help:"Path to SDK root directory (for ZAP generation)" required:"true"`
-	SDKLabel         string `name:"sdk-label" help:"Label for SDK" default:"SDK"`
-	SpecLabel        string `name:"spec-label" help:"Label for Spec" default:"Spec"`
+	SDKLabel         string `name:"sdk-label" help:"Label for SDK (used in human-readable reports)" default:"SDK"`
+	SpecLabel        string `name:"spec-label" help:"Label for Spec (used in human-readable reports)" default:"Spec"`
 	GenAttributes    string `name:"gen-attributes" help:"Zap generation attributes"`
-	MismatchLevel    int    `name:"mismatch-level" help:"Mismatch level to report (1-3)" default:"3"`
+	MismatchLevel    int    `name:"mismatch-level" help:"Mismatch level to report (1-3); 1 is most important" default:"3"`
 }
 
 func (z *ZAPDiff) Run(cc *cli.Context) (err error) {
-	if z.GenAttributes != "" {
-		slog.Info("Running ZAP generation", "attributes", z.GenAttributes)
-		zapCmd := &cli.ZAP{}
-		zapCmd.Root = "."
-		zapCmd.SdkRoot = z.GeneratedSDKRoot
-		zapCmd.Attribute = []string{z.GenAttributes}
-		zapCmd.FeatureXML = true
-		zapCmd.ConformanceXML = true
-		zapCmd.NoProgress = true
-		err = zapCmd.Run(cc)
-		if err != nil {
-			slog.Error("ZAP generation failed", "error", err)
-			return err
-		}
+	slog.Info("Running ZAP generation", "attributes", z.GenAttributes)
+	zapCmd := &cli.ZAP{}
+	zapCmd.Root = "."
+	zapCmd.SdkRoot = z.GeneratedSDKRoot
+	zapCmd.Attribute = []string{z.GenAttributes}
+	zapCmd.FeatureXML = true
+	zapCmd.ConformanceXML = true
+	zapCmd.NoProgress = true
+	err = zapCmd.Run(cc)
+	if err != nil {
+		slog.Error("ZAP generation failed", "error", err)
+		return err
 	}
 
 	slog.Info("Running ZAPDiff", "xml1", z.BaselineXMLDir, "xml2", z.GeneratedXMLDir)
@@ -53,6 +51,7 @@ func (z *ZAPDiff) Run(cc *cli.Context) (err error) {
 	diffCmd.Label1 = z.SDKLabel
 	diffCmd.Label2 = z.SpecLabel
 	diffCmd.MismatchLevel = z.MismatchLevel
+	diffCmd.Format = "both"
 
 	err = diffCmd.Run(cc)
 	if err != nil {
