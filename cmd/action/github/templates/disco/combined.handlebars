@@ -1,0 +1,50 @@
+<a href="https://github.com/project-chip/alchemy"></a><img align="left" width="75" height="75"
+  src="https://raw.githubusercontent.com/project-chip/alchemy/refs/heads/main/alchemy.svg"></a>
+<a href="https://github.com/project-chip/alchemy">Alchemy</a> found disco-ball suggestions for this commit.
+<br />
+
+{{#if has_mandatory}}
+> [!CAUTION]
+> These issues must be fixed before this PR can be merged.
+> Apply it to your PR by running <kbd>patch -p0 < disco-mandatory.patch</kbd> in the root of your repo.
+
+<a href="{{mandatory_patch_url}}"><kbd><br />&nbsp; 🔽 &nbsp;Download Mandatory Patch File&nbsp;&nbsp;<br /><br /></kbd></a>
+
+<br />
+
+{{#if mandatory_diff}}
+<details>
+  <summary><b>Mandatory Disco Ball Suggestions</b></summary>
+
+```diff
+{{raw mandatory_diff}}
+```
+
+</details>
+{{else}}
+<i>Mandatory Diff omitted due to size; please download the patch above.</i>
+{{/if}}
+{{/if}}
+
+{{#if has_optional}}
+> [!TIP]
+> These suggestions are optional but recommended.
+> Apply it to your PR by running <kbd>patch -p0 < disco-optional.patch</kbd> in the root of your repo.
+
+<a href="{{optional_patch_url}}"><kbd><br />&nbsp; 🔽 &nbsp;Download Optional Patch File&nbsp;&nbsp;<br /><br /></kbd></a>
+
+<br />
+
+{{#if optional_diff}}
+<details>
+  <summary><b>Optional Disco Ball Suggestions</b></summary>
+
+```diff
+{{raw optional_diff}}
+```
+
+</details>
+{{else}}
+<i>Optional Diff omitted due to size; please download the patch above.</i>
+{{/if}}
+{{/if}}
