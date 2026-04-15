@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/mailgun/raymond/v2"
-	"github.com/pmezard/go-difflib/difflib"
 	"github.com/project-chip/alchemy/internal/handlebars"
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
@@ -69,7 +68,9 @@ func getCustomDiffLines(path string, targetID string) ([]string, int, error) {
 	var customLines []string
 	customLines = append(customLines, parentLines[0])
 	customLines = append(customLines, lines...)
-	customLines = append(customLines, parentLines[len(parentLines)-1])
+	if len(parentLines) > 1 {
+		customLines = append(customLines, parentLines[len(parentLines)-1])
+	}
 
 	return customLines, parentStartLine, nil
 }
@@ -108,24 +109,10 @@ func WriteMismatchesToHTML(w io.Writer, mm []XmlMismatch, l XmlMismatchLevel, ro
 
 			diffStr := ""
 			if hasDiff {
-				diff := difflib.UnifiedDiff{
-					A:        lines1,
-					B:        lines2,
-					FromFile: "Ref",
-					ToFile:   "Generated",
-					Context:  5,
-				}
 				var err error
-				diffStr, err = difflib.GetUnifiedDiffString(diff)
+				diffStr, err = GenerateUnifiedDiff(lines1, lines2, start1, start2)
 				if err != nil {
 					diffStr = fmt.Sprintf("Failed to generate diff: %v", err)
-				} else {
-					// Replace header with correct line numbers
-					lines := strings.Split(diffStr, "\n")
-					if len(lines) > 2 && strings.HasPrefix(lines[2], "@@") {
-						lines[2] = fmt.Sprintf("@@ -%d,%d +%d,%d @@", start1, len(lines1), start2, len(lines2))
-						diffStr = strings.Join(lines, "\n")
-					}
 				}
 			}
 
