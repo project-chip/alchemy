@@ -193,7 +193,6 @@
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
             background-color: rgba(0,0,0,0.4);
         }
         .modal-content {
@@ -201,9 +200,13 @@
             margin: 5% auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 80%;
+            width: 90%;
+            max-width: 1200px;
             border-radius: 8px;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
         }
         .close {
             color: #aaa;
@@ -221,32 +224,42 @@
         
         /* Diff Styles */
         .diff-container {
+            gap: 1rem;
             font-family: monospace;
-            white-space: pre;
             background-color: #f8fafc;
             padding: 1rem;
             border-radius: 6px;
             border: 1px solid var(--border-color);
-            overflow-x: auto;
             max-height: 70vh;
             overflow-y: auto;
+            display: flex;
+            flex: 1;
+        }
+        .diff-column {
+            flex: 1;
+            min-width: 0;
+            overflow-x: auto;
+        }
+        .diff-column-header {
+            font-weight: bold;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0.5rem;
+            position: sticky;
+            top: 0;
+            background-color: #f8fafc;
         }
         .diff-line {
             display: block;
             padding: 0.125rem 0.5rem;
-        }
-        .diff-line.added {
-            background-color: #e6ffed;
-            color: #22863a;
+            white-space: pre;
         }
         .diff-line.removed {
             background-color: #ffeef0;
             color: #cb2431;
         }
-        .diff-line.header {
-            background-color: #eaf5ff;
-            color: #0366d6;
-            font-weight: bold;
+        .diff-line.highlight {
+            background-color: #fef08a; /* Yellow 200 */
         }
         .view-diff-btn {
             background-color: var(--secondary-color);
@@ -553,42 +566,69 @@
     function showDiffById(id) {
         const item = rawData.find(item => item.id === id);
         if (item) {
-            showDiff(item.diff);
+            showDiff(item);
         }
     }
 
-    function showDiff(diffText) {
+    function showDiff(item) {
         const modal = document.getElementById('diffModal');
         const content = document.getElementById('diffContent');
         
-        if (!diffText) {
-            content.innerHTML = 'No diff available for this item.';
-        } else {
-            content.innerHTML = '';
-            diffText = diffText.trim();
+        content.innerHTML = '';
+        
+        // Add details header
+        const headerDetails = document.createElement('div');
+        headerDetails.className = 'diff-header-details';
+        headerDetails.style.marginBottom = '1rem';
+        headerDetails.style.padding = '1rem';
+        headerDetails.style.backgroundColor = '#f1f5f9';
+        headerDetails.style.borderRadius = '6px';
+        headerDetails.style.fontSize = '0.9rem';
+        headerDetails.innerHTML = `
+            <div style="margin-bottom: 0.25rem;"><strong>Type:</strong> ${item.type}</div>
+            <div style="margin-bottom: 0.25rem;"><strong>File:</strong> ${item.file}</div>
+            <div style="margin-bottom: 0.25rem;"><strong>XPath:</strong> ${item.xpath}</div>
+            <div><strong>Detail:</strong> ${item.details}</div>
+        `;
+        content.appendChild(headerDetails);
+        
+        const columnsContainer = document.createElement('div');
+        columnsContainer.className = 'diff-container';
+        content.appendChild(columnsContainer);
+
+        function renderColumn(header, text, highlightStart, highlightEnd) {
+            const div = document.createElement('div');
+            div.className = 'diff-column';
+            div.style.flex = '1';
+            div.style.minWidth = '0'; // Allow shrinking
+            div.innerHTML = `<div class="diff-column-header">${header}</div>`;
             
             const pre = document.createElement('pre');
             pre.style.margin = '0';
             pre.style.fontFamily = 'monospace';
+            pre.style.overflowX = 'auto';
             
-            const lines = diffText.split('\n');
-            lines.forEach(line => {
+            const lines = text.split('\n');
+            lines.forEach((line, index) => {
                 const span = document.createElement('span');
                 span.className = 'diff-line';
                 span.textContent = line;
                 
-                if (line.startsWith('+')) {
-                    span.classList.add('added');
-                } else if (line.startsWith('-')) {
-                    span.classList.add('removed');
-                } else if (line.startsWith('@@')) {
-                    span.classList.add('header');
+                if (index >= highlightStart && index <= highlightEnd) {
+                    span.classList.add('highlight');
                 }
                 
                 pre.appendChild(span);
             });
-            
-            content.appendChild(pre);
+            div.appendChild(pre);
+            return div;
+        }
+        
+        if (item.refContent) {
+            columnsContainer.appendChild(renderColumn('Ref (SDK Master)', item.refContent, item.refHighlightStart, item.refHighlightEnd));
+        }
+        if (item.genContent) {
+            columnsContainer.appendChild(renderColumn('Generated (Spec Master)', item.genContent, item.genHighlightStart, item.genHighlightEnd));
         }
         
         modal.style.display = "block";
@@ -617,7 +657,7 @@
   <div class="modal-content">
     <span class="close" onclick="closeModal()">&times;</span>
     <h2>Diff View</h2>
-    <div id="diffContent" class="diff-container"></div>
+    <div id="diffContent"></div>
   </div>
 </div>
 

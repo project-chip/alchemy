@@ -27,12 +27,13 @@ type ZAPDiff struct {
 	SpecLabel        string `name:"spec-label" help:"Label for Spec (used in human-readable reports)" default:"Spec"`
 	GenAttributes    string `name:"gen-attributes" help:"Zap generation attributes"`
 	MismatchLevel    int    `name:"mismatch-level" help:"Mismatch level to report (1-3); 1 is most important" default:"3"`
+	SpecRoot         string `name:"spec-root" help:"Path to Spec root directory" default:"."`
 }
 
 func (z *ZAPDiff) Run(cc *cli.Context) (err error) {
 	slog.Info("Running ZAP generation", "attributes", z.GenAttributes)
 	zapCmd := &cli.ZAP{}
-	zapCmd.Root = "."
+	zapCmd.Root = z.SpecRoot
 	zapCmd.SdkRoot = z.GeneratedSDKRoot
 	zapCmd.Attribute = []string{z.GenAttributes}
 	zapCmd.FeatureXML = true

@@ -17,13 +17,18 @@ import (
 var templateFiles embed.FS
 
 type jsonMismatch struct {
-	Level   string   `json:"level"`
-	Type    string   `json:"type"`
-	File    string   `json:"file"`
-	XPath   string   `json:"xpath"`
-	Details string   `json:"details"`
-	Diff    string   `json:"diff"`
-	HasDiff bool     `json:"hasDiff"`
+	Level             string `json:"level"`
+	Type              string `json:"type"`
+	File              string `json:"file"`
+	XPath             string `json:"xpath"`
+	Details           string `json:"details"`
+	RefContent        string `json:"refContent"`
+	GenContent        string `json:"genContent"`
+	RefHighlightStart int    `json:"refHighlightStart"`
+	RefHighlightEnd   int    `json:"refHighlightEnd"`
+	GenHighlightStart int    `json:"genHighlightStart"`
+	GenHighlightEnd   int    `json:"genHighlightEnd"`
+	HasDiff           bool   `json:"hasDiff"`
 }
 
 var htmlReportTemplate pipeline.Once[*raymond.Template]
@@ -43,55 +48,7 @@ func LoadHTMLReportTemplate() (*raymond.Template, error) {
 	return t.Clone(), nil
 }
 
-func getParentID(id string) string {
-	i := strings.LastIndex(id, "/")
-	if i < 0 {
-		return ""
-	}
-	return id[:i]
-}
 
-func getCustomDiffLines(path string, targetID string) ([]string, int, error) {
-	lines, startLine, err := findElementLines(path, targetID)
-	if err != nil {
-		return nil, 0, err
-	}
-	parentID := getParentID(targetID)
-	if parentID == "" || parentID == "configurator" {
-		return lines, startLine, nil
-	}
-	parentLines, parentStartLine, err := findElementLines(path, parentID)
-	if err != nil || len(parentLines) == 0 {
-		return lines, startLine, nil
-	}
-
-	var customLines []string
-	customLines = append(customLines, parentLines[0])
-	customLines = append(customLines, lines...)
-	if len(parentLines) > 1 {
-		customLines = append(customLines, parentLines[len(parentLines)-1])
-	}
-
-	return customLines, parentStartLine, nil
-}
-
-func getMajorParentID(id string) string {
-	// IDs look like: configurator/cluster[name='...']/attribute[@code='...']/description
-	// We want to truncate to the major parent: cluster, attribute, command, event, feature.
-	
-	segments := strings.Split(id, "/")
-	for i := len(segments) - 1; i >= 0; i-- {
-		seg := segments[i]
-		if strings.HasPrefix(seg, "cluster[") || 
-		   strings.HasPrefix(seg, "attribute[") || 
-		   strings.HasPrefix(seg, "command[") || 
-		   strings.HasPrefix(seg, "event[") || 
-		   strings.HasPrefix(seg, "feature[") {
-			return strings.Join(segments[:i+1], "/")
-		}
-	}
-	return id
-}
 
 func WriteMismatchesToHTML(w io.Writer, mm []XmlMismatch, l XmlMismatchLevel, root1, root2 string) error {
 	var jmm []jsonMismatch
@@ -100,30 +57,35 @@ func WriteMismatchesToHTML(w io.Writer, mm []XmlMismatch, l XmlMismatchLevel, ro
 			path1 := filepath.Join(root1, m.Path)
 			path2 := filepath.Join(root2, m.Path)
 
-			targetID := getMajorParentID(m.EntityUniqueIdentifier)
+			targetID := m.EntityUniqueIdentifier
 
-			lines1, start1, _ := getCustomDiffLines(path1, targetID)
-			lines2, start2, _ := getCustomDiffLines(path2, targetID)
+			lines1, relStart1, relEnd1, _ := getCustomDiffLines(path1, targetID)
+			lines2, relStart2, relEnd2, _ := getCustomDiffLines(path2, targetID)
 
-			hasDiff := len(lines1) > 0 && len(lines2) > 0
-
-			diffStr := ""
-			if hasDiff {
-				var err error
-				diffStr, err = GenerateUnifiedDiff(lines1, lines2, start1, start2)
-				if err != nil {
-					diffStr = fmt.Sprintf("Failed to generate diff: %v", err)
-				}
+			refContent := ""
+			if len(lines1) > 0 && relStart1 != -1 {
+				refContent = strings.Join(lines1, "\n")
+			}
+			genContent := ""
+			if len(lines2) > 0 && relStart2 != -1 {
+				genContent = strings.Join(lines2, "\n")
 			}
 
+			hasDiff := len(lines1) > 0 || len(lines2) > 0
+
 			jmm = append(jmm, jsonMismatch{
-				Level:   m.Level().String(),
-				Type:    m.Type.String(),
-				File:    m.Path,
-				XPath:   m.EntityUniqueIdentifier,
-				Details: m.Details,
-				Diff:    diffStr,
-				HasDiff: hasDiff,
+				Level:             m.Level().String(),
+				Type:              m.Type.String(),
+				File:              m.Path,
+				XPath:             m.EntityUniqueIdentifier,
+				Details:           m.Details,
+				RefContent:        refContent,
+				GenContent:        genContent,
+				RefHighlightStart: relStart1,
+				RefHighlightEnd:   relEnd1,
+				GenHighlightStart: relStart2,
+				GenHighlightEnd:   relEnd2,
+				HasDiff:           hasDiff,
 			})
 		}
 	}
