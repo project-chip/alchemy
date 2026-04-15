@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"context"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
+	"unsafe"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
@@ -158,5 +160,79 @@ func TestXrefStyleOnlyInRootWithFile(t *testing.T) {
 		if countAfter != countBefore {
 			t.Errorf("expected number of xrefstyle to remain %d, got %d", countBefore, countAfter)
 		}
+	}
+}
+
+func TestNormalizeAnchorCrossFile(t *testing.T) {
+	pathA := asciidoc.Path{Relative: "testdata/anchor_file.adoc"}
+	inA, err := os.ReadFile("testdata/anchor_file.adoc")
+	if err != nil {
+		t.Fatalf("error reading file A: %v", err)
+	}
+	docA, err := parse.Reader(pathA, bytes.NewReader(inA))
+	if err != nil {
+		t.Fatalf("error parsing file A: %v", err)
+	}
+
+	pathB := asciidoc.Path{Relative: "testdata/reference_file.adoc"}
+	inB, err := os.ReadFile("testdata/reference_file.adoc")
+	if err != nil {
+		t.Fatalf("error reading file B: %v", err)
+	}
+	docB, err := parse.Reader(pathB, bytes.NewReader(inB))
+	if err != nil {
+		t.Fatalf("error parsing file B: %v", err)
+	}
+
+	s := &spec.Specification{}
+	lib := spec.NewLibrary(docA, config.Library{}, nil, nil)
+	lib.Reader = asciidoc.RawReader
+	
+	// Use reflect to set s.libraryIndex
+	v := reflect.ValueOf(s).Elem()
+	f := v.FieldByName("libraryIndex")
+	
+	ptr := unsafe.Pointer(f.UnsafeAddr())
+	mPtr := (*map[*asciidoc.Document]*spec.Library)(ptr)
+	
+	*mPtr = make(map[*asciidoc.Document]*spec.Library)
+	(*mPtr)[docA] = lib
+	(*mPtr)[docB] = lib
+
+	an := AnchorNormalizer{
+		spec:    s,
+		options: DiscoOptions{NormalizeAnchors: true},
+	}
+	
+	_, err = lib.Anchors(asciidoc.RawReader)
+	if err != nil {
+		t.Fatalf("error indexing anchors: %v", err)
+	}
+	
+	// Run it on docB
+	an.rewriteCrossReferences(docB)
+	
+	// Verify that docB retains its label!
+	var foundXref *asciidoc.CrossReference
+	parse.Search(docB, asciidoc.RawReader, nil, docB.Children(), func(doc *asciidoc.Document, el asciidoc.Element, parent asciidoc.ParentElement, index int) parse.SearchShould {
+		if xref, ok := el.(*asciidoc.CrossReference); ok {
+			foundXref = xref
+			return parse.SearchShouldStop
+		}
+		return parse.SearchShouldContinue
+	})
+	
+	if foundXref == nil {
+		t.Fatal("expected to find cross reference in docB")
+	}
+	
+	if len(foundXref.Elements) == 0 {
+		t.Error("expected reference to retain its label, but it was removed")
+	}
+	
+	label := labelText(foundXref.Elements)
+	expectedLabel := "A Non-Normalized Replacement Text Different Than Section Name"
+	if label != expectedLabel {
+		t.Errorf("expected label %q, got %q", expectedLabel, label)
 	}
 }

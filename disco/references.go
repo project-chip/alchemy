@@ -53,10 +53,14 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *asciidoc.Document) {
 			}
 			continue
 		}
-		anchorLabel := labelText(anchor.LabelElements)
+		var anchorLabel string
+		section, isSection := anchor.Element.(*asciidoc.Section)
+		if an.options.NormalizeAnchors && isSection {
+			anchorLabel = library.SectionName(section)
+		}
 		if anchorLabel == "" {
-			section, isSection := anchor.Element.(*asciidoc.Section)
-			if isSection {
+			anchorLabel = labelText(anchor.LabelElements)
+			if anchorLabel == "" && isSection {
 				anchorLabel = library.SectionName(section)
 			}
 		}
@@ -96,6 +100,9 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *asciidoc.Document) {
 }
 
 func removeCrossReferenceStutter(library *spec.Library, doc *asciidoc.Document, icr *asciidoc.CrossReference, parent asciidoc.Parent, index int) {
+	if parent == nil {
+		return
+	}
 	if len(icr.Elements) > 0 {
 		return
 	}
