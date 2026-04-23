@@ -44,6 +44,9 @@ func parseConformance(d *xml.Decoder, e xml.StartElement) (c conformance.Conform
 	case "describedConform":
 		err = parseStandalone(d, e, e.Name.Local)
 		c = &conformance.Described{}
+	case "obsoleteConform":
+		err = parseStandalone(d, e, e.Name.Local)
+		c = &conformance.Obsolete{}
 	case "otherwiseConform":
 		c, err = parseOtherwiseConform(d, e)
 	default:
