@@ -37,11 +37,11 @@ func (cc *ConstraintContext) Child(field *Field, fields FieldSet) *ConstraintCon
 	}
 }
 
-func (cc *ConstraintContext) Nullable() bool {
-	if cc.Field != nil {
-		return cc.Field.Quality.Has(QualityNullable)
+func (cc *ConstraintContext) Nullability() types.Nullability {
+	if cc.Field != nil && cc.Field.Quality.Has(QualityNullable) {
+		return types.NullabilityNullable
 	}
-	return false
+	return types.NullabilityNonNull
 }
 
 func (cc *ConstraintContext) DataType() *types.DataType {
@@ -73,7 +73,7 @@ func (cc *ConstraintContext) MinEntityValue(entity types.Entity, field constrain
 	case *Constant:
 		min = getConstantValue(entity)
 	case *TypeDef:
-		min = types.Min(entity.Type.BaseType, cc.Nullable())
+		min = types.Min(entity.Type.BaseType, cc.Nullability())
 	default:
 		slog.Warn("Unexpected entity type on MinEntityValue", log.Type("entity", entity))
 	}
@@ -103,7 +103,7 @@ func (cc *ConstraintContext) MaxEntityValue(entity types.Entity, field constrain
 		max = getConstantValue(entity)
 	case *TypeDef:
 		slog.Warn("MaxEntityValue on type definition")
-		max = types.Max(entity.Type.BaseType, cc.Nullable())
+		max = types.Max(entity.Type.BaseType, cc.Nullability())
 	default:
 		slog.Warn("Unexpected entity type on MaxEntityValue", log.Type("entity", entity))
 	}

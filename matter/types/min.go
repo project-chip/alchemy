@@ -54,9 +54,9 @@ var fromRanges = map[BaseDataType]DataTypeExtreme{
 	BaseDataTypeUnsignedTemperature:   {Type: DataTypeExtremeTypeUInt64, UInt64: 0},
 }
 
-func Min(baseType BaseDataType, nullable bool) (from DataTypeExtreme) {
+func Min(baseType BaseDataType, nullability Nullability) (from DataTypeExtreme) {
 	var ok bool
-	if nullable {
+	if nullability == NullabilityNullable {
 		from, ok = fromRangesNullable[baseType]
 	}
 	if !ok {
@@ -65,6 +65,6 @@ func Min(baseType BaseDataType, nullable bool) (from DataTypeExtreme) {
 	return
 }
 
-func (dt *DataType) Min(nullable bool) (from DataTypeExtreme) {
-	return Min(dt.BaseType, nullable)
+func (dt *DataType) Min(nullability Nullability) (from DataTypeExtreme) {
+	return Min(dt.BaseType, nullability)
 }

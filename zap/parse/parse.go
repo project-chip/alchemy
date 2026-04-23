@@ -199,7 +199,7 @@ func Extract(d *xml.Decoder, el xml.StartElement) (tokens []xml.Token, err error
 }
 
 func readTag(d *xml.Decoder, e xml.StartElement) (c *matter.Bitmap, err error) {
-	c = &matter.Bitmap{Name: "Feature", Type: types.NewDataType(types.BaseDataTypeMap32, false)}
+	c = &matter.Bitmap{Name: "Feature", Type: types.NewDataType(types.BaseDataTypeMap32, types.DataTypeRankScalar)}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "name":

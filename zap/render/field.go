@@ -11,10 +11,16 @@ import (
 )
 
 func (cr *configuratorRenderer) setFieldAttributes(fieldElement *etree.Element, parentEntityType types.EntityType, field *matter.Field, fieldSet matter.FieldSet, newlyAdded bool) {
-	// Remove incorrect attributes from legacy XML
-	fieldElement.RemoveAttr("code")
-	fieldElement.RemoveAttr("id")
-	xml.PrependAttribute(fieldElement, "fieldId", field.ID.IntString())
+	switch parentEntityType {
+	case types.EntityTypeEvent:
+		// Remove incorrect attributes from legacy XML, but leave "id" on event for now, as ZAP expects it; once ZAP is reading "fieldId", remove this
+		fieldElement.RemoveAttr("code")
+	default:
+		// Remove incorrect attributes from legacy XML
+		fieldElement.RemoveAttr("code")
+		fieldElement.RemoveAttr("id")
+	}
+	xml.PrependAttribute(fieldElement, "fieldId", field.ID.IntString(), "id") // once ZAP is reading "fieldId", remove "id"
 	fieldName := zap.CleanName(field.Name)
 	fieldElement.CreateAttr("name", fieldName)
 	cr.writeDataType(fieldElement, fieldSet, field)

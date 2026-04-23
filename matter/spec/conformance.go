@@ -10,7 +10,12 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (sp *Builder) resolveConformances() {
+func (spec *Specification) ResolveConformances() {
+	sp := &Builder{Spec: spec}
+	sp.ResolveConformances()
+}
+
+func (sp *Builder) ResolveConformances() {
 	specEntityFinder := newSpecEntityFinder(sp.Spec, nil, nil)
 	for cluster := range sp.Spec.Clusters {
 		specEntityFinder.cluster = cluster

@@ -2,6 +2,13 @@ package types
 
 import "math"
 
+type Nullability uint8
+
+const (
+	NullabilityNonNull Nullability = iota
+	NullabilityNullable
+)
+
 type Nullable interface {
 	NullValue() uint64
 }

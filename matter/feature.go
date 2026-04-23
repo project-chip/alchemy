@@ -17,7 +17,7 @@ func NewFeatures(source asciidoc.Element, parent types.Entity) *Features {
 	f := &Features{
 		Bitmap: Bitmap{
 			Name: "Features",
-			Type: types.NewDataType(types.BaseDataTypeMap32, false),
+			Type: types.NewDataType(types.BaseDataTypeMap32, types.DataTypeRankScalar),
 			entity: entity{
 				source: source,
 				parent: parent,
@@ -67,6 +67,16 @@ func (fs *Features) FeatureBits() iter.Seq[*Feature] {
 		for _, b := range fs.Bits {
 			f, ok := b.(*Feature)
 			if ok && !yield(f) {
+				return
+			}
+		}
+	}
+}
+
+func (es Features) Iterate() iter.Seq[types.Entity] {
+	return func(yield func(types.Entity) bool) {
+		for en := range es.FeatureBits() {
+			if !yield(en) {
 				return
 			}
 		}

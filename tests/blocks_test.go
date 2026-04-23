@@ -3704,7 +3704,7 @@ var blocksTestShouldPrependCaptionSpecifiedByCaptionAttributeOnListingBlockEvenI
 						&asciidoc.Counter{
 							Name:         "listing-number",
 							InitialValue: "",
-							Display:      true,
+							Display:      asciidoc.CounterVisibilityVisible,
 						},
 						&asciidoc.String{
 							Value: ". ",

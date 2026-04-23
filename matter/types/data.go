@@ -6,6 +6,17 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 )
 
+type DataTypeRank uint8
+
+const (
+	DataTypeRankScalar DataTypeRank = iota
+	DataTypeRankList
+)
+
+func (r DataTypeRank) IsList() bool {
+	return r == DataTypeRankList
+}
+
 type DataType struct {
 	BaseType BaseDataType     `json:"baseType"`
 	Name     string           `json:"name"`
@@ -15,33 +26,33 @@ type DataType struct {
 	EntryType *DataType `json:"entryType,omitempty"`
 }
 
-func NewDataType(baseType BaseDataType, isArray bool) *DataType {
-	if isArray {
-		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: NewDataType(baseType, false)}
+func NewDataType(baseType BaseDataType, rank DataTypeRank) *DataType {
+	if rank.IsList() {
+		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: NewDataType(baseType, DataTypeRankScalar)}
 	}
 	return &DataType{Name: BaseDataTypeName(baseType), BaseType: baseType}
 }
 
-func NewCustomDataType(dataType string, isArray bool) *DataType {
-	if isArray {
-		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: NewCustomDataType(dataType, false)}
+func NewCustomDataType(dataType string, rank DataTypeRank) *DataType {
+	if rank.IsList() {
+		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: NewCustomDataType(dataType, DataTypeRankScalar)}
 	}
 	return &DataType{Name: dataType, BaseType: BaseDataTypeCustom}
 }
 
-func NewNamedDataType(name string, baseType BaseDataType, isArray bool) *DataType {
-	if isArray {
-		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: NewNamedDataType(name, baseType, false)}
+func NewNamedDataType(name string, baseType BaseDataType, rank DataTypeRank) *DataType {
+	if rank.IsList() {
+		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: NewNamedDataType(name, baseType, DataTypeRankScalar)}
 	}
 	return &DataType{Name: name, BaseType: baseType}
 }
 
-func ParseDataType(typeName string, isArray bool) *DataType {
+func ParseDataType(typeName string, rank DataTypeRank) *DataType {
 	if len(typeName) == 0 {
 		return nil
 	}
-	if isArray {
-		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: ParseDataType(typeName, false)}
+	if rank.IsList() {
+		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: ParseDataType(typeName, DataTypeRankScalar)}
 	}
 	typeName = strings.TrimSpace(typeName)
 	//typeName = strings.TrimPrefix(typeName, "ref_")

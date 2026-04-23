@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter/types"
@@ -153,86 +154,31 @@ func (adt *AssociatedDataTypes) AddConstants(constants ...*Constant) {
 }
 
 // This really exists to allow patching ZAP
+func (adt *AssociatedDataTypes) MoveEnum(en *Enum) {
+	adt.Enums = append(adt.Enums, en)
+	en.parent = adt.parentEntity
+}
+
+// This really exists to allow patching ZAP
 func (adt *AssociatedDataTypes) MoveStruct(s *Struct) {
 	adt.Structs = append(adt.Structs, s)
 	s.parent = adt.parentEntity
 }
 
-type DataTypeIterator iter.Seq2[types.Entity, types.Entity]
+type EntityIterator iter.Seq2[types.Entity, types.Entity]
 
-func iterateOverDataTypes(c *Cluster) DataTypeIterator {
+func iterateOverEntities(c *Cluster) EntityIterator {
 	return func(yield func(types.Entity, types.Entity) bool) {
-		if c.Features != nil {
-			if !yield(c, c.Features) {
-				return
+		traverseEntities(c, func(parent, entity types.Entity) parse.SearchShould {
+			if !yield(parent, entity) {
+				return parse.SearchShouldStop
 			}
-		}
-		for _, en := range c.Bitmaps {
-			if !yield(c, en) {
-				return
-			}
-		}
-		for _, en := range c.Enums {
-			if !yield(c, en) {
-				return
-			}
-		}
-		for _, en := range c.Structs {
-			if !yield(c, en) {
-				return
-			}
-			for _, f := range en.Fields {
-				for p, e := range iterateOverFieldDataTypes(f) {
-					if !yield(p, e) {
-						return
-					}
-				}
-			}
-		}
-		for _, cmd := range c.Commands {
-			if !yield(c, cmd) {
-				return
-			}
-			for _, f := range cmd.Fields {
-				for p, e := range iterateOverFieldDataTypes(f) {
-					if !yield(p, e) {
-						return
-					}
-				}
-			}
-			if cmd.Response != nil && cmd.Response.Entity != nil && cmd.Response.Name == "" {
-				if !yield(cmd, cmd.Response.Entity) {
-					return
-				}
-			}
-			for _, ev := range c.Events {
-				if !yield(c, ev) {
-					return
-				}
-				for _, f := range ev.Fields {
-					for p, e := range iterateOverFieldDataTypes(f) {
-						if !yield(p, e) {
-							return
-						}
-					}
-				}
-			}
-			for _, a := range c.Attributes {
-
-				if !yield(c, a) {
-					return
-				}
-				for p, e := range iterateOverFieldDataTypes(a) {
-					if !yield(p, e) {
-						return
-					}
-				}
-			}
-		}
+			return parse.SearchShouldContinue
+		})
 	}
 }
 
-func iterateOverFieldDataTypes(field *Field) DataTypeIterator {
+func iterateOverFieldDataTypes(field *Field) EntityIterator {
 	return func(yield func(types.Entity, types.Entity) bool) {
 		if field.Type == nil {
 			return
@@ -267,4 +213,155 @@ func iterateOverFieldDataTypes(field *Field) DataTypeIterator {
 		}
 
 	}
+}
+
+type EntityCallback func(parent types.Entity, entity types.Entity) parse.SearchShould
+
+func traverseYieldEntity(parent types.Entity, entity types.Entity, callback EntityCallback) bool {
+	switch callback(parent, entity) {
+	case parse.SearchShouldStop:
+		return false
+	}
+	return true
+}
+
+func traverseYieldParentEntity(parent types.Entity, entity types.Entity, children iter.Seq[types.Entity], callback EntityCallback) bool {
+	if entity != nil && !traverseYieldEntity(parent, entity, callback) {
+		return false
+	}
+	for child := range children {
+		var entityFields FieldSet
+		switch child := child.(type) {
+		case *Field:
+			if child.Type == nil {
+				continue
+			}
+			var fieldEntity types.Entity
+			if child.Type.IsArray() {
+				if child.Type.EntryType == nil {
+					continue
+				}
+				if child.Type.EntryType.Entity == nil {
+					continue
+				}
+				fieldEntity = child.Type.EntryType.Entity
+			} else {
+				fieldEntity = child.Type.Entity
+			}
+			if fieldEntity == nil {
+				continue
+			}
+			switch entity := entity.(type) {
+			case *Struct:
+				entityFields = entity.Fields
+			case *Command:
+				entityFields = entity.Fields
+			case *Event:
+				entityFields = entity.Fields
+			}
+			if !traverseYieldParentEntity(child, fieldEntity, entityFields.Iterate(), callback) {
+				return false
+			}
+		}
+
+	}
+	return true
+}
+
+func traverseEntities(c *Cluster, callback EntityCallback) parse.SearchShould {
+	yieldEntity := func(parent types.Entity, entity types.Entity) bool {
+		switch callback(parent, entity) {
+		case parse.SearchShouldStop:
+			return false
+		}
+		return true
+	}
+
+	if c.Features != nil {
+		if !traverseYieldEntity(c, c.Features, callback) {
+			return parse.SearchShouldStop
+		}
+	}
+	for _, en := range c.Bitmaps {
+		if !traverseYieldEntity(c, en, callback) {
+			return parse.SearchShouldStop
+		}
+	}
+	for _, en := range c.Enums {
+		if !traverseYieldEntity(c, en, callback) {
+			return parse.SearchShouldStop
+		}
+	}
+	for _, en := range c.Structs {
+		if !traverseYieldParentEntity(c, en, en.Fields.Iterate(), callback) {
+			return parse.SearchShouldStop
+		}
+	}
+	for _, cmd := range c.Commands {
+		if !traverseYieldParentEntity(c, cmd, cmd.Fields.Iterate(), callback) {
+			return parse.SearchShouldStop
+		}
+		if cmd.Response != nil && cmd.Response.Entity != nil && cmd.Response.Name == "" {
+			if !yieldEntity(cmd, cmd.Response.Entity) {
+				return parse.SearchShouldStop
+			}
+		}
+	}
+	for _, ev := range c.Events {
+		if !traverseYieldParentEntity(c, ev, ev.Fields.Iterate(), callback) {
+			return parse.SearchShouldStop
+		}
+	}
+	for _, a := range c.Attributes {
+		if !yieldEntity(c, a) {
+			return parse.SearchShouldStop
+		}
+		traverseFieldDataTypes(a, callback)
+	}
+	return parse.SearchShouldContinue
+}
+
+func traverseFieldDataTypes(field *Field, callback EntityCallback) parse.SearchShould {
+	if field.Type == nil {
+		return parse.SearchShouldContinue
+	}
+	var entity types.Entity
+	if field.Type.IsArray() {
+		if field.Type.EntryType == nil {
+			return parse.SearchShouldContinue
+		}
+		if field.Type.EntryType.Entity == nil {
+			return parse.SearchShouldContinue
+		}
+		entity = field.Type.EntryType.Entity
+	} else {
+		entity = field.Type.Entity
+	}
+	if entity == nil {
+		return parse.SearchShouldContinue
+	}
+	switch callback(field, entity) {
+	case parse.SearchShouldSkip:
+		return parse.SearchShouldContinue
+	case parse.SearchShouldContinue:
+
+	case parse.SearchShouldStop:
+		return parse.SearchShouldStop
+	}
+	var fields FieldSet
+	switch entity := entity.(type) {
+	case *Struct:
+		fields = entity.Fields
+	case *Command:
+		fields = entity.Fields
+	case *Event:
+		fields = entity.Fields
+	}
+	for _, f := range fields {
+		switch traverseFieldDataTypes(f, callback) {
+		case parse.SearchShouldStop:
+			return parse.SearchShouldStop
+		}
+	}
+	return parse.SearchShouldContinue
 }

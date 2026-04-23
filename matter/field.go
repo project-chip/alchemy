@@ -1,6 +1,8 @@
 package matter
 
 import (
+	"iter"
+
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
@@ -103,7 +105,7 @@ func (f *Field) Clone() *Field {
 	return nf
 }
 
-func (f *Field) IterateDataTypes() DataTypeIterator {
+func (f *Field) IterateDataTypes() EntityIterator {
 	return iterateOverFieldDataTypes(f)
 }
 
@@ -154,4 +156,14 @@ func (fs FieldSet) ToEntities() []types.Entity {
 		es = append(es, f)
 	}
 	return es
+}
+
+func (fs FieldSet) Iterate() iter.Seq[types.Entity] {
+	return func(yield func(types.Entity) bool) {
+		for _, f := range fs {
+			if !yield(f) {
+				return
+			}
+		}
+	}
 }

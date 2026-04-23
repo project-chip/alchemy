@@ -65,7 +65,8 @@ func readField(path string, d *xml.Decoder, e xml.StartElement, entityType types
 func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) (err error) {
 	var max, min, length, minLength string
 	var fieldType, entryType string
-	var isArray, fabricSensitive bool
+	var fabricSensitive bool
+	var rank types.DataTypeRank
 	var optional, timed, writable string
 	for _, a := range e.Attr {
 		switch a.Name.Local {
@@ -96,9 +97,13 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) (
 		case "entryType":
 			entryType = a.Value
 		case "array":
+			var isArray bool
 			isArray, err = strconv.ParseBool(a.Value)
 			if err != nil {
 				return err
+			}
+			if isArray {
+				rank = types.DataTypeRankList
 			}
 		case "default", "defaut": // Ugh
 			field.Fallback = constraint.ParseLimit(a.Value)
@@ -147,19 +152,19 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) (
 	if fieldBaseType == types.BaseDataTypeList {
 		switch entryBaseType {
 		case types.BaseDataTypeCustom:
-			field.Type = types.NewCustomDataType(entryType, true)
+			field.Type = types.NewCustomDataType(entryType, types.DataTypeRankList)
 		case types.BaseDataTypeUnknown:
-			field.Type = types.NewNamedDataType(fieldType, fieldBaseType, true)
+			field.Type = types.NewNamedDataType(fieldType, fieldBaseType, types.DataTypeRankList)
 		default:
-			field.Type = types.NewNamedDataType(entryType, entryBaseType, true)
+			field.Type = types.NewNamedDataType(entryType, entryBaseType, types.DataTypeRankList)
 		}
 
 	} else {
 		switch fieldBaseType {
 		case types.BaseDataTypeCustom:
-			field.Type = types.NewCustomDataType(fieldType, isArray)
+			field.Type = types.NewCustomDataType(fieldType, rank)
 		default:
-			field.Type = types.NewNamedDataType(fieldType, fieldBaseType, isArray)
+			field.Type = types.NewNamedDataType(fieldType, fieldBaseType, rank)
 		}
 	}
 	var cons string

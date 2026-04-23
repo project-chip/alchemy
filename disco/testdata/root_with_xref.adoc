@@ -1,0 +1,7 @@
+:xrefstyle: full
+
+= Copyright Notice
+This is the copyright notice.
+
+= First Section
+This is the first section.

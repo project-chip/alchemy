@@ -64,12 +64,12 @@ func (b *Baller) fixConstraintCells(cxt *discoContext, section *asciidoc.Section
 }
 
 type constraintContext struct {
-	dataType *types.DataType
-	nullable bool
+	dataType    *types.DataType
+	nullability types.Nullability
 }
 
-func (cc *constraintContext) Nullable() bool {
-	return cc.nullable
+func (cc *constraintContext) Nullability() types.Nullability {
+	return cc.nullability
 }
 
 func (cc *constraintContext) DataType() *types.DataType {
@@ -92,10 +92,13 @@ func simplifyConstraints(cons constraint.Constraint, dataType *types.DataType, q
 	switch c := cons.(type) {
 	case *constraint.RangeConstraint:
 		if quality != matter.QualityNone { // We know whether or not this type is nullable, so we can check for the full range
-			nullable := quality.Has(matter.QualityNullable)
-			cc := &constraintContext{dataType: dataType, nullable: nullable}
-			dataTypeMin := dataType.Min(nullable)
-			dataTypeMax := dataType.Max(nullable)
+			var nullability types.Nullability
+			if quality.Has(matter.QualityNullable) {
+				nullability = types.NullabilityNullable
+			}
+			cc := &constraintContext{dataType: dataType, nullability: nullability}
+			dataTypeMin := dataType.Min(nullability)
+			dataTypeMax := dataType.Max(nullability)
 			rangeMin := c.Minimum.Min(cc)
 			rangeMax := c.Maximum.Max(cc)
 			if dataTypeMin.ValueEquals(rangeMin) && dataTypeMax.ValueEquals(rangeMax) {

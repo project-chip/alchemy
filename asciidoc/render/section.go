@@ -8,7 +8,7 @@ import (
 
 func renderSection(cxt Target, s *asciidoc.Section) (err error) {
 	cxt.FlushWrap()
-	err = renderAttributes(cxt, s.Attributes(), false)
+	err = renderAttributes(cxt, s.Attributes(), attributeRenderTypeBlock)
 	if err != nil {
 		return
 	}

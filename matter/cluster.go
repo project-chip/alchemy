@@ -232,8 +232,12 @@ func (c *Cluster) Cluster() *Cluster {
 	return c
 }
 
-func (c *Cluster) IterateDataTypes() DataTypeIterator {
-	return iterateOverDataTypes(c)
+func (c *Cluster) IterateDataTypes() EntityIterator {
+	return iterateOverEntities(c)
+}
+
+func (c *Cluster) TraverseDataTypes(callback EntityCallback) {
+	traverseEntities(c, callback)
 }
 
 func findCluster(entity types.Entity) *Cluster {

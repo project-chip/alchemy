@@ -63,7 +63,7 @@ func (library *Library) toDeviceTypes(reader asciidoc.Reader, d *asciidoc.Docume
 				dt.ComposedDeviceTypeClusterRequirements = append(dt.ComposedDeviceTypeClusterRequirements, extraComposedDeviceClusterRequirements...)
 			case matter.SectionComposedDeviceTypeSemanticTagRequirements:
 				dt.ComposedDeviceTagRequirements, err = library.toDeviceTypeTagRequirements(reader, d, s, dt)
-			case matter.SectionComposedDeviceTypeConditionRequirements:
+			case matter.SectionConditionRequirements:
 				dt.ConditionRequirements, err = library.toConditionRequirements(reader, d, s, dt)
 			case matter.SectionRevisionHistory:
 				dt.Revisions, err = readRevisionHistory(reader, d, s, dt)
