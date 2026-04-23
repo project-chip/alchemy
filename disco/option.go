@@ -19,7 +19,7 @@ type DiscoOptions struct {
 	RemoveExtraSpaces             bool `default:"true" aliases:"removeExtraSpaces" help:"remove extraneous spaces" group:"Discoballing:"`
 	NormalizeFeatureNames         bool `default:"true" aliases:"normalizeFeatureNames" help:"correct invalid feature names" group:"Discoballing:"`
 	DisambiguateConformanceChoice bool `default:"true" aliases:"disambiguateConformanceChoice" help:"ensure conformance choices are only used once per document" group:"Discoballing:"`
-	NormalizeAnchors              bool `default:"false" aliases:"normalizeAnchors" help:"rewrite anchors and references without labels" group:"Discoballing:"`
+	NormalizeAnchors              bool `default:"true" aliases:"normalizeAnchors" help:"rewrite anchors and references without labels" group:"Discoballing:"`
 	RemoveMandatoryFallbacks      bool `default:"true" aliases:"removeMandatoryFallbacks" help:"remove fallback values for mandatory fields" group:"Discoballing:"`
 	RenameSections                bool `default:"false" help:"rename sections to disco-ball standard names" group:"Discoballing:"`
 	XrefStyleOnlyInRoot           bool `default:"true" aliases:"xrefStyleOnlyInRoot" help:"enforce xrefstyle: basic only in root" group:"Discoballing:"`
@@ -43,7 +43,7 @@ var DefaultOptions = DiscoOptions{
 	RemoveExtraSpaces:             true,
 	NormalizeFeatureNames:         true,
 	DisambiguateConformanceChoice: true,
-	NormalizeAnchors:              false,
+	NormalizeAnchors:              true,
 	RemoveMandatoryFallbacks:      true,
 	RenameSections:                false,
 	XrefStyleOnlyInRoot:           true,
