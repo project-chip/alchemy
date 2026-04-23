@@ -23,6 +23,7 @@ type DiscoOptions struct {
 	RemoveMandatoryFallbacks      bool `default:"true" aliases:"removeMandatoryFallbacks" help:"remove fallback values for mandatory fields" group:"Discoballing:"`
 	RenameSections                bool `default:"false" help:"rename sections to disco-ball standard names" group:"Discoballing:"`
 	XrefStyleOnlyInRoot           bool `default:"true" aliases:"xrefStyleOnlyInRoot" help:"enforce xrefstyle: basic only in root" group:"Discoballing:"`
+	AddDiscoballed                bool `default:"true" aliases:"addDiscoballed" help:"add :alchemy-discoballed: to top of file" group:"Discoballing:"`
 }
 
 var DefaultOptions = DiscoOptions{
@@ -46,4 +47,5 @@ var DefaultOptions = DiscoOptions{
 	RemoveMandatoryFallbacks:      true,
 	RenameSections:                false,
 	XrefStyleOnlyInRoot:           true,
+	AddDiscoballed:                true,
 }

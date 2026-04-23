@@ -163,6 +163,117 @@ func TestXrefStyleOnlyInRootWithFile(t *testing.T) {
 	}
 }
 
+func TestAddDiscoballed(t *testing.T) {
+	b := NewBaller(nil, DiscoOptions{AddDiscoballed: true})
+
+	// Case 1: Without marker
+	{
+		doc, err := parse.Reader(asciidoc.Path{Relative: "test.adoc"}, strings.NewReader("= Title\n\nContent\n"))
+		if err != nil {
+			t.Fatalf("error parsing: %v", err)
+		}
+		lib := spec.NewLibrary(doc, config.Library{}, nil, nil)
+		lib.Reader = asciidoc.RawReader
+		dc := &discoContext{
+			Context:            context.Background(),
+			doc:                doc,
+			library:            lib,
+			potentialDataTypes: make(map[string][]*DataTypeEntry),
+		}
+		top := parse.FindFirst[*asciidoc.Section](doc, asciidoc.RawReader, doc)
+		err = b.discoBallTopLevelSection(dc, top, matter.DocTypeCluster)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if len(doc.Elements) < 1 {
+			t.Fatal("doc has no elements")
+		}
+		ae, ok := doc.Elements[0].(*asciidoc.AttributeEntry)
+		if !ok || ae.Name != "alchemy-discoballed" {
+			t.Errorf("expected marker at top, got %T", doc.Elements[0])
+		}
+	}
+
+	// Case 2: Marker not at top
+	{
+		doc, err := parse.Reader(asciidoc.Path{Relative: "test.adoc"}, strings.NewReader("= Title\n\n:alchemy-discoballed:\nContent\n"))
+		if err != nil {
+			t.Fatalf("error parsing: %v", err)
+		}
+		lib := spec.NewLibrary(doc, config.Library{}, nil, nil)
+		lib.Reader = asciidoc.RawReader
+		dc := &discoContext{
+			Context:            context.Background(),
+			doc:                doc,
+			library:            lib,
+			potentialDataTypes: make(map[string][]*DataTypeEntry),
+		}
+		top := parse.FindFirst[*asciidoc.Section](doc, asciidoc.RawReader, doc)
+		err = b.discoBallTopLevelSection(dc, top, matter.DocTypeCluster)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if len(doc.Elements) < 1 {
+			t.Fatal("doc has no elements")
+		}
+		ae, ok := doc.Elements[0].(*asciidoc.AttributeEntry)
+		if !ok || ae.Name != "alchemy-discoballed" {
+			t.Errorf("expected marker at top, got %T", doc.Elements[0])
+		}
+
+		count := 0
+		for _, el := range doc.Elements {
+			if ae, ok := el.(*asciidoc.AttributeEntry); ok && ae.Name == "alchemy-discoballed" {
+				count++
+			}
+		}
+		if count != 1 {
+			t.Errorf("expected 1 marker, got %d", count)
+		}
+	}
+
+	// Case 3: Marker already at top
+	{
+		doc, err := parse.Reader(asciidoc.Path{Relative: "test.adoc"}, strings.NewReader(":alchemy-discoballed:\n= Title\n\nContent\n"))
+		if err != nil {
+			t.Fatalf("error parsing: %v", err)
+		}
+		lib := spec.NewLibrary(doc, config.Library{}, nil, nil)
+		lib.Reader = asciidoc.RawReader
+		dc := &discoContext{
+			Context:            context.Background(),
+			doc:                doc,
+			library:            lib,
+			potentialDataTypes: make(map[string][]*DataTypeEntry),
+		}
+		top := parse.FindFirst[*asciidoc.Section](doc, asciidoc.RawReader, doc)
+		err = b.discoBallTopLevelSection(dc, top, matter.DocTypeCluster)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if len(doc.Elements) < 1 {
+			t.Fatal("doc has no elements")
+		}
+		ae, ok := doc.Elements[0].(*asciidoc.AttributeEntry)
+		if !ok || ae.Name != "alchemy-discoballed" {
+			t.Errorf("expected marker at top, got %T", doc.Elements[0])
+		}
+
+		count := 0
+		for _, el := range doc.Elements {
+			if ae, ok := el.(*asciidoc.AttributeEntry); ok && ae.Name == "alchemy-discoballed" {
+				count++
+			}
+		}
+		if count != 1 {
+			t.Errorf("expected 1 marker, got %d", count)
+		}
+  }
+}
+
 func TestNormalizeAnchorCrossFile(t *testing.T) {
 	pathA := asciidoc.Path{Relative: "testdata/anchor_file.adoc"}
 	inA, err := os.ReadFile("testdata/anchor_file.adoc")
