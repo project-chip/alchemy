@@ -88,6 +88,7 @@ func (c *Disco) Run(cc *cli.Context) (err error) {
 	if len(changedDocs) == 0 {
 		action.Infof("No changed asciidoc files found\n")
 		action.SetOutput("disco_status", "noop")
+		action.SetOutput("template_name", "disco/unpatched")
 		return nil
 	}
 
