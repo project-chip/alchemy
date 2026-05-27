@@ -26,7 +26,7 @@ func (cr *configuratorRenderer) generateAttributes(cle *etree.Element, cluster *
 		}
 		attributeID := matter.ParseNumber(ce.Value)
 		if !attributeID.Valid() {
-			slog.Warn("invalid code attribute value in cluster", slog.String("path", cr.configurator.OutPath), slog.String("clusterName", cluster.Name), slog.String("id", attributeID.Text()))
+			slog.Warn("invalid code attribute value in cluster", slog.String("path", cr.configurator.OutPath), slog.String("clusterName", cluster.Name), slog.String("attributeId", attributeID.Text()))
 			continue
 		}
 		var attribute *matter.Field

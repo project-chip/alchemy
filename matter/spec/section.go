@@ -227,7 +227,7 @@ func getSectionType(sectionInfoCache SectionInfoCache, reader asciidoc.Reader, d
 	case "semantic tag requirements":
 		return matter.SectionSemanticTagRequirements
 	case "condition requirements":
-		return matter.SectionComposedDeviceTypeConditionRequirements
+		return matter.SectionConditionRequirements
 	case "element requirements on composing device types", "element requirements on component device types":
 		return matter.SectionComposedDeviceTypeElementRequirements
 	case "semantic tag requirements on composing device types", "semantic tag requirements on component device types":
@@ -471,7 +471,7 @@ func GetDataType(sectionInfoCache SectionInfoCache, reader asciidoc.Reader, doc 
 		}
 	}
 	if len(dts) > 0 {
-		return types.ParseDataType(dts, false), nil
+		return types.ParseDataType(dts, types.DataTypeRankScalar), nil
 	}
 	return nil, nil
 }

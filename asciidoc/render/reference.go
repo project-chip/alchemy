@@ -56,7 +56,7 @@ func renderDocumentCrossReference(cxt Target, dcf *asciidoc.DocumentCrossReferen
 	if len(attributes) == 0 {
 		cxt.WriteString("[]\n")
 	} else {
-		err = renderAttributes(cxt, attributes, true)
+		err = renderAttributes(cxt, attributes, attributeRenderTypeInline)
 		if err != nil {
 			return
 		}

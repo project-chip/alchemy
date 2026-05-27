@@ -25,7 +25,7 @@ func (library *Library) toEnum(reader asciidoc.Reader, d *asciidoc.Document, s *
 		return nil, newGenericParseError(s, "error parsing enum data type: %v", err)
 	}
 	if dt == nil {
-		dt = types.NewDataType(types.BaseDataTypeEnum8, false)
+		dt = types.NewDataType(types.BaseDataTypeEnum8, types.DataTypeRankScalar)
 		slog.Warn("Enum does not declare its derived data type; assuming enum8", log.Element("source", d.Path, s), slog.String("enum", name))
 	} else if !dt.IsEnum() {
 		return nil, newGenericParseError(s, "unknown enum data type: \"%s\"", dt.Name)
@@ -85,15 +85,8 @@ func (library *Library) findEnumValues(reader asciidoc.Reader, doc *asciidoc.Doc
 			}
 			ev.Name = matter.StripTypeSuffixes(ev.Name)
 			if len(ev.Name) == 0 {
-				ev.Name, err = ti.ReadValue(reader, row, matter.TableColumnSummary)
-				if err != nil {
-					return nil, err
-				}
-				ev.Name = matter.StripTypeSuffixes(ev.Name)
-				if len(ev.Name) == 0 {
-					slog.Debug("skipping enum with no name", slog.String("path", doc.Path.String()), slog.String("section", library.SectionName(s)))
-					continue
-				}
+				slog.Warn("skipping enum value with no name", log.Path("source", ev), slog.String("section", library.SectionName(s)))
+				continue
 			}
 			ev.Name = CanonicalName(ev.Name)
 			ev.Summary, err = ti.ReadValue(reader, row, matter.TableColumnSummary, matter.TableColumnDescription)
@@ -138,7 +131,7 @@ func (library *Library) toModeTags(reader asciidoc.Reader, d *asciidoc.Document,
 	}
 	e = matter.NewEnum(s, parent)
 	e.Name = "ModeTag"
-	e.Type = types.NewDataType(types.BaseDataTypeEnum16, false)
+	e.Type = types.NewDataType(types.BaseDataTypeEnum16, types.DataTypeRankScalar)
 	for row := range ti.ContentRows() {
 		ev := matter.NewEnumValue(s, e)
 		ev.Name, err = ti.ReadString(reader, row, matter.TableColumnName)

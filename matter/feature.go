@@ -17,7 +17,7 @@ func NewFeatures(source asciidoc.Element, parent types.Entity) *Features {
 	f := &Features{
 		Bitmap: Bitmap{
 			Name: "Features",
-			Type: types.NewDataType(types.BaseDataTypeMap32, false),
+			Type: types.NewDataType(types.BaseDataTypeMap32, types.DataTypeRankScalar),
 			entity: entity{
 				source: source,
 				parent: parent,

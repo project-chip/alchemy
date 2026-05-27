@@ -13,7 +13,7 @@ func renderFileInclude(cxt Target, el *asciidoc.FileInclude) (err error) {
 	if len(attributes) == 0 {
 		cxt.WriteString("[]\n")
 	} else {
-		err = renderAttributes(cxt, el.Attributes(), true)
+		err = renderAttributes(cxt, el.Attributes(), attributeRenderTypeInline)
 		if err != nil {
 			return
 		}
@@ -26,7 +26,7 @@ func renderFileInclude(cxt Target, el *asciidoc.FileInclude) (err error) {
 func renderCounter(cxt Target, el *asciidoc.Counter) {
 	cxt.StartBlock()
 	cxt.WriteString("{counter")
-	if !el.Display {
+	if !el.Display.Visible() {
 		cxt.WriteRune('2')
 	}
 	cxt.WriteRune(':')

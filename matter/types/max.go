@@ -61,9 +61,9 @@ var toRanges = map[BaseDataType]DataTypeExtreme{
 	BaseDataTypeList: {Type: DataTypeExtremeTypeInt64, Int64: math.MaxUint16 - 1, Format: NumberFormatInt},
 }
 
-func Max(baseType BaseDataType, nullable bool) (to DataTypeExtreme) {
+func Max(baseType BaseDataType, nullable Nullability) (to DataTypeExtreme) {
 	var ok bool
-	if nullable {
+	if nullable == NullabilityNullable {
 		to, ok = toRangesNullable[baseType]
 	}
 	if !ok {
@@ -72,6 +72,6 @@ func Max(baseType BaseDataType, nullable bool) (to DataTypeExtreme) {
 	return
 }
 
-func (dt *DataType) Max(nullable bool) (to DataTypeExtreme) {
+func (dt *DataType) Max(nullable Nullability) (to DataTypeExtreme) {
 	return Max(dt.BaseType, nullable)
 }

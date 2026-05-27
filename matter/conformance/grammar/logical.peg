@@ -58,7 +58,7 @@ AndOp <- _ "&" _ f:LogicalTerm {
     return fc, nil
 }
 
-LogicalTerm <- not:'!'? '(' _  eq:Expression _ ')' {
+LogicalTerm <- not:'!'? '(' _  eq:LogicalExpression _ ')' {
     //debug("matched feature term %s\n", string(c.text))
     if not != nil {
         switch eq := eq.(type) {

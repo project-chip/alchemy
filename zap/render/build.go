@@ -20,7 +20,7 @@ func ZAPTemplateDestinations(sdkRoot string, docPath string, entities []types.En
 	for clusterID, path := range errata.ClusterSplit {
 		cid := matter.ParseNumber(clusterID)
 		if !cid.Valid() {
-			slog.Warn("invalid cluster split ID", "id", clusterID)
+			slog.Warn("invalid cluster split ID", "clusterId", clusterID)
 			continue
 		}
 		var clusters []types.Entity

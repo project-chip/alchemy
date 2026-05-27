@@ -91,6 +91,11 @@ func Check(spec *spec.Specification, entity types.Entity, originalEntity types.E
 	case *matter.Enum, *matter.Bitmap, *matter.Struct:
 		refs, ok := spec.DataTypeRefs.Get(entity)
 		if !ok || refs.Size() == 0 {
+			if e, ok := entity.(*matter.Bitmap); ok && e.Name == "Features" {
+				if parentCluster, ok := entity.Parent().(*matter.Cluster); ok {
+					return Check(spec, parentCluster.Features, originalEntity)
+				}
+			}
 			slog.Warn("Enum, bitmap or struct has no references; assuming provisional", matter.LogEntity("entity", entity))
 			return StateUnreferenced
 		}

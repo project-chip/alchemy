@@ -90,6 +90,8 @@ func renderConformance(con conformance.Conformance, parentEntity types.Entity) (
 		element = etree.NewElement("deprecateConform")
 	case *conformance.Described:
 		element = etree.NewElement("describedConform")
+	case *conformance.Obsolete:
+		element = etree.NewElement("obsoleteConform")
 	case *conformance.Generic:
 		err = fmt.Errorf("generic conformance elements are not supported in XML")
 	case conformance.Set:

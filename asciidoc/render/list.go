@@ -8,7 +8,7 @@ func renderOrderedListElement(cxt Target, el *asciidoc.OrderedListItem) (err err
 	cxt.DisableWrap()
 	cxt.EnsureNewLine()
 
-	err = renderAttributes(cxt, el.Attributes(), false)
+	err = renderAttributes(cxt, el.Attributes(), attributeRenderTypeBlock)
 	if err != nil {
 		return
 	}
@@ -25,7 +25,7 @@ func renderUnorderedListElement(cxt Target, el *asciidoc.UnorderedListItem) (err
 	cxt.DisableWrap()
 	cxt.EnsureNewLine()
 
-	err = renderAttributes(cxt, el.Attributes(), false)
+	err = renderAttributes(cxt, el.Attributes(), attributeRenderTypeBlock)
 	if err != nil {
 		return
 	}
@@ -39,7 +39,7 @@ func renderUnorderedListElement(cxt Target, el *asciidoc.UnorderedListItem) (err
 
 func renderDescriptionListItem(cxt Target, el *asciidoc.DescriptionListItem) (err error) {
 	cxt.FlushWrap()
-	err = renderAttributes(cxt, el.Attributes(), false)
+	err = renderAttributes(cxt, el.Attributes(), attributeRenderTypeBlock)
 	if err != nil {
 		return
 	}

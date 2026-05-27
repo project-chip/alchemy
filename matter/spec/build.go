@@ -147,7 +147,7 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 
 	sp.resolveClusterDataTypeReferences(false)
 
-	sp.resolveConformances()
+	sp.ResolveConformances()
 	sp.resolveConstraints()
 	err = updateBridgedBasicInformationCluster(spec, basicInformationCluster, bridgedDeviceBasicInformationCluster)
 	if err != nil {

@@ -1,6 +1,7 @@
 package action
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -27,7 +28,14 @@ func (c *Comment) Run(cc *cli.Context) (err error) {
 	}
 
 	var t *raymond.Template
-	t, err = templates.LoadTemplate(templateName)
+	switch templateName {
+	case "disco/combined":
+		t, err = templates.LoadDiscoCombinedTemplate()
+	case "disco/unpatched":
+		t, err = templates.LoadDiscoUnpatchedTemplate()
+	default:
+		t, err = templates.LoadTemplate(templateName)
+	}
 
 	if err != nil {
 		err = fmt.Errorf("error loading template %s: %w", templateName, err)
@@ -35,19 +43,41 @@ func (c *Comment) Run(cc *cli.Context) (err error) {
 	}
 
 	templateContext := make(map[string]any)
-	templateContext["patch_url"] = githubactions.GetInput("patch_url")
 
-	patchPath := githubactions.GetInput("patch_path")
-
-	if patchPath != "" {
-		var patch []byte
-		patch, err = os.ReadFile(patchPath)
+	templateDataStr := githubactions.GetInput("template_data")
+	if templateDataStr != "" {
+		var templateData map[string]any
+		err = json.Unmarshal([]byte(templateDataStr), &templateData)
 		if err != nil {
-			err = fmt.Errorf("error loading patch file: %w", err)
+			err = fmt.Errorf("error parsing template_data JSON: %w", err)
 			return
 		}
-		if len(patch) < 60000 {
-			templateContext["diff"] = string(patch)
+		for k, v := range templateData {
+			templateContext[k] = v
+		}
+	}
+
+	fileDataStr := githubactions.GetInput("file_data")
+	if fileDataStr != "" {
+		var fileData map[string]string
+		err = json.Unmarshal([]byte(fileDataStr), &fileData)
+		if err != nil {
+			err = fmt.Errorf("error parsing file_data JSON: %w", err)
+			return
+		}
+		for k, path := range fileData {
+			if path == "" {
+				continue
+			}
+			var content []byte
+			content, err = os.ReadFile(path)
+			if err != nil {
+				err = fmt.Errorf("error reading file %s for key %s: %w", path, k, err)
+				return
+			}
+			if len(content) < 60000 {
+				templateContext[k] = string(content)
+			}
 		}
 	}
 

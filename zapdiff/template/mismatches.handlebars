@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ZAPDiff Mismatch Report</title>
+    <style>
+        :root {
+            --primary-color: #1e293b; /* Slate 800 */
+            --secondary-color: #3b82f6; /* Blue 500 */
+            --bg-color: #f8fafc; /* Slate 50 */
+            --text-color: #334155; /* Slate 700 */
+            --border-color: #e2e8f0; /* Slate 200 */
+            --header-bg: #0f172a; /* Slate 900 */
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        h1 {
+            color: var(--primary-color);
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .table-container {
+            max-height: calc(100vh - 150px);
+            min-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            border: 1px solid var(--border-color);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            background-color: var(--header-bg);
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            cursor: pointer;
+            user-select: none;
+        }
+        th:hover {
+            background-color: #1e293b;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+        .details {
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-width: 400px;
+            word-break: break-all;
+            font-size: 0.875rem;
+        }
+        
+        /* Header content layout */
+        .th-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            position: relative;
+        }
+        
+        .header-label {
+            flex-grow: 1;
+        }
+        
+        /* Icons */
+        .icon-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-btn:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sort-icon {
+            font-size: 0.75rem;
+            margin-left: 0.25rem;
+        }
+        
+        /* Dropdowns */
+        .filter-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.75rem;
+            z-index: 20;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            width: 250px;
+            color: var(--text-color);
+            text-transform: none;
+            letter-spacing: normal;
+        }
+        
+        .filter-dropdown.active {
+            display: block;
+        }
+        
+        .filter-dropdown input[type="text"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+            box-sizing: border-box;
+            font-size: 0.875rem;
+        }
+        
+        .checkbox-list {
+            max-height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .checkbox-item input {
+            cursor: pointer;
+        }
+        
+        .checkbox-item label {
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .dropdown-footer {
+            margin-top: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+        }
+        
+        .dropdown-footer button {
+            background: none;
+            border: none;
+            color: var(--secondary-color);
+            cursor: pointer;
+            padding: 0;
+        }
+        .dropdown-footer button:hover {
+            text-decoration: underline;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 1200px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        /* Diff Styles */
+        .diff-container {
+            gap: 1rem;
+            font-family: monospace;
+            background-color: #f8fafc;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            max-height: 70vh;
+            overflow-y: auto;
+            display: flex;
+            flex: 1;
+        }
+        .diff-column {
+            flex: 1;
+            min-width: 0;
+            overflow-x: auto;
+        }
+        .diff-column-header {
+            font-weight: bold;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0.5rem;
+            position: sticky;
+            top: 0;
+            background-color: #f8fafc;
+        }
+        .diff-line {
+            display: block;
+            padding: 0.125rem 0.5rem;
+            white-space: pre;
+        }
+        .diff-line.removed {
+            background-color: #ffeef0;
+            color: #cb2431;
+        }
+        .diff-line.highlight {
+            background-color: #fef08a; /* Yellow 200 */
+        }
+        .view-diff-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+        .view-diff-btn:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+
+<h1>ZAPDiff Mismatch Report</h1>
+
+<div class="table-container">
+    <table id="mismatchTable">
+        <thead>
+            <tr>
+                <th>Row</th>
+                <!-- Level -->
+                <th onclick="handleSort('level')">
+                    <div class="th-content">
+                        <span class="header-label">Level</span>
+                        <span id="sort-level" class="sort-icon"></span>
+                        <button class="icon-btn" onclick="toggleDropdown(event, 'level')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                        </button>
+                        <div id="dropdown-level" class="filter-dropdown" onclick="event.stopPropagation()">
+                            <input type="text" placeholder="Contains..." oninput="handleContains('level', this.value)">
+                            <div id="checkboxes-level" class="checkbox-list"></div>
+                            <div class="dropdown-footer">
+                                <button onclick="clearFilter('level')">Clear</button>
+                                <button onclick="toggleAllDropdownCheckboxes('level', true)">Select All</button>
+                            </div>
+                        </div>
+                    </div>
+                </th>
+                
+                <!-- Type -->
+                <th onclick="handleSort('type')">
+                    <div class="th-content">
+                        <span class="header-label">Type</span>
+                        <span id="sort-type" class="sort-icon"></span>
+                        <button class="icon-btn" onclick="toggleDropdown(event, 'type')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                        </button>
+                        <div id="dropdown-type" class="filter-dropdown" onclick="event.stopPropagation()">
+                            <input type="text" placeholder="Contains..." oninput="handleContains('type', this.value)">
+                            <div id="checkboxes-type" class="checkbox-list"></div>
+                            <div class="dropdown-footer">
+                                <button onclick="clearFilter('type')">Clear</button>
+                                <button onclick="toggleAllDropdownCheckboxes('type', true)">Select All</button>
+                            </div>
+                        </div>
+                    </div>
+                </th>
+                
+                <!-- File -->
+                <th onclick="handleSort('file')">
+                    <div class="th-content">
+                        <span class="header-label">File</span>
+                        <span id="sort-file" class="sort-icon"></span>
+                        <button class="icon-btn" onclick="toggleDropdown(event, 'file')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                        </button>
+                        <div id="dropdown-file" class="filter-dropdown" onclick="event.stopPropagation()">
+                            <input type="text" placeholder="Contains..." oninput="handleContains('file', this.value)">
+                            <div id="checkboxes-file" class="checkbox-list"></div>
+                            <div class="dropdown-footer">
+                                <button onclick="clearFilter('file')">Clear</button>
+                                <button onclick="toggleAllDropdownCheckboxes('file', true)">Select All</button>
+                            </div>
+                        </div>
+                    </div>
+                </th>
+                
+                <!-- Diff -->
+                <th>Diff</th>
+                
+                <!-- XPath -->
+                <th onclick="handleSort('xpath')">
+                    <div class="th-content">
+                        <span class="header-label">Element Xpath</span>
+                        <span id="sort-xpath" class="sort-icon"></span>
+                        <button class="icon-btn" onclick="toggleDropdown(event, 'xpath')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                        </button>
+                        <div id="dropdown-xpath" class="filter-dropdown" onclick="event.stopPropagation()">
+                            <input type="text" placeholder="Contains..." oninput="handleContains('xpath', this.value)">
+                            <div id="checkboxes-xpath" class="checkbox-list"></div>
+                            <div class="dropdown-footer">
+                                <button onclick="clearFilter('xpath')">Clear</button>
+                                <button onclick="toggleAllDropdownCheckboxes('xpath', true)">Select All</button>
+                            </div>
+                        </div>
+                    </div>
+                </th>
+                
+                <!-- Details -->
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- Rows inserted by JS -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const rawData = {{{jsonData}}};
+    let currentData = [...rawData];
+    let sortState = { field: null, order: 1 }; // 1 for asc, -1 for desc
+    
+    // Filters state
+    let filters = {
+        level: { contains: '', selected: [] },
+        type: { contains: '', selected: [] },
+        file: { contains: '', selected: [] },
+        xpath: { contains: '', selected: [] }
+    };
+
+    // Add unique ID to rawData
+    rawData.forEach((item, index) => item.id = index);
+
+    function renderTable(data) {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        data.forEach((item, index) => {
+            const row = document.createElement('tr');
+            
+            let diffCell = '';
+            if (item.hasDiff) {
+                diffCell = `<td><button class="view-diff-btn" onclick="showDiffById(${item.id})">View</button></td>`;
+            } else {
+                diffCell = `<td><span style="text-decoration: line-through; color: #94a3b8;">Diff</span></td>`;
+            }
+
+            row.innerHTML = `
+                <td>${item.id + 1}</td>
+                <td>${item.level}</td>
+                <td>${item.type}</td>
+                <td>${item.file}</td>
+                ${diffCell}
+                <td>${item.xpath}</td>
+                <td class="details">${item.details}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function handleSort(field) {
+        if (sortState.field === field) {
+            sortState.order *= -1;
+        } else {
+            sortState.field = field;
+            sortState.order = 1;
+        }
+        
+        const order = sortState.order;
+        currentData.sort((a, b) => {
+            if (a[field] < b[field]) return -1 * order;
+            if (a[field] > b[field]) return 1 * order;
+            return 0;
+        });
+        
+        updateSortIcons();
+        renderTable(currentData);
+    }
+    
+    function updateSortIcons() {
+        ['level', 'type', 'file', 'xpath'].forEach(f => {
+            const icon = document.getElementById(`sort-${f}`);
+            if (sortState.field === f) {
+                icon.textContent = sortState.order === 1 ? ' ▲' : ' ▼';
+            } else {
+                icon.textContent = '';
+            }
+        });
+    }
+
+    function toggleDropdown(event, field) {
+        event.stopPropagation(); // Prevent sort
+        const dropdown = document.getElementById(`dropdown-${field}`);
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.filter-dropdown').forEach(d => {
+            if (d !== dropdown) d.classList.remove('active');
+        });
+        
+        dropdown.classList.toggle('active');
+    }
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('active'));
+    });
+    
+    function populateAllFilters() {
+        const fields = ['level', 'type', 'file', 'xpath'];
+        fields.forEach(field => {
+            const values = [...new Set(rawData.map(item => item[field]))];
+            filters[field].selected = [...values]; // Initially all selected
+            
+            const container = document.getElementById(`checkboxes-${field}`);
+            container.innerHTML = '';
+            values.sort().forEach(val => {
+                const div = document.createElement('div');
+                div.className = 'checkbox-item';
+                const id = `cb-${field}-${val}`;
+                div.innerHTML = `
+                    <input type="checkbox" id="${id}" checked onchange="handleCheckboxChange('${field}', '${val}', this.checked)">
+                    <label for="${id}">${val}</label>
+                `;
+                container.appendChild(div);
+            });
+        });
+    }
+
+    function handleCheckboxChange(field, value, checked) {
+        if (checked) {
+            if (!filters[field].selected.includes(value)) {
+                filters[field].selected.push(value);
+            }
+        } else {
+            filters[field].selected = filters[field].selected.filter(v => v !== value);
+        }
+        applyAllFilters();
+    }
+    
+    function handleContains(field, value) {
+        filters[field].contains = value.toLowerCase();
+        applyAllFilters();
+    }
+    
+    function applyAllFilters() {
+        currentData = rawData.filter(item => {
+            // Check each field
+            for (const field in filters) {
+                const itemVal = item[field].toLowerCase();
+                const filterVal = filters[field].contains;
+                
+                // Contains filter
+                if (filterVal && !itemVal.includes(filterVal)) {
+                    return false;
+                }
+                
+                // Checkbox filter
+                if (!filters[field].selected.includes(item[field])) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        
+        // Maintain sort if any
+        if (sortState.field) {
+            const field = sortState.field;
+            const order = sortState.order;
+            currentData.sort((a, b) => {
+                if (a[field] < b[field]) return -1 * order;
+                if (a[field] > b[field]) return 1 * order;
+                return 0;
+            });
+        }
+        
+        renderTable(currentData);
+    }
+    
+    function clearFilter(field) {
+        filters[field].contains = '';
+        const searchInput = document.querySelector(`#dropdown-${field} input`);
+        if (searchInput) searchInput.value = '';
+        
+        // Reset checkboxes to NONE selected
+        filters[field].selected = [];
+        
+        const checkboxes = document.querySelectorAll(`#checkboxes-${field} input`);
+        checkboxes.forEach(cb => cb.checked = false);
+        
+        applyAllFilters();
+    }
+    
+    function toggleAllDropdownCheckboxes(field, checked) {
+        const checkboxes = document.querySelectorAll(`#checkboxes-${field} input`);
+        checkboxes.forEach(cb => cb.checked = checked);
+        
+        if (checked) {
+            filters[field].selected = [...new Set(rawData.map(item => item[field]))];
+        } else {
+            filters[field].selected = [];
+        }
+        
+        applyAllFilters();
+    }
+
+    populateAllFilters();
+    renderTable(currentData);
+
+    function showDiffById(id) {
+        const item = rawData.find(item => item.id === id);
+        if (item) {
+            showDiff(item);
+        }
+    }
+
+    function showDiff(item) {
+        const modal = document.getElementById('diffModal');
+        const content = document.getElementById('diffContent');
+        
+        content.innerHTML = '';
+        
+        // Add details header
+        const headerDetails = document.createElement('div');
+        headerDetails.className = 'diff-header-details';
+        headerDetails.style.marginBottom = '1rem';
+        headerDetails.style.padding = '1rem';
+        headerDetails.style.backgroundColor = '#f1f5f9';
+        headerDetails.style.borderRadius = '6px';
+        headerDetails.style.fontSize = '0.9rem';
+        headerDetails.innerHTML = `
+            <div style="margin-bottom: 0.25rem;"><strong>Type:</strong> ${item.type}</div>
+            <div style="margin-bottom: 0.25rem;"><strong>File:</strong> ${item.file}</div>
+            <div style="margin-bottom: 0.25rem;"><strong>XPath:</strong> ${item.xpath}</div>
+            <div><strong>Detail:</strong> ${item.details}</div>
+        `;
+        content.appendChild(headerDetails);
+        
+        const columnsContainer = document.createElement('div');
+        columnsContainer.className = 'diff-container';
+        content.appendChild(columnsContainer);
+
+        function renderColumn(header, text, highlightStart, highlightEnd) {
+            const div = document.createElement('div');
+            div.className = 'diff-column';
+            div.style.flex = '1';
+            div.style.minWidth = '0'; // Allow shrinking
+            div.innerHTML = `<div class="diff-column-header">${header}</div>`;
+            
+            const pre = document.createElement('pre');
+            pre.style.margin = '0';
+            pre.style.fontFamily = 'monospace';
+            pre.style.overflowX = 'auto';
+            
+            const lines = text.split('\n');
+            lines.forEach((line, index) => {
+                const span = document.createElement('span');
+                span.className = 'diff-line';
+                span.textContent = line;
+                
+                if (index >= highlightStart && index <= highlightEnd) {
+                    span.classList.add('highlight');
+                }
+                
+                pre.appendChild(span);
+            });
+            div.appendChild(pre);
+            return div;
+        }
+        
+        if (item.refContent) {
+            columnsContainer.appendChild(renderColumn('Ref (SDK Master)', item.refContent, item.refHighlightStart, item.refHighlightEnd));
+        }
+        if (item.genContent) {
+            columnsContainer.appendChild(renderColumn('Generated (Spec Master)', item.genContent, item.genHighlightStart, item.genHighlightEnd));
+        }
+        
+        modal.style.display = "block";
+    }
+    
+    function closeModal() {
+        document.getElementById('diffModal').style.display = "none";
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    window.onclick = function(event) {
+        const modal = document.getElementById('diffModal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+
+<!-- The Modal -->
+<div id="diffModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2>Diff View</h2>
+    <div id="diffContent"></div>
+  </div>
+</div>
+
+</body>
+</html>

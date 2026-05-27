@@ -143,7 +143,7 @@ func (cr *configuratorRenderer) populateStruct(ee *etree.Element, s *matter.Stru
 			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeStructField) {
 				continue
 			}
-			cr.setStructFieldAttributes(fe, s, f, newlyAdded)
+			cr.setFieldAttributes(fe, types.EntityTypeStruct, f, s.Fields, newlyAdded)
 			break
 		}
 	}
@@ -161,13 +161,14 @@ func (cr *configuratorRenderer) populateStruct(ee *etree.Element, s *matter.Stru
 			return
 		}
 		fe := etree.NewElement("item")
-		cr.setStructFieldAttributes(fe, s, field, newlyAdded)
+		cr.setFieldAttributes(fe, types.EntityTypeStruct, field, s.Fields, newlyAdded)
 		xml.AppendElement(ee, fe, "cluster")
 	}
 
 	return
 }
 
+/*
 func (cr *configuratorRenderer) setStructFieldAttributes(e *etree.Element, s *matter.Struct, v *matter.Field, newlyAdded bool) {
 	// Remove incorrect attributes from legacy XML
 	e.RemoveAttr("code")
@@ -204,3 +205,4 @@ func (cr *configuratorRenderer) setStructFieldAttributes(e *etree.Element, s *ma
 		cr.setProvisional(e, v)
 	}
 }
+*/

@@ -1,0 +1,7 @@
+= Main Spec
+
+include::service_device_management/BasicInformationCluster.adoc[]
+include::service_device_management/BridgedDeviceBasicInformationCluster.adoc[]
+include::device_types/RootNode.adoc[]
+include::device_types/BaseDeviceType.adoc[]
+include::app_clusters/test_cluster.adoc[]

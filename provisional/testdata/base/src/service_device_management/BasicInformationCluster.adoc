@@ -1,0 +1,25 @@
+[[ref_BasicInformationCluster, Basic Information Cluster]]
+= Basic Information Cluster
+
+== Classification
+
+|===
+| Hierarchy | Role        | Scope    | PICS Code
+| Base      | Application | Endpoint | BIS
+|===
+
+== Cluster Identifiers
+
+[options="header",valign="middle"]
+|===
+| Identification     | Name
+| 0x0028             | Basic Information
+|===
+
+== Revision History
+
+[options="header",valign="middle"]
+|===
+| Revision | Description
+| 1        | Initial Release
+|===

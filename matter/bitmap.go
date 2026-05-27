@@ -70,8 +70,8 @@ func (bm *Bitmap) Size() int {
 	}
 }
 
-func (bm *Bitmap) AddBit(b *BitmapBit) {
-	b.parent = bm
+func (bm *Bitmap) AddBit(b Bit) {
+	b.SetParent(bm)
 	bm.Bits = append(bm.Bits, b)
 }
 
@@ -136,11 +136,15 @@ func (bm *Bitmap) Inherit(parent *Bitmap) error {
 	if len(bm.Description) == 0 {
 		bm.Description = parent.Description
 	}
-	slices.SortStableFunc(mergedBits, func(a, b Bit) int {
-		return strings.Compare(a.Bit(), b.Bit())
-	})
+	SortBits(mergedBits)
 	bm.Bits = mergedBits
 	return nil
+}
+
+func SortBits(bits []Bit) {
+	slices.SortStableFunc(bits, func(a, b Bit) int {
+		return strings.Compare(a.Bit(), b.Bit())
+	})
 }
 
 type BitmapSet []*Bitmap
@@ -154,10 +158,10 @@ func (bs BitmapSet) Identifier(name string) (types.Entity, bool) {
 	return nil, false
 }
 
-func (bs BitmapSet) Iterate() iter.Seq[types.Entity] {
+func (bs BitSet) Iterate() iter.Seq[types.Entity] {
 	return func(yield func(types.Entity) bool) {
-		for _, bm := range bs {
-			if !yield(bm) {
+		for _, b := range bs {
+			if !yield(b) {
 				return
 			}
 		}
@@ -173,6 +177,8 @@ type Bit interface {
 	SetName(name string)
 	Summary() string
 	Conformance() conformance.Set
+	SetConformance(conformance conformance.Set)
+	SetParent(parent types.Entity)
 
 	Inherit(parent Bit) error
 	Clone() Bit
@@ -233,6 +239,10 @@ func (bmb *BitmapBit) Summary() string {
 
 func (bmb *BitmapBit) Conformance() conformance.Set {
 	return bmb.conformance
+}
+
+func (bmb *BitmapBit) SetConformance(conformance conformance.Set) {
+	bmb.conformance = conformance
 }
 
 func (bmb *BitmapBit) Clone() Bit {

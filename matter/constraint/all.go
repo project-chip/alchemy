@@ -30,7 +30,7 @@ func (c *AllConstraint) Equal(o Constraint) bool {
 func (c *AllConstraint) Min(cc Context) (min types.DataTypeExtreme) {
 	dt := cc.DataType()
 	if dt != nil {
-		min = dt.Min(cc.Nullable())
+		min = dt.Min(cc.Nullability())
 	}
 	return
 }
@@ -38,7 +38,7 @@ func (c *AllConstraint) Min(cc Context) (min types.DataTypeExtreme) {
 func (c *AllConstraint) Max(cc Context) (max types.DataTypeExtreme) {
 	dt := cc.DataType()
 	if dt != nil {
-		max = dt.Max(cc.Nullable())
+		max = dt.Max(cc.Nullability())
 	}
 	return
 }

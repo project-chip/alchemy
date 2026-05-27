@@ -1,0 +1,2 @@
+[[ref_external_anchor, A Non-Normalized Replacement Text Different Than Section Name]]
+== Section Name Different Than Replacement Text

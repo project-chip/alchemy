@@ -28,13 +28,13 @@ const (
 	SectionEvent
 	SectionNamespace
 	SectionConditions
+	SectionConditionRequirements
 	SectionDeviceTypeRequirements
 	SectionClusterRequirements
 	SectionClusterRestrictions
 	SectionElementRequirements
 	SectionSemanticTagRequirements
 	SectionComposedDeviceTypeClusterRequirements
-	SectionComposedDeviceTypeConditionRequirements
 	SectionComposedDeviceTypeElementRequirements
 	SectionComposedDeviceTypeSemanticTagRequirements
 	SectionEndpointComposition
@@ -67,9 +67,15 @@ var TopLevelSectionOrders = map[DocType][]Section{
 		SectionRevisionHistory,
 		SectionClassification,
 		SectionConditions,
+		SectionConditionRequirements,
 		SectionDeviceTypeRequirements,
 		SectionClusterRequirements,
 		SectionElementRequirements,
+		SectionSemanticTagRequirements,
+		SectionDeviceTypeRequirements,
+		SectionComposedDeviceTypeClusterRequirements,
+		SectionComposedDeviceTypeElementRequirements,
+		SectionComposedDeviceTypeSemanticTagRequirements,
 	},
 }
 
@@ -77,7 +83,7 @@ var DataTypeSectionOrder = []Section{SectionPrefix, SectionDataTypeConstant, Sec
 var DeviceRequirementsSectionOrder = []Section{SectionClusterRestrictions,
 	SectionElementRequirements,
 	SectionEndpointComposition,
-	SectionComposedDeviceTypeConditionRequirements,
+	SectionConditionRequirements,
 	SectionComposedDeviceTypeClusterRequirements,
 	SectionComposedDeviceTypeElementRequirements,
 	SectionSemanticTagRequirements}
@@ -114,16 +120,16 @@ var sectionTypeStrings = map[Section]string{
 	SectionClusterRequirements:    "ClusterRequirements",
 	SectionClusterRestrictions:    "ClusterRestrictions",
 	SectionElementRequirements:    "ElementRequirements",
-	SectionComposedDeviceTypeClusterRequirements:   "ComposedDeviceTypeClusterRequirements",
-	SectionComposedDeviceTypeConditionRequirements: "ComposedDeviceTypeConditionRequirements",
-	SectionComposedDeviceTypeElementRequirements:   "ComposedDeviceTypeElementRequirements",
-	SectionEndpointComposition:                     "EndpointComposition",
-	SectionField:                                   "Field",
-	SectionValue:                                   "Value",
-	SectionBit:                                     "Bit",
-	SectionDerivedClusterNamespace:                 "DerivedClusterNamespace",
-	SectionModeTags:                                "ModeTags",
-	SectionGlobalElements:                          "GlobalElements",
+	SectionComposedDeviceTypeClusterRequirements: "ComposedDeviceTypeClusterRequirements",
+	SectionConditionRequirements:                 "ComposedDeviceTypeConditionRequirements",
+	SectionComposedDeviceTypeElementRequirements: "ComposedDeviceTypeElementRequirements",
+	SectionEndpointComposition:                   "EndpointComposition",
+	SectionField:                                 "Field",
+	SectionValue:                                 "Value",
+	SectionBit:                                   "Bit",
+	SectionDerivedClusterNamespace:               "DerivedClusterNamespace",
+	SectionModeTags:                              "ModeTags",
+	SectionGlobalElements:                        "GlobalElements",
 }
 
 func (st Section) String() string {
@@ -164,34 +170,34 @@ var sectionTypeNames = map[Section]string{
 	SectionClusterRestrictions:                   "Cluster Restrictions",
 	SectionElementRequirements:                   "Element Requirements",
 	SectionComposedDeviceTypeClusterRequirements: "Cluster Requirements on Component Device Types",
-	SectionComposedDeviceTypeConditionRequirements: "Condition Requirements on Component Device Types",
-	SectionComposedDeviceTypeElementRequirements:   "Element Requirements on Component Device Types",
-	SectionEndpointComposition:                     "Endpoint Composition",
-	SectionField:                                   "Field",
-	SectionDerivedClusterNamespace:                 "Derived Cluster Namespace",
-	SectionModeTags:                                "Mode Tags",
+	SectionConditionRequirements:                 "Condition Requirements on Component Device Types",
+	SectionComposedDeviceTypeElementRequirements: "Element Requirements on Component Device Types",
+	SectionEndpointComposition:                   "Endpoint Composition",
+	SectionField:                                 "Field",
+	SectionDerivedClusterNamespace:               "Derived Cluster Namespace",
+	SectionModeTags:                              "Mode Tags",
 }
 
 var canonicalSectionTypeNames = map[Section]string{
-	SectionIntroduction:                            "Introduction",
-	SectionRevisionHistory:                         "Revision History",
-	SectionClassification:                          "Classification",
-	SectionFeatures:                                "Features",
-	SectionDependencies:                            "Dependencies",
-	SectionDataTypes:                               "Data Types",
-	SectionAttributes:                              "Attributes",
-	SectionCommands:                                "Commands",
-	SectionEvents:                                  "Events",
-	SectionDeviceTypeRequirements:                  "Device Type Requirements",
-	SectionClusterRequirements:                     "Cluster Requirements",
-	SectionClusterRestrictions:                     "Cluster Restrictions",
-	SectionElementRequirements:                     "Element Requirements",
-	SectionComposedDeviceTypeClusterRequirements:   "Cluster Requirements on Component Device Types",
-	SectionComposedDeviceTypeConditionRequirements: "Condition Requirements",
-	SectionComposedDeviceTypeElementRequirements:   "Element Requirements on Component Device Types",
-	SectionEndpointComposition:                     "Endpoint Composition",
-	SectionDerivedClusterNamespace:                 "Derived Cluster Namespace",
-	SectionModeTags:                                "Mode Tags",
+	SectionIntroduction:                          "Introduction",
+	SectionRevisionHistory:                       "Revision History",
+	SectionClassification:                        "Classification",
+	SectionFeatures:                              "Features",
+	SectionDependencies:                          "Dependencies",
+	SectionDataTypes:                             "Data Types",
+	SectionAttributes:                            "Attributes",
+	SectionCommands:                              "Commands",
+	SectionEvents:                                "Events",
+	SectionDeviceTypeRequirements:                "Device Type Requirements",
+	SectionClusterRequirements:                   "Cluster Requirements",
+	SectionClusterRestrictions:                   "Cluster Restrictions",
+	SectionElementRequirements:                   "Element Requirements",
+	SectionComposedDeviceTypeClusterRequirements: "Cluster Requirements on Component Device Types",
+	SectionConditionRequirements:                 "Condition Requirements",
+	SectionComposedDeviceTypeElementRequirements: "Element Requirements on Component Device Types",
+	SectionEndpointComposition:                   "Endpoint Composition",
+	SectionDerivedClusterNamespace:               "Derived Cluster Namespace",
+	SectionModeTags:                              "Mode Tags",
 }
 
 func CanonicalSectionTypeName(st Section) string {

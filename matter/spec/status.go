@@ -21,7 +21,7 @@ func (library *Library) toStatusCodes(reader asciidoc.Reader, d *asciidoc.Docume
 		return nil, newGenericParseError(s, "error parsing error code type: %v", err)
 	}
 	if dt == nil {
-		dt = types.NewDataType(types.BaseDataTypeEnum8, false)
+		dt = types.NewDataType(types.BaseDataTypeEnum8, types.DataTypeRankScalar)
 		slog.Debug("Status code does not declare its derived data type; assuming enum8", log.Element("source", d.Path, s), slog.String("enum", name))
 	} else if !dt.IsEnum() {
 		return nil, newGenericParseError(s, "unknown status code data type: %s", dt.Name)

@@ -12,7 +12,7 @@ func renderLink(cxt Target, il *asciidoc.Link) (err error) {
 		return
 	}
 
-	err = renderAttributes(cxt, il.Attributes(), true)
+	err = renderAttributes(cxt, il.Attributes(), attributeRenderTypeInline)
 	cxt.EndBlock()
 	return
 }
@@ -26,7 +26,7 @@ func renderLinkMacro(cxt Target, il *asciidoc.LinkMacro) (err error) {
 		return
 	}
 
-	err = renderAttributes(cxt, il.Attributes(), true)
+	err = renderAttributes(cxt, il.Attributes(), attributeRenderTypeInline)
 	cxt.EndBlock()
 	return
 }
@@ -34,7 +34,7 @@ func renderLinkMacro(cxt Target, il *asciidoc.LinkMacro) (err error) {
 func renderImageBlock(cxt Target, ib *asciidoc.BlockImage) (err error) {
 	cxt.FlushWrap()
 	cxt.EnsureNewLine()
-	_, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
+	_, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, attributeRenderTypeBlock)
 	if err != nil {
 		return
 	}
@@ -46,7 +46,7 @@ func renderImageBlock(cxt Target, ib *asciidoc.BlockImage) (err error) {
 		return
 	}
 	var count int
-	count, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
+	count, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, attributeRenderTypeInline)
 	if err != nil {
 		return
 	}
@@ -61,7 +61,7 @@ func renderImageBlock(cxt Target, ib *asciidoc.BlockImage) (err error) {
 func renderInlineImage(cxt Target, ib *asciidoc.InlineImage) (err error) {
 	cxt.FlushWrap()
 	cxt.EnsureNewLine()
-	_, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
+	_, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, attributeRenderTypeBlock)
 	if err != nil {
 		return
 	}
@@ -73,7 +73,7 @@ func renderInlineImage(cxt Target, ib *asciidoc.InlineImage) (err error) {
 		return
 	}
 	var count int
-	count, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
+	count, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, attributeRenderTypeInline)
 	if err != nil {
 		return
 	}

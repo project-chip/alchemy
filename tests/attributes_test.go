@@ -1670,7 +1670,7 @@ var attributesTestCreatesCounter = &asciidoc.Document{
 		&asciidoc.Counter{
 			Name:         "mycounter",
 			InitialValue: "",
-			Display:      true,
+			Display:      asciidoc.CounterVisibilityVisible,
 		},
 		&asciidoc.NewLine{},
 	},
@@ -1695,7 +1695,7 @@ var attributesTestCanSeedCounterToStartAtA = &asciidoc.Document{
 		&asciidoc.Counter{
 			Name:         "mycounter",
 			InitialValue: "",
-			Display:      true,
+			Display:      asciidoc.CounterVisibilityVisible,
 		},
 		&asciidoc.NewLine{},
 	},
@@ -1902,7 +1902,7 @@ var attributesTestCounterUses0AsSeedValueIfSeedAttributeIsNil = &asciidoc.Docume
 		&asciidoc.Counter{
 			Name:         "mycounter",
 			InitialValue: "",
-			Display:      true,
+			Display:      asciidoc.CounterVisibilityVisible,
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.EmptyLine{
@@ -1933,7 +1933,7 @@ var attributesTestCounterValueCanBeResetByAttributeEntry = &asciidoc.Document{
 		&asciidoc.Counter{
 			Name:         "mycounter",
 			InitialValue: "",
-			Display:      true,
+			Display:      asciidoc.CounterVisibilityVisible,
 		},
 		&asciidoc.String{
 			Value: " ",
@@ -1941,7 +1941,7 @@ var attributesTestCounterValueCanBeResetByAttributeEntry = &asciidoc.Document{
 		&asciidoc.Counter{
 			Name:         "mycounter",
 			InitialValue: "",
-			Display:      true,
+			Display:      asciidoc.CounterVisibilityVisible,
 		},
 		&asciidoc.String{
 			Value: " ",
@@ -1949,7 +1949,7 @@ var attributesTestCounterValueCanBeResetByAttributeEntry = &asciidoc.Document{
 		&asciidoc.Counter{
 			Name:         "mycounter",
 			InitialValue: "",
-			Display:      true,
+			Display:      asciidoc.CounterVisibilityVisible,
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.EmptyLine{
@@ -1967,7 +1967,7 @@ var attributesTestCounterValueCanBeResetByAttributeEntry = &asciidoc.Document{
 		&asciidoc.Counter{
 			Name:         "mycounter",
 			InitialValue: "",
-			Display:      true,
+			Display:      asciidoc.CounterVisibilityVisible,
 		},
 		&asciidoc.NewLine{},
 	},
@@ -1984,7 +1984,7 @@ var attributesTestCounterValueCanBeAdvancedByAttributeEntry = &asciidoc.Document
 		&asciidoc.Counter{
 			Name:         "mycounter",
 			InitialValue: "",
-			Display:      true,
+			Display:      asciidoc.CounterVisibilityVisible,
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.EmptyLine{
@@ -2007,7 +2007,7 @@ var attributesTestCounterValueCanBeAdvancedByAttributeEntry = &asciidoc.Document
 		&asciidoc.Counter{
 			Name:         "mycounter",
 			InitialValue: "",
-			Display:      true,
+			Display:      asciidoc.CounterVisibilityVisible,
 		},
 		&asciidoc.NewLine{},
 	},
@@ -2232,7 +2232,7 @@ var attributesTestShouldNotAllowCounterToModifyBuiltInLockedAttribute = &asciido
 		&asciidoc.Counter{
 			Name:         "max-include-depth",
 			InitialValue: "",
-			Display:      true,
+			Display:      asciidoc.CounterVisibilityVisible,
 		},
 		&asciidoc.String{
 			Value: " is one more than ",
@@ -2252,7 +2252,7 @@ var attributesTestShouldNotAllowCounter2ToModifyBuiltInLockedAttribute = &asciid
 		&asciidoc.Counter{
 			Name:         "max-include-depth",
 			InitialValue: "",
-			Display:      false,
+			Display:      asciidoc.CounterVisibilityHidden,
 		},
 		&asciidoc.UserAttributeReference{
 			Value: "max-include-depth",

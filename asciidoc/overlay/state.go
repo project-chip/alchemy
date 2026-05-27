@@ -7,8 +7,9 @@ import (
 )
 
 type conditionalBlock struct {
-	open     asciidoc.Element
-	suppress bool
+	open      asciidoc.Element
+	suppress  bool
+	addToCell bool
 }
 
 type overlayState struct {

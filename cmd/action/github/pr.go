@@ -16,6 +16,14 @@ import (
 	"github.com/walle/targz"
 )
 
+type FileStatus string
+
+const (
+	FileStatusAdded    FileStatus = "added"
+	FileStatusModified FileStatus = "modified"
+	FileStatusDeleted  FileStatus = "deleted"
+)
+
 func GetPRChangedFiles(cxt context.Context, githubContext *githubactions.GitHubContext, action *githubactions.Action, pr *github.PullRequest) (changedFiles []string, err error) {
 
 	token := action.Getenv("GITHUB_AUTH_TOKEN")
@@ -44,6 +52,44 @@ func GetPRChangedFiles(cxt context.Context, githubContext *githubactions.GitHubC
 			}
 			slog.Info("changed file", "file", *file.Filename)
 			changedFiles = append(changedFiles, *file.Filename)
+		}
+		if resp.NextPage == 0 {
+			break
+		}
+		lo.Page = resp.NextPage
+	}
+	return
+}
+
+func GetPRChangedFilesWithStatus(cxt context.Context, githubContext *githubactions.GitHubContext, action *githubactions.Action, pr *github.PullRequest) (changedFiles map[string]FileStatus, err error) {
+
+	token := action.Getenv("GITHUB_AUTH_TOKEN")
+	if token == "" {
+		return nil, fmt.Errorf("missing github token")
+	}
+	client := github.NewClient(nil).WithAuthToken(token)
+
+	owner, repo := githubContext.Repo()
+
+	lo := github.ListOptions{
+		PerPage: 100,
+	}
+	changedFiles = make(map[string]FileStatus)
+	for {
+		action.Infof("Fetching PR from: %s/%s; page %d\n", owner, repo, lo.Page)
+		var files []*github.CommitFile
+		var resp *github.Response
+		files, resp, err = client.PullRequests.ListFiles(cxt, owner, repo, pr.GetNumber(), &lo)
+		if err != nil {
+			err = fmt.Errorf("failed listing files in PR: %w", err)
+			return
+		}
+		for _, file := range files {
+			if file.GetStatus() == "deleted" {
+				continue
+			}
+			slog.Info("changed file", "file", file.GetFilename(), "status", file.GetStatus())
+			changedFiles[file.GetFilename()] = FileStatus(file.GetStatus())
 		}
 		if resp.NextPage == 0 {
 			break

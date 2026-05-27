@@ -5,4 +5,5 @@ type Action struct {
 	Disco      Disco      `cmd:"" default:"" help:"GitHub action for Matter spec documents"`
 	ZAP        ZAP        `cmd:"" help:"GitHub action for Matter SDK ZAP XML"`
 	MergeGuard MergeGuard `cmd:"" help:"GitHub action to prevent Provisionality and Parse errors to be merged."`
+	ZAPDiff    ZAPDiff    `cmd:"" help:"GitHub action for ZAP XML diff"`
 }

@@ -104,6 +104,8 @@ func buildPythonConformance(cluster *matter.Cluster, c conformance.Conformance, 
 	switch c := c.(type) {
 	case *conformance.Deprecated:
 		return fmt.Errorf("deprecated conformance cannot be converted to Python")
+	case *conformance.Obsolete:
+		return fmt.Errorf("obsolete conformance cannot be converted to Python")
 	case *conformance.Described:
 		return fmt.Errorf("described conformance cannot be converted to Python")
 	case *conformance.Generic:

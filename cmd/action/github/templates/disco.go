@@ -11,12 +11,12 @@ import (
 //go:embed disco
 var discoTemplateFiles embed.FS
 
-var discoPatchedTemplate pipeline.Once[*raymond.Template]
+var discoCombinedTemplate pipeline.Once[*raymond.Template]
 
-func LoadDiscoPatchedTemplate() (*raymond.Template, error) {
-	t, err := discoPatchedTemplate.Do(func() (*raymond.Template, error) {
+func LoadDiscoCombinedTemplate() (*raymond.Template, error) {
+	t, err := discoCombinedTemplate.Do(func() (*raymond.Template, error) {
 
-		t, err := handlebars.LoadTemplate("{{> disco/patched}}", discoTemplateFiles)
+		t, err := handlebars.LoadTemplate("{{> disco/combined}}", discoTemplateFiles)
 		if err != nil {
 			return nil, err
 		}

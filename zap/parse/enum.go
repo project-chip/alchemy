@@ -17,7 +17,7 @@ func (sp *ZapParser) readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.En
 		case "name":
 			en.Name = a.Value
 		case "type":
-			en.Type = types.NewDataType(zap.ToBaseDataType(a.Value), false)
+			en.Type = types.NewDataType(zap.ToBaseDataType(a.Value), types.DataTypeRankScalar)
 		case "apiMaturity":
 		default:
 			return nil, nil, fmt.Errorf("unexpected enum attribute: %s", a.Name.Local)

@@ -40,7 +40,7 @@ func renderTable(cxt Target, t *asciidoc.Table) (err error) {
 		return
 	}
 
-	err = renderAttributes(cxt, t.Attributes(), false)
+	err = renderAttributes(cxt, t.Attributes(), attributeRenderTypeBlock)
 	if err != nil {
 		return
 	}

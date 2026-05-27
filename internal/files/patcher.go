@@ -16,7 +16,13 @@ type Patcher[T string | []byte] struct {
 	writer
 
 	Root string
-	out  io.Writer
+	out  io.Writer // Fallback writer
+
+	ModifiedFiles []string
+
+	// GetWriter returns the destination writer for a given file path.
+	// If it returns nil, the file is not written to any patch.
+	GetWriter func(path string) io.Writer
 }
 
 func NewPatcher[T string | []byte](name string, out io.Writer) *Patcher[T] {
@@ -63,9 +69,18 @@ func (sp *Patcher[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (
 
 		diff := textdiff.Unified(existing, string(i.Content), textdiff.IndentHeuristic(), diff.Optimal())
 		if len(diff) > 0 {
-			fmt.Fprintf(sp.out, "--- %s\n", path)
-			fmt.Fprintf(sp.out, "+++ %s\n", path)
-			fmt.Fprintln(sp.out, diff)
+			sp.ModifiedFiles = append(sp.ModifiedFiles, path)
+
+			targetOut := sp.out
+			if sp.GetWriter != nil {
+				if w := sp.GetWriter(path); w != nil {
+					targetOut = w
+				}
+			}
+
+			fmt.Fprintf(targetOut, "--- %s\n", path)
+			fmt.Fprintf(targetOut, "+++ %s\n", path)
+			fmt.Fprintln(targetOut, diff)
 		}
 
 		/*edits := myers.ComputeEdits(span.URIFromPath(path), existing, string(i.Content))

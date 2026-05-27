@@ -1,0 +1,79 @@
+[[ref_TestCluster, Test Cluster]]
+= Test Cluster
+
+== Classification
+
+|===
+| Hierarchy | Role        | Scope    | PICS Code
+| Base      | Application | Endpoint | TEST
+|===
+
+== Cluster Identifiers
+
+[options="header",valign="middle"]
+|===
+| Identification     | Name
+| 0xFFFE             | Test Cluster
+|===
+
+== Commands
+[options="header",valign="middle"]
+|===
+| ID     | Name              | Direction        | Response      | Access | Conformance
+ifdef::in-progress[]
+| 0x00  s| ProvCommand1      | client => server | Y                 | O      | P
+endif::[]
+| 0x01  s| ProvCommand2      | client => server | Y                 | O      | P
+ifdef::in-progress[]
+| 0x02  s| ProvCommand3      | client => server | Y                 | O      | P
+endif::[]
+ifdef::in-progress[]
+| 0x03  s| NonProvCommand    | client => server | Y                 | O      | M
+endif::[]
+|===
+
+ifdef::in-progress[]
+=== ProvCommand1 Command
+This is Case 1: Provisional in ifdef with no provisional ancestor.
+(The cluster is NOT provisional).
+
+[options="header",valign="middle"]
+|===
+| ID | Name      | Type   | Constraint | Quality | Default | Conformance
+| 0 s| Field1    | string | max 6      |         | empty   | M
+|===
+endif::[]
+
+=== ProvCommand2 Command
+This is Case 2: Provisional not in ifdef.
+(It is in the table without ifdef).
+
+[options="header",valign="middle"]
+|===
+| ID | Name      | Type   | Constraint | Quality | Default | Conformance
+| 0 s| Field2    | string | max 6      |         | empty   | M
+|===
+
+ifdef::in-progress[]
+=== ProvCommand3 Command
+This is Case 3: Provisional in ifdef with provisional ancestor.
+(ProvCommand3 is provisional, and Field3 inside it is also provisional).
+
+[options="header",valign="middle"]
+|===
+| ID | Name      | Type   | Constraint | Quality | Default | Conformance
+| 0 s| Field3    | string | max 6      |         | empty   | P
+|===
+endif::[]
+
+ifdef::in-progress[]
+=== NonProvCommand Command
+This is Case 4: Not provisional in ifdef.
+(Triggers NonProvisional violation).
+
+[options="header",valign="middle"]
+|===
+| ID | Name      | Type   | Constraint | Quality | Default | Conformance
+| 0 s| Field4    | string | max 6      |         | empty   | M
+|===
+endif::[]

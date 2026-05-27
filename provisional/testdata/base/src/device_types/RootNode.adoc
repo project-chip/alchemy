@@ -1,0 +1,16 @@
+[[ref_RootNode, Root Node]]
+= Root Node
+
+== Classification
+[options="header",valign="middle"]
+|===
+| Device Name | Device Type ID | Device Type Revision
+| Root Node   | 0x0016         | 1
+|===
+
+== Cluster Requirements
+[options="header",valign="middle"]
+|===
+| Cluster | Client/Server | Conformance
+| Basic Information | Server | M
+|===
