@@ -99,6 +99,31 @@ func (ti *TableInfo) ContentRows() iter.Seq[*asciidoc.TableRow] {
 	}
 }
 
+func (ti *TableInfo) CategorizedRows(reader asciidoc.Reader) iter.Seq2[*asciidoc.TableRow, string] {
+	return func(yield func(*asciidoc.TableRow, string) bool) {
+		var currentCategory string
+		for i := ti.HeaderRowIndex + 1; i < len(ti.Rows); i++ {
+			row := ti.Rows[i]
+			if len(row.Elements) > 0 {
+				firstCell := row.Cell(0)
+				if firstCell.Format.Span.Column.IsSet && firstCell.Format.Span.Column.Value == len(row.Elements) {
+					var err error
+					currentCategory, err = RenderTableCell(reader, firstCell)
+					if err != nil {
+						slog.Error("failed to render category cell", log.Element("source", ti.Doc.Path, firstCell), slog.Any("error", err))
+						currentCategory = ""
+					}
+					currentCategory = strings.TrimSpace(currentCategory)
+					continue
+				}
+			}
+			if !yield(row, currentCategory) {
+				return
+			}
+		}
+	}
+}
+
 func (ti *TableInfo) ReadString(reader asciidoc.Reader, row *asciidoc.TableRow, columns ...matter.TableColumn) (string, error) {
 	for _, column := range columns {
 		offset, ok := ti.ColumnMap[column]

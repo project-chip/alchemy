@@ -12,6 +12,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -120,7 +121,7 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 			if err != nil {
 				return
 			}
-			err = renderElementRequirements(deviceType, cr, clx)
+			err = renderElementRequirements(deviceType, cr, deviceType.ElementRequirements, clx)
 			if err != nil {
 				return
 			}
@@ -128,23 +129,30 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 		}
 	}
 
-	type deviceTypeRequirements struct {
-		deviceRequirements  []*matter.DeviceTypeRequirement
-		clusterRequirements []*matter.DeviceTypeClusterRequirement
-		elementRequirements map[*matter.Cluster][]*matter.ElementRequirement
+	type deviceTypeInstance struct {
+		DeviceTypeName string
+		Label          string
 	}
 
-	dtrs := make(map[*matter.DeviceType]*deviceTypeRequirements)
+	type deviceTypeRequirements struct {
+		DeviceType          *matter.DeviceType
+		deviceRequirements  []*matter.DeviceTypeRequirement
+		clusterRequirements []*matter.DeviceTypeClusterRequirement
+		elementRequirements map[string][]*matter.ElementRequirement
+	}
+
+	dtrs := make(map[deviceTypeInstance]*deviceTypeRequirements)
 
 	for _, dr := range deviceType.DeviceTypeRequirements {
 		if dr.DeviceType == nil {
 			continue
 		}
 
-		dtr, ok := dtrs[dr.DeviceType]
+		key := deviceTypeInstance{DeviceTypeName: dr.DeviceType.Name, Label: ""}
+		dtr, ok := dtrs[key]
 		if !ok {
-			dtr = &deviceTypeRequirements{}
-			dtrs[dr.DeviceType] = dtr
+			dtr = &deviceTypeRequirements{DeviceType: dr.DeviceType}
+			dtrs[key] = dtr
 		}
 		dtr.deviceRequirements = append(dtr.deviceRequirements, dr)
 	}
@@ -157,10 +165,15 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 			continue
 		}
 
-		dtr, ok := dtrs[cr.DeviceType]
+		label := cr.InstanceLabel
+		if label == cr.DeviceType.Name {
+			label = ""
+		}
+		key := deviceTypeInstance{DeviceTypeName: cr.DeviceType.Name, Label: label}
+		dtr, ok := dtrs[key]
 		if !ok {
-			dtr = &deviceTypeRequirements{}
-			dtrs[cr.DeviceType] = dtr
+			dtr = &deviceTypeRequirements{DeviceType: cr.DeviceType}
+			dtrs[key] = dtr
 		}
 		dtr.clusterRequirements = append(dtr.clusterRequirements, cr)
 	}
@@ -172,40 +185,77 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 		if er.ElementRequirement.Cluster == nil {
 			continue
 		}
-		dtr, ok := dtrs[er.DeviceType]
+		label := er.InstanceLabel
+		if label == er.DeviceType.Name {
+			label = ""
+		}
+		key := deviceTypeInstance{DeviceTypeName: er.DeviceType.Name, Label: label}
+		dtr, ok := dtrs[key]
 		if !ok {
-			continue
+			dtr = &deviceTypeRequirements{DeviceType: er.DeviceType}
+			dtrs[key] = dtr
 		}
+		
+		foundCluster := false
+		for _, cr := range dtr.clusterRequirements {
+			if cr.ClusterRequirement.ClusterID.Equals(er.ElementRequirement.ClusterID) {
+				foundCluster = true
+				break
+			}
+		}
+		if !foundCluster {
+			cr := matter.NewClusterRequirement(er.DeviceType, er.Source())
+			cr.ClusterID = er.ElementRequirement.ClusterID
+			cr.ClusterName = er.ElementRequirement.ClusterName
+			cr.Interface = matter.InterfaceServer // Default to server
+
+			
+			dtcr := matter.NewDeviceTypeClusterRequirement(er.DeviceType, cr, er.Source())
+			dtcr.DeviceTypeID = er.DeviceTypeID
+			dtcr.DeviceTypeName = er.DeviceTypeName
+			dtcr.InstanceLabel = er.InstanceLabel
+			
+			dtr.clusterRequirements = append(dtr.clusterRequirements, dtcr)
+		}
+
 		if dtr.elementRequirements == nil {
-			dtr.elementRequirements = make(map[*matter.Cluster][]*matter.ElementRequirement)
+			dtr.elementRequirements = make(map[string][]*matter.ElementRequirement)
 		}
-		dtr.elementRequirements[er.ElementRequirement.Cluster] = append(dtr.elementRequirements[er.ElementRequirement.Cluster], er.ElementRequirement)
+		cidStr := er.ElementRequirement.ClusterID.HexString()
+		dtr.elementRequirements[cidStr] = append(dtr.elementRequirements[cidStr], er.ElementRequirement)
 
 	}
 
 	if len(dtrs) > 0 {
 		cx := c.CreateElement("composedDeviceTypes")
-		deviceTypes := make([]*matter.DeviceType, 0, len(dtrs))
-		for _, dtr := range dtrs {
-			if len(dtr.clusterRequirements) > 0 {
-				deviceTypes = append(deviceTypes, dtr.clusterRequirements[0].DeviceType)
-			} else if len(dtr.deviceRequirements) > 0 {
-				deviceTypes = append(deviceTypes, dtr.deviceRequirements[0].DeviceType)
-			}
+		instances := make([]deviceTypeInstance, 0, len(dtrs))
+		for key := range dtrs {
+			instances = append(instances, key)
 		}
-		slices.SortStableFunc(deviceTypes, func(a, b *matter.DeviceType) int {
-			return strings.Compare(a.Name, b.Name)
-		})
-		for _, dt := range deviceTypes {
-			dtr, ok := dtrs[dt]
-			if !ok {
-				continue
+		slices.SortStableFunc(instances, func(a, b deviceTypeInstance) int {
+			cmp := strings.Compare(a.DeviceTypeName, b.DeviceTypeName)
+			if cmp != 0 {
+				return cmp
 			}
+			return strings.Compare(a.Label, b.Label)
+		})
+		for _, inst := range instances {
+			dtr := dtrs[inst]
+			dt := dtr.DeviceType
 			dte := cx.CreateElement("deviceType")
 			if dt.ID.Valid() {
 				dte.CreateAttr("deviceTypeId", dt.ID.HexString())
 			}
 			dte.CreateAttr("deviceTypeName", dt.Name)
+			
+			var baseConformance conformance.Set
+			for _, dr := range deviceType.DeviceTypeRequirements {
+				if dr.DeviceType == dt {
+					baseConformance = dr.Conformance
+					break
+				}
+			}
+
 			if len(dtr.deviceRequirements) > 0 {
 				err = renderConformanceElement(dtr.deviceRequirements[0].Conformance, dte, nil)
 				if err != nil {
@@ -215,7 +265,16 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 				if err != nil {
 					return
 				}
+			} else if inst.Label != "" {
+				if baseConformance != nil {
+					err = renderConformanceElement(baseConformance, dte, nil)
+					if err != nil {
+						return
+					}
+				}
+
 			}
+			
 			if len(dtr.clusterRequirements) > 0 {
 				crx := dte.CreateElement("clusterRequirements")
 				reqs := make([]*matter.DeviceTypeClusterRequirement, len(dtr.clusterRequirements))
@@ -231,12 +290,14 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 					clx := crx.CreateElement("cluster")
 					clx.CreateAttr("id", cr.ClusterRequirement.ClusterID.HexString())
 					clx.CreateAttr("name", cr.ClusterRequirement.ClusterName)
-					err = renderConformanceElement(cr.ClusterRequirement.Conformance, clx, nil)
-					if err != nil {
-						return
+					if len(cr.ClusterRequirement.Conformance) > 0 {
+						err = renderConformanceElement(cr.ClusterRequirement.Conformance, clx, nil)
+						if err != nil {
+							return
+						}
 					}
 					renderQuality(clx, cr.ClusterRequirement.Quality)
-					renderElementRequirements(dt, cr.ClusterRequirement, clx)
+					renderElementRequirements(dt, cr.ClusterRequirement, dtr.elementRequirements[cr.ClusterRequirement.ClusterID.HexString()], clx)
 				}
 			}
 		}
@@ -265,9 +326,9 @@ type commandRequirement struct {
 	fields      []*matter.ElementRequirement
 }
 
-func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.ClusterRequirement, clx *etree.Element) (err error) {
+func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.ClusterRequirement, ers []*matter.ElementRequirement, clx *etree.Element) (err error) {
 	erMap := make(map[types.EntityType][]*matter.ElementRequirement)
-	for _, er := range deviceType.ElementRequirements {
+	for _, er := range ers {
 		if er.ClusterID.Equals(cr.ClusterID) {
 			erMap[er.Element] = append(erMap[er.Element], er)
 		}
@@ -276,7 +337,7 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 	var attributeRequirements []*matter.ElementRequirement
 	var commandRequirements []*commandRequirement
 	var eventRequirements []*matter.ElementRequirement
-	for _, er := range deviceType.ElementRequirements {
+	for _, er := range ers {
 		if er.ClusterID.Equals(cr.ClusterID) {
 			switch er.Element {
 			case types.EntityTypeFeature:
