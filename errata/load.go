@@ -16,8 +16,8 @@ import (
 //go:embed default.yaml
 var defaultErrata []byte
 
-func LoadErrata(config *config.Config) (*Collection, error) {
-	b := loadErrataFile(config.Root())
+func LoadErrata(config *config.Config, errataPath string) (*Collection, error) {
+	b := loadErrataFile(config.Root(), errataPath)
 	if b == nil {
 		b = defaultErrata
 	}
@@ -82,11 +82,16 @@ type overlayErrata struct {
 	ZAP      *SDK      `yaml:"zap,omitempty"`
 }
 
-func loadErrataFile(specRoot string) []byte {
-	if specRoot == "" {
-		return nil
+func loadErrataFile(specRoot string, overridePath string) []byte {
+	var errataPath string
+	if overridePath != "" {
+		errataPath = overridePath
+	} else {
+		if specRoot == "" {
+			return nil
+		}
+		errataPath = filepath.Join(specRoot, ".github/alchemy/errata.yaml")
 	}
-	errataPath := filepath.Join(specRoot, ".github/alchemy/errata.yaml")
 	exists, err := files.Exists(errataPath)
 	if err != nil {
 		slog.Warn("error checking for errata path", slog.Any("error", err))
