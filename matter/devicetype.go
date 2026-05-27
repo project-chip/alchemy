@@ -238,7 +238,7 @@ var (
 		DeviceTypeRequirementLocationChildEndpoint:      "childEndpoint",
 		DeviceTypeRequirementLocationRootEndpoint:       "rootEndpoint",
 		DeviceTypeRequirementLocationDescendantEndpoint: "descendantEndpoint",
-		DeviceTypeRequirementLocationAnywhere:           "anywhere",
+		DeviceTypeRequirementLocationAnywhere:           "anyEndpoint",
 	}
 )
 
