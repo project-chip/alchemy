@@ -228,6 +228,7 @@ const (
 	DeviceTypeRequirementLocationChildEndpoint
 	DeviceTypeRequirementLocationRootEndpoint
 	DeviceTypeRequirementLocationDescendantEndpoint
+	DeviceTypeRequirementLocationAnywhere
 )
 
 var (
@@ -237,6 +238,7 @@ var (
 		DeviceTypeRequirementLocationChildEndpoint:      "childEndpoint",
 		DeviceTypeRequirementLocationRootEndpoint:       "rootEndpoint",
 		DeviceTypeRequirementLocationDescendantEndpoint: "descendantEndpoint",
+		DeviceTypeRequirementLocationAnywhere:           "anywhere",
 	}
 )
 

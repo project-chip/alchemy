@@ -247,6 +247,20 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 				dte.CreateAttr("deviceTypeId", dt.ID.HexString())
 			}
 			dte.CreateAttr("deviceTypeName", dt.Name)
+
+			location := matter.DeviceTypeRequirementLocationUnknown
+			if len(dtr.deviceRequirements) > 0 {
+				location = dtr.deviceRequirements[0].Location
+			} else {
+				// Fallback to base requirement for the same device type
+				baseKey := deviceTypeInstance{DeviceTypeName: dt.Name, Label: ""}
+				if baseDtr, ok := dtrs[baseKey]; ok && len(baseDtr.deviceRequirements) > 0 {
+					location = baseDtr.deviceRequirements[0].Location
+				}
+			}
+			if location != matter.DeviceTypeRequirementLocationUnknown {
+				dte.CreateAttr("deviceTypeLocation", location.String())
+			}
 			
 			var baseConformance conformance.Set
 			for _, dr := range deviceType.DeviceTypeRequirements {
