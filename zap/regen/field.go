@@ -45,7 +45,7 @@ func structFieldsHelper(spec *spec.Specification) func(s matter.Struct, options 
 	return func(s matter.Struct, options *raymond.Options) raymond.SafeString {
 		fields := filterEntities(s.Fields)
 		if s.FabricScoping == matter.FabricScopingScoped {
-			fabricIndex := &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, false), Conformance: conformance.Set{&conformance.Mandatory{}}}
+			fabricIndex := &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, types.DataTypeRankScalar), Conformance: conformance.Set{&conformance.Mandatory{}}}
 			fabricIndex.SetParent(&s)
 			fields = append(fields, fabricIndex)
 		}
@@ -57,7 +57,7 @@ func eventFieldsHelper(spec *spec.Specification) func(e matter.Event, options *r
 	return func(e matter.Event, options *raymond.Options) raymond.SafeString {
 		fields := filterEntities(e.Fields)
 		if e.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
-			fabricIndex := &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, false), Conformance: conformance.Set{&conformance.Mandatory{}}}
+			fabricIndex := &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, types.DataTypeRankScalar), Conformance: conformance.Set{&conformance.Mandatory{}}}
 			fabricIndex.SetParent(&e)
 
 			fields = append(fields, fabricIndex)
