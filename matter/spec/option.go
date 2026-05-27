@@ -50,10 +50,19 @@ func (po *ParserOptions) AfterApply() error {
 	if !exists {
 		return fmt.Errorf("spec root \"%s\" does not exist", po.Root)
 	}
-	if po.ErrataPath != "" && !filepath.IsAbs(po.ErrataPath) {
-		po.ErrataPath, err = filepath.Abs(po.ErrataPath)
+	if po.ErrataPath != "" {
+		if !filepath.IsAbs(po.ErrataPath) {
+			po.ErrataPath, err = filepath.Abs(po.ErrataPath)
+			if err != nil {
+				return err
+			}
+		}
+		exists, err = files.Exists(po.ErrataPath)
 		if err != nil {
 			return err
+		}
+		if !exists {
+			return fmt.Errorf("errata path \"%s\" does not exist", po.ErrataPath)
 		}
 	}
 	return nil
