@@ -124,7 +124,7 @@ func (ce *DataTypeExtreme) ZapString(dataType *DataType) string {
 				case 4:
 					return fmt.Sprintf("0x%08X", uint32(val))
 				case 8:
-					return fmt.Sprintf("0x%16X", uint64(val))
+					return fmt.Sprintf("0x%016X", uint64(val))
 
 				}
 			}
@@ -163,7 +163,7 @@ func (ce *DataTypeExtreme) DataModelString(dataType *DataType) string {
 				case 4:
 					return fmt.Sprintf("0x%08X", uint32(val))
 				case 8:
-					return fmt.Sprintf("0x%16X", uint64(val))
+					return fmt.Sprintf("0x%016X", uint64(val))
 
 				}
 			}
@@ -212,7 +212,7 @@ func (ce *DataTypeExtreme) formatUint64(dataType *DataType, val uint64) string {
 			case 4:
 				return fmt.Sprintf("0x%08X", uint32(val))
 			case 8:
-				return fmt.Sprintf("0x%16X", uint64(val))
+				return fmt.Sprintf("0x%016X", uint64(val))
 
 			}
 		}
