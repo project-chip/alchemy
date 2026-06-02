@@ -1,6 +1,10 @@
 package cli
 
 import (
+	"fmt"
+	"path/filepath"
+	"slices"
+
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -220,10 +224,10 @@ type ZAPRegen struct {
 	spec.FilterOptions         `embed:""`
 	sdk.SDKOptions             `embed:""`
 	render.TemplateOptions     `embed:""`
+	ControllerClusters         bool `name:"controller-clusters" help:"Generate controller-clusters.matter from all spec clusters"`
 }
 
 func (z *ZAPRegen) Run(cc *Context) (err error) {
-	zapTargeter := regen.Targeter(z.SdkRoot)
 
 	var specification *spec.Specification
 	specification, _, err = spec.Parse(cc, z.ParserOptions, z.ProcessingOptions, []spec.BuilderOption{spec.PatchForSdk(true)}, z.ASCIIDocAttributes.ToList())
@@ -235,6 +239,12 @@ func (z *ZAPRegen) Run(cc *Context) (err error) {
 	if err != nil {
 		return
 	}
+
+	if z.ControllerClusters {
+		return z.runControllerClusters(cc, specification)
+	}
+
+	zapTargeter := regen.Targeter(z.SdkRoot)
 
 	var zapPaths pipeline.Paths
 	zapPaths, err = pipeline.Start(cc, zapTargeter)
@@ -271,4 +281,67 @@ func (z *ZAPRegen) Run(cc *Context) (err error) {
 	err = writer.Write(cc, matterFiles, z.ProcessingOptions)
 
 	return
+}
+
+func (z *ZAPRegen) runControllerClusters(cc *Context, specification *spec.Specification) error {
+	var clusterRefs []zap.ClusterRef
+	for code, cluster := range specification.ClustersByID {
+		clusterRefs = append(clusterRefs, zap.ClusterRef{
+			Code: int(code),
+			Name: cluster.Name,
+			Side: "server",
+		})
+	}
+
+	slices.SortFunc(clusterRefs, func(a, b zap.ClusterRef) int {
+		return a.Code - b.Code
+	})
+
+	var validDeviceTypeCode uint64
+	for id := range specification.DeviceTypesByID {
+		validDeviceTypeCode = id
+		break
+	}
+
+	syntheticFile := &zap.File{
+		EndpointTypes: []zap.EndpointType{
+			{
+				ID:             0,
+				Name:           "Synthetic Endpoint",
+				DeviceTypeCode: int(validDeviceTypeCode),
+				Clusters:       clusterRefs,
+			},
+		},
+		Endpoints: []zap.Endpoint{
+			{
+				EndpointId:        0,
+				EndpointTypeIndex: 0,
+			},
+		},
+	}
+
+	renderer, err := regen.NewIdlRenderer(specification)
+	if err != nil {
+		return err
+	}
+	renderer.SuppressEndpoints = true
+
+	zapPath := filepath.Join(z.SdkRoot, "src/controller/data_model/controller-clusters.zap")
+	zapData := pipeline.NewData[*zap.File](zapPath, syntheticFile)
+
+	outputs, _, err := renderer.Process(cc, zapData, 0, 1)
+	if err != nil {
+		return err
+	}
+
+	if len(outputs) == 0 {
+		return fmt.Errorf("no output generated")
+	}
+
+	writer := files.NewWriter[string]("Writing controller-clusters.matter", z.OutputOptions)
+
+	outputSet := pipeline.StringSet(pipeline.NewMap[string, *pipeline.Data[string]]())
+	outputSet.Store(outputs[0].Path, outputs[0])
+
+	return writer.Write(cc, outputSet, z.ProcessingOptions)
 }

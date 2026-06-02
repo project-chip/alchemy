@@ -16,6 +16,7 @@ import (
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/provisional"
 	"github.com/project-chip/alchemy/zap"
 )
 
@@ -26,6 +27,8 @@ type IdlRenderer struct {
 	spec *spec.Specification
 
 	commonAttributes matter.FieldSet
+
+	SuppressEndpoints bool
 }
 
 func NewIdlRenderer(spec *spec.Specification) (IdlRenderer, error) {
@@ -138,16 +141,7 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 	namespaces := make(map[string]*matter.Namespace)
 
 	spec.TraverseEntities(p.spec, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
-		if parentCluster == nil {
-			switch entity := entity.(type) {
-			case *matter.Bitmap, *matter.Command, *matter.Enum, *matter.Struct:
-				_, ok := globalEntities[entity]
-				if ok {
-					globalEntities[entity] = true
-				}
-			}
-			return parse.SearchShouldContinue
-		}
+
 		ce, ok := clusterEntities[parentCluster]
 		if !ok {
 			return parse.SearchShouldSkip
@@ -172,6 +166,10 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 				return parse.SearchShouldSkip
 			}
 		}
+		if _, isGlobal := p.spec.GlobalObjects[entity]; isGlobal {
+			globalEntities[entity] = true
+			return parse.SearchShouldContinue
+		}
 		ce[entity] = struct{}{}
 		globalEntities[entity] = false
 		return parse.SearchShouldContinue
@@ -179,6 +177,9 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 
 	for entity, isGlobal := range globalEntities {
 		if !isGlobal {
+			continue
+		}
+		if provisional.Check(p.spec, entity, entity) == provisional.StateUnreferenced {
 			continue
 		}
 		switch entity := entity.(type) {
@@ -196,7 +197,11 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 
 	for fieldName, ns := range namespaces {
 		en := matter.NewEnum(ns.Source(), ns.Parent())
-		en.Name = fieldName + "Tag"
+		if strings.HasSuffix(fieldName, "Tag") {
+			en.Name = fieldName
+		} else {
+			en.Name = fieldName + "Tag"
+		}
 		en.Type = types.NewDataType(types.BaseDataTypeEnum8, types.DataTypeRankScalar)
 		for _, tag := range ns.SemanticTags {
 			nst := matter.NewEnumValue(tag.Source(), en)
@@ -234,6 +239,9 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 		"structs":   globalStructs,
 		"clusters":  clusterList,
 		"endpoints": endpoints,
+	}
+	if p.SuppressEndpoints {
+		tc["endpoints"] = nil
 	}
 
 	var t *raymond.Template
