@@ -22,7 +22,7 @@ func (c *HexLimit) ASCIIDocString(dataType *types.DataType) string {
 		case 4:
 			return fmt.Sprintf("0x%08X", uint32(val))
 		case 8:
-			return fmt.Sprintf("0x%16X", uint64(val))
+			return fmt.Sprintf("0x%016X", uint64(val))
 		}
 	}
 	return fmt.Sprintf("0x%X", uint64(val))
