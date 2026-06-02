@@ -6,7 +6,6 @@ import (
 	"unicode"
 
 	"github.com/mailgun/raymond/v2"
-	"github.com/project-chip/alchemy/internal/text"
 )
 
 func asUpperCamelCaseHelper(value string) raymond.SafeString {
@@ -18,7 +17,7 @@ func asUpperCamelCaseIgnoreAcronymsHelper(value string) raymond.SafeString {
 }
 
 func asLowerCamelCaseHelper(value string) raymond.SafeString {
-	if len(value) > 1 && text.IsUpperCase(value) {
+	if len(value) > 1 && isUpperCase(value) {
 		return raymond.SafeString(strings.ToLower(value))
 	}
 	return raymond.SafeString(caseify(value, true, true))

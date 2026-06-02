@@ -88,7 +88,7 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 	clusters := make(map[*matter.Cluster]*ClusterInfo)
 
 	for _, endpoint := range input.Content.Endpoints {
-		if endpoint.EndpointTypeIndex > len(input.Content.EndpointTypes)-1 {
+		if endpoint.EndpointTypeIndex < 0 || endpoint.EndpointTypeIndex >= len(input.Content.EndpointTypes) {
 			continue
 		}
 		endpointType := input.Content.EndpointTypes[endpoint.EndpointTypeIndex]
@@ -120,6 +120,9 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 	clusterList := make([]*ClusterInfo, 0, len(clusters))
 	clusterEntities := make(map[*matter.Cluster]map[types.Entity]struct{})
 	globalEntities := make(map[types.Entity]bool)
+	for entity := range p.spec.GlobalObjects {
+		globalEntities[entity] = false
+	}
 	for cluster, ci := range clusters {
 		clusterList = append(clusterList, ci)
 		clusterEntities[cluster] = make(map[types.Entity]struct{})
@@ -196,7 +199,7 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 		en.Name = fieldName + "Tag"
 		en.Type = types.NewDataType(types.BaseDataTypeEnum8, types.DataTypeRankScalar)
 		for _, tag := range ns.SemanticTags {
-			nst := matter.NewEnumValue(tag.Source(), ns)
+			nst := matter.NewEnumValue(tag.Source(), en)
 			nst.Name = tag.Name
 			nst.Value = tag.ID
 			en.Values = append(en.Values, nst)

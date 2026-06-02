@@ -142,10 +142,7 @@ func maxValue(field matter.Field, fs matter.FieldSet) (max types.DataTypeExtreme
 		return
 	}
 
-	var maxDueToNullable bool
-	if hasNumericMax {
-		maxDueToNullable = types.Max(sdk.ToUnderlyingType(sdk.FindBaseType(field.Type)), types.NullabilityNullable).ValueEquals(max)
-	}
+	maxDueToNullable := types.Max(sdk.ToUnderlyingType(sdk.FindBaseType(field.Type)), types.NullabilityNullable).ValueEquals(max)
 	if maxDueToNullable {
 		return
 	}
@@ -208,7 +205,7 @@ func accessStringHelper(a matter.Access) raymond.SafeString {
 		list.WriteString("read: ")
 		list.WriteString(strings.ToLower(a.Read.String()))
 	}
-	if a.Write != matter.PrivilegeUnknown && a.Write != matter.PrivilegeView {
+	if a.Write != matter.PrivilegeUnknown && a.Write != matter.PrivilegeOperate {
 		if list.Len() > 0 {
 			list.WriteString(", ")
 		}
@@ -253,7 +250,7 @@ func descriptionCommentHelper(description string) raymond.SafeString {
 	var comment strings.Builder
 	var line strings.Builder
 	line.WriteString("/**")
-	words := strings.Split(description, " ")
+	words := strings.Fields(description)
 	for _, word := range words {
 		if line.Len() > 100 {
 			comment.WriteString(line.String())
