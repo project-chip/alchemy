@@ -2,8 +2,10 @@ package cli
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/internal/files"
@@ -16,8 +18,9 @@ import (
 )
 
 type ZAP struct {
-	ZAPXML   ZAPXML   `cmd:"" name:"xml" default:"withargs"`
-	ZAPRegen ZAPRegen `cmd:"" name:"regen"`
+	ZAPXML             ZAPXML                `cmd:"" name:"xml" default:"withargs"`
+	ZAPRegen           ZAPRegen              `cmd:"" name:"regen"`
+	ControllerClusters ZAPControllerClusters `cmd:"" name:"controller-clusters"`
 }
 
 type ZAPXML struct {
@@ -224,7 +227,6 @@ type ZAPRegen struct {
 	spec.FilterOptions         `embed:""`
 	sdk.SDKOptions             `embed:""`
 	render.TemplateOptions     `embed:""`
-	ControllerClusters         bool `name:"controller-clusters" help:"Generate controller-clusters.matter from all spec clusters"`
 }
 
 func (z *ZAPRegen) Run(cc *Context) (err error) {
@@ -238,10 +240,6 @@ func (z *ZAPRegen) Run(cc *Context) (err error) {
 	err = sdk.ApplyErrata(specification)
 	if err != nil {
 		return
-	}
-
-	if z.ControllerClusters {
-		return z.runControllerClusters(cc, specification)
 	}
 
 	zapTargeter := regen.Targeter(z.SdkRoot)
@@ -283,7 +281,26 @@ func (z *ZAPRegen) Run(cc *Context) (err error) {
 	return
 }
 
-func (z *ZAPRegen) runControllerClusters(cc *Context, specification *spec.Specification) error {
+type ZAPControllerClusters struct {
+	common.ASCIIDocAttributes  `embed:""`
+	pipeline.ProcessingOptions `embed:""`
+	files.OutputOptions        `embed:""`
+	spec.ParserOptions         `embed:""`
+	Output                     string `name:"output" placeholder:"path" help:"Output file or directory for controller-clusters.matter" optional:"" default:"controller-clusters.matter"`
+}
+
+func (z *ZAPControllerClusters) Run(cc *Context) (err error) {
+	var specification *spec.Specification
+	specification, _, err = spec.Parse(cc, z.ParserOptions, z.ProcessingOptions, []spec.BuilderOption{spec.PatchForSdk(true)}, z.ASCIIDocAttributes.ToList())
+	if err != nil {
+		return
+	}
+
+	err = sdk.ApplyErrata(specification)
+	if err != nil {
+		return
+	}
+
 	var clusterRefs []zap.ClusterRef
 	for code, cluster := range specification.ClustersByID {
 		clusterRefs = append(clusterRefs, zap.ClusterRef{
@@ -326,7 +343,25 @@ func (z *ZAPRegen) runControllerClusters(cc *Context, specification *spec.Specif
 	}
 	renderer.SuppressEndpoints = true
 
-	zapPath := filepath.Join(z.SdkRoot, "src/controller/data_model/controller-clusters.zap")
+	var zapPath string
+	outPath := filepath.Clean(z.Output)
+	isDir := false
+	if fi, err := os.Stat(outPath); err == nil {
+		isDir = fi.IsDir()
+	} else if strings.HasSuffix(z.Output, "/") || strings.HasSuffix(z.Output, string(filepath.Separator)) {
+		isDir = true
+	}
+
+	if isDir {
+		zapPath = filepath.Join(outPath, "controller-clusters.zap")
+	} else {
+		ext := filepath.Ext(outPath)
+		if ext == "" {
+			zapPath = outPath + ".zap"
+		} else {
+			zapPath = strings.TrimSuffix(outPath, ext) + ".zap"
+		}
+	}
 	zapData := pipeline.NewData[*zap.File](zapPath, syntheticFile)
 
 	outputs, _, err := renderer.Process(cc, zapData, 0, 1)
