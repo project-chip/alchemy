@@ -1,0 +1,42 @@
+{{descriptionComment clusterInfo.Cluster.Description ~}}
+{{#if provisional}}provisional {{/if ~}}
+cluster {{asUpperCamelCaseIgnoreAcronyms clusterInfo.Cluster.Name}} = {{number clusterInfo.Cluster.ID}} {
+  revision {{currentRevision clusterInfo.Cluster.Revisions}};
+{{#enums clusterInfo.ReferencedEnums}}
+
+  {{> enum cluster=clusterInfo.Cluster shared=@shared enum=this provisional=@provisional shared=@shared}}
+{{/enums}}
+{{#bitmaps clusterInfo }}
+
+  {{> bitmap cluster=clusterInfo.Cluster bitmap=this provisional=@provisional shared=@shared}}
+{{/bitmaps}}
+{{#structs clusterInfo.ReferencedStructs}}
+
+  {{> struct cluster=clusterInfo.Cluster struct=this provisional=@provisional shared=@shared}}
+{{/structs}}
+{{#events clusterInfo.Cluster}}
+
+  {{> event cluster=clusterInfo.Cluster event=this provisional=@provisional }}
+{{/events}}
+
+{{#attributes clusterInfo.Cluster}}
+  {{> attribute cluster=cluster  attribute=this provisional=@provisional}}
+{{/attributes}}
+{{#commands clusterInfo.Cluster.Commands}}
+{{#ifRequest this ~}}
+{{#ifHasValidFields this.Fields}}
+
+  {{> request cluster=clusterInfo.Cluster command=this provisional=@provisional }}
+{{/ifHasValidFields}}
+{{else}}
+
+  {{> response cluster=clusterInfo.Cluster command=this provisional=@provisional}}
+{{/ifRequest}}
+{{/commands}}
+{{#if clusterInfo.Cluster.Commands}}
+
+{{#requests clusterInfo.Cluster.Commands}}
+  {{> command cluster=cluster command=this provisional=@provisional}}
+{{/requests}}
+{{/if}}
+}

@@ -3,6 +3,7 @@ package spec
 import (
 	"sync"
 
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
@@ -47,40 +48,21 @@ func (cr *EntityRefs[T]) Get(m types.Entity) (pipeline.Map[T, struct{}], bool) {
 }
 
 func (spec *Specification) BuildDataTypeReferences() {
-	iterateOverDataTypes(spec, func(cluster *matter.Cluster, parent, entity types.Entity) {
-		spec.DataTypeRefs.Add(parent, entity)
+	TraverseEntities(spec, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
+		if parent != nil {
+			spec.DataTypeRefs.Add(parent, entity)
+		}
+		return parse.SearchShouldContinue
 	})
 }
 
-func iterateOverDataTypes(spec *Specification, callback func(cluster *matter.Cluster, parent, entity types.Entity)) {
+func TraverseEntities(spec *Specification, callback func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould) {
 	for _, c := range spec.ClustersByName {
-		for p, e := range c.IterateDataTypes() {
-			callback(c, p, e)
-		}
+		traverseClusterEntities(c, func(parent, entity types.Entity) parse.SearchShould {
+			return callback(c, parent, entity)
+		})
 	}
-	for e := range spec.GlobalObjects {
-		switch en := e.(type) {
-		case *matter.Struct:
-			for _, f := range en.Fields {
-				for p, e := range f.IterateDataTypes() {
-					callback(nil, p, e)
-				}
-			}
-		case *matter.Command:
-			for _, f := range en.Fields {
-				for p, e := range f.IterateDataTypes() {
-					callback(nil, p, e)
-				}
-			}
-			if en.Response != nil && en.Response.Entity != nil && en.Response.Name == "" {
-				callback(nil, en, en.Response.Entity)
-			}
-		case *matter.Event:
-			for _, f := range en.Fields {
-				for p, e := range f.IterateDataTypes() {
-					callback(nil, p, e)
-				}
-			}
-		}
-	}
+	traverseEntityList(nil, nil, spec.GlobalObjects.Iterate(), func(parent, entity types.Entity) parse.SearchShould {
+		return callback(nil, parent, entity)
+	})
 }

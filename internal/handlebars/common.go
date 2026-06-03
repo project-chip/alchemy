@@ -11,5 +11,7 @@ func RegisterCommonHelpers(t *raymond.Template) {
 	t.RegisterHelper("brace", BraceHelper)
 	t.RegisterHelper("format", FormatHelper)
 	t.RegisterHelper("year", YearHelper)
+	t.RegisterHelper("toLower", ToLowerHelper)
+	t.RegisterHelper("toUpper", ToUpperHelper)
 	t.RegisterHelper("indentLength", IndentLengthHelper)
 }

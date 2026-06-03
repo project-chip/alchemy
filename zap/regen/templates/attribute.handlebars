@@ -1,0 +1,6 @@
+{{#if provisional}}provisional {{/if ~}}
+{{#ifReadOnly attribute.Access}}readonly {{/ifReadOnly ~}}
+attribute {{> access access=attribute.Access ~}}{{#ifOptional attribute.Conformance}}optional {{/ifOptional ~}}
+{{#ifNullable attribute.Quality}}nullable {{/ifNullable ~}}
+{{fieldType attribute cluster.Attributes ~}}
+{{#ifHasLengthConstraint attribute cluster.Attributes}}<{{lengthConstraint attribute cluster.Attributes}}>{{/ifHasLengthConstraint}} {{asLowerCamelCase attribute.Name}}{{#fieldIsArray attribute.Type}}[]{{/fieldIsArray}} = {{number attribute.ID}};
