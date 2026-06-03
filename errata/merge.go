@@ -176,9 +176,15 @@ func (s *SDK) Merge(other *SDK) {
 	}
 }
 
-func (u UniqueStringList) Merge(other UniqueStringList) {
+func (u *UniqueStringList) Merge(other UniqueStringList) {
+	if len(other) == 0 {
+		return
+	}
+	if *u == nil {
+		*u = make(UniqueStringList)
+	}
 	for k := range other {
-		u[k] = struct{}{}
+		(*u)[k] = struct{}{}
 	}
 }
 
