@@ -31,8 +31,9 @@ func (bo BuilderOptions) List() (options []BuilderOption) {
 }
 
 type ParserOptions struct {
-	Root       string `name:"spec-root" default:"connectedhomeip-spec" aliases:"specRoot" help:"the src root of your clone of CHIP-Specifications/connectedhomeip-spec" group:"Spec:"`
-	ErrataPath string `name:"errata-path" help:"the path to the errata file" group:"Spec:"`
+	Root              string `name:"spec-root" default:"connectedhomeip-spec" aliases:"specRoot" help:"the src root of your clone of CHIP-Specifications/connectedhomeip-spec" group:"Spec:"`
+	ErrataPath        string `name:"errata-path" help:"the path to the errata file" group:"Spec:"`
+	ErrataOverlayPath string `name:"errata-overlay" help:"the path to the errata overlay file" group:"Spec:"`
 }
 
 func (po *ParserOptions) AfterApply() error {
@@ -63,6 +64,21 @@ func (po *ParserOptions) AfterApply() error {
 		}
 		if !exists {
 			return fmt.Errorf("errata path \"%s\" does not exist", po.ErrataPath)
+		}
+	}
+	if po.ErrataOverlayPath != "" {
+		if !filepath.IsAbs(po.ErrataOverlayPath) {
+			po.ErrataOverlayPath, err = filepath.Abs(po.ErrataOverlayPath)
+			if err != nil {
+				return err
+			}
+		}
+		exists, err = files.Exists(po.ErrataOverlayPath)
+		if err != nil {
+			return err
+		}
+		if !exists {
+			return fmt.Errorf("errata overlay path \"%s\" does not exist", po.ErrataOverlayPath)
 		}
 	}
 	return nil

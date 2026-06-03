@@ -29,7 +29,7 @@ func Build(cxt context.Context, parserOptions ParserOptions, processingOptions p
 	}
 
 	var ec *errata.Collection
-	ec, err = errata.LoadErrata(cfg, parserOptions.ErrataPath)
+	ec, err = errata.LoadErrata(cfg, parserOptions.ErrataPath, parserOptions.ErrataOverlayPath)
 	if err != nil {
 		return
 	}
