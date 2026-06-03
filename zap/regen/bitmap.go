@@ -13,22 +13,51 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func clusterBitmapsHelper(spec *spec.Specification) func(clusterInfo ClusterInfo, options *raymond.Options) raymond.SafeString {
-	return func(clusterInfo ClusterInfo, options *raymond.Options) raymond.SafeString {
-		bitmaps := make(matter.BitmapSet, 0, len(clusterInfo.ReferencedBitmaps))
-		for _, bm := range clusterInfo.ReferencedBitmaps {
-			if len(filterBits(bm)) > 0 {
-				bitmaps = append(bitmaps, bm)
+func clusterBitmapsHelper(spec *spec.Specification) func(val any, options *raymond.Options) raymond.SafeString {
+	return func(val any, options *raymond.Options) raymond.SafeString {
+		var bitmaps matter.BitmapSet
+		switch val := val.(type) {
+		case ClusterInfo:
+			for _, bm := range val.ReferencedBitmaps {
+				if len(filterBits(bm)) > 0 {
+					bitmaps = append(bitmaps, bm)
+				}
 			}
-		}
-		cluster := clusterInfo.Cluster
-		if cluster.Features != nil {
-			if len(filterBits(&cluster.Features.Bitmap)) > 0 {
-				features := cluster.Features.Bitmap.Clone()
-
-				// ZAP renames this for some reason
-				features.Name = "Feature"
-				bitmaps = append(bitmaps, features)
+			cluster := val.Cluster
+			if cluster != nil && cluster.Features != nil {
+				if len(filterBits(&cluster.Features.Bitmap)) > 0 {
+					features := cluster.Features.Bitmap.Clone()
+					features.Name = "Feature"
+					bitmaps = append(bitmaps, features)
+				}
+			}
+		case *ClusterInfo:
+			if val != nil {
+				for _, bm := range val.ReferencedBitmaps {
+					if len(filterBits(bm)) > 0 {
+						bitmaps = append(bitmaps, bm)
+					}
+				}
+				cluster := val.Cluster
+				if cluster != nil && cluster.Features != nil {
+					if len(filterBits(&cluster.Features.Bitmap)) > 0 {
+						features := cluster.Features.Bitmap.Clone()
+						features.Name = "Feature"
+						bitmaps = append(bitmaps, features)
+					}
+				}
+			}
+		case matter.BitmapSet:
+			for _, bm := range val {
+				if len(filterBits(bm)) > 0 {
+					bitmaps = append(bitmaps, bm)
+				}
+			}
+		case []*matter.Bitmap:
+			for _, bm := range val {
+				if len(filterBits(bm)) > 0 {
+					bitmaps = append(bitmaps, bm)
+				}
 			}
 		}
 		slices.SortStableFunc(bitmaps, func(a *matter.Bitmap, b *matter.Bitmap) int {
