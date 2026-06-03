@@ -16,11 +16,88 @@ import (
 //go:embed default.yaml
 var defaultErrata []byte
 
-func LoadErrata(config *config.Config, errataPath string) (*Collection, error) {
-	b := loadErrataFile(config.Root(), errataPath)
-	if b == nil {
-		b = defaultErrata
+func LoadErrata(config *config.Config, errataPath string, errataOverlayPath string) (*Collection, error) {
+	var mainCollection *Collection
+
+	var targetPath string
+	if errataPath != "" {
+		targetPath = errataPath
+	} else {
+		if config.Root() == "" {
+			mainCollection = &Collection{errata: make(map[string]*Errata)}
+		} else {
+			targetPath = filepath.Join(config.Root(), ".github/alchemy/errata.yaml")
+		}
 	}
+
+	if mainCollection == nil {
+		exists, err := files.Exists(targetPath)
+		if err != nil {
+			slog.Warn("error checking for errata path", slog.Any("error", err))
+			return nil, err
+		}
+
+		if !exists {
+			if errataPath != "" {
+				return nil, fmt.Errorf("errata path %s does not exist", errataPath)
+			}
+			mainCollection, err = parseErrataBytes(defaultErrata)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			mainCollection, err = loadSingleErrataFile(targetPath)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	if errataOverlayPath != "" {
+		exists, err := files.Exists(errataOverlayPath)
+		if err != nil {
+			return nil, fmt.Errorf("error checking errata overlay path: %w", err)
+		}
+		if !exists {
+			return nil, fmt.Errorf("errata overlay path %s does not exist", errataOverlayPath)
+		}
+		overlayCollection, err := loadSingleErrataFile(errataOverlayPath)
+		if err != nil {
+			return nil, fmt.Errorf("error loading errata overlay: %w", err)
+		}
+
+		for path, oe := range overlayCollection.errata {
+			if existing, ok := mainCollection.errata[path]; ok {
+				existing.Merge(oe)
+			} else {
+				mainCollection.errata[path] = oe
+			}
+		}
+	}
+
+	for p := range mainCollection.errata {
+		path := filepath.Join(config.Root(), p)
+		exists, err := files.Exists(path)
+		if err != nil {
+			slog.Error("error checking if file exists", slog.Any("error", err))
+		}
+		if !exists {
+			slog.Warn("errata points to non-existent file", "path", p)
+		}
+	}
+
+	return mainCollection, nil
+}
+
+func loadSingleErrataFile(path string) (*Collection, error) {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("error reading errata path %s: %w", path, err)
+	}
+	return parseErrataBytes(b)
+}
+
+func parseErrataBytes(b []byte) (*Collection, error) {
 	var errataOverlay errataOverlay
 	err := yaml.Unmarshal(b, &errataOverlay)
 	if err != nil {
@@ -31,8 +108,6 @@ func LoadErrata(config *config.Config, errataPath string) (*Collection, error) {
 	if err != nil {
 		return nil, err
 	}
-	// TODO: once alchemy has migrated to using sdk: instead of zap: in errata.yaml, we can drop this indirection
-	// This is only here because YAML can't have two tags aliasing the same value
 	overlayErrata := make(map[string]*Errata)
 	for path, oe := range errataOverlay.Errata {
 		var e Errata
@@ -52,26 +127,12 @@ func LoadErrata(config *config.Config, errataPath string) (*Collection, error) {
 		}
 		overlayErrata[path] = &e
 	}
-	c := &Collection{errata: overlayErrata}
-
-	for p := range c.errata {
-		path := filepath.Join(config.Root(), p)
-		exists, err := files.Exists(path)
-		if err != nil {
-			slog.Error("error checking if file exists", slog.Any("error", err))
-		}
-		if !exists {
-			slog.Warn("errata points to non-existent file", "path", p)
-		}
-
-	}
-
-	return c, nil
+	return &Collection{errata: overlayErrata}, nil
 }
 
 type errataOverlay struct {
-	MinimumVersion string                    `yaml:"minimum-version"`
-	Errata         map[string]*overlayErrata `yaml:"errata"`
+	MinimumVersion string                    `yaml:"minimum-version,omitempty"`
+	Errata         map[string]*overlayErrata `yaml:"errata,omitempty"`
 }
 
 type overlayErrata struct {
