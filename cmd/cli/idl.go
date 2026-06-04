@@ -116,11 +116,10 @@ func (z *IDLControllerClusters) Run(cc *Context) (err error) {
 		return a.Code - b.Code
 	})
 
-	var validDeviceTypeCode uint64
-	for id := range specification.DeviceTypesByID {
-		validDeviceTypeCode = id
-		break
+	if _, ok := specification.DeviceTypesByID[22]; !ok {
+		return fmt.Errorf("device type 22 (Root Node) not found in specification")
 	}
+	validDeviceTypeCode := uint64(22)
 
 	syntheticFile := &idl.File{
 		EndpointTypes: []idl.EndpointType{
