@@ -73,6 +73,9 @@ func clusterEventsHelper(spec *spec.Specification) func(cluster matter.Cluster, 
 	return func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
 		events := make(matter.EventSet, len(cluster.Events))
 		copy(events, cluster.Events)
+		slices.SortStableFunc(events, func(a *matter.Event, b *matter.Event) int {
+			return a.ID.Compare(b.ID)
+		})
 		return enumerateEntitiesHelper(events, spec, options)
 	}
 }

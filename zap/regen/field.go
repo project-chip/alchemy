@@ -1,6 +1,8 @@
 package regen
 
 import (
+	"slices"
+
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -49,6 +51,9 @@ func structFieldsHelper(spec *spec.Specification) func(s matter.Struct, options 
 			fabricIndex.SetParent(&s)
 			fields = append(fields, fabricIndex)
 		}
+		slices.SortStableFunc(fields, func(a *matter.Field, b *matter.Field) int {
+			return a.ID.Compare(b.ID)
+		})
 		return enumerateEntitiesHelper(fields, spec, options)
 	}
 }
@@ -61,6 +66,9 @@ func eventFieldsHelper(spec *spec.Specification) func(e matter.Event, options *r
 			fabricIndex.SetParent(&e)
 			fields = append(fields, fabricIndex)
 		}
+		slices.SortStableFunc(fields, func(a *matter.Field, b *matter.Field) int {
+			return a.ID.Compare(b.ID)
+		})
 		return enumerateEntitiesHelper(fields, spec, options)
 	}
 }
