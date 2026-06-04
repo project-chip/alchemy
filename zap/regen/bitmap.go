@@ -120,6 +120,17 @@ func filterBits(bm *matter.Bitmap) (bits matter.BitSet) {
 		}
 		bits = append(bits, b)
 	}
+	slices.SortStableFunc(bits, func(a, b matter.Bit) int {
+		maskA, _ := a.Mask()
+		maskB, _ := b.Mask()
+		if maskA < maskB {
+			return -1
+		}
+		if maskA > maskB {
+			return 1
+		}
+		return 0
+	})
 	return
 }
 

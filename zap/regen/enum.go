@@ -16,6 +16,11 @@ func enumsHelper(spec *spec.Specification) func(enums matter.EnumSet, options *r
 		slices.SortStableFunc(sortedEnums, func(a *matter.Enum, b *matter.Enum) int {
 			return strings.Compare(a.Name, b.Name)
 		})
+		for _, en := range sortedEnums {
+			slices.SortStableFunc(en.Values, func(a *matter.EnumValue, b *matter.EnumValue) int {
+				return a.Value.Compare(b.Value)
+			})
+		}
 		return enumerateEntitiesHelper(sortedEnums, spec, options)
 	}
 }

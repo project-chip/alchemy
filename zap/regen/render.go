@@ -212,6 +212,18 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 		globalEnums = append(globalEnums, en)
 	}
 
+	slices.SortFunc(globalEnums, func(a, b *matter.Enum) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+
+	slices.SortFunc(globalBitmaps, func(a, b *matter.Bitmap) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+
+	slices.SortFunc(globalStructs, func(a, b *matter.Struct) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+
 	for _, clusterInfo := range clusterList {
 		ce, ok := clusterEntities[clusterInfo.Cluster]
 		if !ok {

@@ -2,6 +2,7 @@ package regen
 
 import (
 	"slices"
+	"strings"
 
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/matter"
@@ -25,11 +26,7 @@ func commandsHelper(spec *spec.Specification) func(commands matter.CommandSet, o
 			if cmp != 0 {
 				return cmp
 			}
-			if a.Direction == matter.InterfaceServer {
-				return 1
-			} else {
-				return 0
-			}
+			return strings.Compare(a.Name, b.Name)
 		})
 		return enumerateEntitiesHelper(sortedCommands, spec, options)
 	}
@@ -41,6 +38,9 @@ func commandFieldsHelper(spec *spec.Specification) func(matter.Command, *raymond
 		if cmd.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
 			fields = append(fields, &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, types.DataTypeRankScalar), Conformance: conformance.Set{&conformance.Mandatory{}}})
 		}
+		slices.SortStableFunc(fields, func(a *matter.Field, b *matter.Field) int {
+			return a.ID.Compare(b.ID)
+		})
 		return enumerateEntitiesHelper(fields, spec, options)
 	}
 }
