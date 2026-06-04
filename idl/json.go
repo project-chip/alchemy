@@ -1,4 +1,4 @@
-package zap
+package idl
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ type File struct {
 	KeyValuePairs []KeyValuePair `json:"keyValuePairs"`
 	Package       []Package      `json:"package"`
 	EndpointTypes []EndpointType `json:"endpointTypes"`
-	Endpoints     []Endpoint     `json:"endpoints"`
+	Endpoints     []JSONEndpoint `json:"endpoints"`
 }
 
 type KeyValuePair struct {
@@ -107,7 +107,7 @@ type EventRef struct {
 	Included int    `json:"included"`
 }
 
-type Endpoint struct {
+type JSONEndpoint struct {
 	EndpointTypeName         string `json:"endpointTypeName"`
 	EndpointTypeIndex        int    `json:"endpointTypeIndex"`
 	ParentEndpointIdentifier *int   `json:"parentEndpointIdentifier"`

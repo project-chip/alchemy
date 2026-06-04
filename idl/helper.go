@@ -1,4 +1,4 @@
-package regen
+package idl
 
 import (
 	"fmt"

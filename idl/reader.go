@@ -1,4 +1,4 @@
-package regen
+package idl
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/project-chip/alchemy/internal/pipeline"
-	"github.com/project-chip/alchemy/zap"
 )
 
 type Reader struct {
@@ -21,7 +20,7 @@ func (p Reader) Name() string {
 	return "Parsing ZAP files"
 }
 
-func (p Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*zap.File], extras []*pipeline.Data[struct{}], err error) {
+func (p Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*File], extras []*pipeline.Data[struct{}], err error) {
 	slog.Info("reading zap path", "path", input.Path)
 	var contents *os.File
 	contents, err = os.Open(input.Path)
@@ -34,7 +33,7 @@ func (p Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], ind
 
 	decoder.DisallowUnknownFields()
 
-	var zf zap.File
+	var zf File
 
 	err = decoder.Decode(&zf)
 	if err != nil {
@@ -42,6 +41,6 @@ func (p Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], ind
 		return
 	}
 
-	outputs = append(outputs, &pipeline.Data[*zap.File]{Path: input.Path, Content: &zf})
+	outputs = append(outputs, &pipeline.Data[*File]{Path: input.Path, Content: &zf})
 	return
 }

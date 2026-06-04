@@ -1,4 +1,4 @@
-package regen
+package idl
 
 import (
 	"context"
@@ -12,7 +12,6 @@ import (
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/zap"
 )
 
 func TestEntityShouldBeIncluded(t *testing.T) {
@@ -264,13 +263,13 @@ func TestSuppressProvisionalIntegration(t *testing.T) {
 	specification.ClusterRefs.Add(cluster, nonProvEvt)
 
 	// Create synthetic zap file data
-	syntheticFile := &zap.File{
-		EndpointTypes: []zap.EndpointType{
+	syntheticFile := &File{
+		EndpointTypes: []EndpointType{
 			{
 				ID:             0,
 				Name:           "Test Endpoint",
 				DeviceTypeCode: 1,
-				Clusters: []zap.ClusterRef{
+				Clusters: []ClusterRef{
 					{
 						Code: 1,
 						Name: "MyCluster",
@@ -279,7 +278,7 @@ func TestSuppressProvisionalIntegration(t *testing.T) {
 				},
 			},
 		},
-		Endpoints: []zap.Endpoint{
+		Endpoints: []JSONEndpoint{
 			{
 				EndpointId:        0,
 				EndpointTypeIndex: 0,
