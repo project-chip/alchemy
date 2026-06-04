@@ -1,14 +1,13 @@
-package regen
+package idl
 
 import (
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/zap"
 )
 
 type Endpoint struct {
 	ID int
-	zap.EndpointType
+	EndpointType
 
 	Servers []*ClusterInfo
 	Clients []*ClusterInfo
@@ -16,7 +15,7 @@ type Endpoint struct {
 
 func endpointServersHelper(spec *spec.Specification, filter ProvisionalFilter) func(Endpoint, *raymond.Options) raymond.SafeString {
 	return func(endpoint Endpoint, options *raymond.Options) raymond.SafeString {
-		servers := make([]zap.ClusterRef, 0, len(endpoint.Clusters))
+		servers := make([]ClusterRef, 0, len(endpoint.Clusters))
 		for _, clusterRef := range endpoint.Clusters {
 			if clusterRef.Side != "server" {
 				continue
@@ -37,7 +36,7 @@ func endpointServersHelper(spec *spec.Specification, filter ProvisionalFilter) f
 
 func endpointClientsHelper(spec *spec.Specification, filter ProvisionalFilter) func(Endpoint, *raymond.Options) raymond.SafeString {
 	return func(endpoint Endpoint, options *raymond.Options) raymond.SafeString {
-		clients := make([]zap.ClusterRef, 0, len(endpoint.Clusters))
+		clients := make([]ClusterRef, 0, len(endpoint.Clusters))
 		for _, clusterRef := range endpoint.Clusters {
 			if clusterRef.Side != "client" {
 				continue

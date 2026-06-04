@@ -1,4 +1,4 @@
-package regen
+package idl
 
 import (
 	"context"
@@ -17,7 +17,6 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/provisional"
-	"github.com/project-chip/alchemy/zap"
 )
 
 //go:embed templates
@@ -80,7 +79,7 @@ func (p IdlRenderer) Name() string {
 	return "Writing Matter files"
 }
 
-func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*zap.File], err error) {
+func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*File], err error) {
 
 	dir := filepath.Dir(input.Path)
 	base := filepath.Base(input.Path)
