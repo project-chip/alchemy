@@ -14,7 +14,7 @@ type Endpoint struct {
 	Clients []*ClusterInfo
 }
 
-func endpointServersHelper(spec *spec.Specification) func(Endpoint, *raymond.Options) raymond.SafeString {
+func endpointServersHelper(spec *spec.Specification, filter ProvisionalFilter) func(Endpoint, *raymond.Options) raymond.SafeString {
 	return func(endpoint Endpoint, options *raymond.Options) raymond.SafeString {
 		servers := make([]zap.ClusterRef, 0, len(endpoint.Clusters))
 		for _, clusterRef := range endpoint.Clusters {
@@ -25,6 +25,9 @@ func endpointServersHelper(spec *spec.Specification) func(Endpoint, *raymond.Opt
 			if !ok {
 				continue
 			}
+			if !entityShouldBeIncluded(spec, filter, cluster) {
+				continue
+			}
 			clusterRef.Cluster = cluster
 			servers = append(servers, clusterRef)
 		}
@@ -32,7 +35,7 @@ func endpointServersHelper(spec *spec.Specification) func(Endpoint, *raymond.Opt
 	}
 }
 
-func endpointClientsHelper(spec *spec.Specification) func(Endpoint, *raymond.Options) raymond.SafeString {
+func endpointClientsHelper(spec *spec.Specification, filter ProvisionalFilter) func(Endpoint, *raymond.Options) raymond.SafeString {
 	return func(endpoint Endpoint, options *raymond.Options) raymond.SafeString {
 		clients := make([]zap.ClusterRef, 0, len(endpoint.Clusters))
 		for _, clusterRef := range endpoint.Clusters {
@@ -41,6 +44,9 @@ func endpointClientsHelper(spec *spec.Specification) func(Endpoint, *raymond.Opt
 			}
 			cluster, ok := spec.ClustersByID[uint64(clusterRef.Code)]
 			if !ok {
+				continue
+			}
+			if !entityShouldBeIncluded(spec, filter, cluster) {
 				continue
 			}
 			clusterRef.Cluster = cluster

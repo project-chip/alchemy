@@ -228,6 +228,7 @@ type ZAPRegen struct {
 	spec.FilterOptions         `embed:""`
 	sdk.SDKOptions             `embed:""`
 	render.TemplateOptions     `embed:""`
+	SuppressProvisional        string `name:"suppress-provisional" help:"Suppress rendering of provisional elements" default:"none" enum:"none,all,keep-existing"`
 }
 
 func (z *ZAPRegen) Run(cc *Context) (err error) {
@@ -268,6 +269,7 @@ func (z *ZAPRegen) Run(cc *Context) (err error) {
 	if err != nil {
 		return
 	}
+	renderer.SuppressProvisional = z.SuppressProvisional
 
 	var matterFiles pipeline.StringSet
 	matterFiles, err = pipeline.Parallel(cc, z.ProcessingOptions, renderer, zapFiles)
@@ -287,6 +289,7 @@ type ZAPControllerClusters struct {
 	files.OutputOptions        `embed:""`
 	spec.ParserOptions         `embed:""`
 	Output                     string `name:"output" placeholder:"path" help:"Output file or directory for controller-clusters.matter" optional:"" default:"controller-clusters.matter"`
+	SuppressProvisional        string `name:"suppress-provisional" help:"Suppress rendering of provisional elements" default:"none" enum:"none,all,keep-existing"`
 }
 
 func (z *ZAPControllerClusters) Run(cc *Context) (err error) {
@@ -342,6 +345,7 @@ func (z *ZAPControllerClusters) Run(cc *Context) (err error) {
 		return err
 	}
 	renderer.SuppressEndpoints = true
+	renderer.SuppressProvisional = z.SuppressProvisional
 
 	var zapPath string
 	outPath := filepath.Clean(z.Output)
