@@ -9,14 +9,13 @@ import (
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/zap"
 )
 
-func commandsHelper(spec *spec.Specification) func(commands matter.CommandSet, options *raymond.Options) raymond.SafeString {
+func commandsHelper(spec *spec.Specification, filter ProvisionalFilter) func(commands matter.CommandSet, options *raymond.Options) raymond.SafeString {
 	return func(commands matter.CommandSet, options *raymond.Options) raymond.SafeString {
 		var sortedCommands matter.CommandSet
 		for _, cmd := range commands {
-			if !entityShouldBeIncluded(cmd) {
+			if !entityShouldBeIncluded(spec, filter, cmd) {
 				continue
 			}
 			sortedCommands = append(sortedCommands, cmd)
@@ -28,28 +27,28 @@ func commandsHelper(spec *spec.Specification) func(commands matter.CommandSet, o
 			}
 			return strings.Compare(a.Name, b.Name)
 		})
-		return enumerateEntitiesHelper(sortedCommands, spec, options)
+		return enumerateEntitiesHelper(sortedCommands, spec, filter, options)
 	}
 }
 
-func commandFieldsHelper(spec *spec.Specification) func(matter.Command, *raymond.Options) raymond.SafeString {
+func commandFieldsHelper(spec *spec.Specification, filter ProvisionalFilter) func(matter.Command, *raymond.Options) raymond.SafeString {
 	return func(cmd matter.Command, options *raymond.Options) raymond.SafeString {
-		fields := filterEntities(cmd.Fields)
+		fields := filterEntities(spec, filter, cmd.Fields)
 		if cmd.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
 			fields = append(fields, &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, types.DataTypeRankScalar), Conformance: conformance.Set{&conformance.Mandatory{}}})
 		}
 		slices.SortStableFunc(fields, func(a *matter.Field, b *matter.Field) int {
 			return a.ID.Compare(b.ID)
 		})
-		return enumerateEntitiesHelper(fields, spec, options)
+		return enumerateEntitiesHelper(fields, spec, filter, options)
 	}
 }
 
-func requestsHelper(spec *spec.Specification) func(commands matter.CommandSet, options *raymond.Options) raymond.SafeString {
+func requestsHelper(spec *spec.Specification, filter ProvisionalFilter) func(commands matter.CommandSet, options *raymond.Options) raymond.SafeString {
 	return func(commands matter.CommandSet, options *raymond.Options) raymond.SafeString {
 		var requests []*matter.Command
 		for _, command := range commands {
-			if conformance.IsZigbee(command.Conformance) || zap.IsDisallowed(command, command.Conformance) {
+			if !entityShouldBeIncluded(spec, filter, command) {
 				continue
 			}
 			switch command.Direction {
@@ -60,7 +59,7 @@ func requestsHelper(spec *spec.Specification) func(commands matter.CommandSet, o
 		slices.SortStableFunc(requests, func(a *matter.Command, b *matter.Command) int {
 			return a.ID.Compare(b.ID)
 		})
-		return enumerateEntitiesHelper(requests, spec, options)
+		return enumerateEntitiesHelper(requests, spec, filter, options)
 	}
 }
 

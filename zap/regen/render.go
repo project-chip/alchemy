@@ -28,7 +28,10 @@ type IdlRenderer struct {
 
 	commonAttributes matter.FieldSet
 
-	SuppressEndpoints bool
+	SuppressEndpoints   bool
+	SuppressProvisional string
+
+	provisionalFilter ProvisionalFilter
 }
 
 func NewIdlRenderer(spec *spec.Specification) (IdlRenderer, error) {
@@ -87,6 +90,19 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 
 	slog.Info("converting zap path", "path", input.Path, "matter", path)
 
+	filter := ProvisionalFilter{
+		Mode: p.SuppressProvisional,
+	}
+	if p.SuppressProvisional == "keep-existing" {
+		elements, err := parseExistingMatterElements(path)
+		if err != nil {
+			slog.Warn("Failed to parse existing matter file for provisional elements", slog.String("path", path), slog.Any("err", err))
+		} else {
+			filter.ExistingElements = elements
+		}
+	}
+	p.provisionalFilter = filter
+
 	var endpoints []Endpoint
 	clusters := make(map[*matter.Cluster]*ClusterInfo)
 
@@ -106,6 +122,9 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 			c, ok := p.spec.ClustersByID[uint64(clusterRef.Code)]
 			if !ok {
 				slog.Warn("Unrecognized cluster code", slog.String("path", input.Path), slog.Int("clusterCode", clusterRef.Code))
+				continue
+			}
+			if !entityShouldBeIncluded(p.spec, p.provisionalFilter, c) {
 				continue
 			}
 			ci := &ClusterInfo{Cluster: c}
@@ -146,7 +165,8 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 		if !ok {
 			return parse.SearchShouldSkip
 		}
-		if !entityShouldBeIncluded(entity) || !entityShouldBeIncluded(parent) {
+
+		if !entityShouldBeIncluded(p.spec, p.provisionalFilter, entity) || !entityShouldBeIncluded(p.spec, p.provisionalFilter, parent) {
 			return parse.SearchShouldSkip
 		}
 		_, isDirectChildOfCluster := parent.(*matter.Cluster)
@@ -195,6 +215,13 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 		}
 	}
 
+	for _, ns := range p.spec.Namespaces {
+		name := ns.Name
+		if _, existing := namespaces[name]; !existing {
+			namespaces[name] = ns
+		}
+	}
+
 	for fieldName, ns := range namespaces {
 		en := matter.NewEnum(ns.Source(), ns.Parent())
 		if strings.HasSuffix(fieldName, "Tag") {
@@ -229,18 +256,19 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*zap.File
 		if !ok {
 			continue
 		}
-		for e := range ce {
-			isGlobal := globalEntities[e]
-			if isGlobal {
-				continue
+		for _, s := range clusterInfo.Cluster.Structs {
+			if _, ok := ce[s]; ok {
+				clusterInfo.ReferencedStructs = append(clusterInfo.ReferencedStructs, s)
 			}
-			switch e := e.(type) {
-			case *matter.Bitmap:
-				clusterInfo.ReferencedBitmaps = append(clusterInfo.ReferencedBitmaps, e)
-			case *matter.Enum:
-				clusterInfo.ReferencedEnums = append(clusterInfo.ReferencedEnums, e)
-			case *matter.Struct:
-				clusterInfo.ReferencedStructs = append(clusterInfo.ReferencedStructs, e)
+		}
+		for _, en := range clusterInfo.Cluster.Enums {
+			if _, ok := ce[en]; ok {
+				clusterInfo.ReferencedEnums = append(clusterInfo.ReferencedEnums, en)
+			}
+		}
+		for _, bm := range clusterInfo.Cluster.Bitmaps {
+			if _, ok := ce[bm]; ok {
+				clusterInfo.ReferencedBitmaps = append(clusterInfo.ReferencedBitmaps, bm)
 			}
 		}
 	}

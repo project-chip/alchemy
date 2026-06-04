@@ -17,7 +17,7 @@ type ClusterInfo struct {
 	ReferencedStructs matter.StructSet
 }
 
-func clustersHelper(spec *spec.Specification) func(clusterInfos []*ClusterInfo, options *raymond.Options) raymond.SafeString {
+func clustersHelper(spec *spec.Specification, filter ProvisionalFilter) func(clusterInfos []*ClusterInfo, options *raymond.Options) raymond.SafeString {
 	return func(clusterInfos []*ClusterInfo, options *raymond.Options) raymond.SafeString {
 		var result strings.Builder
 		for i, en := range clusterInfos {
@@ -35,7 +35,7 @@ func clustersHelper(spec *spec.Specification) func(clusterInfos []*ClusterInfo, 
 	}
 }
 
-func clusterAttributesHelper(spec *spec.Specification, commonAttributes matter.FieldSet) func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
+func clusterAttributesHelper(spec *spec.Specification, filter ProvisionalFilter, commonAttributes matter.FieldSet) func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
 	return func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
 		cas := make(matter.FieldSet, 0, len(commonAttributes))
 		for _, ca := range commonAttributes {
@@ -43,17 +43,17 @@ func clusterAttributesHelper(spec *spec.Specification, commonAttributes matter.F
 			ca.SetParent(&cluster)
 			cas = append(cas, ca)
 		}
-		attributes := filterEntities(cluster.Attributes, cas)
+		attributes := filterEntities(spec, filter, cluster.Attributes, cas)
 		slices.SortStableFunc(attributes, func(a *matter.Field, b *matter.Field) int {
 			return a.ID.Compare(b.ID)
 		})
-		return enumerateEntitiesHelper(attributes, spec, options)
+		return enumerateEntitiesHelper(attributes, spec, filter, options)
 	}
 }
 
-func clusterStructsHelper(spec *spec.Specification) func(s matter.StructSet, options *raymond.Options) raymond.SafeString {
+func clusterStructsHelper(spec *spec.Specification, filter ProvisionalFilter) func(s matter.StructSet, options *raymond.Options) raymond.SafeString {
 	return func(s matter.StructSet, options *raymond.Options) raymond.SafeString {
-		structs := filterEntities(s)
+		structs := filterEntities(spec, filter, s)
 		slices.SortStableFunc(structs, func(a *matter.Struct, b *matter.Struct) int {
 			if a.FabricScoping != b.FabricScoping {
 				if a.FabricScoping == matter.FabricScopingScoped {
@@ -65,17 +65,17 @@ func clusterStructsHelper(spec *spec.Specification) func(s matter.StructSet, opt
 			}
 			return strings.Compare(a.Name, b.Name)
 		})
-		return enumerateEntitiesHelper(structs, spec, options)
+		return enumerateEntitiesHelper(structs, spec, filter, options)
 	}
 }
 
-func clusterEventsHelper(spec *spec.Specification) func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
+func clusterEventsHelper(spec *spec.Specification, filter ProvisionalFilter) func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
 	return func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
 		events := make(matter.EventSet, len(cluster.Events))
 		copy(events, cluster.Events)
 		slices.SortStableFunc(events, func(a *matter.Event, b *matter.Event) int {
 			return a.ID.Compare(b.ID)
 		})
-		return enumerateEntitiesHelper(events, spec, options)
+		return enumerateEntitiesHelper(events, spec, filter, options)
 	}
 }

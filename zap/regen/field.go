@@ -35,17 +35,19 @@ func fieldIsArrayHelper(a any, options *raymond.Options) string {
 	}
 }
 
-func ifHasValidFieldsHelper(fs matter.FieldSet, options *raymond.Options) string {
-	if len(filterEntities(fs)) > 0 {
-		return options.Fn()
-	} else {
-		return options.Inverse()
+func ifHasValidFieldsHelper(spec *spec.Specification, filter ProvisionalFilter) func(fs matter.FieldSet, options *raymond.Options) string {
+	return func(fs matter.FieldSet, options *raymond.Options) string {
+		if len(filterEntities(spec, filter, fs)) > 0 {
+			return options.Fn()
+		} else {
+			return options.Inverse()
+		}
 	}
 }
 
-func structFieldsHelper(spec *spec.Specification) func(s matter.Struct, options *raymond.Options) raymond.SafeString {
+func structFieldsHelper(spec *spec.Specification, filter ProvisionalFilter) func(s matter.Struct, options *raymond.Options) raymond.SafeString {
 	return func(s matter.Struct, options *raymond.Options) raymond.SafeString {
-		fields := filterEntities(s.Fields)
+		fields := filterEntities(spec, filter, s.Fields)
 		if s.FabricScoping == matter.FabricScopingScoped {
 			fabricIndex := &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, types.DataTypeRankScalar), Conformance: conformance.Set{&conformance.Mandatory{}}}
 			fabricIndex.SetParent(&s)
@@ -54,13 +56,13 @@ func structFieldsHelper(spec *spec.Specification) func(s matter.Struct, options 
 		slices.SortStableFunc(fields, func(a *matter.Field, b *matter.Field) int {
 			return a.ID.Compare(b.ID)
 		})
-		return enumerateEntitiesHelper(fields, spec, options)
+		return enumerateEntitiesHelper(fields, spec, filter, options)
 	}
 }
 
-func eventFieldsHelper(spec *spec.Specification) func(e matter.Event, options *raymond.Options) raymond.SafeString {
+func eventFieldsHelper(spec *spec.Specification, filter ProvisionalFilter) func(e matter.Event, options *raymond.Options) raymond.SafeString {
 	return func(e matter.Event, options *raymond.Options) raymond.SafeString {
-		fields := filterEntities(e.Fields)
+		fields := filterEntities(spec, filter, e.Fields)
 		if e.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
 			fabricIndex := &matter.Field{ID: matter.NewNumber(254), Name: "FabricIndex", Type: types.NewDataType(types.BaseDataTypeFabricIndex, types.DataTypeRankScalar), Conformance: conformance.Set{&conformance.Mandatory{}}}
 			fabricIndex.SetParent(&e)
@@ -69,6 +71,6 @@ func eventFieldsHelper(spec *spec.Specification) func(e matter.Event, options *r
 		slices.SortStableFunc(fields, func(a *matter.Field, b *matter.Field) int {
 			return a.ID.Compare(b.ID)
 		})
-		return enumerateEntitiesHelper(fields, spec, options)
+		return enumerateEntitiesHelper(fields, spec, filter, options)
 	}
 }

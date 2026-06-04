@@ -7,25 +7,23 @@ import (
 
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/zap"
 )
 
-func clusterBitmapsHelper(spec *spec.Specification) func(val any, options *raymond.Options) raymond.SafeString {
+func clusterBitmapsHelper(spec *spec.Specification, filter ProvisionalFilter) func(val any, options *raymond.Options) raymond.SafeString {
 	return func(val any, options *raymond.Options) raymond.SafeString {
 		var bitmaps matter.BitmapSet
 		switch val := val.(type) {
 		case ClusterInfo:
 			for _, bm := range val.ReferencedBitmaps {
-				if len(filterBits(bm)) > 0 {
+				if len(filterBits(spec, filter, bm)) > 0 {
 					bitmaps = append(bitmaps, bm)
 				}
 			}
 			cluster := val.Cluster
 			if cluster != nil && cluster.Features != nil {
-				if len(filterBits(&cluster.Features.Bitmap)) > 0 {
+				if len(filterBits(spec, filter, &cluster.Features.Bitmap)) > 0 {
 					features := cluster.Features.Bitmap.Clone()
 					features.Name = "Feature"
 					bitmaps = append(bitmaps, features)
@@ -34,13 +32,13 @@ func clusterBitmapsHelper(spec *spec.Specification) func(val any, options *raymo
 		case *ClusterInfo:
 			if val != nil {
 				for _, bm := range val.ReferencedBitmaps {
-					if len(filterBits(bm)) > 0 {
+					if len(filterBits(spec, filter, bm)) > 0 {
 						bitmaps = append(bitmaps, bm)
 					}
 				}
 				cluster := val.Cluster
 				if cluster != nil && cluster.Features != nil {
-					if len(filterBits(&cluster.Features.Bitmap)) > 0 {
+					if len(filterBits(spec, filter, &cluster.Features.Bitmap)) > 0 {
 						features := cluster.Features.Bitmap.Clone()
 						features.Name = "Feature"
 						bitmaps = append(bitmaps, features)
@@ -49,13 +47,13 @@ func clusterBitmapsHelper(spec *spec.Specification) func(val any, options *raymo
 			}
 		case matter.BitmapSet:
 			for _, bm := range val {
-				if len(filterBits(bm)) > 0 {
+				if len(filterBits(spec, filter, bm)) > 0 {
 					bitmaps = append(bitmaps, bm)
 				}
 			}
 		case []*matter.Bitmap:
 			for _, bm := range val {
-				if len(filterBits(bm)) > 0 {
+				if len(filterBits(spec, filter, bm)) > 0 {
 					bitmaps = append(bitmaps, bm)
 				}
 			}
@@ -64,7 +62,7 @@ func clusterBitmapsHelper(spec *spec.Specification) func(val any, options *raymo
 			return strings.Compare(a.Name, b.Name)
 		})
 
-		return enumerateEntitiesHelper(bitmaps, spec, options)
+		return enumerateEntitiesHelper(bitmaps, spec, filter, options)
 	}
 }
 
@@ -113,9 +111,9 @@ func bitMaskHelper(bit any) raymond.SafeString {
 	}
 }
 
-func filterBits(bm *matter.Bitmap) (bits matter.BitSet) {
+func filterBits(spec *spec.Specification, filter ProvisionalFilter, bm *matter.Bitmap) (bits matter.BitSet) {
 	for _, b := range bm.Bits {
-		if conformance.IsZigbee(b.Conformance()) || zap.IsDisallowed(b, b.Conformance()) || conformance.IsDeprecated(b.Conformance()) {
+		if !entityShouldBeIncluded(spec, filter, b) {
 			continue
 		}
 		bits = append(bits, b)
@@ -134,8 +132,8 @@ func filterBits(bm *matter.Bitmap) (bits matter.BitSet) {
 	return
 }
 
-func bitmapBitsHelper(spec *spec.Specification) func(bm matter.Bitmap, options *raymond.Options) raymond.SafeString {
+func bitmapBitsHelper(spec *spec.Specification, filter ProvisionalFilter) func(bm matter.Bitmap, options *raymond.Options) raymond.SafeString {
 	return func(bm matter.Bitmap, options *raymond.Options) raymond.SafeString {
-		return enumerateEntitiesHelper(filterBits(&bm), spec, options)
+		return enumerateEntitiesHelper(filterBits(spec, filter, &bm), spec, filter, options)
 	}
 }

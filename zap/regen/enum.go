@@ -9,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func enumsHelper(spec *spec.Specification) func(enums matter.EnumSet, options *raymond.Options) raymond.SafeString {
+func enumsHelper(spec *spec.Specification, filter ProvisionalFilter) func(enums matter.EnumSet, options *raymond.Options) raymond.SafeString {
 	return func(enums matter.EnumSet, options *raymond.Options) raymond.SafeString {
 		sortedEnums := make(matter.EnumSet, len(enums))
 		copy(sortedEnums, enums)
@@ -21,6 +21,6 @@ func enumsHelper(spec *spec.Specification) func(enums matter.EnumSet, options *r
 				return a.Value.Compare(b.Value)
 			})
 		}
-		return enumerateEntitiesHelper(sortedEnums, spec, options)
+		return enumerateEntitiesHelper(sortedEnums, spec, filter, options)
 	}
 }
