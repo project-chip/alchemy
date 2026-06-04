@@ -1,0 +1,24 @@
+// This IDL was generated automatically by Alchemy.
+
+{{#enums enums}}
+
+{{> enum enum=this shared=shared provisional=@provisional}}
+{{/enums}}
+{{#bitmaps bitmaps}}
+
+{{> bitmap bitmap=this shared=shared provisional=@provisional}}
+{{/bitmaps}}
+{{#structs structs}}
+
+{{> struct struct=this shared=shared provisional=@provisional}}
+{{/structs}}
+{{#clusters clusters}}
+
+{{> cluster clusterInfo=this  provisional=@provisional}}
+{{/clusters}}
+
+{{#each endpoints}}
+{{> endpoint endpoint=this  provisional=@provisional}}
+{{/each}}
+
+

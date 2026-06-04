@@ -33,6 +33,20 @@ func (ns *Namespace) Equals(e types.Entity) bool {
 	return ns.Name == ons.Name
 }
 
+func (ns *Namespace) Clone() *Namespace {
+	nc := &Namespace{entity: entity{source: ns.source, parent: ns.parent}, Name: ns.Name}
+	if ns.ID != nil {
+		nc.ID = ns.ID.Clone()
+	}
+	nc.SemanticTags = make([]*SemanticTag, 0, len(ns.SemanticTags))
+	for _, t := range ns.SemanticTags {
+		tc := t.Clone()
+		tc.parent = nc
+		nc.SemanticTags = append(nc.SemanticTags, tc)
+	}
+	return nc
+}
+
 type SemanticTag struct {
 	entity
 
@@ -71,4 +85,12 @@ func NewSemanticTag(namespace *Namespace, source asciidoc.Element) *SemanticTag 
 	return &SemanticTag{
 		entity: entity{parent: namespace, source: source},
 	}
+}
+
+func (ns *SemanticTag) Clone() *SemanticTag {
+	nc := &SemanticTag{entity: entity{source: ns.source, parent: ns.parent}, Name: ns.Name, Description: ns.Description}
+	if ns.ID != nil {
+		nc.ID = ns.ID.Clone()
+	}
+	return nc
 }

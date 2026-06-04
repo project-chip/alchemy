@@ -32,7 +32,7 @@ type ZAPDiff struct {
 
 func (z *ZAPDiff) Run(cc *cli.Context) (err error) {
 	slog.Info("Running ZAP generation", "attributes", z.GenAttributes)
-	zapCmd := &cli.ZAP{}
+	zapCmd := &cli.ZAPXML{}
 	zapCmd.Root = z.SpecRoot
 	zapCmd.SdkRoot = z.GeneratedSDKRoot
 	zapCmd.Attribute = []string{z.GenAttributes}
