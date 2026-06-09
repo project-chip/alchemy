@@ -54,8 +54,7 @@ func enumerateEntitiesHelper[T types.Entity](list []T, spec *spec.Specification,
 		df.Set("first", i == 0)
 		df.Set("last", i == len(list)-1)
 		if spec != nil {
-			refs, ok := spec.ClusterRefs.Get(en)
-			if ok && refs.Size() > 1 {
+			if isShared(spec, en) {
 				df.Set("shared", true)
 			}
 			df.Set("provisional", isProvisional(spec, en))
@@ -67,6 +66,56 @@ func enumerateEntitiesHelper[T types.Entity](list []T, spec *spec.Specification,
 		result.WriteString(options.FnCtxData(en, df))
 	}
 	return raymond.SafeString(result.String())
+}
+
+func isShared(spec *spec.Specification, en types.Entity) bool {
+	refs, ok := spec.ClusterRefs.Get(en)
+	if ok && refs.Size() > 1 {
+		return true
+	}
+	var cluster *matter.Cluster
+	var name string
+	var isTargetType bool
+	switch entity := any(en).(type) {
+	case *matter.Struct:
+		cluster = entity.Cluster()
+		name = entity.Name
+		isTargetType = true
+	case *matter.Enum:
+		cluster = entity.Cluster()
+		name = entity.Name
+		isTargetType = true
+	case *matter.Bitmap:
+		cluster = entity.Cluster()
+		name = entity.Name
+		isTargetType = true
+	}
+	if !isTargetType || cluster == nil {
+		return false
+	}
+	doc, ok := spec.DocRefs[cluster]
+	if !ok {
+		return false
+	}
+	if spec.Errata == nil {
+		return false
+	}
+	errata := spec.Errata.Get(doc.Path.Relative)
+	if errata == nil {
+		return false
+	}
+	switch any(en).(type) {
+	case *matter.Struct:
+		_, ok = errata.SDK.SharedStructs[name]
+		return ok
+	case *matter.Enum:
+		_, ok = errata.SDK.SharedEnums[name]
+		return ok
+	case *matter.Bitmap:
+		_, ok = errata.SDK.SharedBitmaps[name]
+		return ok
+	}
+	return false
 }
 
 func isProvisional(spec *spec.Specification, entity types.Entity) bool {

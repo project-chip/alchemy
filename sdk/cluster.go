@@ -11,7 +11,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, errata errata.SDK) {
+func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, errata errata.SDK, options applyErrataOptions) {
 	if errata.Types != nil {
 		ac, ok := errata.Types.Clusters[cluster.Name]
 		if ok {
@@ -53,27 +53,54 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 		applyErrataToEvent(ev, errata.TypeNames, errata.Types)
 	}
 
-	sharedEntities := make(map[types.Entity]types.Entity)
-	for bitmapName := range errata.SharedBitmaps {
-		if cluster.ParentCluster == nil {
-			slog.Warn("Errata: separate bitmap on cluster without parent", slog.String("bitmapName", bitmapName), slog.String("clusterName", cluster.Name))
-			continue
+	if !options.skipSharedEntities {
+		sharedEntities := make(map[types.Entity]types.Entity)
+		for bitmapName := range errata.SharedBitmaps {
+			if cluster.ParentCluster == nil {
+				slog.Warn("Errata: separate bitmap on cluster without parent", slog.String("bitmapName", bitmapName), slog.String("clusterName", cluster.Name))
+				continue
+			}
+			cluster.Bitmaps = replaceSharedEntity(spec, cluster, cluster.ParentCluster, bitmapName, cluster.ParentCluster.Bitmaps, cluster.Bitmaps, sharedEntities)
 		}
-		cluster.Bitmaps = replaceSharedEntity(spec, cluster, cluster.ParentCluster, bitmapName, cluster.ParentCluster.Bitmaps, cluster.Bitmaps, sharedEntities)
-	}
-	for enumName := range errata.SharedEnums {
-		if cluster.ParentCluster == nil {
-			slog.Warn("Errata: separate enum on cluster without parent", slog.String("enumName", enumName), slog.String("clusterName", cluster.Name))
-			continue
+		for enumName := range errata.SharedEnums {
+			if cluster.ParentCluster == nil {
+				slog.Warn("Errata: separate enum on cluster without parent", slog.String("enumName", enumName), slog.String("clusterName", cluster.Name))
+				continue
+			}
+			cluster.Enums = replaceSharedEntity(spec, cluster, cluster.ParentCluster, enumName, cluster.ParentCluster.Enums, cluster.Enums, sharedEntities)
 		}
-		cluster.Enums = replaceSharedEntity(spec, cluster, cluster.ParentCluster, enumName, cluster.ParentCluster.Enums, cluster.Enums, sharedEntities)
-	}
-	for structName := range errata.SharedStructs {
-		if cluster.ParentCluster == nil {
-			slog.Warn("Errata: separate struct on cluster without parent", slog.String("structName", structName), slog.String("clusterName", cluster.Name))
-			continue
+		for structName := range errata.SharedStructs {
+			if cluster.ParentCluster == nil {
+				slog.Warn("Errata: separate struct on cluster without parent", slog.String("structName", structName), slog.String("clusterName", cluster.Name))
+				continue
+			}
+			cluster.Structs = replaceSharedEntity(spec, cluster, cluster.ParentCluster, structName, cluster.ParentCluster.Structs, cluster.Structs, sharedEntities)
 		}
-		cluster.Structs = replaceSharedEntity(spec, cluster, cluster.ParentCluster, structName, cluster.ParentCluster.Structs, cluster.Structs, sharedEntities)
+		if len(sharedEntities) > 0 {
+			cluster.TraverseDataTypes(func(parent, entity types.Entity) parse.SearchShould {
+				target, ok := sharedEntities[entity]
+				if !ok {
+					return parse.SearchShouldContinue
+				}
+				switch parent := parent.(type) {
+				case *matter.Field:
+					fieldType := parent.Type
+					if fieldType == nil {
+						break
+					}
+					if fieldType.IsArray() {
+						fieldType = fieldType.EntryType
+					}
+					if fieldType == nil {
+						break
+					}
+					fieldType.Entity = target
+
+				}
+				return parse.SearchShouldContinue
+			})
+
+		}
 	}
 	for enumName := range errata.SeparateEnums {
 		for _, en := range cluster.Enums {
@@ -81,31 +108,6 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 				spec.ClusterRefs.Add(cluster, en)
 			}
 		}
-	}
-	if len(sharedEntities) > 0 {
-		cluster.TraverseDataTypes(func(parent, entity types.Entity) parse.SearchShould {
-			target, ok := sharedEntities[entity]
-			if !ok {
-				return parse.SearchShouldContinue
-			}
-			switch parent := parent.(type) {
-			case *matter.Field:
-				fieldType := parent.Type
-				if fieldType == nil {
-					break
-				}
-				if fieldType.IsArray() {
-					fieldType = fieldType.EntryType
-				}
-				if fieldType == nil {
-					break
-				}
-				fieldType.Entity = target
-
-			}
-			return parse.SearchShouldContinue
-		})
-
 	}
 
 }

@@ -38,7 +38,7 @@ func (z *IDLRegen) Run(cc *Context) (err error) {
 		return
 	}
 
-	err = sdk.ApplyErrata(specification)
+	err = sdk.ApplyErrata(specification, sdk.WithSkipSharedEntities(true))
 	if err != nil {
 		return
 	}
@@ -98,7 +98,7 @@ func (z *IDLControllerClusters) Run(cc *Context) (err error) {
 		return
 	}
 
-	err = sdk.ApplyErrata(specification)
+	err = sdk.ApplyErrata(specification, sdk.WithSkipSharedEntities(true))
 	if err != nil {
 		return
 	}

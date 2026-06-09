@@ -92,6 +92,22 @@ func TestSuppressProvisionalIntegration(t *testing.T) {
 	specification.ClustersByID[1] = cluster
 	specification.ClustersByName["MyCluster"] = cluster
 
+	provCluster := matter.NewCluster(nil)
+	provCluster.Name = "ProvCluster"
+	provCluster.ID = matter.NewNumber(2)
+	provCluster.Conformance = conformance.Set{&conformance.Provisional{}}
+
+	specification.ClustersByID[2] = provCluster
+	specification.ClustersByName["ProvCluster"] = provCluster
+
+	provCluster2 := matter.NewCluster(nil)
+	provCluster2.Name = "ProvCluster2"
+	provCluster2.ID = matter.NewNumber(3)
+	provCluster2.Conformance = conformance.Set{&conformance.Provisional{}}
+
+	specification.ClustersByID[3] = provCluster2
+	specification.ClustersByName["ProvCluster2"] = provCluster2
+
 	// Enums
 	provEnum := &matter.Enum{Name: "ProvEnum", Type: types.NewDataType(types.BaseDataTypeEnum8, types.DataTypeRankScalar)}
 	provEnum.SetParent(cluster)
@@ -275,6 +291,16 @@ func TestSuppressProvisionalIntegration(t *testing.T) {
 						Name: "MyCluster",
 						Side: "server",
 					},
+					{
+						Code: 2,
+						Name: "ProvCluster",
+						Side: "server",
+					},
+					{
+						Code: 3,
+						Name: "ProvCluster2",
+						Side: "server",
+					},
 				},
 			},
 		},
@@ -377,6 +403,8 @@ cluster MyCluster = 1 {
   provisional readonly attribute ProvBitmap provAttrBitmap = 3;
   provisional command ProvCmd() = 1;
 }
+provisional cluster ProvCluster = 2 {
+}
 `
 	existingPath := filepath.Join(tmpDir, "existing.matter")
 	err = os.WriteFile(existingPath, []byte(existingFileContent), 0644)
@@ -419,5 +447,13 @@ cluster MyCluster = 1 {
 	}
 	if !strings.Contains(contentKeep, "event NonProvEvt") {
 		t.Errorf("expected NonProvEvt to be kept in keep output: %s", contentKeep)
+	}
+	// ProvCluster was in existing file, so it MUST be kept!
+	if !strings.Contains(contentKeep, "cluster ProvCluster") {
+		t.Errorf("expected ProvCluster to be kept in keep output: %s", contentKeep)
+	}
+	// ProvCluster2 was NOT in existing file, so it MUST be suppressed!
+	if strings.Contains(contentKeep, "cluster ProvCluster2") {
+		t.Errorf("expected ProvCluster2 to be suppressed in keep output: %s", contentKeep)
 	}
 }

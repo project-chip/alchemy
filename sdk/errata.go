@@ -10,7 +10,23 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func ApplyErrata(spec *spec.Specification) (err error) {
+type ApplyErrataOption func(*applyErrataOptions)
+
+type applyErrataOptions struct {
+	skipSharedEntities bool
+}
+
+func WithSkipSharedEntities(skip bool) ApplyErrataOption {
+	return func(o *applyErrataOptions) {
+		o.skipSharedEntities = skip
+	}
+}
+
+func ApplyErrata(spec *spec.Specification, opts ...ApplyErrataOption) (err error) {
+	var options applyErrataOptions
+	for _, opt := range opts {
+		opt(&options)
+	}
 	var addedExtraEntities bool
 	for path, errata := range spec.Errata.All() {
 		if !errata.SDK.HasSdkPatch() {
@@ -28,7 +44,7 @@ func ApplyErrata(spec *spec.Specification) (err error) {
 		for _, entity := range entities {
 			switch entity := entity.(type) {
 			case *matter.Cluster:
-				applyErrataToCluster(spec, entity, errata.SDK)
+				applyErrataToCluster(spec, entity, errata.SDK, options)
 			case *matter.Bitmap:
 				applyErrataToBitmap(entity, typeNames, typeOverrides)
 			case *matter.Enum:
