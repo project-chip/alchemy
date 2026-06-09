@@ -89,6 +89,26 @@ func applyErrataToCommand(st *matter.Command, typeNames map[string]string, typeO
 		}
 		if override.Response != "" {
 			st.Response = types.ParseDataType(override.Response, types.DataTypeRankScalar)
+			// Since ApplyErrata runs after type resolution, we must manually resolve the response name
+			// to its command entity so that IDL and other templates can reference it properly.
+			if cluster, ok := st.Parent().(*matter.Cluster); ok {
+				var desiredDirection matter.Interface
+				switch st.Direction {
+				case matter.InterfaceServer:
+					desiredDirection = matter.InterfaceClient
+				case matter.InterfaceClient:
+					desiredDirection = matter.InterfaceServer
+				}
+				for _, cmd := range cluster.Commands {
+					if cmd.Direction == desiredDirection && cmd.Name == override.Response {
+						st.Response.Entity = cmd
+						break
+					}
+				}
+				if st.Response.Entity == nil {
+					slog.Warn("Failed to resolve overridden response", slog.String("command", st.Name), slog.String("response", override.Response))
+				}
+			}
 		}
 		applyErrataToFields(st.Fields, override)
 	}

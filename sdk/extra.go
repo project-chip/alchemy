@@ -245,6 +245,26 @@ func addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) {
 		command.SetParent(cluster)
 		cluster.Commands = append(cluster.Commands, command)
 	}
+
+	// Since addExtraCommands runs after the main type resolution pass, we must
+	// manually resolve the response command references to their corresponding command entities.
+	for _, command := range cluster.Commands {
+		if command.Response != nil && command.Response.Entity == nil && command.Response.Name != "" {
+			var desiredDirection matter.Interface
+			switch command.Direction {
+			case matter.InterfaceServer:
+				desiredDirection = matter.InterfaceClient
+			case matter.InterfaceClient:
+				desiredDirection = matter.InterfaceServer
+			}
+			for _, cmd := range cluster.Commands {
+				if cmd.Direction == desiredDirection && cmd.Name == command.Response.Name {
+					command.Response.Entity = cmd
+					break
+				}
+			}
+		}
+	}
 }
 
 func resolveExtraConformance(cluster *matter.Cluster, conf conformance.Conformance) {

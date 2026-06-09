@@ -231,9 +231,6 @@ func (sp *Builder) resolveCommandResponseDataType(library *Library, cluster *mat
 	}
 	for _, cmd := range cluster.Commands {
 		if cmd.Direction == desiredDirection && cmd.Name == command.Response.Name {
-			if cmd.Response == nil {
-				break
-			}
 			command.Response.Entity = cmd
 			return
 		}
