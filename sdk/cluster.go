@@ -7,6 +7,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -20,6 +21,9 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 			}
 			if ac.Description != "" {
 				cluster.Description = ac.Description
+			}
+			if ac.Conformance != "" {
+				cluster.Conformance = conformance.ParseConformance(ac.Conformance)
 			}
 		}
 		for _, a := range cluster.Attributes {
