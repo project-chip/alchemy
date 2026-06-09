@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"reflect"
 	"testing"
+
+	"github.com/project-chip/alchemy/matter"
 )
 
 func TestParseExistingMatterElements(t *testing.T) {
@@ -115,3 +117,39 @@ cluster BasicInformation = 40 {
 		}
 	}
 }
+
+func TestEntityPath(t *testing.T) {
+	cluster := &matter.Cluster{
+		Name: "DoorLock",
+	}
+	features := matter.NewFeatures(nil, cluster)
+	featureBit := matter.NewFeature(nil, "0", "PinGeneration", "PIN", "Supports PINs", nil)
+	features.AddFeatureBit(featureBit)
+
+	t.Run("Features", func(t *testing.T) {
+		got := entityPath(features)
+		want := "DoorLock.Feature"
+		if got != want {
+			t.Errorf("entityPath(features) = %q, want %q", got, want)
+		}
+	})
+
+	t.Run("FeatureBit", func(t *testing.T) {
+		got := entityPath(featureBit)
+		want := "DoorLock.Feature.PinGeneration"
+		if got != want {
+			t.Errorf("entityPath(featureBit) = %q, want %q", got, want)
+		}
+	})
+
+	t.Run("IsElementPresent", func(t *testing.T) {
+		existing := map[string]bool{
+			"doorlock.feature.pingeneration": true,
+		}
+		got := isElementPresent(existing, featureBit)
+		if !got {
+			t.Errorf("isElementPresent() = false, want true")
+		}
+	})
+}
+

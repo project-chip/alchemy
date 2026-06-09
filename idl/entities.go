@@ -121,7 +121,7 @@ func isShared(spec *spec.Specification, en types.Entity) bool {
 func isProvisional(spec *spec.Specification, entity types.Entity) bool {
 	switch entity := entity.(type) {
 	case *matter.Bitmap:
-		if entity.Name == "Feature" {
+		if entity.Name == "Feature" || entity.Name == "Features" {
 			return false
 		}
 	case *matter.Enum:
@@ -161,7 +161,14 @@ func entityPath(e types.Entity) string {
 			parts = append(parts, node.Name)
 			curr = node.Parent()
 		case *matter.Bitmap:
-			parts = append(parts, node.Name)
+			if node.Name == "Features" {
+				parts = append(parts, "Feature")
+			} else {
+				parts = append(parts, node.Name)
+			}
+			curr = node.Parent()
+		case *matter.Features:
+			parts = append(parts, "Feature")
 			curr = node.Parent()
 		case *matter.Struct:
 			parts = append(parts, node.Name)
