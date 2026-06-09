@@ -320,7 +320,7 @@ func TestSuppressProvisionalIntegration(t *testing.T) {
 	if !strings.Contains(contentNone, "struct ProvCmd") || !strings.Contains(contentNone, "struct NonProvCmd") {
 		t.Errorf("expected commands in none output: %s", contentNone)
 	}
-	if !strings.Contains(contentNone, "event ProvEvt") || !strings.Contains(contentNone, "event NonProvEvt") {
+	if !strings.Contains(contentNone, "event optional ProvEvt") || !strings.Contains(contentNone, "event NonProvEvt") {
 		t.Errorf("expected events in none output: %s", contentNone)
 	}
 
@@ -352,7 +352,7 @@ func TestSuppressProvisionalIntegration(t *testing.T) {
 	if strings.Contains(contentAll, "struct ProvCmd") || !strings.Contains(contentAll, "struct NonProvCmd") {
 		t.Errorf("expected commands in all output (ProvCmd suppressed, NonProvCmd kept): %s", contentAll)
 	}
-	if strings.Contains(contentAll, "event ProvEvt") || !strings.Contains(contentAll, "event NonProvEvt") {
+	if strings.Contains(contentAll, "event optional ProvEvt") || !strings.Contains(contentAll, "event NonProvEvt") {
 		t.Errorf("expected events in all output (ProvEvt suppressed, NonProvEvt kept): %s", contentAll)
 	}
 
@@ -414,7 +414,7 @@ cluster MyCluster = 1 {
 		t.Errorf("expected commands in keep output: %s", contentKeep)
 	}
 	// ProvEvt was NOT in existing file, so it MUST be suppressed!
-	if strings.Contains(contentKeep, "event ProvEvt") {
+	if strings.Contains(contentKeep, "optional ProvEvt") {
 		t.Errorf("expected ProvEvt to be suppressed in keep output: %s", contentKeep)
 	}
 	if !strings.Contains(contentKeep, "event NonProvEvt") {

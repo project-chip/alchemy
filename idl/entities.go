@@ -254,15 +254,14 @@ func parseExistingMatterElements(path string) (map[string]bool, error) {
 				}
 			}
 		} else if strings.Contains(trimmed, " event ") {
-			parts := strings.Fields(trimmed)
-			for idx, word := range parts {
-				if word == "event" && idx+1 < len(parts) {
-					name := parts[idx+1]
-					name = strings.TrimSuffix(name, "{")
-					name = strings.Split(name, "=")[0]
+			eqIdx := strings.Index(trimmed, "=")
+			if eqIdx != -1 {
+				left := strings.TrimSpace(trimmed[:eqIdx])
+				parts := strings.Fields(left)
+				if len(parts) > 0 {
+					name := parts[len(parts)-1]
 					declName = strings.TrimSpace(name)
 					declType = "event"
-					break
 				}
 			}
 		} else if strings.Contains(trimmed, "attribute ") {

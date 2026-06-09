@@ -41,11 +41,16 @@ cluster DoorLock = 257 {
     int32u eventId = 1;
   }
 
+  info event optional opt_event = 2 {
+    int32u someField = 0;
+  }
+
   readonly attribute DoorStateEnum doorState = 0;
   attribute int32u pinCodeLength = 1;
 
   request command LockDoor() = 0;
   response command LockDoorResponse() = 1;
+  command optional OptCommand() = 2;
 }
 
 cluster BasicInformation = 40 {
@@ -82,10 +87,13 @@ cluster BasicInformation = 40 {
 		"doorlock.event.event_id":                              true,
 		"doorlock.event.event_id.attributeid":                  true,
 		"doorlock.event.event_id.eventid":                      true,
+		"doorlock.event.opt_event":                             true,
+		"doorlock.event.opt_event.somefield":                   true,
 		"doorlock.attribute.doorstate":                         true,
 		"doorlock.attribute.pincodelength":                     true,
 		"doorlock.command.lockdoor":                            true,
 		"doorlock.command.lockdoorresponse":                    true,
+		"doorlock.command.optcommand":                          true,
 		"basicinformation":                                     true,
 		"basicinformation.producttypeenum":                     true,
 		"basicinformation.producttypeenum.item":                true,
