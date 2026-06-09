@@ -57,9 +57,19 @@ func addExtraTypes(extraTypes *errata.SDKTypes, entities []types.Entity) {
 		s := matter.NewStruct(nil, nil)
 		s.Name = name
 		s.Description = es.Description
+		switch es.FabricScoping {
+		case "unscoped":
+			s.FabricScoping = matter.FabricScopingUnscoped
+		case "scoped":
+			s.FabricScoping = matter.FabricScopingScoped
+		}
 		for i, ef := range es.Fields {
 			f := matter.NewField(nil, s, types.EntityTypeStructField)
-			f.ID = matter.NewNumber(uint64(i))
+			if ef.Value != "" {
+				f.ID = matter.ParseNumber(ef.Value)
+			} else {
+				f.ID = matter.NewNumber(uint64(i))
+			}
 			f.Name = ef.Name
 			var rank types.DataTypeRank
 			if ef.List {
@@ -71,8 +81,9 @@ func addExtraTypes(extraTypes *errata.SDKTypes, entities []types.Entity) {
 			}
 			if ef.Conformance != "" {
 				f.Conformance = conformance.ParseConformance(ef.Conformance)
+			} else {
+				f.Conformance = conformance.Set{&conformance.Mandatory{}}
 			}
-			f.Conformance = conformance.Set{&conformance.Mandatory{}}
 			s.Fields = append(s.Fields, f)
 		}
 		extraEntities = append(extraEntities, s)
@@ -153,7 +164,11 @@ func addExtraAttributes(cluster *matter.Cluster, extra *errata.SDKType) {
 			field.ID = matter.ParseNumber(a.Value)
 		}
 		if a.Type != "" {
-			field.Type = types.ParseDataType(a.Type, types.DataTypeRankScalar)
+			var rank types.DataTypeRank = types.DataTypeRankScalar
+			if a.List {
+				rank = types.DataTypeRankList
+			}
+			field.Type = types.ParseDataType(a.Type, rank)
 		}
 		if a.Access != "" {
 			var parsed bool
