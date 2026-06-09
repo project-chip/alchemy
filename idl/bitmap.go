@@ -24,7 +24,7 @@ func clusterBitmapsHelper(spec *spec.Specification, filter ProvisionalFilter) fu
 			cluster := val.Cluster
 			if cluster != nil && cluster.Features != nil {
 				if len(filterBits(spec, filter, &cluster.Features.Bitmap)) > 0 {
-					features := cluster.Features.Bitmap.Clone()
+					features := cluster.Features.Bitmap.CloneTo(cluster.Features.Bitmap.Parent())
 					features.Name = "Feature"
 					bitmaps = append(bitmaps, features)
 				}
@@ -39,7 +39,7 @@ func clusterBitmapsHelper(spec *spec.Specification, filter ProvisionalFilter) fu
 				cluster := val.Cluster
 				if cluster != nil && cluster.Features != nil {
 					if len(filterBits(spec, filter, &cluster.Features.Bitmap)) > 0 {
-						features := cluster.Features.Bitmap.Clone()
+						features := cluster.Features.Bitmap.CloneTo(cluster.Features.Bitmap.Parent())
 						features.Name = "Feature"
 						bitmaps = append(bitmaps, features)
 					}
