@@ -251,6 +251,17 @@ func parseExistingMatterElements(path string) (map[string]bool, error) {
 		if trimmed == "" || strings.HasPrefix(trimmed, "//") || strings.HasPrefix(trimmed, "/*") || strings.HasPrefix(trimmed, "*") {
 			continue
 		}
+		for {
+			accessIdx := strings.Index(trimmed, "access(")
+			if accessIdx == -1 {
+				break
+			}
+			closeIdx := strings.Index(trimmed[accessIdx:], ")")
+			if closeIdx == -1 {
+				break
+			}
+			trimmed = trimmed[:accessIdx] + " " + trimmed[accessIdx+closeIdx+1:]
+		}
 
 		if strings.HasPrefix(trimmed, "cluster ") || strings.Contains(trimmed, " cluster ") {
 			parts := strings.Fields(trimmed)

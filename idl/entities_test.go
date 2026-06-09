@@ -51,6 +51,8 @@ cluster DoorLock = 257 {
   request command LockDoor() = 0;
   response command LockDoorResponse() = 1;
   command optional OptCommand() = 2;
+  timed command access(invoke: manage) UpdatePIN(UpdatePINRequest): DefaultSuccess = 3;
+  command access(invoke: administer) ResetPIN() = 4;
 }
 
 cluster BasicInformation = 40 {
@@ -94,6 +96,8 @@ cluster BasicInformation = 40 {
 		"doorlock.command.lockdoor":                            true,
 		"doorlock.command.lockdoorresponse":                    true,
 		"doorlock.command.optcommand":                          true,
+		"doorlock.command.updatepin":                           true,
+		"doorlock.command.resetpin":                            true,
 		"basicinformation":                                     true,
 		"basicinformation.producttypeenum":                     true,
 		"basicinformation.producttypeenum.item":                true,
