@@ -20,8 +20,16 @@ func commandsHelper(spec *spec.Specification, filter ProvisionalFilter) func(com
 			}
 			sortedCommands = append(sortedCommands, cmd)
 		}
+		serverCommandIDs := make(map[string]*matter.Number)
+		for _, c := range commands {
+			if c.Direction == matter.InterfaceServer && c.Response != nil && c.Response.Name != "" {
+				serverCommandIDs[c.Response.Name] = c.ID
+			}
+		}
 		slices.SortStableFunc(sortedCommands, func(a *matter.Command, b *matter.Command) int {
-			cmp := a.ID.Compare(b.ID)
+			aID := getSortID(a, serverCommandIDs)
+			bID := getSortID(b, serverCommandIDs)
+			cmp := aID.Compare(bID)
 			if cmp != 0 {
 				return cmp
 			}
@@ -29,6 +37,15 @@ func commandsHelper(spec *spec.Specification, filter ProvisionalFilter) func(com
 		})
 		return enumerateEntitiesHelper(sortedCommands, spec, filter, options)
 	}
+}
+
+func getSortID(cmd *matter.Command, serverCommandIDs map[string]*matter.Number) *matter.Number {
+	if cmd.Direction == matter.InterfaceClient {
+		if id, ok := serverCommandIDs[cmd.Name]; ok {
+			return id
+		}
+	}
+	return cmd.ID
 }
 
 func commandFieldsHelper(spec *spec.Specification, filter ProvisionalFilter) func(matter.Command, *raymond.Options) raymond.SafeString {

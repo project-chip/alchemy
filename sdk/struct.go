@@ -8,11 +8,11 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func applyErrataToStruct(st *matter.Struct, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
+func applyErrataToStruct(st *matter.Struct, typeNames map[string]string, typeOverrides *errata.SDKTypes) error {
 	if typeOverrides != nil {
 		ast, ok := typeOverrides.Structs[st.Name]
 		if !ok {
-			return
+			return nil
 		}
 		if ast.OverrideName != "" {
 			st.Name = ast.OverrideName
@@ -23,26 +23,66 @@ func applyErrataToStruct(st *matter.Struct, typeNames map[string]string, typeOve
 		case "fabric-scoped":
 			st.FabricScoping = matter.FabricScopingScoped
 		}
-		applyErrataToFields(st.Fields, ast)
+		err := applyErrataToFields(st.Fields, ast)
+		if err != nil {
+			return err
+		}
+		err = injectExtraFields(st, &st.Fields, types.EntityTypeStructField, ast.ExtraFields)
+		if err != nil {
+			return err
+		}
 	}
 	st.Name = applyTypeName(typeNames, st.Name)
-
+	return nil
 }
 
-func applyErrataToFields(fs matter.FieldSet, override *errata.SDKType) {
+func injectExtraFields(parent types.Entity, fields *matter.FieldSet, entityType types.EntityType, extraFields []*errata.SDKType) error {
+	for _, f := range extraFields {
+		var found bool
+		for _, field := range *fields {
+			if field.Name == f.Name {
+				found = true
+				break
+			}
+		}
+		if !found {
+			field := matter.NewField(nil, parent, entityType)
+			field.Name = f.Name
+			if f.Type != "" {
+				var rank types.DataTypeRank = types.DataTypeRankScalar
+				if f.List {
+					rank = types.DataTypeRankList
+				}
+				field.Type = types.ParseDataType(f.Type, rank)
+			}
+			err := applyErrataToField(field, f)
+			if err != nil {
+				return err
+			}
+			*fields = append(*fields, field)
+		}
+	}
+	return nil
+}
+
+func applyErrataToFields(fs matter.FieldSet, override *errata.SDKType) error {
 	if len(override.Fields) != 0 {
 		for _, f := range override.Fields {
 			for _, field := range fs {
 				if field.Name == f.Name {
-					applyErrataToField(field, f)
+					err := applyErrataToField(field, f)
+					if err != nil {
+						return err
+					}
 					break
 				}
 			}
 		}
 	}
+	return nil
 }
 
-func applyErrataToField(field *matter.Field, override *errata.SDKType) {
+func applyErrataToField(field *matter.Field, override *errata.SDKType) error {
 	if override.OverrideName != "" {
 		field.Name = override.OverrideName
 	}
@@ -66,5 +106,10 @@ func applyErrataToField(field *matter.Field, override *errata.SDKType) {
 		field.ID = matter.ParseNumber(override.Value)
 	}
 	field.Quality = overrideQuality(override, field.Quality)
-	field.Access = overrideAccess(override, field.EntityType(), field.Access)
+	access, err := overrideAccess(override, field.EntityType(), field.Access)
+	if err != nil {
+		return err
+	}
+	field.Access = access
+	return nil
 }

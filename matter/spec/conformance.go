@@ -11,7 +11,11 @@ import (
 )
 
 func (spec *Specification) ResolveConformances() {
-	sp := &Builder{Spec: spec}
+	sp := &Builder{
+		Spec:                spec,
+		conformanceFailures: make(map[any]referenceFailure),
+		constraintFailures:  make(map[any]referenceFailure),
+	}
 	sp.ResolveConformances()
 }
 

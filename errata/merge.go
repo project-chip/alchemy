@@ -287,6 +287,7 @@ func (t *SDKType) Merge(other *SDKType) {
 	}
 	t.Attributes = mergeSDKTypeMap(t.Attributes, other.Attributes)
 	t.Commands = mergeSDKTypeMap(t.Commands, other.Commands)
+	t.Events = mergeSDKTypeMap(t.Events, other.Events)
 }
 
 func mergeSDKTypeList(target, source []*SDKType) []*SDKType {

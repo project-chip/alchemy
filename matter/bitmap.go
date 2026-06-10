@@ -85,7 +85,7 @@ func (bm *Bitmap) CloneTo(parent types.Entity) *Bitmap {
 		nbm.Type = bm.Type.Clone()
 	}
 	for _, b := range bm.Bits {
-		nbm.Bits = append(nbm.Bits, b.CloneTo(parent))
+		nbm.Bits = append(nbm.Bits, b.CloneTo(nbm))
 	}
 	return nbm
 }

@@ -92,6 +92,22 @@ func TestSuppressProvisionalIntegration(t *testing.T) {
 	specification.ClustersByID[1] = cluster
 	specification.ClustersByName["MyCluster"] = cluster
 
+	provCluster := matter.NewCluster(nil)
+	provCluster.Name = "ProvCluster"
+	provCluster.ID = matter.NewNumber(2)
+	provCluster.Conformance = conformance.Set{&conformance.Provisional{}}
+
+	specification.ClustersByID[2] = provCluster
+	specification.ClustersByName["ProvCluster"] = provCluster
+
+	provCluster2 := matter.NewCluster(nil)
+	provCluster2.Name = "ProvCluster2"
+	provCluster2.ID = matter.NewNumber(3)
+	provCluster2.Conformance = conformance.Set{&conformance.Provisional{}}
+
+	specification.ClustersByID[3] = provCluster2
+	specification.ClustersByName["ProvCluster2"] = provCluster2
+
 	// Enums
 	provEnum := &matter.Enum{Name: "ProvEnum", Type: types.NewDataType(types.BaseDataTypeEnum8, types.DataTypeRankScalar)}
 	provEnum.SetParent(cluster)
@@ -275,6 +291,16 @@ func TestSuppressProvisionalIntegration(t *testing.T) {
 						Name: "MyCluster",
 						Side: "server",
 					},
+					{
+						Code: 2,
+						Name: "ProvCluster",
+						Side: "server",
+					},
+					{
+						Code: 3,
+						Name: "ProvCluster2",
+						Side: "server",
+					},
 				},
 			},
 		},
@@ -320,7 +346,7 @@ func TestSuppressProvisionalIntegration(t *testing.T) {
 	if !strings.Contains(contentNone, "struct ProvCmd") || !strings.Contains(contentNone, "struct NonProvCmd") {
 		t.Errorf("expected commands in none output: %s", contentNone)
 	}
-	if !strings.Contains(contentNone, "event ProvEvt") || !strings.Contains(contentNone, "event NonProvEvt") {
+	if !strings.Contains(contentNone, "optional event ProvEvt") || !strings.Contains(contentNone, "event NonProvEvt") {
 		t.Errorf("expected events in none output: %s", contentNone)
 	}
 
@@ -352,7 +378,7 @@ func TestSuppressProvisionalIntegration(t *testing.T) {
 	if strings.Contains(contentAll, "struct ProvCmd") || !strings.Contains(contentAll, "struct NonProvCmd") {
 		t.Errorf("expected commands in all output (ProvCmd suppressed, NonProvCmd kept): %s", contentAll)
 	}
-	if strings.Contains(contentAll, "event ProvEvt") || !strings.Contains(contentAll, "event NonProvEvt") {
+	if strings.Contains(contentAll, "optional event ProvEvt") || !strings.Contains(contentAll, "event NonProvEvt") {
 		t.Errorf("expected events in all output (ProvEvt suppressed, NonProvEvt kept): %s", contentAll)
 	}
 
@@ -376,6 +402,8 @@ cluster MyCluster = 1 {
   provisional readonly attribute ProvStruct provAttrStruct = 2;
   provisional readonly attribute ProvBitmap provAttrBitmap = 3;
   provisional command ProvCmd() = 1;
+}
+provisional cluster ProvCluster = 2 {
 }
 `
 	existingPath := filepath.Join(tmpDir, "existing.matter")
@@ -414,10 +442,18 @@ cluster MyCluster = 1 {
 		t.Errorf("expected commands in keep output: %s", contentKeep)
 	}
 	// ProvEvt was NOT in existing file, so it MUST be suppressed!
-	if strings.Contains(contentKeep, "event ProvEvt") {
+	if strings.Contains(contentKeep, "optional event ProvEvt") {
 		t.Errorf("expected ProvEvt to be suppressed in keep output: %s", contentKeep)
 	}
 	if !strings.Contains(contentKeep, "event NonProvEvt") {
 		t.Errorf("expected NonProvEvt to be kept in keep output: %s", contentKeep)
+	}
+	// ProvCluster was in existing file, so it MUST be kept!
+	if !strings.Contains(contentKeep, "cluster ProvCluster") {
+		t.Errorf("expected ProvCluster to be kept in keep output: %s", contentKeep)
+	}
+	// ProvCluster2 was NOT in existing file, so it MUST be suppressed!
+	if strings.Contains(contentKeep, "cluster ProvCluster2") {
+		t.Errorf("expected ProvCluster2 to be suppressed in keep output: %s", contentKeep)
 	}
 }

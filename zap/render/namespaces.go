@@ -58,7 +58,7 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*
 		for _, entity := range entities {
 			switch namespace := entity.(type) {
 			case *matter.Namespace:
-				namespacesByName[matterNamespaceName(namespace)] = namespace
+				namespacesByName[matterNamespaceName(p.spec, namespace)] = namespace
 			}
 		}
 
@@ -104,12 +104,19 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*
 	return
 }
 
-func matterNamespaceName(ns *matter.Namespace) string {
+func matterNamespaceName(specification *spec.Specification, ns *matter.Namespace) string {
 	name := strings.TrimSpace(text.TrimCaseInsensitivePrefix(text.TrimCaseInsensitiveSuffix(ns.Name, " Namespace"), "Common "))
 	name = matter.Case(name)
 	if name == "Area" {
 		// Backwards compatibility for one namespace
 		name += "Type"
 	}
-	return name + "Tag"
+	name = name + "Tag"
+	if doc, ok := specification.DocRefs[ns]; ok {
+		errata := specification.Errata.Get(doc.Path.Relative)
+		if override, ok := errata.SDK.TypeNames[name]; ok {
+			return override
+		}
+	}
+	return name
 }

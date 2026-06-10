@@ -54,8 +54,7 @@ func enumerateEntitiesHelper[T types.Entity](list []T, spec *spec.Specification,
 		df.Set("first", i == 0)
 		df.Set("last", i == len(list)-1)
 		if spec != nil {
-			refs, ok := spec.ClusterRefs.Get(en)
-			if ok && refs.Size() > 1 {
+			if isShared(spec, en) {
 				df.Set("shared", true)
 			}
 			df.Set("provisional", isProvisional(spec, en))
@@ -69,10 +68,60 @@ func enumerateEntitiesHelper[T types.Entity](list []T, spec *spec.Specification,
 	return raymond.SafeString(result.String())
 }
 
+func isShared(spec *spec.Specification, en types.Entity) bool {
+	refs, ok := spec.ClusterRefs.Get(en)
+	if ok && refs.Size() > 1 {
+		return true
+	}
+	var cluster *matter.Cluster
+	var name string
+	var isTargetType bool
+	switch entity := en.(type) {
+	case *matter.Struct:
+		cluster = entity.Cluster()
+		name = entity.Name
+		isTargetType = true
+	case *matter.Enum:
+		cluster = entity.Cluster()
+		name = entity.Name
+		isTargetType = true
+	case *matter.Bitmap:
+		cluster = entity.Cluster()
+		name = entity.Name
+		isTargetType = true
+	}
+	if !isTargetType || cluster == nil {
+		return false
+	}
+	doc, ok := spec.DocRefs[cluster]
+	if !ok {
+		return false
+	}
+	if spec.Errata == nil {
+		return false
+	}
+	errata := spec.Errata.Get(doc.Path.Relative)
+	if errata == nil {
+		return false
+	}
+	switch en.(type) {
+	case *matter.Struct:
+		_, ok = errata.SDK.SharedStructs[name]
+		return ok
+	case *matter.Enum:
+		_, ok = errata.SDK.SharedEnums[name]
+		return ok
+	case *matter.Bitmap:
+		_, ok = errata.SDK.SharedBitmaps[name]
+		return ok
+	}
+	return false
+}
+
 func isProvisional(spec *spec.Specification, entity types.Entity) bool {
 	switch entity := entity.(type) {
 	case *matter.Bitmap:
-		if entity.Name == "Feature" {
+		if entity.Name == "Feature" || entity.Name == "Features" {
 			return false
 		}
 	case *matter.Enum:
@@ -89,6 +138,7 @@ func isProvisional(spec *spec.Specification, entity types.Entity) bool {
 		return false
 	}
 	is := provisional.Check(spec, entity, entity)
+
 	switch is {
 	case provisional.StateAllClustersProvisional,
 		provisional.StateAllDataTypeReferencesProvisional,
@@ -112,7 +162,14 @@ func entityPath(e types.Entity) string {
 			parts = append(parts, node.Name)
 			curr = node.Parent()
 		case *matter.Bitmap:
-			parts = append(parts, node.Name)
+			if node.Name == "Features" {
+				parts = append(parts, "Feature")
+			} else {
+				parts = append(parts, node.Name)
+			}
+			curr = node.Parent()
+		case *matter.Features:
+			parts = append(parts, "Feature")
 			curr = node.Parent()
 		case *matter.Struct:
 			parts = append(parts, node.Name)
@@ -202,6 +259,30 @@ func parseExistingMatterElements(path string) (map[string]bool, error) {
 		if trimmed == "" || strings.HasPrefix(trimmed, "//") || strings.HasPrefix(trimmed, "/*") || strings.HasPrefix(trimmed, "*") {
 			continue
 		}
+		for {
+			accessIdx := strings.Index(trimmed, "access(")
+			if accessIdx == -1 {
+				break
+			}
+			depth := 1
+			closeIdx := -1
+			startSearch := accessIdx + len("access(")
+			for i := startSearch; i < len(trimmed); i++ {
+				if trimmed[i] == '(' {
+					depth++
+				} else if trimmed[i] == ')' {
+					depth--
+					if depth == 0 {
+						closeIdx = i
+						break
+					}
+				}
+			}
+			if closeIdx == -1 {
+				break
+			}
+			trimmed = trimmed[:accessIdx] + " " + trimmed[closeIdx+1:]
+		}
 
 		if strings.HasPrefix(trimmed, "cluster ") || strings.Contains(trimmed, " cluster ") {
 			parts := strings.Fields(trimmed)
@@ -253,16 +334,15 @@ func parseExistingMatterElements(path string) (map[string]bool, error) {
 					break
 				}
 			}
-		} else if strings.Contains(trimmed, " event ") {
-			parts := strings.Fields(trimmed)
-			for idx, word := range parts {
-				if word == "event" && idx+1 < len(parts) {
-					name := parts[idx+1]
-					name = strings.TrimSuffix(name, "{")
-					name = strings.Split(name, "=")[0]
+		} else if strings.Contains(trimmed, " event ") && !strings.Contains(trimmed, "attribute ") && !strings.Contains(trimmed, "command ") {
+			eqIdx := strings.Index(trimmed, "=")
+			if eqIdx != -1 {
+				left := strings.TrimSpace(trimmed[:eqIdx])
+				parts := strings.Fields(left)
+				if len(parts) > 0 {
+					name := parts[len(parts)-1]
 					declName = strings.TrimSpace(name)
 					declType = "event"
-					break
 				}
 			}
 		} else if strings.Contains(trimmed, "attribute ") {

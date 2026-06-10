@@ -7,11 +7,12 @@ import (
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, errata errata.SDK) {
+func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, errata errata.SDK, options applyErrataOptions) error {
 	if errata.Types != nil {
 		ac, ok := errata.Types.Clusters[cluster.Name]
 		if ok {
@@ -21,13 +22,19 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 			if ac.Description != "" {
 				cluster.Description = ac.Description
 			}
+			if ac.Conformance != "" {
+				cluster.Conformance = conformance.ParseConformance(ac.Conformance)
+			}
 		}
 		for _, a := range cluster.Attributes {
 			ao, ok := errata.Types.Attributes[a.Name]
 			if !ok {
 				continue
 			}
-			applyErrataToField(a, ao)
+			err := applyErrataToField(a, ao)
+			if err != nil {
+				return err
+			}
 		}
 		if cluster.Features != nil {
 			fc, ok := errata.Types.Bitmaps["Features"]
@@ -44,36 +51,72 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 		applyErrataToEnum(en, errata.TypeNames, errata.Types)
 	}
 	for _, s := range cluster.Structs {
-		applyErrataToStruct(s, errata.TypeNames, errata.Types)
+		err := applyErrataToStruct(s, errata.TypeNames, errata.Types)
+		if err != nil {
+			return err
+		}
 	}
 	for _, cmd := range cluster.Commands {
-		applyErrataToCommand(cmd, errata.TypeNames, errata.Types)
+		err := applyErrataToCommand(cmd, errata.TypeNames, errata.Types)
+		if err != nil {
+			return err
+		}
 	}
 	for _, ev := range cluster.Events {
-		applyErrataToEvent(ev, errata.TypeNames, errata.Types)
+		err := applyErrataToEvent(ev, errata.TypeNames, errata.Types)
+		if err != nil {
+			return err
+		}
 	}
 
-	sharedEntities := make(map[types.Entity]types.Entity)
-	for bitmapName := range errata.SharedBitmaps {
-		if cluster.ParentCluster == nil {
-			slog.Warn("Errata: separate bitmap on cluster without parent", slog.String("bitmapName", bitmapName), slog.String("clusterName", cluster.Name))
-			continue
+	if !options.skipSharedEntities {
+		sharedEntities := make(map[types.Entity]types.Entity)
+		for bitmapName := range errata.SharedBitmaps {
+			if cluster.ParentCluster == nil {
+				slog.Warn("Errata: separate bitmap on cluster without parent", slog.String("bitmapName", bitmapName), slog.String("clusterName", cluster.Name))
+				continue
+			}
+			cluster.Bitmaps = replaceSharedEntity(spec, cluster, cluster.ParentCluster, bitmapName, cluster.ParentCluster.Bitmaps, cluster.Bitmaps, sharedEntities)
 		}
-		cluster.Bitmaps = replaceSharedEntity(spec, cluster, cluster.ParentCluster, bitmapName, cluster.ParentCluster.Bitmaps, cluster.Bitmaps, sharedEntities)
-	}
-	for enumName := range errata.SharedEnums {
-		if cluster.ParentCluster == nil {
-			slog.Warn("Errata: separate enum on cluster without parent", slog.String("enumName", enumName), slog.String("clusterName", cluster.Name))
-			continue
+		for enumName := range errata.SharedEnums {
+			if cluster.ParentCluster == nil {
+				slog.Warn("Errata: separate enum on cluster without parent", slog.String("enumName", enumName), slog.String("clusterName", cluster.Name))
+				continue
+			}
+			cluster.Enums = replaceSharedEntity(spec, cluster, cluster.ParentCluster, enumName, cluster.ParentCluster.Enums, cluster.Enums, sharedEntities)
 		}
-		cluster.Enums = replaceSharedEntity(spec, cluster, cluster.ParentCluster, enumName, cluster.ParentCluster.Enums, cluster.Enums, sharedEntities)
-	}
-	for structName := range errata.SharedStructs {
-		if cluster.ParentCluster == nil {
-			slog.Warn("Errata: separate struct on cluster without parent", slog.String("structName", structName), slog.String("clusterName", cluster.Name))
-			continue
+		for structName := range errata.SharedStructs {
+			if cluster.ParentCluster == nil {
+				slog.Warn("Errata: separate struct on cluster without parent", slog.String("structName", structName), slog.String("clusterName", cluster.Name))
+				continue
+			}
+			cluster.Structs = replaceSharedEntity(spec, cluster, cluster.ParentCluster, structName, cluster.ParentCluster.Structs, cluster.Structs, sharedEntities)
 		}
-		cluster.Structs = replaceSharedEntity(spec, cluster, cluster.ParentCluster, structName, cluster.ParentCluster.Structs, cluster.Structs, sharedEntities)
+		if len(sharedEntities) > 0 {
+			cluster.TraverseDataTypes(func(parent, entity types.Entity) parse.SearchShould {
+				target, ok := sharedEntities[entity]
+				if !ok {
+					return parse.SearchShouldContinue
+				}
+				switch parent := parent.(type) {
+				case *matter.Field:
+					fieldType := parent.Type
+					if fieldType == nil {
+						break
+					}
+					if fieldType.IsArray() {
+						fieldType = fieldType.EntryType
+					}
+					if fieldType == nil {
+						break
+					}
+					fieldType.Entity = target
+
+				}
+				return parse.SearchShouldContinue
+			})
+
+		}
 	}
 	for enumName := range errata.SeparateEnums {
 		for _, en := range cluster.Enums {
@@ -82,32 +125,8 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 			}
 		}
 	}
-	if len(sharedEntities) > 0 {
-		cluster.TraverseDataTypes(func(parent, entity types.Entity) parse.SearchShould {
-			target, ok := sharedEntities[entity]
-			if !ok {
-				return parse.SearchShouldContinue
-			}
-			switch parent := parent.(type) {
-			case *matter.Field:
-				fieldType := parent.Type
-				if fieldType == nil {
-					break
-				}
-				if fieldType.IsArray() {
-					fieldType = fieldType.EntryType
-				}
-				if fieldType == nil {
-					break
-				}
-				fieldType.Entity = target
 
-			}
-			return parse.SearchShouldContinue
-		})
-
-	}
-
+	return nil
 }
 
 func replaceSharedEntity[T types.Entity](spec *spec.Specification, cluster *matter.Cluster, parentCluster *matter.Cluster, entityName string, parentList []T, targetList []T, sharedEntities map[types.Entity]types.Entity) []T {

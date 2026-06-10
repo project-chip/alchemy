@@ -70,7 +70,7 @@ func (cr *configuratorRenderer) getDataTypeString(fs matter.FieldSet, f *matter.
 	case types.BaseDataTypeTag:
 		if f.Type.Entity != nil {
 			if namespace, ok := f.Type.Entity.(*matter.Namespace); ok {
-				return matterNamespaceName(namespace)
+				return matterNamespaceName(cr.configurator.Spec, namespace)
 			}
 		} else {
 			return "enum8"

@@ -124,7 +124,7 @@ func maxValue(field matter.Field, fs matter.FieldSet) (max types.DataTypeExtreme
 	}
 	if !field.Type.HasLength() {
 		switch field.Type.Entity.(type) {
-		case *matter.Enum, *matter.Bitmap:
+		case *matter.Enum, *matter.Bitmap, *matter.Struct:
 			return
 		}
 		if field.Type.BaseType.IsSimple() {

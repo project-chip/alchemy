@@ -2,4 +2,4 @@
 {{#if provisional}}provisional {{/if ~}}
 {{#ifFabricScoped command.Access.FabricScoping}}fabric {{/ifFabricScoped ~}}
 {{#isTimed command}}timed {{/isTimed ~}}
-command {{> access access=command.Access ~}}{{asUpperCamelCase command.Name}}({{#ifHasValidFields command.Fields}}{{requestName command}}Request{{/ifHasValidFields}}): {{responseName command}} = {{number command.ID}};
+{{#ifOptional command.Conformance}}optional {{/ifOptional ~}}command {{> access access=command.Access ~}}{{asUpperCamelCase command.Name}}({{#ifHasValidFields command.Fields}}{{requestName command}}Request{{/ifHasValidFields}}): {{responseName command}} = {{number command.ID}};

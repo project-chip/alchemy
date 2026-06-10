@@ -71,38 +71,38 @@ func ParseDataTypeName(typeName string) (baseType BaseDataType, name string) {
 	switch strings.ToLower(typeName) {
 	case "bool", "boolean":
 		baseType = BaseDataTypeBoolean
-	case "uint8":
+	case "uint8", "int8u":
 		baseType = BaseDataTypeUInt8
-	case "uint16":
+	case "uint16", "int16u":
 		baseType = BaseDataTypeUInt16
-	case "uint24":
+	case "uint24", "int24u":
 		baseType = BaseDataTypeUInt24
-	case "uint32":
+	case "uint32", "int32u":
 		baseType = BaseDataTypeUInt32
-	case "uint40":
+	case "uint40", "int40u":
 		baseType = BaseDataTypeUInt40
-	case "uint48":
+	case "uint48", "int48u":
 		baseType = BaseDataTypeUInt48
-	case "uint56":
+	case "uint56", "int56u":
 		baseType = BaseDataTypeUInt56
-	case "uint64":
+	case "uint64", "int64u":
 		baseType = BaseDataTypeUInt64
 
-	case "int8":
+	case "int8", "int8s":
 		baseType = BaseDataTypeInt8
-	case "int16":
+	case "int16", "int16s":
 		baseType = BaseDataTypeInt16
-	case "int24":
+	case "int24", "int24s":
 		baseType = BaseDataTypeInt24
-	case "int32":
+	case "int32", "int32s":
 		baseType = BaseDataTypeInt32
-	case "int40":
+	case "int40", "int40s":
 		baseType = BaseDataTypeInt40
-	case "int48":
+	case "int48", "int48s":
 		baseType = BaseDataTypeInt48
-	case "int56":
+	case "int56", "int56s":
 		baseType = BaseDataTypeInt56
-	case "int64":
+	case "int64", "int64s":
 		baseType = BaseDataTypeInt64
 
 	case "single":
@@ -115,17 +115,17 @@ func ParseDataTypeName(typeName string) (baseType BaseDataType, name string) {
 	case "enum16":
 		baseType = BaseDataTypeEnum16
 
-	case "map8":
+	case "map8", "bitmap8":
 		baseType = BaseDataTypeMap8
-	case "map16":
+	case "map16", "bitmap16":
 		baseType = BaseDataTypeMap16
-	case "map32":
+	case "map32", "bitmap32":
 		baseType = BaseDataTypeMap32
-	case "map64":
+	case "map64", "bitmap64":
 		baseType = BaseDataTypeMap64
-	case "string", "character string":
+	case "string", "character string", "char_string":
 		baseType = BaseDataTypeString
-	case "octstr", "octet string":
+	case "octstr", "octet string", "octet_string":
 		baseType = BaseDataTypeOctStr
 	case "percent":
 		baseType = BaseDataTypePercent
@@ -255,7 +255,7 @@ func ParseDataTypeName(typeName string) (baseType BaseDataType, name string) {
 }
 
 func (dt *DataType) Clone() *DataType {
-	ndt := &DataType{Name: dt.Name, BaseType: dt.BaseType, Source: dt.Source}
+	ndt := &DataType{Name: dt.Name, BaseType: dt.BaseType, Entity: dt.Entity, Source: dt.Source}
 	if dt.EntryType != nil {
 		ndt.EntryType = dt.EntryType.Clone()
 	}

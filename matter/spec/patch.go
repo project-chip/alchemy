@@ -115,11 +115,16 @@ func patchContentLaunchCluster(spec *Specification) {
 func patchLabelCluster(spec *Specification) {
 	/*
 		Another hacky workaround: the spec defines LabelStruct under a base cluster called Label Cluster, but the
-		ZAP XML has this struct under Fixed Label
+		ZAP XML has this struct under Fixed Label and User Label
 	*/
 	fixedLabelCluster, ok := spec.ClustersByName["Fixed Label"]
 	if !ok {
 		slog.Warn("Could not find Fixed Label cluster")
+		return
+	}
+	userLabelCluster, ok := spec.ClustersByName["User Label"]
+	if !ok {
+		slog.Warn("Could not find User Label cluster")
 		return
 	}
 	labelCluster, ok := spec.ClustersByName["Label"]
@@ -131,6 +136,31 @@ func patchLabelCluster(spec *Specification) {
 		if s.Name == "LabelStruct" {
 			fixedLabelCluster.MoveStruct(s)
 			spec.DataTypeRefs.Add(fixedLabelCluster, s)
+
+			clone := s.Clone()
+			userLabelCluster.MoveStruct(clone)
+			spec.DataTypeRefs.Add(userLabelCluster, clone)
+
+			userLabelCluster.TraverseDataTypes(func(parent, entity types.Entity) parse.SearchShould {
+				if entity == s {
+					switch parent := parent.(type) {
+					case *matter.Field:
+						fieldType := parent.Type
+						if fieldType == nil {
+							return parse.SearchShouldContinue
+						}
+						if fieldType.IsArray() {
+							fieldType = fieldType.EntryType
+						}
+						if fieldType == nil {
+							return parse.SearchShouldContinue
+						}
+						fieldType.Entity = clone
+					}
+				}
+				return parse.SearchShouldContinue
+			})
+
 			labelCluster.Structs = slices.Delete(labelCluster.Structs, i, i+1)
 			break
 		}

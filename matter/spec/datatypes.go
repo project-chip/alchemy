@@ -160,7 +160,22 @@ func (sp *Builder) resolveFieldDataTypes(library *Library, cluster *matter.Clust
 		return
 	}
 	if dataType.Entity != nil {
-		// This has already been resolved by some other process
+		if cluster != nil && cluster.Hierarchy != "Base" {
+			// If this is a derived cluster and the entity reference was already resolved to a base
+			// cluster entity (e.g., during base struct/command inheritance cloning), we attempt to
+			// redirect it to the local cloned copy in the derived cluster. Otherwise, the local cloned
+			// entity will have 0 references and will be omitted from the generated IDL.
+			parentCluster, hasParentCluster := dataType.Entity.Parent().(*matter.Cluster)
+			if hasParentCluster && parentCluster != cluster {
+				local := finder.findEntityByIdentifier(matter.EntityName(dataType.Entity), field)
+				if local != nil {
+					dataType.Entity = local
+				} else {
+					slog.Error("failed to find local cloned entity for data type reference", slog.String("name", matter.EntityName(dataType.Entity)), slog.String("field", field.Name), slog.String("cluster", cluster.Name))
+					sp.Spec.addError(&MissingClonedEntityError{Entity: dataType.Entity, Field: field})
+				}
+			}
+		}
 		if cluster != nil {
 			sp.Spec.addEntity(dataType.Entity, cluster)
 		}
@@ -231,9 +246,6 @@ func (sp *Builder) resolveCommandResponseDataType(library *Library, cluster *mat
 	}
 	for _, cmd := range cluster.Commands {
 		if cmd.Direction == desiredDirection && cmd.Name == command.Response.Name {
-			if cmd.Response == nil {
-				break
-			}
 			command.Response.Entity = cmd
 			return
 		}
@@ -276,4 +288,10 @@ func (sp *Builder) getCustomDataTypeFromFieldReference(library *Library, cluster
 		e = finder.findEntityByIdentifier(label, reference)
 	}
 	return
+}
+
+func (spec *Specification) ResolveDataTypeReferences() {
+	builder := &Builder{Spec: spec}
+	builder.resolveClusterDataTypeReferences(true)
+	builder.resolveClusterDataTypeReferences(false)
 }

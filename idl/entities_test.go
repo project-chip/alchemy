@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"reflect"
 	"testing"
+
+	"github.com/project-chip/alchemy/matter"
 )
 
 func TestParseExistingMatterElements(t *testing.T) {
@@ -41,11 +43,18 @@ cluster DoorLock = 257 {
     int32u eventId = 1;
   }
 
+  info event optional opt_event = 2 {
+    int32u someField = 0;
+  }
+
   readonly attribute DoorStateEnum doorState = 0;
   attribute int32u pinCodeLength = 1;
 
   request command LockDoor() = 0;
   response command LockDoorResponse() = 1;
+  command optional OptCommand() = 2;
+  timed command access(invoke: manage) UpdatePIN(UpdatePINRequest): DefaultSuccess = 3;
+  command access(invoke: administer) ResetPIN() = 4;
 }
 
 cluster BasicInformation = 40 {
@@ -82,10 +91,15 @@ cluster BasicInformation = 40 {
 		"doorlock.event.event_id":                              true,
 		"doorlock.event.event_id.attributeid":                  true,
 		"doorlock.event.event_id.eventid":                      true,
+		"doorlock.event.opt_event":                             true,
+		"doorlock.event.opt_event.somefield":                   true,
 		"doorlock.attribute.doorstate":                         true,
 		"doorlock.attribute.pincodelength":                     true,
 		"doorlock.command.lockdoor":                            true,
 		"doorlock.command.lockdoorresponse":                    true,
+		"doorlock.command.optcommand":                          true,
+		"doorlock.command.updatepin":                           true,
+		"doorlock.command.resetpin":                            true,
 		"basicinformation":                                     true,
 		"basicinformation.producttypeenum":                     true,
 		"basicinformation.producttypeenum.item":                true,
@@ -103,3 +117,39 @@ cluster BasicInformation = 40 {
 		}
 	}
 }
+
+func TestEntityPath(t *testing.T) {
+	cluster := &matter.Cluster{
+		Name: "DoorLock",
+	}
+	features := matter.NewFeatures(nil, cluster)
+	featureBit := matter.NewFeature(nil, "0", "PinGeneration", "PIN", "Supports PINs", nil)
+	features.AddFeatureBit(featureBit)
+
+	t.Run("Features", func(t *testing.T) {
+		got := entityPath(features)
+		want := "DoorLock.Feature"
+		if got != want {
+			t.Errorf("entityPath(features) = %q, want %q", got, want)
+		}
+	})
+
+	t.Run("FeatureBit", func(t *testing.T) {
+		got := entityPath(featureBit)
+		want := "DoorLock.Feature.PinGeneration"
+		if got != want {
+			t.Errorf("entityPath(featureBit) = %q, want %q", got, want)
+		}
+	})
+
+	t.Run("IsElementPresent", func(t *testing.T) {
+		existing := map[string]bool{
+			"doorlock.feature.pingeneration": true,
+		}
+		got := isElementPresent(existing, featureBit)
+		if !got {
+			t.Errorf("isElementPresent() = false, want true")
+		}
+	})
+}
+
