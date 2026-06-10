@@ -115,6 +115,7 @@ type SDKType struct {
 
 	Attributes map[string]*SDKType `yaml:"attributes,omitempty"`
 	Commands   map[string]*SDKType `yaml:"commands,omitempty"`
+	Events     map[string]*SDKType `yaml:"events,omitempty"`
 }
 
 type SDKTypeCollection map[string]*SDKType

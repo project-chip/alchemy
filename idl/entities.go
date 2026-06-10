@@ -138,6 +138,7 @@ func isProvisional(spec *spec.Specification, entity types.Entity) bool {
 		return false
 	}
 	is := provisional.Check(spec, entity, entity)
+
 	switch is {
 	case provisional.StateAllClustersProvisional,
 		provisional.StateAllDataTypeReferencesProvisional,

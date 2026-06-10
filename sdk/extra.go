@@ -139,6 +139,7 @@ func addExtraAttributesAndCommandsToCluster(cluster *matter.Cluster, extraTypes 
 	if override, ok := extraTypes.Clusters[cluster.Name]; ok {
 		addExtraAttributes(cluster, override)
 		addExtraCommands(cluster, override)
+		addExtraEvents(cluster, override)
 	}
 	if len(extraTypes.Attributes) > 0 {
 		addExtraAttributes(cluster, &errata.SDKType{Attributes: extraTypes.Attributes})
@@ -146,7 +147,70 @@ func addExtraAttributesAndCommandsToCluster(cluster *matter.Cluster, extraTypes 
 	if len(extraTypes.Commands) > 0 {
 		addExtraCommands(cluster, &errata.SDKType{Commands: extraTypes.Commands})
 	}
+	if len(extraTypes.Events) > 0 {
+		addExtraEvents(cluster, &errata.SDKType{Events: extraTypes.Events})
+	}
 }
+
+func addExtraEvents(cluster *matter.Cluster, extra *errata.SDKType) {
+	existingEvents := make(map[string]struct{}, len(cluster.Events))
+	for _, ev := range cluster.Events {
+		existingEvents[ev.Name] = struct{}{}
+	}
+
+	for name, ev := range extra.Events {
+		if _, ok := existingEvents[name]; ok {
+			continue
+		}
+		event := matter.NewEvent(nil, cluster)
+		event.Name = name
+		if ev.Value != "" {
+			event.ID = matter.ParseNumber(ev.Value)
+		}
+		if ev.Priority != "" {
+			event.Priority = ev.Priority
+		}
+		if ev.Access != "" {
+			var parsed bool
+			event.Access, parsed = spec.ParseAccess(ev.Access, types.EntityTypeEvent)
+			if !parsed {
+				slog.Warn("failed to parse access string for extra event from errata", slog.String("cluster", cluster.Name), slog.String("event", name), slog.String("access", ev.Access))
+			}
+		}
+		if ev.Conformance != "" {
+			event.Conformance = conformance.ParseConformance(ev.Conformance)
+			resolveExtraConformance(cluster, event.Conformance)
+		}
+		for i, f := range ev.Fields {
+			field := matter.NewField(nil, event, types.EntityTypeEventField)
+			field.Name = f.Name
+			if f.Value != "" {
+				field.ID = matter.ParseNumber(f.Value)
+			} else {
+				field.ID = matter.NewNumber(uint64(i))
+			}
+			var rank types.DataTypeRank
+			if f.List {
+				rank = types.DataTypeRankList
+			}
+			field.Type = types.ParseDataType(f.Type, rank)
+			if f.Constraint != "" {
+				field.Constraint = constraint.ParseString(f.Constraint)
+			}
+			if f.Conformance != "" {
+				field.Conformance = conformance.ParseConformance(f.Conformance)
+				resolveExtraConformance(cluster, field.Conformance)
+			}
+			if f.Fallback != "" {
+				field.Fallback = constraint.ParseLimit(f.Fallback)
+			}
+			event.Fields = append(event.Fields, field)
+		}
+		event.SetParent(cluster)
+		cluster.Events = append(cluster.Events, event)
+	}
+}
+
 
 func addExtraAttributes(cluster *matter.Cluster, extra *errata.SDKType) {
 	existingAttributes := make(map[string]struct{}, len(cluster.Attributes))
