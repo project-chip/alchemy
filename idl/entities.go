@@ -321,7 +321,7 @@ func parseExistingMatterElements(path string) (map[string]bool, error) {
 					break
 				}
 			}
-		} else if strings.Contains(trimmed, " event ") {
+		} else if strings.Contains(trimmed, " event ") && !strings.Contains(trimmed, "attribute ") && !strings.Contains(trimmed, "command ") {
 			eqIdx := strings.Index(trimmed, "=")
 			if eqIdx != -1 {
 				left := strings.TrimSpace(trimmed[:eqIdx])

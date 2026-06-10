@@ -20,9 +20,15 @@ func commandsHelper(spec *spec.Specification, filter ProvisionalFilter) func(com
 			}
 			sortedCommands = append(sortedCommands, cmd)
 		}
+		serverCommandIDs := make(map[string]*matter.Number)
+		for _, c := range commands {
+			if c.Direction == matter.InterfaceServer && c.Response != nil && c.Response.Name != "" {
+				serverCommandIDs[c.Response.Name] = c.ID
+			}
+		}
 		slices.SortStableFunc(sortedCommands, func(a *matter.Command, b *matter.Command) int {
-			aID := getSortID(a, commands)
-			bID := getSortID(b, commands)
+			aID := getSortID(a, serverCommandIDs)
+			bID := getSortID(b, serverCommandIDs)
 			cmp := aID.Compare(bID)
 			if cmp != 0 {
 				return cmp
@@ -33,12 +39,10 @@ func commandsHelper(spec *spec.Specification, filter ProvisionalFilter) func(com
 	}
 }
 
-func getSortID(cmd *matter.Command, commands matter.CommandSet) *matter.Number {
+func getSortID(cmd *matter.Command, serverCommandIDs map[string]*matter.Number) *matter.Number {
 	if cmd.Direction == matter.InterfaceClient {
-		for _, c := range commands {
-			if c.Direction == matter.InterfaceServer && c.Response != nil && c.Response.Name == cmd.Name {
-				return c.ID
-			}
+		if id, ok := serverCommandIDs[cmd.Name]; ok {
+			return id
 		}
 	}
 	return cmd.ID
