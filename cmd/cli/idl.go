@@ -27,7 +27,7 @@ type IDLRegen struct {
 	spec.ParserOptions         `embed:""`
 	spec.FilterOptions         `embed:""`
 	sdk.SDKOptions             `embed:""`
-	SuppressProvisional        string `name:"suppress-provisional" help:"Suppress rendering of provisional elements" default:"none" enum:"none,all,keep-existing"`
+	SuppressProvisional        string `name:"suppress-provisional" help:"Suppress rendering of provisional elements" default:"all" enum:"none,all,keep-existing"`
 }
 
 func (z *IDLRegen) Run(cc *Context) (err error) {
@@ -88,7 +88,7 @@ type IDLControllerClusters struct {
 	files.OutputOptions        `embed:""`
 	spec.ParserOptions         `embed:""`
 	Output                     string `name:"output" placeholder:"path" help:"Output file or directory for controller-clusters.matter" optional:"" default:"controller-clusters.matter"`
-	SuppressProvisional        string `name:"suppress-provisional" help:"Suppress rendering of provisional elements" default:"none" enum:"none,all,keep-existing"`
+	SuppressProvisional        string `name:"suppress-provisional" help:"Suppress rendering of provisional elements" default:"all" enum:"none,all,keep-existing"`
 }
 
 func (z *IDLControllerClusters) Run(cc *Context) (err error) {
