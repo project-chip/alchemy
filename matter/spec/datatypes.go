@@ -274,3 +274,9 @@ func (sp *Builder) getCustomDataTypeFromFieldReference(library *Library, cluster
 	}
 	return
 }
+
+func (spec *Specification) ResolveDataTypeReferences() {
+	builder := &Builder{Spec: spec}
+	builder.resolveClusterDataTypeReferences(true)
+	builder.resolveClusterDataTypeReferences(false)
+}

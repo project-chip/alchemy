@@ -256,17 +256,17 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 			continue
 		}
 		for _, s := range clusterInfo.Cluster.Structs {
-			if _, ok := ce[s]; ok {
+			if hasEntityWithName(ce, s.Name) {
 				clusterInfo.ReferencedStructs = append(clusterInfo.ReferencedStructs, s)
 			}
 		}
 		for _, en := range clusterInfo.Cluster.Enums {
-			if _, ok := ce[en]; ok {
+			if hasEntityWithName(ce, en.Name) {
 				clusterInfo.ReferencedEnums = append(clusterInfo.ReferencedEnums, en)
 			}
 		}
 		for _, bm := range clusterInfo.Cluster.Bitmaps {
-			if _, ok := ce[bm]; ok {
+			if hasEntityWithName(ce, bm.Name) {
 				clusterInfo.ReferencedBitmaps = append(clusterInfo.ReferencedBitmaps, bm)
 			}
 		}
@@ -351,6 +351,15 @@ func forceIncludeEntity(spec *spec.Specification, cluster *matter.Cluster, e typ
 		}
 	case *matter.Struct:
 		if _, ok := errata.SDK.ExtraTypes.Structs[e.Name]; ok {
+			return true
+		}
+	}
+	return false
+}
+
+func hasEntityWithName(ce map[types.Entity]struct{}, name string) bool {
+	for e := range ce {
+		if matter.EntityName(e) == name {
 			return true
 		}
 	}
