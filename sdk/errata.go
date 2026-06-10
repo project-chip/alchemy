@@ -65,6 +65,7 @@ func ApplyErrata(spec *spec.Specification, opts ...ApplyErrataOption) (err error
 		}
 	}
 	if addedExtraEntities {
+		spec.ResolveDataTypeReferences()
 		spec.BuildDataTypeReferences()
 		spec.BuildClusterReferences()
 	}
@@ -111,6 +112,28 @@ func applyErrataToCommand(st *matter.Command, typeNames map[string]string, typeO
 			}
 		}
 		applyErrataToFields(st.Fields, override)
+		for _, f := range override.ExtraFields {
+			var found bool
+			for _, field := range st.Fields {
+				if field.Name == f.Name {
+					found = true
+					break
+				}
+			}
+			if !found {
+				field := matter.NewField(nil, st, types.EntityTypeCommandField)
+				field.Name = f.Name
+				if f.Type != "" {
+					var rank types.DataTypeRank = types.DataTypeRankScalar
+					if f.List {
+						rank = types.DataTypeRankList
+					}
+					field.Type = types.ParseDataType(f.Type, rank)
+				}
+				applyErrataToField(field, f)
+				st.Fields = append(st.Fields, field)
+			}
+		}
 	}
 	st.Name = applyTypeName(typeNames, st.Name)
 }
@@ -146,6 +169,28 @@ func applyErrataToEvent(ev *matter.Event, typeNames map[string]string, typeOverr
 			ev.Access.FabricSensitivity = matter.FabricSensitivitySensitive
 		}
 		applyErrataToFields(ev.Fields, override)
+		for _, f := range override.ExtraFields {
+			var found bool
+			for _, field := range ev.Fields {
+				if field.Name == f.Name {
+					found = true
+					break
+				}
+			}
+			if !found {
+				field := matter.NewField(nil, ev, types.EntityTypeEventField)
+				field.Name = f.Name
+				if f.Type != "" {
+					var rank types.DataTypeRank = types.DataTypeRankScalar
+					if f.List {
+						rank = types.DataTypeRankList
+					}
+					field.Type = types.ParseDataType(f.Type, rank)
+				}
+				applyErrataToField(field, f)
+				ev.Fields = append(ev.Fields, field)
+			}
+		}
 	}
 	ev.Name = applyTypeName(typeNames, ev.Name)
 

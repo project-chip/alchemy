@@ -24,6 +24,28 @@ func applyErrataToStruct(st *matter.Struct, typeNames map[string]string, typeOve
 			st.FabricScoping = matter.FabricScopingScoped
 		}
 		applyErrataToFields(st.Fields, ast)
+		for _, f := range ast.ExtraFields {
+			var found bool
+			for _, field := range st.Fields {
+				if field.Name == f.Name {
+					found = true
+					break
+				}
+			}
+			if !found {
+				field := matter.NewField(nil, st, types.EntityTypeStructField)
+				field.Name = f.Name
+				if f.Type != "" {
+					var rank types.DataTypeRank = types.DataTypeRankScalar
+					if f.List {
+						rank = types.DataTypeRankList
+					}
+					field.Type = types.ParseDataType(f.Type, rank)
+				}
+				applyErrataToField(field, f)
+				st.Fields = append(st.Fields, field)
+			}
+		}
 	}
 	st.Name = applyTypeName(typeNames, st.Name)
 
