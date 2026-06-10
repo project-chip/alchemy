@@ -1,6 +1,6 @@
 {{#if provisional}}provisional {{/if ~}}
 {{#ifFabricSensitive event.Access}}fabric_sensitive {{/ifFabricSensitive ~}}
-{{toLower event.Priority}} event {{> access access=event.Access ~}}{{#ifOptional event.Conformance}}optional {{/ifOptional ~}}{{asUpperCamelCase event.Name}} = {{number event.ID}} {
+{{toLower event.Priority}} {{#ifOptional event.Conformance}}optional {{/ifOptional ~}}event {{> access access=event.Access ~}}{{asUpperCamelCase event.Name}} = {{number event.ID}} {
 {{#eventFields event}}
   {{> field cluster=cluster event=event field=this fieldset=event.Fields}}
 {{/eventFields}}
