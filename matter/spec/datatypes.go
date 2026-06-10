@@ -170,6 +170,9 @@ func (sp *Builder) resolveFieldDataTypes(library *Library, cluster *matter.Clust
 				local := finder.findEntityByIdentifier(matter.EntityName(dataType.Entity), field)
 				if local != nil {
 					dataType.Entity = local
+				} else {
+					slog.Error("failed to find local cloned entity for data type reference", slog.String("name", matter.EntityName(dataType.Entity)), slog.String("field", field.Name), slog.String("cluster", cluster.Name))
+					sp.Spec.addError(&MissingClonedEntityError{Entity: dataType.Entity, Field: field})
 				}
 			}
 		}

@@ -12,7 +12,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, errata errata.SDK, options applyErrataOptions) {
+func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, errata errata.SDK, options applyErrataOptions) error {
 	if errata.Types != nil {
 		ac, ok := errata.Types.Clusters[cluster.Name]
 		if ok {
@@ -31,7 +31,10 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 			if !ok {
 				continue
 			}
-			applyErrataToField(a, ao)
+			err := applyErrataToField(a, ao)
+			if err != nil {
+				return err
+			}
 		}
 		if cluster.Features != nil {
 			fc, ok := errata.Types.Bitmaps["Features"]
@@ -48,13 +51,22 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 		applyErrataToEnum(en, errata.TypeNames, errata.Types)
 	}
 	for _, s := range cluster.Structs {
-		applyErrataToStruct(s, errata.TypeNames, errata.Types)
+		err := applyErrataToStruct(s, errata.TypeNames, errata.Types)
+		if err != nil {
+			return err
+		}
 	}
 	for _, cmd := range cluster.Commands {
-		applyErrataToCommand(cmd, errata.TypeNames, errata.Types)
+		err := applyErrataToCommand(cmd, errata.TypeNames, errata.Types)
+		if err != nil {
+			return err
+		}
 	}
 	for _, ev := range cluster.Events {
-		applyErrataToEvent(ev, errata.TypeNames, errata.Types)
+		err := applyErrataToEvent(ev, errata.TypeNames, errata.Types)
+		if err != nil {
+			return err
+		}
 	}
 
 	if !options.skipSharedEntities {
@@ -114,6 +126,7 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 		}
 	}
 
+	return nil
 }
 
 func replaceSharedEntity[T types.Entity](spec *spec.Specification, cluster *matter.Cluster, parentCluster *matter.Cluster, entityName string, parentList []T, targetList []T, sharedEntities map[types.Entity]types.Entity) []T {

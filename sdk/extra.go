@@ -1,7 +1,7 @@
 package sdk
 
 import (
-	"log/slog"
+	"fmt"
 
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
@@ -11,9 +11,9 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func addExtraTypes(extraTypes *errata.SDKTypes, entities []types.Entity) {
+func addExtraTypes(extraTypes *errata.SDKTypes, entities []types.Entity) error {
 	if extraTypes == nil {
-		return
+		return nil
 	}
 
 	var extraEntities []types.Entity
@@ -92,18 +92,25 @@ func addExtraTypes(extraTypes *errata.SDKTypes, entities []types.Entity) {
 		switch v := m.(type) {
 		case *matter.ClusterGroup:
 			for _, cl := range v.Clusters {
-				addExtraAttributesAndCommandsToCluster(cl, extraTypes)
+				err := addExtraAttributesAndCommandsToCluster(cl, extraTypes)
+				if err != nil {
+					return err
+				}
 				for _, e := range extraEntities {
 					addExtraEntity(cl, e)
 				}
 			}
 		case *matter.Cluster:
-			addExtraAttributesAndCommandsToCluster(v, extraTypes)
+			err := addExtraAttributesAndCommandsToCluster(v, extraTypes)
+			if err != nil {
+				return err
+			}
 			for _, e := range extraEntities {
 				addExtraEntity(v, e)
 			}
 		}
 	}
+	return nil
 }
 
 func addExtraEntity(cluster *matter.Cluster, e types.Entity) {
@@ -135,24 +142,43 @@ func addExtraEntity(cluster *matter.Cluster, e types.Entity) {
 	}
 }
 
-func addExtraAttributesAndCommandsToCluster(cluster *matter.Cluster, extraTypes *errata.SDKTypes) {
+func addExtraAttributesAndCommandsToCluster(cluster *matter.Cluster, extraTypes *errata.SDKTypes) error {
 	if override, ok := extraTypes.Clusters[cluster.Name]; ok {
-		addExtraAttributes(cluster, override)
-		addExtraCommands(cluster, override)
-		addExtraEvents(cluster, override)
+		err := addExtraAttributes(cluster, override)
+		if err != nil {
+			return err
+		}
+		err = addExtraCommands(cluster, override)
+		if err != nil {
+			return err
+		}
+		err = addExtraEvents(cluster, override)
+		if err != nil {
+			return err
+		}
 	}
 	if len(extraTypes.Attributes) > 0 {
-		addExtraAttributes(cluster, &errata.SDKType{Attributes: extraTypes.Attributes})
+		err := addExtraAttributes(cluster, &errata.SDKType{Attributes: extraTypes.Attributes})
+		if err != nil {
+			return err
+		}
 	}
 	if len(extraTypes.Commands) > 0 {
-		addExtraCommands(cluster, &errata.SDKType{Commands: extraTypes.Commands})
+		err := addExtraCommands(cluster, &errata.SDKType{Commands: extraTypes.Commands})
+		if err != nil {
+			return err
+		}
 	}
 	if len(extraTypes.Events) > 0 {
-		addExtraEvents(cluster, &errata.SDKType{Events: extraTypes.Events})
+		err := addExtraEvents(cluster, &errata.SDKType{Events: extraTypes.Events})
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-func addExtraEvents(cluster *matter.Cluster, extra *errata.SDKType) {
+func addExtraEvents(cluster *matter.Cluster, extra *errata.SDKType) error {
 	existingEvents := make(map[string]struct{}, len(cluster.Events))
 	for _, ev := range cluster.Events {
 		existingEvents[ev.Name] = struct{}{}
@@ -174,7 +200,7 @@ func addExtraEvents(cluster *matter.Cluster, extra *errata.SDKType) {
 			var parsed bool
 			event.Access, parsed = spec.ParseAccess(ev.Access, types.EntityTypeEvent)
 			if !parsed {
-				slog.Warn("failed to parse access string for extra event from errata", slog.String("cluster", cluster.Name), slog.String("event", name), slog.String("access", ev.Access))
+				return fmt.Errorf("failed to parse access string %q for extra event %s in cluster %s from errata", ev.Access, name, cluster.Name)
 			}
 		}
 		if ev.Conformance != "" {
@@ -209,10 +235,11 @@ func addExtraEvents(cluster *matter.Cluster, extra *errata.SDKType) {
 		event.SetParent(cluster)
 		cluster.Events = append(cluster.Events, event)
 	}
+	return nil
 }
 
 
-func addExtraAttributes(cluster *matter.Cluster, extra *errata.SDKType) {
+func addExtraAttributes(cluster *matter.Cluster, extra *errata.SDKType) error {
 	existingAttributes := make(map[string]struct{}, len(cluster.Attributes))
 	for _, f := range cluster.Attributes {
 		existingAttributes[f.Name] = struct{}{}
@@ -238,7 +265,7 @@ func addExtraAttributes(cluster *matter.Cluster, extra *errata.SDKType) {
 			var parsed bool
 			field.Access, parsed = spec.ParseAccess(a.Access, types.EntityTypeAttribute)
 			if !parsed {
-				slog.Warn("failed to parse access string for extra attribute from errata", slog.String("cluster", cluster.Name), slog.String("attribute", name), slog.String("access", a.Access))
+				return fmt.Errorf("failed to parse access string %q for extra attribute %s in cluster %s from errata", a.Access, name, cluster.Name)
 			}
 		}
 		if a.Conformance != "" {
@@ -257,9 +284,10 @@ func addExtraAttributes(cluster *matter.Cluster, extra *errata.SDKType) {
 		field.SetParent(cluster)
 		cluster.Attributes = append(cluster.Attributes, field)
 	}
+	return nil
 }
 
-func addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) {
+func addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) error {
 	existingCommands := make(map[string]struct{}, len(cluster.Commands))
 	for _, cmd := range cluster.Commands {
 		existingCommands[cmd.Name] = struct{}{}
@@ -278,7 +306,7 @@ func addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) {
 			var parsed bool
 			command.Access, parsed = spec.ParseAccess(cmd.Access, types.EntityTypeCommand)
 			if !parsed {
-				slog.Warn("failed to parse access string for extra command from errata", slog.String("cluster", cluster.Name), slog.String("command", name), slog.String("access", cmd.Access))
+				return fmt.Errorf("failed to parse access string %q for extra command %s in cluster %s from errata", cmd.Access, name, cluster.Name)
 			}
 		}
 		if cmd.Conformance != "" {
@@ -344,6 +372,7 @@ func addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) {
 			}
 		}
 	}
+	return nil
 }
 
 func resolveExtraConformance(cluster *matter.Cluster, conf conformance.Conformance) {

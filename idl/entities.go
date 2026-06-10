@@ -76,7 +76,7 @@ func isShared(spec *spec.Specification, en types.Entity) bool {
 	var cluster *matter.Cluster
 	var name string
 	var isTargetType bool
-	switch entity := any(en).(type) {
+	switch entity := en.(type) {
 	case *matter.Struct:
 		cluster = entity.Cluster()
 		name = entity.Name
@@ -104,7 +104,7 @@ func isShared(spec *spec.Specification, en types.Entity) bool {
 	if errata == nil {
 		return false
 	}
-	switch any(en).(type) {
+	switch en.(type) {
 	case *matter.Struct:
 		_, ok = errata.SDK.SharedStructs[name]
 		return ok
@@ -264,11 +264,24 @@ func parseExistingMatterElements(path string) (map[string]bool, error) {
 			if accessIdx == -1 {
 				break
 			}
-			closeIdx := strings.Index(trimmed[accessIdx:], ")")
+			depth := 1
+			closeIdx := -1
+			startSearch := accessIdx + len("access(")
+			for i := startSearch; i < len(trimmed); i++ {
+				if trimmed[i] == '(' {
+					depth++
+				} else if trimmed[i] == ')' {
+					depth--
+					if depth == 0 {
+						closeIdx = i
+						break
+					}
+				}
+			}
 			if closeIdx == -1 {
 				break
 			}
-			trimmed = trimmed[:accessIdx] + " " + trimmed[accessIdx+closeIdx+1:]
+			trimmed = trimmed[:accessIdx] + " " + trimmed[closeIdx+1:]
 		}
 
 		if strings.HasPrefix(trimmed, "cluster ") || strings.Contains(trimmed, " cluster ") {

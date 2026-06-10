@@ -777,3 +777,20 @@ func (ccme ConformanceChoiceMismatchError) Error() string {
 
 	return fmt.Sprintf("mismatch in choice limit \"%s\": %s vs. %s", ccme.Set, limit, previous)
 }
+
+type MissingClonedEntityError struct {
+	Entity types.Entity
+	Field  *matter.Field
+}
+
+func (mcee *MissingClonedEntityError) Type() ErrorType {
+	return ErrorTypeUnknown
+}
+
+func (mcee *MissingClonedEntityError) Origin() (path string, line int) {
+	return mcee.Field.Origin()
+}
+
+func (mcee *MissingClonedEntityError) Error() string {
+	return fmt.Sprintf("failed to find local clone of entity %s for field %s", matter.EntityName(mcee.Entity), mcee.Field.Name)
+}
