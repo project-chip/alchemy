@@ -44,7 +44,7 @@ func (library *Library) toBitmap(reader asciidoc.Reader, d *asciidoc.Document, s
 		}
 	} else {
 		for row := range ti.ContentRows() {
-			var bit, name, summary string
+			var bit, name, summary, instructionDependency string
 			var conf conformance.Set
 			name, err = ti.ReadValue(reader, row, matter.TableColumnName)
 			if err != nil {
@@ -52,6 +52,10 @@ func (library *Library) toBitmap(reader asciidoc.Reader, d *asciidoc.Document, s
 			}
 			name = matter.StripTypeSuffixes(name)
 			summary, err = ti.ReadValue(reader, row, matter.TableColumnSummary, matter.TableColumnDescription)
+			if err != nil {
+				return
+			}
+			instructionDependency, err = ti.ReadString(reader, row, matter.TableColumnInstructionDependency)
 			if err != nil {
 				return
 			}
@@ -73,6 +77,7 @@ func (library *Library) toBitmap(reader asciidoc.Reader, d *asciidoc.Document, s
 				name = matter.Case(summary)
 			}
 			bv := matter.NewBitmapBit(section, bm, bit, CanonicalName(name), summary, conf)
+			bv.SetInstructionDependency(instructionDependency)
 			bm.AddBit(bv)
 		}
 	}

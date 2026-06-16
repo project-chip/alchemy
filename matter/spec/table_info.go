@@ -436,7 +436,7 @@ func readRowCellValueElements(reader asciidoc.Reader, row *asciidoc.TableRow, pa
 				continue
 			}
 			value.WriteString(qt)
-		case *asciidoc.SpecialCharacter:
+		case asciidoc.SpecialCharacter:
 			value.WriteString(el.Character)
 		case *asciidoc.InlinePassthrough:
 			value.WriteString("+")
