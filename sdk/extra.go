@@ -248,9 +248,9 @@ func addExtraEvents(cluster *matter.Cluster, extra *errata.SDKType) error {
 			}
 			if f.Access != "" {
 				var parsed bool
-				field.Access, parsed = spec.ParseAccess(f.Access, types.EntityTypeCommandField)
+				field.Access, parsed = spec.ParseAccess(f.Access, types.EntityTypeEventField)
 				if !parsed {
-					fmt.Printf("failed to parse access string %q for extra command field %s\n", f.Access, f.Name)
+					fmt.Printf("failed to parse access string %q for extra event field %s\n", f.Access, f.Name)
 				}
 			}
 			event.Fields = append(event.Fields, field)
