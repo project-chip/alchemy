@@ -226,6 +226,8 @@ func ParseDataTypeName(typeName string) (baseType BaseDataType, name string) {
 		name = "SemanticTagStruct"
 	case "status", "statuscode", "status code":
 		baseType = BaseDataTypeStatus
+	case "medium-type":
+		baseType = BaseDataTypeMediumType
 	case "priority":
 		baseType = BaseDataTypePriority
 	case "messageid":

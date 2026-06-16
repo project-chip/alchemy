@@ -50,7 +50,7 @@ func ToUnderlyingType(dt types.BaseDataType) types.BaseDataType {
 		return types.BaseDataTypeUInt8
 	case types.BaseDataTypePercentHundredths:
 		return types.BaseDataTypeUInt16
-	case types.BaseDataTypeFabricIndex, types.BaseDataTypePriority, types.BaseDataTypeStatus, types.BaseDataTypeActionID:
+	case types.BaseDataTypeFabricIndex, types.BaseDataTypePriority, types.BaseDataTypeStatus, types.BaseDataTypeMediumType, types.BaseDataTypeActionID:
 		return types.BaseDataTypeUInt8
 	case types.BaseDataTypeGroupID, types.BaseDataTypeEndpointNumber, types.BaseDataTypeVendorID, types.BaseDataTypeEntryIndex:
 		return types.BaseDataTypeUInt16

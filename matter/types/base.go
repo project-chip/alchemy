@@ -60,6 +60,7 @@ const (
 	BaseDataTypeEnum16
 	BaseDataTypePriority
 	BaseDataTypeStatus
+	BaseDataTypeMediumType
 
 	BaseDataTypeGroupID
 	BaseDataTypeEndpointID
@@ -257,6 +258,8 @@ func BaseDataTypeName(baseDataType BaseDataType) string {
 		return "priority"
 	case BaseDataTypeStatus:
 		return "status"
+	case BaseDataTypeMediumType:
+		return "medium-type"
 	case BaseDataTypeGroupID:
 		return "group-id"
 	case BaseDataTypeEndpointID:

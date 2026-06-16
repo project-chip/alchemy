@@ -285,6 +285,8 @@ func DataTypeName(dataType *types.DataType) string {
 		return "octet_string"
 	case types.BaseDataTypeStatus:
 		return "status"
+	case types.BaseDataTypeMediumType:
+		return "medium_type"
 	}
 	return dataType.Name
 }

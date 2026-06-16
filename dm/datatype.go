@@ -155,6 +155,8 @@ func dataModelName(dataType *types.DataType) string {
 		return "devtype-id"
 	case types.BaseDataTypeStatus:
 		return "status"
+	case types.BaseDataTypeMediumType:
+		return "medium-type"
 	case types.BaseDataTypeEndpointID:
 		return "endpoint-id"
 	case types.BaseDataTypeTag:

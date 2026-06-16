@@ -34,7 +34,7 @@ func (dt *DataType) NullValue() uint64 {
 		return 0x80000000000000
 	case BaseDataTypeInt64, BaseDataTypeAmperage, BaseDataTypeVoltage, BaseDataTypePower, BaseDataTypeEnergy, BaseDataTypeApparentEnergy, BaseDataTypeApparentPower, BaseDataTypeReactiveEnergy, BaseDataTypeReactivePower, BaseDataTypeMoney:
 		return 0x8000000000000000
-	case BaseDataTypeUInt8, BaseDataTypeBoolean, BaseDataTypeMap8, BaseDataTypeEnum8, BaseDataTypePercent, BaseDataTypePriority, BaseDataTypeStatus, BaseDataTypeUnsignedTemperature, BaseDataTypeActionID, BaseDataTypeNamespaceID, BaseDataTypeTag:
+	case BaseDataTypeUInt8, BaseDataTypeBoolean, BaseDataTypeMap8, BaseDataTypeEnum8, BaseDataTypePercent, BaseDataTypePriority, BaseDataTypeStatus, BaseDataTypeMediumType, BaseDataTypeUnsignedTemperature, BaseDataTypeActionID, BaseDataTypeNamespaceID, BaseDataTypeTag:
 		return math.MaxUint8
 	case BaseDataTypeUInt16, BaseDataTypeMap16, BaseDataTypeEnum16, BaseDataTypePercentHundredths, BaseDataTypeGroupID, BaseDataTypeEndpointID, BaseDataTypeEndpointNumber, BaseDataTypeVendorID, BaseDataTypeEntryIndex:
 		return math.MaxUint16
