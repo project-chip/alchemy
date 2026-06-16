@@ -84,6 +84,19 @@ func addExtraTypes(extraTypes *errata.SDKTypes, entities []types.Entity) error {
 			} else {
 				f.Conformance = conformance.Set{&conformance.Mandatory{}}
 			}
+			if ef.Fallback != "" {
+				f.Fallback = constraint.ParseLimit(ef.Fallback)
+			}
+			if ef.Quality != "" {
+				f.Quality = matter.ParseQuality(ef.Quality)
+			}
+			if ef.Access != "" {
+				var parsed bool
+				f.Access, parsed = spec.ParseAccess(ef.Access, types.EntityTypeStructField)
+				if !parsed {
+					fmt.Printf("failed to parse access string %q for extra struct field %s\n", ef.Access, ef.Name)
+				}
+			}
 			s.Fields = append(s.Fields, f)
 		}
 		extraEntities = append(extraEntities, s)
@@ -230,6 +243,16 @@ func addExtraEvents(cluster *matter.Cluster, extra *errata.SDKType) error {
 			if f.Fallback != "" {
 				field.Fallback = constraint.ParseLimit(f.Fallback)
 			}
+			if f.Quality != "" {
+				field.Quality = matter.ParseQuality(f.Quality)
+			}
+			if f.Access != "" {
+				var parsed bool
+				field.Access, parsed = spec.ParseAccess(f.Access, types.EntityTypeCommandField)
+				if !parsed {
+					fmt.Printf("failed to parse access string %q for extra command field %s\n", f.Access, f.Name)
+				}
+			}
 			event.Fields = append(event.Fields, field)
 		}
 		event.SetParent(cluster)
@@ -346,6 +369,16 @@ func addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) error {
 			}
 			if f.Fallback != "" {
 				field.Fallback = constraint.ParseLimit(f.Fallback)
+			}
+			if f.Quality != "" {
+				field.Quality = matter.ParseQuality(f.Quality)
+			}
+			if f.Access != "" {
+				var parsed bool
+				field.Access, parsed = spec.ParseAccess(f.Access, types.EntityTypeCommandField)
+				if !parsed {
+					fmt.Printf("failed to parse access string %q for extra command field %s\n", f.Access, f.Name)
+				}
 			}
 			command.Fields = append(command.Fields, field)
 		}
