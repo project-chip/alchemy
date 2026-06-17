@@ -92,6 +92,9 @@ type SDKType struct {
 	OverrideName string `yaml:"override-name,omitempty"`
 	OverrideType string `yaml:"override-type,omitempty"`
 	List         bool   `yaml:"list,omitempty"`
+	Keep         bool   `yaml:"keep,omitempty"`
+	ForceGlobal  bool   `yaml:"force-global,omitempty"`
+	ForceLocal   bool   `yaml:"force-local,omitempty"`
 
 	Fields      []*SDKType `yaml:"fields,omitempty"`
 	ExtraFields []*SDKType `yaml:"extra-fields,omitempty"`
