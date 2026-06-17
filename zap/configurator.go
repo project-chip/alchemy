@@ -66,8 +66,10 @@ func NewConfigurator(spec *spec.Specification, docs []*asciidoc.Document, entiti
 
 		ExternalEntities: make(map[types.Entity]struct{}),
 	}
-	if len(docs) > 0 {
-		//c.Domain = matter.DomainNames[docs[0].Domain]
+	if errata != nil && errata.Domain != "" {
+		c.Domain = errata.Domain
+	} else {
+		c.Domain = "CHIP"
 	}
 
 	for _, m := range entities {

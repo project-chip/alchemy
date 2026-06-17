@@ -14,6 +14,7 @@ type SDK struct {
 	ClusterName                  string              `yaml:"cluster-name,omitempty"`
 	ClusterAliases               map[string][]string `yaml:"cluster-aliases,omitempty"`
 	ClusterListKeys              map[string]string   `yaml:"cluster-list-keys,omitempty"`
+	Domain                       string              `yaml:"domain,omitempty"`
 
 	WritePrivilegeAsRole bool `yaml:"write-privilege-as-role,omitempty"`
 

@@ -35,3 +35,8 @@ type conditionalAttributes struct {
 	names []asciidoc.AttributeName
 	union asciidoc.ConditionalUnion
 }
+
+type crossReferenceBrackets struct {
+	Label      asciidoc.Elements
+	Attributes []asciidoc.Attribute
+}

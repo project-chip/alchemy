@@ -39,24 +39,65 @@ CrossReferenceLabel = (
 
 CrossReferenceMacroStart = "xref:"
 
-CrossReferenceMacroLabelElement = ("\\]" / InlineElement / NewLine) 
+CrossReferenceMacro = CrossReferenceMacroStart path:(Path) brackets:(CrossReferenceMacroBrackets)? {
+    debugPosition(c, "matched document cross reference: %s\n", string(c.text))
+    cr := asciidoc.NewCrossReference(path.(asciidoc.Elements), asciidoc.CrossReferenceFormatMacro)
+    if brackets != nil {
+        b := brackets.(*crossReferenceBrackets)
+        if len(b.Attributes) > 0 {
+            err := cr.ReadAttributes(cr, b.Attributes...)
+            if err != nil {
+                return nil, err
+            }
+        }
+        if len(b.Label) > 0 {
+            cr.SetChildren(b.Label)
+        }
+    }
+    return compose(c, cr)
+}
 
-CrossReferenceMacroLabelContent = (!CrossReferenceMacroLabelEnd CrossReferenceMacroLabelElement)+ 
-
-CrossReferenceMacroLabel = CrossReferenceMacroLabelStart content:(CrossReferenceMacroLabelContent)* CrossReferenceMacroLabelEnd {
-    debugPosition(c, "matched cross reference label content: %s\n", string(c.text))
+CrossReferenceMacroBrackets = "[" content:(
+      attrs:CrossReferenceMacroNamedAttributes {
+          return &crossReferenceBrackets{Attributes: attrs.([]asciidoc.Attribute)}, nil
+      }
+    / label:CrossReferenceMacroLabel attrs:(AnySpaces "," AnySpaces attrs:CrossReferenceMacroNamedAttributes { return attrs, nil })? {
+          var namedAttrs []asciidoc.Attribute
+          if attrs != nil {
+              namedAttrs = attrs.([]asciidoc.Attribute)
+          }
+          return &crossReferenceBrackets{Label: label.(asciidoc.Elements), Attributes: namedAttrs}, nil
+      }
+    / AnySpaces {
+          return &crossReferenceBrackets{}, nil
+      }
+) "]" {
     return content, nil
 }
 
-CrossReferenceMacroLabelStart = "["
-
-CrossReferenceMacroLabelEnd = !"\\" "]"
-
-CrossReferenceMacro = CrossReferenceMacroStart path:(Path) label:(CrossReferenceMacroLabel) {
-    debugPosition(c, "matched document cross reference: %s\n", string(c.text))
-    var lbl asciidoc.Elements
-    if label != nil {
-        lbl = join(label.([]any))
+CrossReferenceMacroNamedAttributes = head:CrossReferenceMacroNamedAttribute tail:(AnySpaces "," AnySpaces attr:CrossReferenceMacroNamedAttribute { return attr, nil })* {
+    var attrs []asciidoc.Attribute
+    attrs = append(attrs, head.(asciidoc.Attribute))
+    if tail != nil {
+        for _, a := range tail.([]any) {
+            attrs = append(attrs, a.(asciidoc.Attribute))
+        }
     }
-    return compose(c, asciidoc.NewCrossReference(path.(asciidoc.Elements), asciidoc.CrossReferenceFormatMacro), setElements[*asciidoc.CrossReference](lbl))
+    return attrs, nil
 }
+
+CrossReferenceMacroNamedAttribute = name:(NamedAttributeName) AnySpaces "=" AnySpaces value:(SingleQuoteAttributeValue / DoubleQuoteAttributeValue / NakedAttributeValue) {
+    return asciidoc.NewNamedAttribute(name.(string), value.(*attributeValue).value, value.(*attributeValue).quote), nil
+}
+
+CrossReferenceMacroLabel = content:(CrossReferenceMacroLabelElement)* {
+    return join(flat(content.([]any))), nil
+}
+
+CrossReferenceMacroLabelElement = (
+      `\,` { return asciidoc.NewString(string(c.text)), nil }
+    / `\]` { return asciidoc.NewString(string(c.text)), nil }
+    / !( "," / "]" ) el:(InlineElement / NewLine / [^\r\n]) {
+          return el, nil
+      }
+)

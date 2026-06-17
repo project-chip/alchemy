@@ -116,6 +116,7 @@ NakedAttributeValueElement = (!AttributeReference NakedAttributeValueCharacter)
 
 NakedAttributeValueCharacter = (
     _ / 
+    ( "\\" [=\],] { return string(c.text), nil } ) /
     [^=\], ]
 )
 
