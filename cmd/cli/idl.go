@@ -16,7 +16,7 @@ import (
 )
 
 type IDL struct {
-	IDLRegen           IDLRegen              `cmd:"" name:"regen"`
+	IDLRegen              IDLRegen              `cmd:"" name:"regen"`
 	IDLControllerClusters IDLControllerClusters `cmd:"" name:"controller-clusters"`
 }
 

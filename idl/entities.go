@@ -254,5 +254,3 @@ func entityPath(e types.Entity) string {
 	}
 	return strings.Join(parts, ".")
 }
-
-

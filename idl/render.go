@@ -3,21 +3,20 @@ package idl
 import (
 	"context"
 	"embed"
-	"log/slog"
-	"path/filepath"
-	"slices"
-	"strings"
-	"github.com/project-chip/alchemy/internal/text"
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/handlebars"
 	"github.com/project-chip/alchemy/internal/pipeline"
-
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/provisional"
+	"log/slog"
+	"path/filepath"
+	"slices"
+	"strings"
 )
 
 //go:embed templates
@@ -189,8 +188,6 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 		return parse.SearchShouldContinue
 	})
 
-
-
 	for entity, isGlobal := range globalEntities {
 		if !isGlobal {
 			continue
@@ -360,8 +357,6 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 		tc["endpoints"] = nil
 	}
 
-
-
 	var out string
 	out, err = t.Exec(tc)
 	if err != nil {
@@ -456,5 +451,3 @@ func getClusterFileName(clusterName string) string {
 	name = text.ToIDLSnakeCase(name)
 	return name + ".matter"
 }
-
-
