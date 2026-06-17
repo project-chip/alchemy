@@ -190,9 +190,26 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 		return parse.SearchShouldContinue
 	})
 
-	for c, ce := range clusterEntities {
-		doc, ok := p.spec.DocRefs[c]
+	originalToClone := make(map[*matter.Cluster]*matter.Cluster)
+	cloneToOriginal := make(map[*matter.Cluster]*matter.Cluster)
+	for _, ci := range clusterList {
+		originalC := ci.Cluster
+		cClone := *originalC
+		cClone.Enums = slices.Clone(cClone.Enums)
+		cClone.Bitmaps = slices.Clone(cClone.Bitmaps)
+		cClone.Structs = slices.Clone(cClone.Structs)
+		ci.Cluster = &cClone
+		originalToClone[originalC] = &cClone
+		cloneToOriginal[&cClone] = originalC
+	}
+
+	for originalC, ce := range clusterEntities {
+		c := originalToClone[originalC]
+		doc, ok := p.spec.DocRefs[originalC]
 		if !ok {
+			continue
+		}
+		if p.spec.Errata == nil {
 			continue
 		}
 		errata := p.spec.Errata.Get(doc.Path.Relative)
@@ -284,7 +301,7 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 			namespaces[name] = ns
 		}
 		doc, ok := p.spec.DocRefs[ns]
-		if ok {
+		if ok && p.spec.Errata != nil {
 			errata := p.spec.Errata.Get(doc.Path.Relative)
 			if errata != nil && errata.SDK.Types != nil {
 				if entry, ok := errata.SDK.Types.Enums[name+"Tag"]; ok && entry.OverrideName != "" {
@@ -302,7 +319,7 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 			en.Name = fieldName + "Tag"
 		}
 		doc, ok := p.spec.DocRefs[ns]
-		if ok {
+		if ok && p.spec.Errata != nil {
 			errata := p.spec.Errata.Get(doc.Path.Relative)
 			if errata != nil && errata.SDK.Types != nil {
 				if entry, ok := errata.SDK.Types.Enums[en.Name]; ok && entry.OverrideName != "" {
@@ -318,9 +335,13 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 			en.Values = append(en.Values, nst)
 		}
 		globalEnums = append(globalEnums, en)
-		for c, ce := range clusterEntities {
-			doc, ok := p.spec.DocRefs[c]
+		for originalC, ce := range clusterEntities {
+			c := originalToClone[originalC]
+			doc, ok := p.spec.DocRefs[originalC]
 			if !ok {
+				continue
+			}
+			if p.spec.Errata == nil {
 				continue
 			}
 			errata := p.spec.Errata.Get(doc.Path.Relative)
@@ -356,13 +377,14 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 	})
 
 	for _, clusterInfo := range clusterList {
-		ce, ok := clusterEntities[clusterInfo.Cluster]
+		originalC := cloneToOriginal[clusterInfo.Cluster]
+		ce, ok := clusterEntities[originalC]
 		if !ok {
 			continue
 		}
 
 		var errata *errata.Errata
-		if doc, ok := p.spec.DocRefs[clusterInfo.Cluster]; ok && p.spec.Errata != nil {
+		if doc, ok := p.spec.DocRefs[originalC]; ok && p.spec.Errata != nil {
 			errata = p.spec.Errata.Get(doc.Path.Relative)
 		}
 
@@ -422,7 +444,8 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 	if p.PerTrait {
 		for _, clusterInfo := range clusterList {
 			c := clusterInfo.Cluster
-			ce := clusterEntities[c]
+			originalC := cloneToOriginal[c]
+			ce := clusterEntities[originalC]
 
 			ceNames := make(map[string]struct{}, len(ce))
 			for e := range ce {
@@ -431,12 +454,12 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 
 			var clusterGlobalEnums []*matter.Enum
 			var errata *errata.Errata
-			if doc, ok := p.spec.DocRefs[c]; ok && p.spec.Errata != nil {
+			if doc, ok := p.spec.DocRefs[originalC]; ok && p.spec.Errata != nil {
 				errata = p.spec.Errata.Get(doc.Path.Relative)
 			}
 
-			for i := 0; i < len(c.Enums); {
-				local := c.Enums[i]
+			var localEnums []*matter.Enum
+			for _, local := range c.Enums {
 				globalForced := false
 				if errata != nil && errata.SDK.Types != nil {
 					if entry, ok := errata.SDK.Types.Enums[local.Name]; ok && entry.ForceGlobal {
@@ -445,11 +468,11 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 				}
 				if globalForced {
 					clusterGlobalEnums = append(clusterGlobalEnums, local)
-					c.Enums = append(c.Enums[:i], c.Enums[i+1:]...)
 				} else {
-					i++
+					localEnums = append(localEnums, local)
 				}
 			}
+			c.Enums = localEnums
 
 			for _, en := range globalEnums {
 				if _, ok := ceNames[en.Name]; ok {
@@ -466,8 +489,8 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 				}
 			}
 			var clusterGlobalBitmaps []*matter.Bitmap
-			for i := 0; i < len(c.Bitmaps); {
-				local := c.Bitmaps[i]
+			var localBitmaps []*matter.Bitmap
+			for _, local := range c.Bitmaps {
 				globalForced := false
 				if errata != nil && errata.SDK.Types != nil {
 					if entry, ok := errata.SDK.Types.Bitmaps[local.Name]; ok && entry.ForceGlobal {
@@ -476,11 +499,11 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 				}
 				if globalForced {
 					clusterGlobalBitmaps = append(clusterGlobalBitmaps, local)
-					c.Bitmaps = append(c.Bitmaps[:i], c.Bitmaps[i+1:]...)
 				} else {
-					i++
+					localBitmaps = append(localBitmaps, local)
 				}
 			}
+			c.Bitmaps = localBitmaps
 			for _, bm := range globalBitmaps {
 				if _, ok := ceNames[bm.Name]; ok {
 					isLocal := false
@@ -496,8 +519,8 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 				}
 			}
 			var clusterGlobalStructs []*matter.Struct
-			for i := 0; i < len(c.Structs); {
-				local := c.Structs[i]
+			var localStructs []*matter.Struct
+			for _, local := range c.Structs {
 				globalForced := false
 				if errata != nil && errata.SDK.Types != nil {
 					if entry, ok := errata.SDK.Types.Structs[local.Name]; ok && entry.ForceGlobal {
@@ -506,11 +529,11 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 				}
 				if globalForced {
 					clusterGlobalStructs = append(clusterGlobalStructs, local)
-					c.Structs = append(c.Structs[:i], c.Structs[i+1:]...)
 				} else {
-					i++
+					localStructs = append(localStructs, local)
 				}
 			}
+			c.Structs = localStructs
 			for _, s := range globalStructs {
 				if _, ok := ceNames[s.Name]; ok {
 					isLocal := false
@@ -644,20 +667,17 @@ func getClusterFileName(clusterName string) string {
 }
 
 func idlNameToLowerSnakeCase(text string) string {
-	replaceTerms := map[string]string{
-		"BLE":   "Ble",
-		"IDs":   "Ids",
-		"IPv4":  "Ipv4",
-		"IPv6":  "Ipv6",
-		"iOS":   "Ios",
-		"Int8U": "Int8u",
-		"KWh":   "Kwh",
-		"KVAh":  "Kvah",
-	}
-
-	for old, new := range replaceTerms {
-		text = strings.ReplaceAll(text, old, new)
-	}
+	replacer := strings.NewReplacer(
+		"BLE", "Ble",
+		"IDs", "Ids",
+		"IPv4", "Ipv4",
+		"IPv6", "Ipv6",
+		"iOS", "Ios",
+		"Int8U", "Int8u",
+		"KWh", "Kwh",
+		"KVAh", "Kvah",
+	)
+	text = replacer.Replace(text)
 
 	runes := []rune(text)
 	if len(runes) == 0 {
