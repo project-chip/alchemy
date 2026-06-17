@@ -132,6 +132,9 @@ func (s *SDK) Merge(other *SDK) {
 	if other.WritePrivilegeAsRole {
 		s.WritePrivilegeAsRole = true
 	}
+	if other.Domain != "" {
+		s.Domain = other.Domain
+	}
 
 	s.SeparateStructs.Merge(other.SeparateStructs)
 	s.SeparateBitmaps.Merge(other.SeparateBitmaps)
