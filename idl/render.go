@@ -95,14 +95,6 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 	filter := ProvisionalFilter{
 		Mode: p.SuppressProvisional,
 	}
-	if p.SuppressProvisional == "keep-existing" {
-		elements, err := parseExistingMatterElements(path)
-		if err != nil {
-			slog.Warn("Failed to parse existing matter file for provisional elements", slog.String("path", path), slog.Any("err", err))
-		} else {
-			filter.ExistingElements = elements
-		}
-	}
 	p.provisionalFilter = filter
 
 	var endpoints []Endpoint

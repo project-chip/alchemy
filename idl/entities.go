@@ -1,7 +1,6 @@
 package idl
 
 import (
-	"os"
 	"strings"
 
 	"github.com/mailgun/raymond/v2"
@@ -14,8 +13,7 @@ import (
 )
 
 type ProvisionalFilter struct {
-	Mode             string
-	ExistingElements map[string]bool
+	Mode string
 }
 
 func entityShouldBeIncluded(spec *spec.Specification, filter ProvisionalFilter, e types.Entity) bool {
@@ -29,9 +27,6 @@ func entityShouldBeIncluded(spec *spec.Specification, filter ProvisionalFilter, 
 	}
 
 	if filter.Mode != "none" && isProvisional(spec, e) {
-		if filter.Mode == "keep-existing" && isElementPresent(filter.ExistingElements, e) {
-			return true
-		}
 		return false
 	}
 	return true
@@ -258,205 +253,4 @@ func entityPath(e types.Entity) string {
 	return strings.Join(parts, ".")
 }
 
-func isElementPresent(existing map[string]bool, e types.Entity) bool {
-	if len(existing) == 0 {
-		return false
-	}
-	path := strings.ToLower(entityPath(e))
-	return existing[path]
-}
 
-func parseExistingMatterElements(path string) (map[string]bool, error) {
-	elements := make(map[string]bool)
-	contentBytes, err := os.ReadFile(path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return elements, nil
-		}
-		return nil, err
-	}
-	content := string(contentBytes)
-	lines := strings.Split(content, "\n")
-
-	var currentCluster string
-
-	type blockContext struct {
-		blockType string
-		blockName string
-	}
-	var stack []blockContext
-
-	getCurrentPath := func(name string) string {
-		var pathParts []string
-		if currentCluster != "" {
-			pathParts = append(pathParts, currentCluster)
-		}
-		for _, ctx := range stack {
-			if ctx.blockType != "cluster" && ctx.blockName != "" {
-				if ctx.blockType == "event" || ctx.blockType == "command" || ctx.blockType == "attribute" {
-					pathParts = append(pathParts, ctx.blockType, ctx.blockName)
-				} else {
-					pathParts = append(pathParts, ctx.blockName)
-				}
-			}
-		}
-		if name != "" {
-			pathParts = append(pathParts, name)
-		}
-		return strings.ToLower(strings.Join(pathParts, "."))
-	}
-
-	for _, line := range lines {
-		trimmed := strings.TrimSpace(line)
-		if trimmed == "" || strings.HasPrefix(trimmed, "//") || strings.HasPrefix(trimmed, "/*") || strings.HasPrefix(trimmed, "*") {
-			continue
-		}
-		for {
-			accessIdx := strings.Index(trimmed, "access(")
-			if accessIdx == -1 {
-				break
-			}
-			depth := 1
-			closeIdx := -1
-			startSearch := accessIdx + len("access(")
-			for i := startSearch; i < len(trimmed); i++ {
-				if trimmed[i] == '(' {
-					depth++
-				} else if trimmed[i] == ')' {
-					depth--
-					if depth == 0 {
-						closeIdx = i
-						break
-					}
-				}
-			}
-			if closeIdx == -1 {
-				break
-			}
-			trimmed = trimmed[:accessIdx] + " " + trimmed[closeIdx+1:]
-		}
-
-		if strings.HasPrefix(trimmed, "cluster ") || strings.Contains(trimmed, " cluster ") {
-			parts := strings.Fields(trimmed)
-			for idx, word := range parts {
-				if word == "cluster" && idx+1 < len(parts) {
-					name := strings.TrimSuffix(parts[idx+1], "{")
-					currentCluster = strings.TrimSpace(name)
-					elements[strings.ToLower(currentCluster)] = true
-					break
-				}
-			}
-		}
-
-		var declType, declName string
-
-		if strings.HasPrefix(trimmed, "enum ") || strings.Contains(trimmed, " enum ") {
-			parts := strings.Fields(trimmed)
-			for idx, word := range parts {
-				if word == "enum" && idx+1 < len(parts) {
-					name := parts[idx+1]
-					name = strings.Split(name, ":")[0]
-					name = strings.TrimSuffix(name, "{")
-					declName = strings.TrimSpace(name)
-					declType = "enum"
-					break
-				}
-			}
-		} else if strings.HasPrefix(trimmed, "bitmap ") || strings.Contains(trimmed, " bitmap ") {
-			parts := strings.Fields(trimmed)
-			for idx, word := range parts {
-				if word == "bitmap" && idx+1 < len(parts) {
-					name := parts[idx+1]
-					name = strings.Split(name, ":")[0]
-					name = strings.TrimSuffix(name, "{")
-					declName = strings.TrimSpace(name)
-					declType = "bitmap"
-					break
-				}
-			}
-		} else if (strings.HasPrefix(trimmed, "struct ") || strings.Contains(trimmed, " struct ")) && !strings.Contains(trimmed, "attribute ") {
-			parts := strings.Fields(trimmed)
-			for idx, word := range parts {
-				if word == "struct" && idx+1 < len(parts) {
-					name := parts[idx+1]
-					name = strings.TrimSuffix(name, "{")
-					name = strings.Split(name, "=")[0]
-					declName = strings.TrimSpace(name)
-					declType = "struct"
-					break
-				}
-			}
-		} else if strings.Contains(trimmed, " event ") && !strings.Contains(trimmed, "attribute ") && !strings.Contains(trimmed, "command ") {
-			eqIdx := strings.Index(trimmed, "=")
-			if eqIdx != -1 {
-				left := strings.TrimSpace(trimmed[:eqIdx])
-				parts := strings.Fields(left)
-				if len(parts) > 0 {
-					name := parts[len(parts)-1]
-					declName = strings.TrimSpace(name)
-					declType = "event"
-				}
-			}
-		} else if strings.Contains(trimmed, "attribute ") {
-			eqIdx := strings.Index(trimmed, "=")
-			if eqIdx != -1 {
-				left := strings.TrimSpace(trimmed[:eqIdx])
-				parts := strings.Fields(left)
-				if len(parts) > 0 {
-					name := parts[len(parts)-1]
-					name = strings.TrimSuffix(name, "[]")
-					attrName := strings.TrimSpace(name)
-					elements[getCurrentPath("attribute."+attrName)] = true
-				}
-			}
-		} else if strings.Contains(trimmed, "command ") {
-			parenIdx := strings.Index(trimmed, "(")
-			if parenIdx != -1 {
-				left := strings.TrimSpace(trimmed[:parenIdx])
-				parts := strings.Fields(left)
-				if len(parts) > 0 {
-					cmdName := strings.TrimSpace(parts[len(parts)-1])
-					elements[getCurrentPath("command."+cmdName)] = true
-				}
-			}
-		} else if len(stack) > 0 {
-			top := stack[len(stack)-1]
-			if top.blockType == "enum" || top.blockType == "bitmap" || top.blockType == "struct" || top.blockType == "event" {
-				eqIdx := strings.Index(trimmed, "=")
-				if eqIdx != -1 {
-					left := strings.TrimSpace(trimmed[:eqIdx])
-					parts := strings.Fields(left)
-					if len(parts) > 0 {
-						name := parts[len(parts)-1]
-						name = strings.TrimSuffix(name, "[]")
-						fieldName := strings.TrimSpace(name)
-						if (top.blockType == "enum" || top.blockType == "bitmap") && len(fieldName) > 1 && fieldName[0] == 'k' && fieldName[1] >= 'A' && fieldName[1] <= 'Z' {
-							fieldName = fieldName[1:]
-						}
-						elements[getCurrentPath(fieldName)] = true
-					}
-				}
-			}
-		}
-
-		openBraces := strings.Count(trimmed, "{")
-		closeBraces := strings.Count(trimmed, "}")
-
-		for o := 0; o < openBraces; o++ {
-			if declType != "" && declName != "" {
-				stack = append(stack, blockContext{blockType: declType, blockName: declName})
-				elements[getCurrentPath("")] = true
-				declType = ""
-				declName = ""
-			} else {
-				stack = append(stack, blockContext{})
-			}
-		}
-		for c := 0; c < closeBraces; c++ {
-			if len(stack) > 0 {
-				stack = stack[:len(stack)-1]
-			}
-		}
-	}
-	return elements, nil
-}
