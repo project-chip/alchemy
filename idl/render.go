@@ -248,6 +248,16 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 			en.Values = append(en.Values, nst)
 		}
 		globalEnums = append(globalEnums, en)
+		for _, clusterInfo := range clusterList {
+			c := clusterInfo.Cluster
+			ce, ok := clusterEntities[c]
+			if !ok {
+				continue
+			}
+			if _, ok := ce[ns]; ok {
+				ce[en] = struct{}{}
+			}
+		}
 	}
 
 	slices.SortFunc(globalEnums, func(a, b *matter.Enum) int {
@@ -275,22 +285,18 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 			continue
 		}
 
-		ceNames := make(map[string]struct{}, len(ce))
-		for e := range ce {
-			ceNames[matter.EntityName(e)] = struct{}{}
-		}
 		for _, s := range clusterInfo.Cluster.Structs {
-			if _, ok := ceNames[s.Name]; ok {
+			if _, ok := ce[s]; ok {
 				clusterInfo.ReferencedStructs = append(clusterInfo.ReferencedStructs, s)
 			}
 		}
 		for _, en := range clusterInfo.Cluster.Enums {
-			if _, ok := ceNames[en.Name]; ok {
+			if _, ok := ce[en]; ok {
 				clusterInfo.ReferencedEnums = append(clusterInfo.ReferencedEnums, en)
 			}
 		}
 		for _, bm := range clusterInfo.Cluster.Bitmaps {
-			if _, ok := ceNames[bm.Name]; ok {
+			if _, ok := ce[bm]; ok {
 				clusterInfo.ReferencedBitmaps = append(clusterInfo.ReferencedBitmaps, bm)
 			}
 		}
@@ -298,7 +304,7 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 		if p.PerTrait {
 			var clusterGlobalEnums []*matter.Enum
 			for _, en := range globalEnums {
-				if _, ok := ceNames[en.Name]; ok {
+				if _, ok := ce[en]; ok {
 					if !slices.ContainsFunc(c.Enums, func(l *matter.Enum) bool { return l.Name == en.Name }) {
 						clusterGlobalEnums = append(clusterGlobalEnums, en)
 					}
@@ -307,7 +313,7 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 
 			var clusterGlobalBitmaps []*matter.Bitmap
 			for _, bm := range globalBitmaps {
-				if _, ok := ceNames[bm.Name]; ok {
+				if _, ok := ce[bm]; ok {
 					if !slices.ContainsFunc(c.Bitmaps, func(l *matter.Bitmap) bool { return l.Name == bm.Name }) {
 						clusterGlobalBitmaps = append(clusterGlobalBitmaps, bm)
 					}
@@ -316,7 +322,7 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 
 			var clusterGlobalStructs []*matter.Struct
 			for _, s := range globalStructs {
-				if _, ok := ceNames[s.Name]; ok {
+				if _, ok := ce[s]; ok {
 					if !slices.ContainsFunc(c.Structs, func(l *matter.Struct) bool { return l.Name == s.Name }) {
 						clusterGlobalStructs = append(clusterGlobalStructs, s)
 					}
