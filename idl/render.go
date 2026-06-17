@@ -3,20 +3,20 @@ package idl
 import (
 	"context"
 	"embed"
-	"log/slog"
-	"path/filepath"
-	"slices"
-	"strings"
-
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/handlebars"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/provisional"
+	"log/slog"
+	"path/filepath"
+	"slices"
+	"strings"
 )
 
 //go:embed templates
@@ -29,6 +29,7 @@ type IdlRenderer struct {
 
 	SuppressEndpoints   bool
 	SuppressProvisional string
+	PerTrait            bool
 
 	provisionalFilter ProvisionalFilter
 }
@@ -91,14 +92,6 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 
 	filter := ProvisionalFilter{
 		Mode: p.SuppressProvisional,
-	}
-	if p.SuppressProvisional == "keep-existing" {
-		elements, err := parseExistingMatterElements(path)
-		if err != nil {
-			slog.Warn("Failed to parse existing matter file for provisional elements", slog.String("path", path), slog.Any("err", err))
-		} else {
-			filter.ExistingElements = elements
-		}
 	}
 	p.provisionalFilter = filter
 
@@ -187,6 +180,7 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 		}
 		if _, isGlobal := p.spec.GlobalObjects[entity]; isGlobal {
 			globalEntities[entity] = true
+			ce[entity] = struct{}{}
 			return parse.SearchShouldContinue
 		}
 		ce[entity] = struct{}{}
@@ -219,6 +213,15 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 		if _, existing := namespaces[name]; !existing {
 			namespaces[name] = ns
 		}
+		doc, ok := p.spec.DocRefs[ns]
+		if ok && p.spec.Errata != nil {
+			errata := p.spec.Errata.Get(doc.Path.Relative)
+			if errata != nil && errata.SDK.Types != nil {
+				if entry, ok := errata.SDK.Types.Enums[name+"Tag"]; ok && entry.OverrideName != "" {
+					namespaces[entry.OverrideName] = ns
+				}
+			}
+		}
 	}
 
 	for fieldName, ns := range namespaces {
@@ -228,6 +231,15 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 		} else {
 			en.Name = fieldName + "Tag"
 		}
+		doc, ok := p.spec.DocRefs[ns]
+		if ok && p.spec.Errata != nil {
+			errata := p.spec.Errata.Get(doc.Path.Relative)
+			if errata != nil && errata.SDK.Types != nil {
+				if entry, ok := errata.SDK.Types.Enums[en.Name]; ok && entry.OverrideName != "" {
+					en.Name = entry.OverrideName
+				}
+			}
+		}
 		en.Type = types.NewDataType(types.BaseDataTypeEnum8, types.DataTypeRankScalar)
 		for _, tag := range ns.SemanticTags {
 			nst := matter.NewEnumValue(tag.Source(), en)
@@ -236,6 +248,16 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 			en.Values = append(en.Values, nst)
 		}
 		globalEnums = append(globalEnums, en)
+		for _, clusterInfo := range clusterList {
+			c := clusterInfo.Cluster
+			ce, ok := clusterEntities[c]
+			if !ok {
+				continue
+			}
+			if _, ok := ce[ns]; ok {
+				ce[en] = struct{}{}
+			}
+		}
 	}
 
 	slices.SortFunc(globalEnums, func(a, b *matter.Enum) int {
@@ -250,30 +272,84 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 		return strings.Compare(a.Name, b.Name)
 	})
 
+	var t *raymond.Template
+	t, err = p.loadTemplate(p.spec)
+	if err != nil {
+		return
+	}
+
 	for _, clusterInfo := range clusterList {
-		ce, ok := clusterEntities[clusterInfo.Cluster]
+		c := clusterInfo.Cluster
+		ce, ok := clusterEntities[c]
 		if !ok {
 			continue
 		}
-		ceNames := make(map[string]struct{}, len(ce))
-		for e := range ce {
-			ceNames[matter.EntityName(e)] = struct{}{}
-		}
+
 		for _, s := range clusterInfo.Cluster.Structs {
-			if _, ok := ceNames[s.Name]; ok {
+			if _, ok := ce[s]; ok {
 				clusterInfo.ReferencedStructs = append(clusterInfo.ReferencedStructs, s)
 			}
 		}
 		for _, en := range clusterInfo.Cluster.Enums {
-			if _, ok := ceNames[en.Name]; ok {
+			if _, ok := ce[en]; ok {
 				clusterInfo.ReferencedEnums = append(clusterInfo.ReferencedEnums, en)
 			}
 		}
 		for _, bm := range clusterInfo.Cluster.Bitmaps {
-			if _, ok := ceNames[bm.Name]; ok {
+			if _, ok := ce[bm]; ok {
 				clusterInfo.ReferencedBitmaps = append(clusterInfo.ReferencedBitmaps, bm)
 			}
 		}
+
+		if p.PerTrait {
+			var clusterGlobalEnums []*matter.Enum
+			for _, en := range globalEnums {
+				if _, ok := ce[en]; ok {
+					if !slices.ContainsFunc(c.Enums, func(l *matter.Enum) bool { return l.Name == en.Name }) {
+						clusterGlobalEnums = append(clusterGlobalEnums, en)
+					}
+				}
+			}
+
+			var clusterGlobalBitmaps []*matter.Bitmap
+			for _, bm := range globalBitmaps {
+				if _, ok := ce[bm]; ok {
+					if !slices.ContainsFunc(c.Bitmaps, func(l *matter.Bitmap) bool { return l.Name == bm.Name }) {
+						clusterGlobalBitmaps = append(clusterGlobalBitmaps, bm)
+					}
+				}
+			}
+
+			var clusterGlobalStructs []*matter.Struct
+			for _, s := range globalStructs {
+				if _, ok := ce[s]; ok {
+					if !slices.ContainsFunc(c.Structs, func(l *matter.Struct) bool { return l.Name == s.Name }) {
+						clusterGlobalStructs = append(clusterGlobalStructs, s)
+					}
+				}
+			}
+
+			clusterTc := map[string]any{
+				"bitmaps":   clusterGlobalBitmaps,
+				"enums":     clusterGlobalEnums,
+				"structs":   clusterGlobalStructs,
+				"clusters":  []*ClusterInfo{clusterInfo},
+				"endpoints": nil,
+			}
+			var clusterOut string
+			clusterOut, err = t.Exec(clusterTc)
+			if err != nil {
+				slog.Error("error rendering matter template for cluster", slog.String("name", c.Name), slog.Any("err", err))
+				return
+			}
+			clusterFileName := getClusterFileName(c.Name)
+			clusterPath := filepath.Join(dir, clusterFileName)
+			outputs = append(outputs, pipeline.NewData(clusterPath, clusterOut))
+		}
+	}
+
+	if p.PerTrait {
+		return
 	}
 
 	tc := map[string]any{
@@ -285,12 +361,6 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 	}
 	if p.SuppressEndpoints {
 		tc["endpoints"] = nil
-	}
-
-	var t *raymond.Template
-	t, err = p.loadTemplate(p.spec)
-	if err != nil {
-		return
 	}
 
 	var out string
@@ -341,24 +411,49 @@ func forceIncludeEntity(spec *spec.Specification, cluster *matter.Cluster, e typ
 		return false
 	}
 	errata := spec.Errata.Get(doc.Path.Relative)
-	if errata == nil || errata.SDK.ExtraTypes == nil {
+	if errata == nil || (errata.SDK.ExtraTypes == nil && errata.SDK.Types == nil) {
 		return false
 	}
 	switch e := e.(type) {
 	case *matter.Bitmap:
-		if _, ok := errata.SDK.ExtraTypes.Bitmaps[e.Name]; ok {
-			return true
+		if errata.SDK.ExtraTypes != nil {
+			if _, ok := errata.SDK.ExtraTypes.Bitmaps[e.Name]; ok {
+				return true
+			}
+		}
+		if errata.SDK.Types != nil {
+			if entry, ok := errata.SDK.Types.Bitmaps[e.Name]; ok && entry.Keep {
+				return true
+			}
 		}
 	case *matter.Enum:
-		if _, ok := errata.SDK.ExtraTypes.Enums[e.Name]; ok {
-			return true
+		if errata.SDK.ExtraTypes != nil {
+			if _, ok := errata.SDK.ExtraTypes.Enums[e.Name]; ok {
+				return true
+			}
+		}
+		if errata.SDK.Types != nil {
+			if entry, ok := errata.SDK.Types.Enums[e.Name]; ok && entry.Keep {
+				return true
+			}
 		}
 	case *matter.Struct:
-		if _, ok := errata.SDK.ExtraTypes.Structs[e.Name]; ok {
-			return true
+		if errata.SDK.ExtraTypes != nil {
+			if _, ok := errata.SDK.ExtraTypes.Structs[e.Name]; ok {
+				return true
+			}
+		}
+		if errata.SDK.Types != nil {
+			if entry, ok := errata.SDK.Types.Structs[e.Name]; ok && entry.Keep {
+				return true
+			}
 		}
 	}
 	return false
 }
 
-
+func getClusterFileName(clusterName string) string {
+	name := caseify(clusterName, false, true)
+	name = text.ToIDLSnakeCase(name)
+	return name + ".matter"
+}

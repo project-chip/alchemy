@@ -80,6 +80,35 @@ func ApplyErrata(spec *spec.Specification, opts ...ApplyErrataOption) (err error
 			addedExtraEntities = true
 		}
 	}
+	for entity, doc := range spec.GlobalObjects {
+		errata := spec.Errata.Get(doc.Path.Relative)
+		if errata == nil || !errata.SDK.HasSdkPatch() {
+			continue
+		}
+		typeOverrides := errata.SDK.Types
+		typeNames := errata.SDK.TypeNames
+		switch entity := entity.(type) {
+		case *matter.Bitmap:
+			applyErrataToBitmap(entity, typeNames, typeOverrides)
+		case *matter.Enum:
+			applyErrataToEnum(entity, typeNames, typeOverrides)
+		case *matter.Struct:
+			err = applyErrataToStruct(entity, typeNames, typeOverrides)
+			if err != nil {
+				return err
+			}
+		case *matter.Command:
+			err = applyErrataToCommand(entity, typeNames, typeOverrides)
+			if err != nil {
+				return err
+			}
+		case *matter.Event:
+			err = applyErrataToEvent(entity, typeNames, typeOverrides)
+			if err != nil {
+				return err
+			}
+		}
+	}
 	if addedExtraEntities {
 		spec.ResolveDataTypeReferences()
 		spec.BuildDataTypeReferences()

@@ -17,9 +17,6 @@ func applyErrataToEnum(en *matter.Enum, typeNames map[string]string, typeOverrid
 			if override.OverrideType != "" {
 				en.Type = types.ParseDataType(override.OverrideType, types.DataTypeRankScalar)
 			}
-			if len(override.Fields) == 0 {
-				return
-			}
 			for _, f := range override.Fields {
 				for _, ev := range en.Values {
 					if ev.Name == f.Name {
@@ -29,9 +26,28 @@ func applyErrataToEnum(en *matter.Enum, typeNames map[string]string, typeOverrid
 						if f.Conformance != "" {
 							ev.Conformance = conformance.ParseConformance(f.Conformance)
 						}
+						if f.Value != "" {
+							ev.Value = matter.ParseNumber(f.Value)
+						}
 						break
 					}
 				}
+			}
+			for _, f := range override.ExtraFields {
+				ev := matter.NewEnumValue(en.Source(), en)
+				ev.Name = f.Name
+				if f.OverrideName != "" {
+					ev.Name = f.OverrideName
+				}
+				if f.Conformance != "" {
+					ev.Conformance = conformance.ParseConformance(f.Conformance)
+				} else {
+					ev.Conformance = conformance.Set{&conformance.Mandatory{}}
+				}
+				if f.Value != "" {
+					ev.Value = matter.ParseNumber(f.Value)
+				}
+				en.Values = append(en.Values, ev)
 			}
 		}
 	}

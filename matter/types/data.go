@@ -123,9 +123,9 @@ func ParseDataTypeName(typeName string) (baseType BaseDataType, name string) {
 		baseType = BaseDataTypeMap32
 	case "map64", "bitmap64":
 		baseType = BaseDataTypeMap64
-	case "string", "character string", "char_string":
+	case "string", "character string", "char_string", "long_char_string", "long char string":
 		baseType = BaseDataTypeString
-	case "octstr", "octet string", "octet_string":
+	case "octstr", "octet string", "octet_string", "long_octet_string", "long octet string":
 		baseType = BaseDataTypeOctStr
 	case "percent":
 		baseType = BaseDataTypePercent

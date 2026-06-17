@@ -2,8 +2,6 @@ package idl
 
 import (
 	"context"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -49,24 +47,6 @@ func TestEntityShouldBeIncluded(t *testing.T) {
 		t.Errorf("expected non-provisional field to be included with Mode=all")
 	}
 
-	// 3. Test Mode = "keep-existing"
-	filterKeepExisting := ProvisionalFilter{
-		Mode: "keep-existing",
-		ExistingElements: map[string]bool{
-			"provfield": true, // Normalize to lowercase for case-insensitive lookup
-		},
-	}
-	if !entityShouldBeIncluded(specification, filterKeepExisting, provField) {
-		t.Errorf("expected provisional field to be included because it is present in ExistingElements")
-	}
-
-	filterKeepExistingEmpty := ProvisionalFilter{
-		Mode:             "keep-existing",
-		ExistingElements: map[string]bool{},
-	}
-	if entityShouldBeIncluded(specification, filterKeepExistingEmpty, provField) {
-		t.Errorf("expected provisional field to be excluded because it is NOT present in ExistingElements")
-	}
 }
 
 func TestSuppressProvisionalIntegration(t *testing.T) {
@@ -381,79 +361,27 @@ func TestSuppressProvisionalIntegration(t *testing.T) {
 	if strings.Contains(contentAll, "optional event ProvEvt") || !strings.Contains(contentAll, "event NonProvEvt") {
 		t.Errorf("expected events in all output (ProvEvt suppressed, NonProvEvt kept): %s", contentAll)
 	}
-
-	// 4. Test Case C: --suppress-provisional keep-existing
-	tmpDir, err := os.MkdirTemp("", "matter-test-keep-*")
-	if err != nil {
-		t.Fatalf("failed to create temp dir: %v", err)
-	}
-	defer os.RemoveAll(tmpDir)
-
-	// Let's create an existing file that has some of the provisional elements, e.g. ProvAttrEnum, ProvAttrStruct, ProvAttrBitmap, ProvCmd, ProvEnum, ProvStruct, ProvBitmap,
-	// but does NOT have ProvEvt.
-	existingFileContent := `
-cluster MyCluster = 1 {
-  enum ProvEnum : enum8 {}
-  struct ProvStruct {}
-  bitmap ProvBitmap : bitmap8 {
-    kMyBit = 0x1;
-  }
-  provisional readonly attribute ProvEnum provAttrEnum = 1;
-  provisional readonly attribute ProvStruct provAttrStruct = 2;
-  provisional readonly attribute ProvBitmap provAttrBitmap = 3;
-  provisional command ProvCmd() = 1;
 }
-provisional cluster ProvCluster = 2 {
-}
-`
-	existingPath := filepath.Join(tmpDir, "existing.matter")
-	err = os.WriteFile(existingPath, []byte(existingFileContent), 0644)
-	if err != nil {
-		t.Fatalf("failed to write existing file: %v", err)
+
+func TestGetClusterFileName(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{"On/Off", "on_off.matter"},
+		{"PM10 Concentration Measurement", "pm10_concentration_measurement.matter"},
+		{"PM1 Concentration Measurement", "pm1_concentration_measurement.matter"},
+		{"PM2.5 Concentration Measurement", "pm25_concentration_measurement.matter"},
+		{"Door Lock", "door_lock.matter"},
+		{"Thermostat", "thermostat.matter"},
 	}
 
-	// We pass existingPath as the output destination (so the renderer reads existingPath to parse the present elements)
-	inputKeep := pipeline.NewData(existingPath, syntheticFile)
-	rendererKeep, err := NewIdlRenderer(specification)
-	if err != nil {
-		t.Fatalf("failed to create renderer: %v", err)
-	}
-	rendererKeep.SuppressProvisional = "keep-existing"
-
-	outputsKeep, _, err := rendererKeep.Process(ctx, inputKeep, 0, 1)
-	if err != nil {
-		t.Fatalf("Process failed: %v", err)
-	}
-	contentKeep := outputsKeep[0].Content
-	// Check that elements present in existing file are KEPT, while ProvEvt (not in existing file) is SUPPRESSED
-	if !strings.Contains(contentKeep, "enum ProvEnum") || !strings.Contains(contentKeep, "enum NonProvEnum") {
-		t.Errorf("expected enums in keep output: %s", contentKeep)
-	}
-	if !strings.Contains(contentKeep, "struct ProvStruct") || !strings.Contains(contentKeep, "struct NonProvStruct") {
-		t.Errorf("expected structs in keep output: %s", contentKeep)
-	}
-	if !strings.Contains(contentKeep, "bitmap ProvBitmap") || !strings.Contains(contentKeep, "bitmap NonProvBitmap") {
-		t.Errorf("expected bitmaps in keep output: %s", contentKeep)
-	}
-	if !strings.Contains(contentKeep, "provAttrEnum") || !strings.Contains(contentKeep, "nonProvAttrEnum") {
-		t.Errorf("expected attributes in keep output: %s", contentKeep)
-	}
-	if !strings.Contains(contentKeep, "struct ProvCmd") || !strings.Contains(contentKeep, "struct NonProvCmd") {
-		t.Errorf("expected commands in keep output: %s", contentKeep)
-	}
-	// ProvEvt was NOT in existing file, so it MUST be suppressed!
-	if strings.Contains(contentKeep, "optional event ProvEvt") {
-		t.Errorf("expected ProvEvt to be suppressed in keep output: %s", contentKeep)
-	}
-	if !strings.Contains(contentKeep, "event NonProvEvt") {
-		t.Errorf("expected NonProvEvt to be kept in keep output: %s", contentKeep)
-	}
-	// ProvCluster was in existing file, so it MUST be kept!
-	if !strings.Contains(contentKeep, "cluster ProvCluster") {
-		t.Errorf("expected ProvCluster to be kept in keep output: %s", contentKeep)
-	}
-	// ProvCluster2 was NOT in existing file, so it MUST be suppressed!
-	if strings.Contains(contentKeep, "cluster ProvCluster2") {
-		t.Errorf("expected ProvCluster2 to be suppressed in keep output: %s", contentKeep)
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			got := getClusterFileName(tt.input)
+			if got != tt.want {
+				t.Errorf("getClusterFileName(%q) = %q, want %q", tt.input, got, tt.want)
+			}
+		})
 	}
 }

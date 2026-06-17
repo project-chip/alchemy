@@ -17,6 +17,7 @@ func patchSpecForSdk(spec *Specification) error {
 	patchLabelCluster(spec)
 	patchLevelControlCluster(spec)
 	patchContentLaunchCluster(spec)
+	applySdkErrata(spec)
 
 	return nil
 }
