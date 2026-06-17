@@ -87,7 +87,7 @@ type IDLControllerClusters struct {
 	pipeline.ProcessingOptions `embed:""`
 	files.OutputOptions        `embed:""`
 	spec.ParserOptions         `embed:""`
-	Output                     string `name:"output" placeholder:"path" help:"Output file or directory for controller-clusters.matter" optional:"" default:"controller-clusters.matter"`
+	Output                     string `name:"output" placeholder:"path" help:"Output file (or directory if --per-trait is used) for controller-clusters.matter" optional:"" default:"controller-clusters.matter"`
 	SuppressProvisional        string `name:"suppress-provisional" help:"Suppress rendering of provisional elements" default:"all" enum:"none,all"`
 	PerTrait                   bool   `name:"per-trait" help:"Generate a separate IDL file for each cluster"`
 }
@@ -153,6 +153,10 @@ func (z *IDLControllerClusters) Run(cc *Context) (err error) {
 	if fi, err := os.Stat(outPath); err == nil {
 		isDir = fi.IsDir()
 	} else if strings.HasSuffix(z.Output, "/") || strings.HasSuffix(z.Output, string(filepath.Separator)) {
+		isDir = true
+	}
+
+	if z.PerTrait {
 		isDir = true
 	}
 
