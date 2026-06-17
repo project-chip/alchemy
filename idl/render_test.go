@@ -457,3 +457,26 @@ provisional cluster ProvCluster = 2 {
 		t.Errorf("expected ProvCluster2 to be suppressed in keep output: %s", contentKeep)
 	}
 }
+
+func TestGetClusterFileName(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{"On/Off", "on_off.matter"},
+		{"PM10 Concentration Measurement", "pm10_concentration_measurement.matter"},
+		{"PM1 Concentration Measurement", "pm1_concentration_measurement.matter"},
+		{"PM2.5 Concentration Measurement", "pm25_concentration_measurement.matter"},
+		{"Door Lock", "door_lock.matter"},
+		{"Thermostat", "thermostat.matter"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			got := getClusterFileName(tt.input)
+			if got != tt.want {
+				t.Errorf("getClusterFileName(%q) = %q, want %q", tt.input, got, tt.want)
+			}
+		})
+	}
+}

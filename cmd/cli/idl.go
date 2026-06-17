@@ -89,6 +89,7 @@ type IDLControllerClusters struct {
 	spec.ParserOptions         `embed:""`
 	Output                     string `name:"output" placeholder:"path" help:"Output file or directory for controller-clusters.matter" optional:"" default:"controller-clusters.matter"`
 	SuppressProvisional        string `name:"suppress-provisional" help:"Suppress rendering of provisional elements" default:"all" enum:"none,all,keep-existing"`
+	PerTrait                   bool   `name:"per-trait" help:"Generate a separate IDL file for each cluster"`
 }
 
 func (z *IDLControllerClusters) Run(cc *Context) (err error) {
@@ -144,6 +145,7 @@ func (z *IDLControllerClusters) Run(cc *Context) (err error) {
 	}
 	renderer.SuppressEndpoints = true
 	renderer.SuppressProvisional = z.SuppressProvisional
+	renderer.PerTrait = z.PerTrait
 
 	var zapPath string
 	outPath := filepath.Clean(z.Output)
@@ -178,7 +180,9 @@ func (z *IDLControllerClusters) Run(cc *Context) (err error) {
 	writer := files.NewWriter[string]("Writing controller-clusters.matter", z.OutputOptions)
 
 	outputSet := pipeline.StringSet(pipeline.NewMap[string, *pipeline.Data[string]]())
-	outputSet.Store(outputs[0].Path, outputs[0])
+	for _, o := range outputs {
+		outputSet.Store(o.Path, o)
+	}
 
 	return writer.Write(cc, outputSet, z.ProcessingOptions)
 }
