@@ -188,6 +188,72 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 		return parse.SearchShouldContinue
 	})
 
+	for cluster, ce := range clusterEntities {
+		doc, ok := p.spec.DocRefs[cluster]
+		if ok {
+			slog.Info("Cluster doc path mapping", "cluster", cluster.Name, "path", doc.Path.Relative)
+		}
+		if !ok || p.spec.Errata == nil {
+			continue
+		}
+		errata := p.spec.Errata.Get(doc.Path.Relative)
+		if errata == nil || errata.SDK.Types == nil {
+			continue
+		}
+
+		for en := range p.spec.GlobalObjects {
+			name := matter.EntityName(en)
+			switch en.(type) {
+			case *matter.Enum:
+				if _, shared := errata.SDK.SharedEnums[name]; shared {
+					if entry, ok := errata.SDK.Types.Enums[name]; ok && entry.Keep {
+						ce[en] = struct{}{}
+						globalEntities[en] = true
+					}
+				}
+			case *matter.Bitmap:
+				if _, shared := errata.SDK.SharedBitmaps[name]; shared {
+					if entry, ok := errata.SDK.Types.Bitmaps[name]; ok && entry.Keep {
+						ce[en] = struct{}{}
+						globalEntities[en] = true
+					}
+				}
+			case *matter.Struct:
+				if _, shared := errata.SDK.SharedStructs[name]; shared {
+					if entry, ok := errata.SDK.Types.Structs[name]; ok && entry.Keep {
+						ce[en] = struct{}{}
+						globalEntities[en] = true
+					}
+				}
+			}
+		}
+
+		for _, en := range cluster.Enums {
+			name := matter.EntityName(en)
+			if _, shared := errata.SDK.SharedEnums[name]; shared {
+				if entry, ok := errata.SDK.Types.Enums[name]; ok && entry.Keep {
+					ce[en] = struct{}{}
+				}
+			}
+		}
+		for _, bm := range cluster.Bitmaps {
+			name := matter.EntityName(bm)
+			if _, shared := errata.SDK.SharedBitmaps[name]; shared {
+				if entry, ok := errata.SDK.Types.Bitmaps[name]; ok && entry.Keep {
+					ce[bm] = struct{}{}
+				}
+			}
+		}
+		for _, s := range cluster.Structs {
+			name := matter.EntityName(s)
+			if _, shared := errata.SDK.SharedStructs[name]; shared {
+				if entry, ok := errata.SDK.Types.Structs[name]; ok && entry.Keep {
+					ce[s] = struct{}{}
+				}
+			}
+		}
+	}
+
 	for entity, isGlobal := range globalEntities {
 		if !isGlobal {
 			continue
@@ -406,48 +472,49 @@ func forceIncludeEntity(spec *spec.Specification, cluster *matter.Cluster, e typ
 			return true
 		}
 	}
-	doc, ok := spec.DocRefs[cluster]
-	if !ok {
-		return false
-	}
-	errata := spec.Errata.Get(doc.Path.Relative)
-	if errata == nil || (errata.SDK.ExtraTypes == nil && errata.SDK.Types == nil) {
-		return false
-	}
-	switch e := e.(type) {
-	case *matter.Bitmap:
-		if errata.SDK.ExtraTypes != nil {
-			if _, ok := errata.SDK.ExtraTypes.Bitmaps[e.Name]; ok {
-				return true
+	for cluster != nil {
+		doc, ok := spec.DocRefs[cluster]
+		if ok {
+			errata := spec.Errata.Get(doc.Path.Relative)
+			if errata != nil {
+				switch e := e.(type) {
+				case *matter.Bitmap:
+					if errata.SDK.ExtraTypes != nil {
+						if _, ok := errata.SDK.ExtraTypes.Bitmaps[e.Name]; ok {
+							return true
+						}
+					}
+					if errata.SDK.Types != nil {
+						if entry, ok := errata.SDK.Types.Bitmaps[e.Name]; ok && entry.Keep {
+							return true
+						}
+					}
+				case *matter.Enum:
+					if errata.SDK.ExtraTypes != nil {
+						if _, ok := errata.SDK.ExtraTypes.Enums[e.Name]; ok {
+							return true
+						}
+					}
+					if errata.SDK.Types != nil {
+						if entry, ok := errata.SDK.Types.Enums[e.Name]; ok && entry.Keep {
+							return true
+						}
+					}
+				case *matter.Struct:
+					if errata.SDK.ExtraTypes != nil {
+						if _, ok := errata.SDK.ExtraTypes.Structs[e.Name]; ok {
+							return true
+						}
+					}
+					if errata.SDK.Types != nil {
+						if entry, ok := errata.SDK.Types.Structs[e.Name]; ok && entry.Keep {
+							return true
+						}
+					}
+				}
 			}
 		}
-		if errata.SDK.Types != nil {
-			if entry, ok := errata.SDK.Types.Bitmaps[e.Name]; ok && entry.Keep {
-				return true
-			}
-		}
-	case *matter.Enum:
-		if errata.SDK.ExtraTypes != nil {
-			if _, ok := errata.SDK.ExtraTypes.Enums[e.Name]; ok {
-				return true
-			}
-		}
-		if errata.SDK.Types != nil {
-			if entry, ok := errata.SDK.Types.Enums[e.Name]; ok && entry.Keep {
-				return true
-			}
-		}
-	case *matter.Struct:
-		if errata.SDK.ExtraTypes != nil {
-			if _, ok := errata.SDK.ExtraTypes.Structs[e.Name]; ok {
-				return true
-			}
-		}
-		if errata.SDK.Types != nil {
-			if entry, ok := errata.SDK.Types.Structs[e.Name]; ok && entry.Keep {
-				return true
-			}
-		}
+		cluster = cluster.ParentCluster
 	}
 	return false
 }

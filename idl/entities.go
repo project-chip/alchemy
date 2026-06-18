@@ -118,7 +118,7 @@ func isShared(spec *spec.Specification, en types.Entity) bool {
 }
 
 func isKeptByErrata(spec *spec.Specification, entity types.Entity) bool {
-	if spec != nil {
+	if spec != nil && spec.Errata != nil {
 		var parentCluster *matter.Cluster
 		curr := entity
 		for curr != nil {
@@ -128,40 +128,39 @@ func isKeptByErrata(spec *spec.Specification, entity types.Entity) bool {
 			}
 			curr = curr.Parent()
 		}
-		if parentCluster != nil {
+		for parentCluster != nil {
 			if doc, ok := spec.DocRefs[parentCluster]; ok {
-				if spec.Errata != nil {
-					if errata := spec.Errata.Get(doc.Path.Relative); errata != nil && errata.SDK.Types != nil {
-						name := matter.EntityName(entity)
-						switch entity.(type) {
-						case *matter.Field:
-							if entry, ok := errata.SDK.Types.Attributes[name]; ok && entry.Keep {
-								return true
-							}
-						case *matter.Command:
-							if entry, ok := errata.SDK.Types.Commands[name]; ok && entry.Keep {
-								return true
-							}
-						case *matter.Event:
-							if entry, ok := errata.SDK.Types.Events[name]; ok && entry.Keep {
-								return true
-							}
-						case *matter.Enum:
-							if entry, ok := errata.SDK.Types.Enums[name]; ok && entry.Keep {
-								return true
-							}
-						case *matter.Bitmap:
-							if entry, ok := errata.SDK.Types.Bitmaps[name]; ok && entry.Keep {
-								return true
-							}
-						case *matter.Struct:
-							if entry, ok := errata.SDK.Types.Structs[name]; ok && entry.Keep {
-								return true
-							}
+				if errata := spec.Errata.Get(doc.Path.Relative); errata != nil && errata.SDK.Types != nil {
+					name := matter.EntityName(entity)
+					switch entity.(type) {
+					case *matter.Field:
+						if entry, ok := errata.SDK.Types.Attributes[name]; ok && entry.Keep {
+							return true
+						}
+					case *matter.Command:
+						if entry, ok := errata.SDK.Types.Commands[name]; ok && entry.Keep {
+							return true
+						}
+					case *matter.Event:
+						if entry, ok := errata.SDK.Types.Events[name]; ok && entry.Keep {
+							return true
+						}
+					case *matter.Enum:
+						if entry, ok := errata.SDK.Types.Enums[name]; ok && entry.Keep {
+							return true
+						}
+					case *matter.Bitmap:
+						if entry, ok := errata.SDK.Types.Bitmaps[name]; ok && entry.Keep {
+							return true
+						}
+					case *matter.Struct:
+						if entry, ok := errata.SDK.Types.Structs[name]; ok && entry.Keep {
+							return true
 						}
 					}
 				}
 			}
+			parentCluster = parentCluster.ParentCluster
 		}
 	}
 	return false

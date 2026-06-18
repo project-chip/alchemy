@@ -117,6 +117,42 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 			})
 
 		}
+	} else {
+		if cluster.ParentCluster != nil {
+			doc, ok := spec.DocRefs[cluster.ParentCluster]
+			if ok {
+				parentErrata := spec.Errata.Get(doc.Path.Relative)
+				if parentErrata != nil {
+					for bitmapName := range errata.SharedBitmaps {
+						for _, bm := range cluster.Bitmaps {
+							if matter.EntityName(bm) == bitmapName {
+								applyErrataToBitmap(bm, parentErrata.SDK.TypeNames, parentErrata.SDK.Types)
+								break
+							}
+						}
+					}
+					for enumName := range errata.SharedEnums {
+						for _, en := range cluster.Enums {
+							if matter.EntityName(en) == enumName {
+								applyErrataToEnum(en, parentErrata.SDK.TypeNames, parentErrata.SDK.Types)
+								break
+							}
+						}
+					}
+					for structName := range errata.SharedStructs {
+						for _, st := range cluster.Structs {
+							if matter.EntityName(st) == structName {
+								err := applyErrataToStruct(st, parentErrata.SDK.TypeNames, parentErrata.SDK.Types)
+								if err != nil {
+									return err
+								}
+								break
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 	for enumName := range errata.SeparateEnums {
 		for _, en := range cluster.Enums {

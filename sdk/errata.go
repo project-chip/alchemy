@@ -28,7 +28,7 @@ func ApplyErrata(spec *spec.Specification, opts ...ApplyErrataOption) (err error
 	for _, opt := range opts {
 		opt(&options)
 	}
-	var addedExtraEntities bool
+
 	for path, errata := range spec.Errata.All() {
 		if !errata.SDK.HasSdkPatch() {
 			continue
@@ -77,7 +77,7 @@ func ApplyErrata(spec *spec.Specification, opts ...ApplyErrataOption) (err error
 			if err != nil {
 				return err
 			}
-			addedExtraEntities = true
+
 		}
 	}
 	for entity, doc := range spec.GlobalObjects {
@@ -109,11 +109,9 @@ func ApplyErrata(spec *spec.Specification, opts ...ApplyErrataOption) (err error
 			}
 		}
 	}
-	if addedExtraEntities {
-		spec.ResolveDataTypeReferences()
-		spec.BuildDataTypeReferences()
-		spec.BuildClusterReferences()
-	}
+	spec.ResolveDataTypeReferences()
+	spec.BuildDataTypeReferences()
+	spec.BuildClusterReferences()
 	spec.ResolveConformances()
 	return
 }
