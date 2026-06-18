@@ -48,5 +48,5 @@ func getDiscoveryBitmapPath(dmRoot string, bm *matter.Bitmap) string {
 }
 
 func isDiscoveryDoc(doc *asciidoc.Document) bool {
-	return strings.HasSuffix(doc.Path.Relative, "secure_channel/Discovery.adoc")
+	return doc != nil && strings.HasSuffix(doc.Path.Relative, "secure_channel/Discovery.adoc")
 }
