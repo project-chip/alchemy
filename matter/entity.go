@@ -51,6 +51,8 @@ func EntityName(e types.Entity) string {
 		return entity.Name
 	case *Bitmap:
 		return entity.Name
+	case *Features:
+		return entity.Name
 	case *Enum:
 		return entity.Name
 	case *TypeDef:

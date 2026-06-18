@@ -190,9 +190,6 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 
 	for cluster, ce := range clusterEntities {
 		doc, ok := p.spec.DocRefs[cluster]
-		if ok {
-			slog.Info("Cluster doc path mapping", "cluster", cluster.Name, "path", doc.Path.Relative)
-		}
 		if !ok || p.spec.Errata == nil {
 			continue
 		}
