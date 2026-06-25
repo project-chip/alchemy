@@ -72,17 +72,10 @@ func (p *Renderer) GenerateGlobalObjects() (globalFiles pipeline.StringSet, err 
 	var commands []*matter.Command
 	var events []*matter.Event
 
-	for e, doc := range p.spec.GlobalObjects {
+	for e := range p.spec.GlobalObjects {
 		switch e := e.(type) {
 		case *matter.Bitmap:
-			if isDiscoveryDoc(doc) {
-				err = renderDiscoveryBitmap(e, p.dmRoot, globalFiles)
-				if err != nil {
-					return
-				}
-			} else {
-				bitmaps = append(bitmaps, e)
-			}
+			bitmaps = append(bitmaps, e)
 		case *matter.Enum:
 			enums = append(enums, e)
 		case *matter.Struct:
