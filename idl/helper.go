@@ -39,7 +39,7 @@ func (sp *IdlRenderer) registerIdlHelpers(t *raymond.Template, spec *spec.Specif
 	t.RegisterHelper("structFields", structFieldsHelper(sp.spec, sp.provisionalFilter))
 	t.RegisterHelper("eventFields", eventFieldsHelper(sp.spec, sp.provisionalFilter))
 	t.RegisterHelper("commandFields", commandFieldsHelper(sp.spec, sp.provisionalFilter))
-	t.RegisterHelper("fieldType", fieldTypeHelper)
+	t.RegisterHelper("fieldType", sp.fieldTypeHelper)
 	t.RegisterHelper("fieldIsArray", fieldIsArrayHelper)
 	t.RegisterHelper("ifFabricScoped", ifFabricScopedHelper)
 	t.RegisterHelper("ifFabricSensitive", ifFabricSensitiveHelper)

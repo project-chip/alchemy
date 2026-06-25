@@ -8,6 +8,7 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -383,5 +384,48 @@ func TestGetClusterFileName(t *testing.T) {
 				t.Errorf("getClusterFileName(%q) = %q, want %q", tt.input, got, tt.want)
 			}
 		})
+	}
+}
+
+func TestFieldTypeHelper(t *testing.T) {
+	renderer, err := NewIdlRenderer(nil)
+	if err != nil {
+		t.Fatalf("failed to create renderer: %v", err)
+	}
+
+	fieldChar := matter.Field{
+		Name:       "TestFieldChar",
+		Type:       types.NewDataType(types.BaseDataTypeString, types.DataTypeRankScalar),
+		Constraint: constraint.ParseString("256"),
+	}
+
+	fieldOctet := matter.Field{
+		Name:       "TestFieldOctet",
+		Type:       types.NewDataType(types.BaseDataTypeOctStr, types.DataTypeRankScalar),
+		Constraint: constraint.ParseString("256"),
+	}
+
+	// 1. KeepLongStrings = false (default behavior: remove long_)
+	renderer.KeepLongStrings = false
+	res := renderer.fieldTypeHelper(fieldChar, nil, nil)
+	if string(res) != "char_string" {
+		t.Errorf("expected fieldTypeHelper to return 'char_string' when KeepLongStrings=false, got '%s'", res)
+	}
+
+	res = renderer.fieldTypeHelper(fieldOctet, nil, nil)
+	if string(res) != "octet_string" {
+		t.Errorf("expected fieldTypeHelper to return 'octet_string' when KeepLongStrings=false, got '%s'", res)
+	}
+
+	// 2. KeepLongStrings = true (keep long_)
+	renderer.KeepLongStrings = true
+	res = renderer.fieldTypeHelper(fieldChar, nil, nil)
+	if string(res) != "long_char_string" {
+		t.Errorf("expected fieldTypeHelper to return 'long_char_string' when KeepLongStrings=true, got '%s'", res)
+	}
+
+	res = renderer.fieldTypeHelper(fieldOctet, nil, nil)
+	if string(res) != "long_octet_string" {
+		t.Errorf("expected fieldTypeHelper to return 'long_octet_string' when KeepLongStrings=true, got '%s'", res)
 	}
 }

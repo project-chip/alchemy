@@ -28,6 +28,7 @@ type IDLRegen struct {
 	spec.FilterOptions         `embed:""`
 	sdk.SDKOptions             `embed:""`
 	SuppressProvisional        string `name:"suppress-provisional" help:"Suppress rendering of provisional elements" default:"all" enum:"none,all,keep-existing"`
+	KeepLongStrings            bool   `name:"keep-long-strings" help:"Keep 'long_' prefix on string types" default:"false"`
 }
 
 func (z *IDLRegen) Run(cc *Context) (err error) {
@@ -69,6 +70,7 @@ func (z *IDLRegen) Run(cc *Context) (err error) {
 		return
 	}
 	renderer.SuppressProvisional = z.SuppressProvisional
+	renderer.KeepLongStrings = z.KeepLongStrings
 
 	var matterFiles pipeline.StringSet
 	matterFiles, err = pipeline.Parallel(cc, z.ProcessingOptions, renderer, zapFiles)
@@ -90,6 +92,7 @@ type IDLControllerClusters struct {
 	Output                     string `name:"output" placeholder:"path" help:"Output file (or directory if --per-trait is used) for controller-clusters.matter" optional:"" default:"controller-clusters.matter"`
 	SuppressProvisional        string `name:"suppress-provisional" help:"Suppress rendering of provisional elements" default:"all" enum:"none,all"`
 	PerTrait                   bool   `name:"per-trait" help:"Generate a separate IDL file for each cluster"`
+	KeepLongStrings            bool   `name:"keep-long-strings" help:"Keep 'long_' prefix on string types" default:"false"`
 }
 
 func (z *IDLControllerClusters) Run(cc *Context) (err error) {
@@ -146,6 +149,7 @@ func (z *IDLControllerClusters) Run(cc *Context) (err error) {
 	renderer.SuppressEndpoints = true
 	renderer.SuppressProvisional = z.SuppressProvisional
 	renderer.PerTrait = z.PerTrait
+	renderer.KeepLongStrings = z.KeepLongStrings
 
 	var zapPath string
 	outPath := filepath.Clean(z.Output)

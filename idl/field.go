@@ -11,8 +11,17 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func fieldTypeHelper(field matter.Field, fs matter.FieldSet, options *raymond.Options) raymond.SafeString {
-	return raymond.SafeString(zap.FieldToZapDataType(fs, &field, field.Constraint))
+func (sp *IdlRenderer) fieldTypeHelper(field matter.Field, fs matter.FieldSet, options *raymond.Options) raymond.SafeString {
+	t := zap.FieldToZapDataType(fs, &field, field.Constraint)
+	if !sp.KeepLongStrings {
+		switch t {
+		case "long_char_string":
+			t = "char_string"
+		case "long_octet_string":
+			t = "octet_string"
+		}
+	}
+	return raymond.SafeString(t)
 }
 
 func fieldIsArrayHelper(a any, options *raymond.Options) string {

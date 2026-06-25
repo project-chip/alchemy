@@ -30,6 +30,7 @@ type IdlRenderer struct {
 	SuppressEndpoints   bool
 	SuppressProvisional string
 	PerTrait            bool
+	KeepLongStrings     bool
 
 	provisionalFilter ProvisionalFilter
 }
