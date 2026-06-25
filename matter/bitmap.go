@@ -176,6 +176,7 @@ type Bit interface {
 	Name() string
 	SetName(name string)
 	Summary() string
+	InstructionDependency() string
 	Conformance() conformance.Set
 	SetConformance(conformance conformance.Set)
 	SetParent(parent types.Entity)
@@ -191,10 +192,11 @@ type Bit interface {
 
 type BitmapBit struct {
 	entity
-	bit         string
-	name        string
-	summary     string
-	conformance conformance.Set
+	bit                   string
+	name                  string
+	summary               string
+	instructionDependency string
+	conformance           conformance.Set
 }
 
 func NewBitmapBit(source asciidoc.Element, parent types.Entity, bit string, name string, summary string, conformance conformance.Set) *BitmapBit {
@@ -237,6 +239,14 @@ func (bmb *BitmapBit) Summary() string {
 	return bmb.summary
 }
 
+func (bmb *BitmapBit) InstructionDependency() string {
+	return bmb.instructionDependency
+}
+
+func (bmb *BitmapBit) SetInstructionDependency(v string) {
+	bmb.instructionDependency = v
+}
+
 func (bmb *BitmapBit) Conformance() conformance.Set {
 	return bmb.conformance
 }
@@ -250,7 +260,7 @@ func (bmb *BitmapBit) Clone() Bit {
 }
 
 func (bmb *BitmapBit) CloneTo(parent types.Entity) Bit {
-	nb := &BitmapBit{entity: entity{source: bmb.source, parent: parent}, bit: bmb.bit, name: bmb.name, summary: bmb.summary}
+	nb := &BitmapBit{entity: entity{source: bmb.source, parent: parent}, bit: bmb.bit, name: bmb.name, summary: bmb.summary, instructionDependency: bmb.instructionDependency}
 	if len(bmb.conformance) > 0 {
 		nb.conformance = bmb.conformance.CloneSet()
 	}
@@ -269,15 +279,17 @@ func (bmb *BitmapBit) Inherit(parent Bit) error {
 
 func (bmb *BitmapBit) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&struct {
-		Bit         string          `json:"bit,omitempty"`
-		Name        string          `json:"name,omitempty"`
-		Summary     string          `json:"summary,omitempty"`
-		Conformance conformance.Set `json:"conformance,omitempty"`
+		Bit                   string          `json:"bit,omitempty"`
+		Name                  string          `json:"name,omitempty"`
+		Summary               string          `json:"summary,omitempty"`
+		InstructionDependency string          `json:"instructionDependency,omitempty"`
+		Conformance           conformance.Set `json:"conformance,omitempty"`
 	}{
-		Bit:         bmb.bit,
-		Name:        bmb.name,
-		Summary:     bmb.summary,
-		Conformance: bmb.conformance,
+		Bit:                   bmb.bit,
+		Name:                  bmb.name,
+		Summary:               bmb.summary,
+		InstructionDependency: bmb.instructionDependency,
+		Conformance:           bmb.conformance,
 	})
 }
 

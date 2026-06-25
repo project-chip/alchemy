@@ -221,6 +221,8 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnModeTagValue
 	case "status code", "status code value":
 		return matter.TableColumnStatusCode
+	case "instruction dependency":
+		return matter.TableColumnInstructionDependency
 	}
 	return matter.TableColumnUnknown
 }
