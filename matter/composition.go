@@ -63,6 +63,7 @@ type DeviceTypeClusterRequirement struct {
 
 	ClusterRequirement *ClusterRequirement
 	Origin             RequirementOrigin
+	InstanceLabel      string
 
 	DeviceType            *DeviceType
 	DeviceTypeRequirement *DeviceTypeRequirement
@@ -78,6 +79,7 @@ func (dtcr *DeviceTypeClusterRequirement) Clone() *DeviceTypeClusterRequirement 
 		DeviceTypeName:        dtcr.DeviceTypeName,
 		ClusterRequirement:    dtcr.ClusterRequirement,
 		Origin:                dtcr.Origin,
+		InstanceLabel:         dtcr.InstanceLabel,
 		DeviceType:            dtcr.DeviceType,
 		DeviceTypeRequirement: dtcr.DeviceTypeRequirement,
 	}
@@ -90,6 +92,7 @@ type DeviceTypeElementRequirement struct {
 
 	ElementRequirement *ElementRequirement
 	Origin             RequirementOrigin
+	InstanceLabel      string
 
 	DeviceType            *DeviceType
 	DeviceTypeRequirement *DeviceTypeRequirement
@@ -105,6 +108,7 @@ func (dter *DeviceTypeElementRequirement) Clone() *DeviceTypeElementRequirement 
 		DeviceTypeName:        dter.DeviceTypeName,
 		ElementRequirement:    dter.ElementRequirement,
 		Origin:                dter.Origin,
+		InstanceLabel:         dter.InstanceLabel,
 		DeviceType:            dter.DeviceType,
 		DeviceTypeRequirement: dter.DeviceTypeRequirement,
 	}

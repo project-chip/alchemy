@@ -265,12 +265,10 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 			deviceTypes[dr.DeviceType] = dr
 			if dr.Location == matter.DeviceTypeRequirementLocationUnknown {
 				switch dr.DeviceType.Class {
-				case "Simple":
-					dr.Location = matter.DeviceTypeRequirementLocationChildEndpoint
 				case "Utility":
 					dr.Location = matter.DeviceTypeRequirementLocationDeviceEndpoint
 				default:
-					slog.Error("Unable to determine location for device type requirement", slog.String("deviceTypeClass", dr.DeviceType.Class), slog.String("deviceTypeName", dr.DeviceType.Name), log.Path("source", dr))
+					dr.Location = matter.DeviceTypeRequirementLocationChildEndpoint
 				}
 			}
 		}

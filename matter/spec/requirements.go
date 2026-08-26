@@ -163,7 +163,7 @@ func (library *Library) toComposedDeviceTypeClusterRequirements(reader asciidoc.
 		}
 		return
 	}
-	for row := range ti.ContentRows() {
+	for row, category := range ti.CategorizedRows(reader) {
 		var cr *matter.ClusterRequirement
 		cr, err = library.toClusterRequirement(reader, deviceType, ti, row)
 		if err != nil {
@@ -171,6 +171,7 @@ func (library *Library) toComposedDeviceTypeClusterRequirements(reader asciidoc.
 		}
 
 		dtcr := matter.NewDeviceTypeClusterRequirement(deviceType, cr, row)
+		dtcr.InstanceLabel = category
 		dtcr.DeviceTypeID, err = ti.ReadID(reader, row, matter.TableColumnDeviceID)
 		if err != nil {
 			return
@@ -230,13 +231,14 @@ func (library *Library) toComposedDeviceTypeElementRequirements(reader asciidoc.
 		}
 		return
 	}
-	for row := range ti.ContentRows() {
+	for row, category := range ti.CategorizedRows(reader) {
 		var er matter.ElementRequirement
 		er, err = library.toElementRequirement(reader, d, ti, row, deviceType)
 		if err != nil {
 			return
 		}
 		dter := matter.NewDeviceTypeElementRequirement(deviceType, &er, row)
+		dter.InstanceLabel = category
 		dter.DeviceTypeID, err = ti.ReadID(reader, row, matter.TableColumnDeviceID)
 		if err != nil {
 			return
@@ -259,6 +261,7 @@ func (library *Library) toComposedDeviceTypeElementRequirements(reader asciidoc.
 			dtcr := matter.NewDeviceTypeClusterRequirement(deviceType, cr, row)
 			dtcr.DeviceTypeID = dter.DeviceTypeID
 			dtcr.DeviceTypeName = dter.DeviceTypeName
+			dtcr.InstanceLabel = category
 			if len(dter.ElementRequirement.Conformance) > 0 {
 				dtcr.ClusterRequirement.Conformance = dter.ElementRequirement.Conformance.CloneSet()
 			}
