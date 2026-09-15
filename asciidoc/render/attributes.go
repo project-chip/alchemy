@@ -299,6 +299,10 @@ func quoteAttributeValue(val any) (string, error) {
 		return escapeQuotes(val.Value), nil
 	case asciidoc.AttributeReference:
 		return "{" + val.Name() + "}", nil
+	case *asciidoc.Counter:
+		var sb strings.Builder
+		renderCounterText(&sb, val)
+		return sb.String(), nil
 	case asciidoc.Elements:
 		var sb strings.Builder
 		for _, a := range val {
@@ -322,6 +326,8 @@ func renderNakedAttributeValue(cxt Target, val any) (err error) {
 		cxt.WriteRune('{')
 		cxt.WriteString(val.Name())
 		cxt.WriteRune('}')
+	case *asciidoc.Counter:
+		renderCounterText(cxt, val)
 	case asciidoc.Elements:
 		for _, a := range val {
 			err = renderNakedAttributeValue(cxt, a)

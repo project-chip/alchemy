@@ -25,16 +25,20 @@ func renderFileInclude(cxt Target, el *asciidoc.FileInclude) (err error) {
 
 func renderCounter(cxt Target, el *asciidoc.Counter) {
 	cxt.StartBlock()
-	cxt.WriteString("{counter")
-	if !el.Display.Visible() {
-		cxt.WriteRune('2')
-	}
-	cxt.WriteRune(':')
-	cxt.WriteString(el.Name)
-	if len(el.InitialValue) > 0 {
-		cxt.WriteRune(':')
-		cxt.WriteString(el.InitialValue)
-	}
-	cxt.WriteString("}")
+	renderCounterText(cxt, el)
 	cxt.EndBlock()
+}
+
+func renderCounterText(tb TextBuffer, el *asciidoc.Counter) {
+	tb.WriteString("{counter")
+	if !el.Display.Visible() {
+		tb.WriteRune('2')
+	}
+	tb.WriteRune(':')
+	tb.WriteString(el.Name)
+	if len(el.InitialValue) > 0 {
+		tb.WriteRune(':')
+		tb.WriteString(el.InitialValue)
+	}
+	tb.WriteString("}")
 }
