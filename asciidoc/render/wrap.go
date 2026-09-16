@@ -44,7 +44,7 @@ func NewWrappedTarget(parent context.Context, wrapLength int) Target {
 	}
 }
 
-func (o *wrappedTarget) WriteString(s string) {
+func (o *wrappedTarget) WriteString(s string) (n int, err error) {
 	if len(s) == 0 {
 		return
 	}
@@ -56,22 +56,24 @@ func (o *wrappedTarget) WriteString(s string) {
 			return
 		}
 		if o.currentBlock != nil {
-			o.currentBlock.WriteString(s)
+			n, err = o.currentBlock.WriteString(s)
 			o.lastBlockRune, _ = utf8.DecodeLastRuneInString(s)
 			return
 		}
 
 	}
-	o.writeWrappedText(s)
+	n = o.writeWrappedText(s)
+	return
 }
 
-func (o *wrappedTarget) writeWrappedText(s string) {
+func (o *wrappedTarget) writeWrappedText(s string) (n int) {
 	for _, r := range s {
-		o.writeRune(r)
+		n += o.writeRune(r)
 	}
+	return
 }
 
-func (o *wrappedTarget) writeRune(r rune) {
+func (o *wrappedTarget) writeRune(r rune) (n int) {
 	index := len(o.out)
 	switch r {
 	case '\r': // We just strip these out as we go
@@ -111,7 +113,7 @@ func (o *wrappedTarget) writeRune(r rune) {
 			o.lastSpace = index
 		}
 	}
-
+	n = utf8.RuneLen(r)
 	o.out = utf8.AppendRune(o.out, r)
 	o.lastRune = r
 	if o.indented {
@@ -130,7 +132,7 @@ func (o *wrappedTarget) writeRune(r rune) {
 	o.lastNewline = o.lastSpace
 	o.lastInsertedNewline = o.lastSpace
 	o.lastSpace = -1
-
+	return
 }
 
 func (o *wrappedTarget) writeBlockText(s string) {
@@ -150,7 +152,7 @@ func (o *wrappedTarget) insertNewLine() {
 	o.lastRune = '\n'
 }
 
-func (o *wrappedTarget) WriteRune(r rune) {
+func (o *wrappedTarget) WriteRune(r rune) (n int, err error) {
 	if o.disableWrapCount > 0 {
 		switch r {
 		case '\r': // We just strip these out as we go
@@ -163,16 +165,18 @@ func (o *wrappedTarget) WriteRune(r rune) {
 				o.lastSpace = len(o.out)
 			}
 		}
+		n = utf8.RuneLen(r)
 		o.out = utf8.AppendRune(o.out, r)
 		o.lastRune = r
 		return
 	}
 	if o.currentBlock != nil {
-		o.currentBlock.WriteRune(r)
+		n, err = o.currentBlock.WriteRune(r)
 		o.lastBlockRune = r
 		return
 	}
-	o.writeRune(r)
+	n = o.writeRune(r)
+	return
 }
 
 func (o *wrappedTarget) EnsureNewLine() {

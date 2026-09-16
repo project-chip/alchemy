@@ -18,17 +18,19 @@ func NewUnwrappedTarget(parent context.Context) Target {
 	}
 }
 
-func (o *unwrappedTarget) WriteString(s string) {
+func (o *unwrappedTarget) WriteString(s string) (n int, err error) {
 	rs := []rune(s)
 	if len(rs) > 0 {
 		o.lastRune = rs[len(rs)-1]
-		o.out.WriteString(s)
+		n, err = o.out.WriteString(s)
 	}
+	return
 }
 
-func (o *unwrappedTarget) WriteRune(r rune) {
-	o.out.WriteRune(r)
+func (o *unwrappedTarget) WriteRune(r rune) (n int, err error) {
 	o.lastRune = r
+	n, err = o.out.WriteRune(r)
+	return
 }
 
 func (o *unwrappedTarget) EnsureNewLine() {
