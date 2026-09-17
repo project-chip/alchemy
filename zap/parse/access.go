@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"github.com/project-chip/alchemy/matter"
@@ -12,12 +13,18 @@ import (
 func readAccess(d *xml.Decoder, e xml.StartElement, access *matter.Access) (err error) {
 	var op string
 	var privilege string
+	var fabricSensitive bool
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "op":
 			op = a.Value
 		case "role", "privilege":
 			privilege = a.Value
+		case "isFabricSensitive":
+			fabricSensitive, err = strconv.ParseBool(a.Value)
+			if err != nil {
+				return err
+			}
 		default:
 			return fmt.Errorf("unexpected access attribute: %s", a.Name.Local)
 		}
@@ -29,6 +36,11 @@ func readAccess(d *xml.Decoder, e xml.StartElement, access *matter.Access) (err 
 	switch strings.ToLower(op) {
 	case "read":
 		access.Read = p
+		if fabricSensitive {
+			access.FabricSensitivity = matter.FabricSensitivitySensitive
+		} else {
+			access.FabricSensitivity = matter.FabricSensitivityInsensitive
+		}
 	case "write":
 		access.Write = p
 	case "invoke":

@@ -111,11 +111,8 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	} else {
 		ae.RemoveAttr("isNullable")
 	}
-	if attribute.Access.IsFabricSensitive() {
-		ae.CreateAttr("isFabricSensitive", "true")
-	} else {
-		ae.RemoveAttr("isFabricSensitive")
-	}
+	// ZAP never supported this here, as it turns out
+	ae.RemoveAttr("isFabricSensitive")
 	// This is a deprecated quality, so remove it if it exists
 	ae.RemoveAttr("reportable")
 	if attribute.Quality.Has(matter.QualityAtomicWrite) {
@@ -125,7 +122,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	}
 	cr.renderConstraint(ae, cluster.Attributes, attribute)
 	cr.setFieldFallback(ae, attribute, cluster.Attributes)
-	needsRead := attribute.Access.Read != matter.PrivilegeUnknown && attribute.Access.Read != matter.PrivilegeView
+	needsRead := (attribute.Access.Read != matter.PrivilegeUnknown && attribute.Access.Read != matter.PrivilegeView) || attribute.Access.IsFabricSensitive()
 	var needsWrite bool
 	if attribute.Access.Write != matter.PrivilegeUnknown {
 		needsWrite = attribute.Access.Write != matter.PrivilegeOperate
@@ -157,6 +154,9 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 			for _, ax := range accessElements {
 				if needsRead {
 					cr.setAccessAttributes(ax, "read", attribute.Access.Read)
+					if attribute.Access.IsFabricSensitive() {
+						ax.CreateAttr("fabricSensitive", "true")
+					}
 					needsRead = false
 				} else if needsWrite {
 					cr.setAccessAttributes(ax, "write", attribute.Access.Write)
@@ -168,6 +168,9 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 			if needsRead {
 				ax := etree.NewElement("access")
 				cr.setAccessAttributes(ax, "read", attribute.Access.Read)
+				if attribute.Access.IsFabricSensitive() {
+					ax.CreateAttr("fabricSensitive", "true")
+				}
 				xml.AppendElement(ae, ax, "description")
 			}
 			if needsWrite {
