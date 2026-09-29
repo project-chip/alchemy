@@ -345,6 +345,8 @@ func validateFields(spec *Specification, parent types.Entity, fields matter.Fiel
 		cv.add(f, f.Conformance)
 
 		validateAccess(spec, f, f.Access)
+		validateConstraint(spec, f)
+		validateFallback(spec, f)
 	}
 	cv.check(spec)
 }

@@ -17,7 +17,12 @@ func (c *PercentLimit) ASCIIDocString(dataType *types.DataType) string {
 }
 
 func (c *PercentLimit) DataModelString(dataType *types.DataType) string {
-	return c.Value.String()
+	switch dataType.BaseType {
+	case types.BaseDataTypePercentHundredths:
+		return c.Value.Mul(decimal.NewFromInt(100)).String()
+	default:
+		return c.Value.String()
+	}
 }
 
 func (c *PercentLimit) Equal(o Limit) bool {
@@ -29,7 +34,8 @@ func (c *PercentLimit) Equal(o Limit) bool {
 
 func (c *PercentLimit) Min(cc Context) (min types.DataTypeExtreme) {
 	val := c.Value
-	if c.Hundredths {
+	dt := cc.DataType()
+	if dt != nil && dt.BaseType == types.BaseDataTypePercentHundredths {
 		val = val.Mul(decimal.NewFromInt(100))
 	}
 	v := val.IntPart()
@@ -41,7 +47,8 @@ func (c *PercentLimit) Min(cc Context) (min types.DataTypeExtreme) {
 
 func (c *PercentLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	val := c.Value
-	if c.Hundredths {
+	dt := cc.DataType()
+	if dt != nil && dt.BaseType == types.BaseDataTypePercentHundredths {
 		val = val.Mul(decimal.NewFromInt(100))
 	}
 	v := val.IntPart()

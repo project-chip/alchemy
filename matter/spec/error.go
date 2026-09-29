@@ -52,7 +52,9 @@ const (
 	ErrorTypeFabricScopedStructNotAllowed
 	ErrorTypeInvalidConformance
 	ErrorTypeInvalidConstraint
+	ErrorTypeInvalidConstraintLimit
 	ErrorTypeInvalidFallback
+	ErrorTypeInvalidFallbackLimit
 	ErrorTypeConformanceChoiceOrphan
 	ErrorTypeConformanceChoiceMismatch
 )
@@ -713,13 +715,31 @@ func (ice InvalidConstraintError) Error() string {
 	return fmt.Sprintf("invalid constraint: \"%s\"", ice.Constraint)
 }
 
+type InvalidConstraintLimitError struct {
+	Limit  constraint.Limit
+	Field  *matter.Field
+	Source log.Source
+}
+
+func (ice InvalidConstraintLimitError) Type() ErrorType {
+	return ErrorTypeInvalidConstraintLimit
+}
+
+func (ice InvalidConstraintLimitError) Origin() (path string, line int) {
+	return ice.Source.Origin()
+}
+
+func (ice InvalidConstraintLimitError) Error() string {
+	return fmt.Sprintf("invalid constraint limit: \"%s\" for field with data type %s", ice.Limit.ASCIIDocString(ice.Field.Type), ice.Field.Type.BaseType.String())
+}
+
 type InvalidFallbackError struct {
 	Fallback string
 	Source   log.Source
 }
 
 func (ifbe InvalidFallbackError) Type() ErrorType {
-	return ErrorTypeInvalidConstraint
+	return ErrorTypeInvalidFallback
 }
 
 func (ifbe InvalidFallbackError) Origin() (path string, line int) {
@@ -728,6 +748,24 @@ func (ifbe InvalidFallbackError) Origin() (path string, line int) {
 
 func (ifbe InvalidFallbackError) Error() string {
 	return fmt.Sprintf("invalid fallback: \"%s\"", ifbe.Fallback)
+}
+
+type InvalidFallbackLimitError struct {
+	Fallback constraint.Limit
+	Field    *matter.Field
+	Source   log.Source
+}
+
+func (ifbe InvalidFallbackLimitError) Type() ErrorType {
+	return ErrorTypeInvalidFallbackLimit
+}
+
+func (ifbe InvalidFallbackLimitError) Origin() (path string, line int) {
+	return ifbe.Source.Origin()
+}
+
+func (ifbe InvalidFallbackLimitError) Error() string {
+	return fmt.Sprintf("invalid fallback: \"%s\" for field with data type %s", ifbe.Fallback.ASCIIDocString(ifbe.Field.Type), ifbe.Field.Type.BaseType.String())
 }
 
 type ConformanceChoiceOrphanError struct {

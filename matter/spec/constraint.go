@@ -8,6 +8,7 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/shopspring/decimal"
 )
 
 func (sp *Builder) resolveConstraints() {
@@ -169,5 +170,81 @@ func (sp *Builder) resolveFieldConstraintLimit(cluster *matter.Cluster, finder e
 		}
 	default:
 		slog.Warn("Unexpected field constraint limit type", log.Type("type", l))
+	}
+}
+
+func validateConstraint(spec *Specification, field *matter.Field) {
+	for _, l := range constraint.TraverseConstraintLimits(field.Constraint) {
+		validateLimit(spec, field, l)
+	}
+}
+
+func isLimitValid(field *matter.Field, limit constraint.Limit) bool {
+	switch l := limit.(type) {
+	case *constraint.NullLimit:
+		if !field.Quality.Has(matter.QualityNullable) {
+			return false
+		}
+	case *constraint.TemperatureLimit:
+		switch field.Type.BaseType {
+		case types.BaseDataTypeTemperature:
+			if !l.Value.Shift(2).IsInteger() {
+				return false
+			}
+			if l.Value.GreaterThan(decimal.New(32767, -2)) || l.Value.LessThan(decimal.New(-32767, -2)) {
+				return false
+			}
+		case types.BaseDataTypeTemperatureDifference:
+			if !l.Value.Shift(2).IsInteger() {
+				return false
+			}
+			if l.Value.GreaterThan(decimal.New(32767, -2)) || l.Value.LessThan(decimal.New(-27315, -2)) {
+				return false
+			}
+		case types.BaseDataTypeUnsignedTemperature:
+			if !l.Value.Shift(1).IsInteger() {
+				return false
+			}
+			if l.Value.GreaterThan(decimal.New(255, 0)) || l.Value.LessThan(decimal.New(0, 0)) {
+				return false
+			}
+		case types.BaseDataTypeSignedTemperature:
+			if !l.Value.Shift(1).IsInteger() {
+				return false
+			}
+			if l.Value.GreaterThan(decimal.New(127, 0)) || l.Value.LessThan(decimal.New(-128, 0)) {
+				return false
+			}
+		default:
+			return false
+		}
+	case *constraint.PercentLimit:
+		switch field.Type.BaseType {
+		case types.BaseDataTypePercent:
+			if !l.Value.IsInteger() {
+				return false
+			}
+		case types.BaseDataTypePercentHundredths:
+			if !l.Value.Shift(2).IsInteger() {
+				return false
+			}
+		default:
+			return false
+		}
+	}
+	return true
+}
+
+func validateLimit(spec *Specification, field *matter.Field, limit constraint.Limit) {
+	if !isLimitValid(field, limit) {
+		spec.addError(&InvalidConstraintLimitError{Limit: limit, Field: field, Source: field})
+	}
+}
+
+func validateFallback(spec *Specification, field *matter.Field) {
+	if field.Fallback != nil {
+		for l := range constraint.TraverseLimit(field.Fallback) {
+			validateLimit(spec, field, l)
+		}
 	}
 }
