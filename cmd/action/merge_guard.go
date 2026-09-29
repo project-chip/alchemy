@@ -89,9 +89,21 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 
 	pipelineOptions := pipeline.ProcessingOptions{NoProgress: true}
 
-	slog.Info("pull request", "pr", pr)
-	slog.Info("pull request", "head", pr.GetHead())
-	slog.Info("pull request", "base", pr.GetBase())
+	slog.Info("pull request", slog.Int64("id", pr.GetID()))
+
+	base := pr.GetBase()
+	if base == nil {
+		return fmt.Errorf("pull request missing base")
+	}
+
+	slog.Info("base", slog.String("sha", base.GetSHA()))
+
+	head := pr.GetHead()
+	if head == nil {
+		return fmt.Errorf("pull request missing head")
+	}
+
+	slog.Info("head", slog.String("sha", head.GetSHA()))
 
 	var baseRoot, headRoot string
 	baseRoot, err = os.MkdirTemp("", "alchemy.base")
@@ -99,7 +111,7 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 		return fmt.Errorf("failed on getting temp base dir: %w", err)
 	}
 
-	baseRoot, err = github.Checkout(cc, githubContext, action, pr, pr.GetBase().GetRef(), baseRoot)
+	baseRoot, err = github.Checkout(cc, githubContext, action, pr, base.GetRef(), baseRoot)
 	if err != nil {
 		return fmt.Errorf("failed checking out base: %w", err)
 	}

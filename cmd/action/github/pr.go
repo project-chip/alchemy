@@ -50,7 +50,6 @@ func GetPRChangedFiles(cxt context.Context, githubContext *githubactions.GitHubC
 			if *file.Status == "deleted" {
 				continue
 			}
-			slog.Info("changed file", "file", *file.Filename)
 			changedFiles = append(changedFiles, *file.Filename)
 		}
 		if resp.NextPage == 0 {
@@ -88,7 +87,6 @@ func GetPRChangedFilesWithStatus(cxt context.Context, githubContext *githubactio
 			if file.GetStatus() == "deleted" {
 				continue
 			}
-			slog.Info("changed file", "file", file.GetFilename(), "status", file.GetStatus())
 			changedFiles[file.GetFilename()] = FileStatus(file.GetStatus())
 		}
 		if resp.NextPage == 0 {
@@ -161,13 +159,11 @@ func Checkout(cxt context.Context, githubContext *githubactions.GitHubContext, a
 		return
 	}
 
-	var written int64
-	written, err = io.Copy(temp, resp.Body)
+	_, err = io.Copy(temp, resp.Body)
 	if err != nil {
 		err = fmt.Errorf("failed reading response: %w", err)
 		return
 	}
-	slog.Info("Wrote bytes to temp file", slog.Int("count", int(written)), slog.String("path", temp.Name()))
 	defer temp.Close()
 
 	err = targz.Extract(temp.Name(), outDir)
@@ -213,10 +209,8 @@ func WriteComment(cxt context.Context, githubContext *githubactions.GitHubContex
 	}
 
 	messageIdComment := fmt.Sprintf("<!-- add-pr-comment:%s -->", messageId)
-	slog.Info("fetched comments", "total", len(comments))
 	var existingComment *github.IssueComment
 	for _, c := range comments {
-		slog.Info("comment", slog.Any("c", c))
 		body := c.GetBody()
 		if strings.HasPrefix(body, messageIdComment) {
 			existingComment = c

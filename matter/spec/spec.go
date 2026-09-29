@@ -199,7 +199,7 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 			entities := library.entitiesByElement[el]
 			discoveredEntities = append(discoveredEntities, entities...)
 		default:
-			slog.Warn("unexpected type of anchor element", log.Type("type", el))
+			slog.Warn("unexpected type of anchor element", log.Type("type", el), log.Path("source", anchor.Source))
 		}
 	}
 	switch len(discoveredEntities) {
@@ -208,7 +208,7 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 		for _, anchor := range anchors {
 			switch el := anchor.Element.(type) {
 			case *asciidoc.Section:
-				slog.Warn("anchor element", log.Path("type", el), log.Address("address", el))
+				slog.Warn("anchor element", log.Path("source", el), log.Address("address", el))
 			}
 		}
 	case 1:
