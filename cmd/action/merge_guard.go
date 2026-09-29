@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/cmd/action/github"
@@ -118,8 +119,8 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 
 	headRoot = githubContext.Workspace
 
-	var out bytes.Buffer
-	writer := files.NewPatcher[string]("Generating patch file...", &out)
+	var patch bytes.Buffer
+	writer := files.NewPatcher[string]("Generating patch file...", &patch)
 
 	specs, err := spec.LoadSpecPullRequest(cc, baseRoot, headRoot, pipelineOptions)
 	if err != nil {
@@ -147,10 +148,12 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 	owner, repo := githubContext.Repo()
 
 	var comment string
+	var violationError error
 	if len(violations) > 0 {
 		action.SetOutput("merge_guard_status", "violations")
+		violationError = errors.New("merge guard violations found")
 
-		err = os.WriteFile("provisional.patch", out.Bytes(), os.ModeAppend|0644)
+		err = os.WriteFile("provisional.patch", patch.Bytes(), os.ModeAppend|0644)
 		if err != nil {
 			return fmt.Errorf("failed saving provisional patch: %v", err)
 		}
@@ -188,22 +191,7 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 			for _, v := range vs {
 				vv := templates.Violation{}
 
-				if v.Entity != nil {
-					vv.EntityName = matter.EntityName(v.Entity)
-					vv.EntityType = entityTypeName(v.Entity)
-
-					parent := v.Entity.Parent()
-					for {
-						if parent == nil {
-							break
-						}
-						vv.EntityName = matter.EntityName(parent) + "." + vv.EntityName
-						parent = parent.Parent()
-					}
-				} else {
-					vv.EntityName = "-"
-					vv.EntityType = "-"
-				}
+				vv.EntityName, vv.EntityType = getViolationEntity(v)
 
 				pathHash := sha256.Sum256([]byte(relPath))
 				vv.SourceLink = fmt.Sprintf("https://github.com/%s/%s/pull/%d/files#diff-%sR%d", owner, repo, pr.GetNumber(), hex.EncodeToString(pathHash[:]), v.Line)
@@ -226,6 +214,8 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 				vf.Violations = append(vf.Violations, vv)
 			}
 			vc.Files = append(vc.Files, vf)
+
+			annotateViolations(action, path, vs)
 		}
 
 		tc := map[string]any{
@@ -259,11 +249,64 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 		action.SetOutput("comment", comment)
 	}
 
-	if len(violations) > 0 {
-		err = errors.New("merge guard violations found")
+	if serr := github.WriteSummary(cc, action, comment); serr != nil {
+		slog.Error("failed to write summary", "error", serr)
+	}
+	if violationError != nil {
+		return violationError
+	}
+	return
+}
+
+func getViolationEntity(v spec.Violation) (entityName, entityType string) {
+	if v.Entity == nil {
+		entityName = "-"
+		entityType = "-"
+		return
 	}
 
+	entityName = matter.EntityName(v.Entity)
+	entityType = entityTypeName(v.Entity)
+
+	parent := v.Entity.Parent()
+	for {
+		if parent == nil {
+			break
+		}
+		entityName = matter.EntityName(parent) + "." + entityName
+		parent = parent.Parent()
+	}
 	return
+}
+
+func annotateViolations(action *githubactions.Action, path string, violations []spec.Violation) {
+	for _, v := range violations {
+
+		entityName, _ := getViolationEntity(v)
+		var annotation strings.Builder
+		if v.Type.Has(spec.ViolationTypeNonProvisional) {
+			fmt.Fprintf(&annotation, "• The entity \"%s\" is newly introduced by this PR, and needs to have provisional conformance.\n", entityName)
+		}
+		if v.Type.Has(spec.ViolationTypeNotIfDefd) {
+			fmt.Fprintf(&annotation, "• The entity \"%s\" must be wrapped in an in-progress ifdef.\n", entityName)
+		}
+		if v.Type.Has(spec.ViolationNewParseError) {
+			annotation.WriteString("• This PR introduces a new parse error.\n")
+			annotation.WriteString(v.Text)
+			annotation.WriteRune('\n')
+		}
+		if v.Type.Has(spec.ViolationMasterList) {
+			annotation.WriteString("• This PR introduces an incompatibility with the Master List:\n")
+			annotation.WriteString(v.Text)
+			annotation.WriteRune('\n')
+		}
+		if v.Type.Has(spec.ViolationEventConformance) {
+			annotation.WriteString("• This PR introduces an invalid event conformance:\n")
+			annotation.WriteString(v.Text)
+			annotation.WriteRune('\n')
+		}
+		github.Annotate(action, github.AnnotationLevelError, "Merge Guard Violation", annotation.String(), path, v.Line)
+	}
 }
 
 func entityTypeName(e types.Entity) string {
