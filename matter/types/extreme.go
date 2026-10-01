@@ -135,9 +135,6 @@ func (ce *DataTypeExtreme) ZapString(dataType *DataType) string {
 			}
 			return strconv.FormatInt(val, 10)
 		default:
-			if dataType != nil && dataType.BaseType == BaseDataTypePercentHundredths {
-				return strconv.FormatInt(ce.Int64*100, 10)
-			}
 			return strconv.FormatInt(ce.Int64, 10)
 		}
 	case DataTypeExtremeTypeUInt64:

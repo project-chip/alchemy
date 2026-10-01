@@ -457,6 +457,7 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "0% to 100%",
+		dataType:   &types.DataType{BaseType: types.BaseDataTypePercent},
 		min:        types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
 		max:        types.NewIntDataTypeExtreme(100, types.NumberFormatInt),
 		zapMin:     "0",
@@ -466,7 +467,7 @@ var constraintTests = []constraintTest{
 		constraint: "0% to 100%",
 		dataType:   &types.DataType{BaseType: types.BaseDataTypePercentHundredths},
 		min:        types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
-		max:        types.NewIntDataTypeExtreme(100, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(10000, types.NumberFormatInt),
 		zapMin:     "0",
 		zapMax:     "10000",
 	},
