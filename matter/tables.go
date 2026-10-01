@@ -321,11 +321,11 @@ var Tables = map[TableType]Table{
 	},
 	TableTypeDeviceTypeRequirements: {
 		ColumnOrder: []TableColumn{
+			TableColumnLocation,
 			TableColumnDeviceID,
 			TableColumnDeviceName,
 			TableColumnConstraint,
 			TableColumnConformance,
-			TableColumnLocation,
 		},
 		ColumnRenames: map[TableColumn]TableColumn{
 			TableColumnID:   TableColumnDeviceID,
