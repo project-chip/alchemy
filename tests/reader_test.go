@@ -513,6 +513,7 @@ var readerTestShouldNotSkipFrontMatterByDefault = &asciidoc.Document{
 		},
 		&asciidoc.ThematicBreak{
 			AttributeList: nil,
+			Text:          "---",
 		},
 		&asciidoc.String{
 			Value: "layout: post",
@@ -532,6 +533,7 @@ var readerTestShouldNotSkipFrontMatterByDefault = &asciidoc.Document{
 		&asciidoc.NewLine{},
 		&asciidoc.ThematicBreak{
 			AttributeList: nil,
+			Text:          "---",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
@@ -565,6 +567,7 @@ var readerTestShouldNotSkipFrontMatterIfEndingDelimiterIsNotFound = &asciidoc.Do
 		},
 		&asciidoc.ThematicBreak{
 			AttributeList: nil,
+			Text:          "---",
 		},
 		&asciidoc.String{
 			Value: "title: Document Title",

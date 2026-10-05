@@ -475,6 +475,7 @@ var blocksTestHorizontalRuleBetweenBlocks = &asciidoc.Document{
 					Options: nil,
 				},
 			},
+			Text: "'''",
 		},
 	},
 }
