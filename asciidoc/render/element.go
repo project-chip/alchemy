@@ -56,6 +56,8 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 			err = renderLink(cxt, el)
 		case *asciidoc.LinkMacro:
 			err = renderLinkMacro(cxt, el)
+		case *asciidoc.Email:
+			cxt.WriteString(el.Address)
 		case asciidoc.SpecialCharacter:
 			err = renderSpecialCharacter(cxt, el)
 		case *asciidoc.Bold:
