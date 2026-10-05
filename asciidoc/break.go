@@ -5,10 +5,11 @@ type ThematicBreak struct {
 	raw
 
 	AttributeList
+	Text string
 }
 
-func NewThematicBreak() *ThematicBreak {
-	return &ThematicBreak{}
+func NewThematicBreak(text string) *ThematicBreak {
+	return &ThematicBreak{Text: text}
 }
 
 func (ThematicBreak) Type() ElementType {
@@ -20,11 +21,11 @@ func (tb *ThematicBreak) Equals(e Element) bool {
 	if !ok {
 		return false
 	}
-	return tb.AttributeList.Equals(otb.AttributeList)
+	return tb.AttributeList.Equals(otb.AttributeList) && tb.Text == otb.Text
 }
 
 func (tb *ThematicBreak) Clone() Element {
-	return &ThematicBreak{position: tb.position, raw: tb.raw, AttributeList: tb.AttributeList.Clone()}
+	return &ThematicBreak{position: tb.position, raw: tb.raw, AttributeList: tb.AttributeList.Clone(), Text: tb.Text}
 }
 
 type PageBreak struct {

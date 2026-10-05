@@ -151,7 +151,9 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 		case *asciidoc.Counter:
 			renderCounter(cxt, el)
 		case *asciidoc.ThematicBreak:
-			cxt.WriteString("'''\n")
+			renderThematicBreak(cxt, el)
+		case *asciidoc.PageBreak:
+			renderPageBreak(cxt, el)
 		case nil:
 		default:
 			if source, ok := el.(interface {
