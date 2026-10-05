@@ -1,7 +1,7 @@
 
 ThematicBreak = ("'''" / "*" _? "*" _? "*" / "-" _? "-" _? "-" / "_" _? "_" _? "_") AnySpaces &EndOfLine {
     debugPosition(c, "thematic break: %s\n", string(c.text))
-    return compose(c, asciidoc.NewThematicBreak())
+    return compose(c, asciidoc.NewThematicBreak(string(c.text)))
 }
 
 

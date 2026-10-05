@@ -1744,6 +1744,7 @@ var listsTestParagraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationS
 				&asciidoc.ListContinuation{
 					ChildElement: &asciidoc.ThematicBreak{
 						AttributeList: nil,
+						Text:          "'''",
 					},
 				},
 			},
@@ -1871,6 +1872,7 @@ var listsTestShouldContinueToParseBlocksAttachedByAListContinuationAfterBlockIsD
 		},
 		&asciidoc.ThematicBreak{
 			AttributeList: nil,
+			Text:          "'''",
 		},
 	},
 }
@@ -6771,6 +6773,7 @@ var listsTestARulerBetweenElementsShouldDivideThemIntoSeparateLists = &asciidoc.
 		},
 		&asciidoc.ThematicBreak{
 			AttributeList: nil,
+			Text:          "'''",
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -10526,6 +10529,7 @@ var listsTestFoldsTextThatLooksLikeRulerOffsetByBlankLineAndLineComment = &ascii
 				},
 				&asciidoc.ThematicBreak{
 					AttributeList: nil,
+					Text:          "'''",
 				},
 			},
 			Title: asciidoc.Elements{
@@ -10956,6 +10960,7 @@ var listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDes
 				},
 				&asciidoc.ThematicBreak{
 					AttributeList: nil,
+					Text:          "'''",
 				},
 			},
 			Title: asciidoc.Elements{
@@ -11004,6 +11009,7 @@ var listsTestAppendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptio
 				},
 				&asciidoc.ThematicBreak{
 					AttributeList: nil,
+					Text:          "'''",
 				},
 			},
 			Title: asciidoc.Elements{
@@ -12701,6 +12707,7 @@ var listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasInlineDescr
 				},
 				&asciidoc.ThematicBreak{
 					AttributeList: nil,
+					Text:          "'''",
 				},
 			},
 			Title: asciidoc.Elements{
@@ -13025,6 +13032,7 @@ var listsTestRulerOffsetByBlankLineDividesListsBecauseItemHasText = &asciidoc.Do
 				},
 				&asciidoc.ThematicBreak{
 					AttributeList: nil,
+					Text:          "'''",
 				},
 				&asciidoc.EmptyLine{
 					Text: "",

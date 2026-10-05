@@ -2605,6 +2605,7 @@ var documentTestHonorHtmlsyntaxAttributeInDocumentHeaderIfFollowedByBackendAttri
 		},
 		&asciidoc.ThematicBreak{
 			AttributeList: nil,
+			Text:          "---",
 		},
 	},
 }
@@ -2635,6 +2636,7 @@ var documentTestDoesNotHonorHtmlsyntaxAttributeInDocumentHeaderIfNotFollowedByBa
 		},
 		&asciidoc.ThematicBreak{
 			AttributeList: nil,
+			Text:          "---",
 		},
 	},
 }
@@ -3017,6 +3019,7 @@ var documentTestShouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 				},
 				&asciidoc.ThematicBreak{
 					AttributeList: nil,
+					Text:          "'''",
 				},
 			},
 			Title: asciidoc.Elements{

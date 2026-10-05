@@ -1336,6 +1336,7 @@ var apiTestFindByShouldReturnArrayOfBlocksThatMatchStyleCriteria = &asciidoc.Doc
 		},
 		&asciidoc.ThematicBreak{
 			AttributeList: nil,
+			Text:          "---",
 		},
 		&asciidoc.EmptyLine{
 			Text: "",

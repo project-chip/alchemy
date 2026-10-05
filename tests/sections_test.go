@@ -1706,6 +1706,7 @@ var sectionsTestHeadingTitleWithMultilineSyntaxCannotBeginWithADot = &asciidoc.D
 		&asciidoc.NewLine{},
 		&asciidoc.ThematicBreak{
 			AttributeList: nil,
+			Text:          "---",
 		},
 		&asciidoc.EmptyLine{
 			Text: "",

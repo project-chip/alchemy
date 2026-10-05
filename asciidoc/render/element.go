@@ -56,6 +56,8 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 			err = renderLink(cxt, el)
 		case *asciidoc.LinkMacro:
 			err = renderLinkMacro(cxt, el)
+		case *asciidoc.Email:
+			cxt.WriteString(el.Address)
 		case asciidoc.SpecialCharacter:
 			err = renderSpecialCharacter(cxt, el)
 		case *asciidoc.Bold:
@@ -137,6 +139,8 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 			err = renderDelimitedLines(cxt, el, el.Delimiter)
 		case *asciidoc.OpenBlock:
 			err = renderDelimitedElements(cxt, el, el.Delimiter)
+		case *asciidoc.QuoteBlock:
+			err = renderDelimitedElements(cxt, el, el.Delimiter)
 		case *asciidoc.FencedBlock:
 			err = renderFencedBlock(cxt, el)
 		case *asciidoc.FileInclude:
@@ -151,7 +155,9 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 		case *asciidoc.Counter:
 			renderCounter(cxt, el)
 		case *asciidoc.ThematicBreak:
-			cxt.WriteString("'''\n")
+			renderThematicBreak(cxt, el)
+		case *asciidoc.PageBreak:
+			renderPageBreak(cxt, el)
 		case nil:
 		default:
 			if source, ok := el.(interface {
