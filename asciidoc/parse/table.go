@@ -289,38 +289,42 @@ func parseBlockCell(tc *asciidoc.TableCell) error {
 	return nil
 }
 
-func trimCell(tc *asciidoc.TableCell) (els asciidoc.Elements, err error) {
+func trimCell(tc *asciidoc.TableCell) (els asciidoc.Elements) {
 	els = tc.Children()
+	return TrimElements(els, unicode.IsSpace)
+}
+
+func TrimElements(in asciidoc.Elements, f func(rune) bool) (out asciidoc.Elements) {
+	out = in
 	leftIndex := 0
-	rightIndex := len(els) - 1
-	switch len(els) {
+	rightIndex := len(out) - 1
+	switch len(out) {
 	case 0:
 	case 1:
-		switch e := els[0].(type) {
+		switch e := out[0].(type) {
 		case *asciidoc.String:
-			e.Value = strings.TrimSpace(e.Value)
+			e.Value = strings.TrimFunc(e.Value, f)
 		}
 	default:
-		switch e := els[leftIndex].(type) {
+		switch e := out[leftIndex].(type) {
 		case *asciidoc.String:
-			e.Value = strings.TrimLeftFunc(e.Value, unicode.IsSpace)
+			e.Value = strings.TrimLeftFunc(e.Value, f)
 			if len(e.Value) == 0 {
 				leftIndex = 1
 			}
 		}
-		switch e := els[rightIndex].(type) {
+		switch e := out[rightIndex].(type) {
 		case *asciidoc.String:
-			e.Value = strings.TrimRightFunc(e.Value, unicode.IsSpace)
+			e.Value = strings.TrimRightFunc(e.Value, f)
 			if len(e.Value) == 0 {
 				rightIndex -= 1
 			}
 		}
 	}
-	if leftIndex == 0 && rightIndex == len(els)-1 {
+	if leftIndex == 0 && rightIndex == len(out)-1 {
 		return
 	}
 
-	els = els[leftIndex : rightIndex+1]
-
-	return
+	out = out[leftIndex : rightIndex+1]
+	return trim(out)
 }
