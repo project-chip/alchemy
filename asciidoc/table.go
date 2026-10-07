@@ -340,6 +340,7 @@ func (tr *TableRow) Clone() Element {
 		case *TableCell:
 			tc := e.Clone().(*TableCell)
 			tc.Row = ctr
+			tc.SetParent(ctr)
 			ctr.Elements = append(ctr.Elements, tc)
 		default:
 			ctr.Elements = append(ctr.Elements, e.Clone())

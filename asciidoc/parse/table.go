@@ -71,7 +71,9 @@ func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Elemen
 					if !ok || skip == 0 {
 						break
 					}
-					currentTableRow.Append(&asciidoc.TableCell{Blank: true})
+					blank := &asciidoc.TableCell{Blank: true, Row: currentTableRow}
+					blank.SetParent(currentTableRow)
+					currentTableRow.Append(blank)
 					colSkip[cellIndex] = skip - 1
 					cellIndex++
 				}
@@ -96,7 +98,7 @@ func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Elemen
 					}
 					if colSpan > 1 {
 						for i := 0; i < colSpan-1; i++ {
-							blank := &asciidoc.TableCell{Blank: true}
+							blank := &asciidoc.TableCell{Blank: true, Row: currentTableRow}
 							blank.SetParent(currentTableRow)
 							currentTableRow.Append(blank)
 							cellIndex++
