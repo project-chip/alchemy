@@ -40,9 +40,14 @@ func (er EntityReference) Equals(oer EntityReference) bool {
 		return er.Name == oer.Name
 	}
 	if er.XRef != nil {
+		if oer.XRef == nil {
+			return false
+		}
 		return er.XRef.Equals(oer.XRef)
+	} else if oer.XRef != nil {
+		return false
 	}
-	return false
+	return true
 }
 
 type ElementReference struct {
@@ -61,7 +66,12 @@ func (er ElementReference) Equals(oer ElementReference) bool {
 		return false
 	}
 	if er.XRef != nil {
+		if oer.XRef == nil {
+			return false
+		}
 		return er.XRef.Equals(oer.XRef)
+	} else if oer.XRef != nil {
+		return false
 	}
 	return true
 }

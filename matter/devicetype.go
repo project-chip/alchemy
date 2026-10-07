@@ -142,6 +142,9 @@ func (er *ElementRequirement) Equals(e types.Entity) bool {
 	if !er.ElementRef.Equals(oer.ElementRef) {
 		return false
 	}
+	if er.Element != oer.Element {
+		return false
+	}
 	if er.Entity != nil {
 		if oer.Entity != nil {
 			return er.Entity.Equals(oer.Entity)
@@ -159,6 +162,7 @@ func (er *ElementRequirement) Clone() *ElementRequirement {
 		entity:     entity{source: er.source},
 		ClusterRef: er.ClusterRef.Clone(),
 		ElementRef: er.ElementRef,
+		Element:    er.Element,
 		Quality:    er.Quality,
 		Access:     er.Access,
 		Cluster:    er.Cluster,
