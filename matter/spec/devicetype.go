@@ -464,19 +464,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 
 func findDeviceTypeRequirementCluster(spec *Specification, ref matter.EntityReference, entity types.Entity, entityFinder entityFinder) (cluster *matter.Cluster) {
 	if ref.XRef != nil {
-		library, ok := spec.libraryIndex[ref.XRef.Document()]
-		if !ok {
-		} else {
-			referenceID, label := referenceInfo(library, ref.XRef)
-			entity := entityFinder.findEntityByReference(referenceID, label, ref.XRef)
-			switch entity := entity.(type) {
-			case *matter.Cluster:
-				cluster = entity
-			case nil:
-			default:
-				slog.Error("Device Type Requirement links to non-cluster", log.Path("source", ref.XRef))
-			}
-		}
+		cluster, _ = referenceEntity[*matter.Cluster](spec, ref.XRef, entityFinder)
 	}
 	if cluster == nil && ref.ID.Valid() {
 		cluster = spec.ClustersByID[ref.ID.Value()]
@@ -508,19 +496,7 @@ func findDeviceTypeRequirementCluster(spec *Specification, ref matter.EntityRefe
 
 func findDeviceTypeRequirementCondition(spec *Specification, ref matter.EntityReference, deviceType *matter.DeviceType, entityFinder entityFinder) (condition *matter.Condition) {
 	if ref.XRef != nil {
-		library, ok := spec.libraryIndex[ref.XRef.Document()]
-		if !ok {
-		} else {
-			referenceID, label := referenceInfo(library, ref.XRef)
-			entity := entityFinder.findEntityByReference(referenceID, label, ref.XRef)
-			switch entity := entity.(type) {
-			case *matter.Condition:
-				condition = entity
-			case nil:
-			default:
-				slog.Error("Device Type Condition Requirement links to non-condition", slog.String("entityType", entity.EntityType().String()), log.Path("source", ref.XRef))
-			}
-		}
+		condition, _ = referenceEntity[*matter.Condition](spec, ref.XRef, entityFinder)
 	}
 
 	if condition == nil && ref.Name != "" {
@@ -546,20 +522,7 @@ func findDeviceTypeRequirementDeviceType(spec *Specification, ref matter.EntityR
 		return
 	}
 	if ref.XRef != nil {
-		library, ok := spec.libraryIndex[ref.XRef.Document()]
-		if !ok {
-		} else {
-			referenceID, label := referenceInfo(library, ref.XRef)
-			entity := entityFinder.findEntityByReference(referenceID, label, ref.XRef)
-			switch entity := entity.(type) {
-			case *matter.DeviceType:
-				deviceType = entity
-			case nil:
-			default:
-				slog.Error("Device Type Requirement links to non-deviceType", log.Path("source", ref.XRef), matter.LogEntity("entity", entity))
-				spec.addError(&DeviceTypeReferenceTypeMismatch{DeviceType: deviceType, Element: types.EntityTypeDeviceType, Entity: entity, Source: entity})
-			}
-		}
+		deviceType, _ = referenceEntity[*matter.DeviceType](spec, ref.XRef, entityFinder)
 	}
 	if deviceType == nil && ref.ID.Valid() {
 		deviceType = spec.DeviceTypesByID[ref.ID.Value()]
@@ -680,15 +643,16 @@ func associateElementRequirement(spec *Specification, dt *matter.DeviceType, er 
 
 func associateElementRequirementFromCluster(spec *Specification, er *matter.ElementRequirement, dt *matter.DeviceType, cluster *matter.Cluster, entityFinder entityFinder) (entity types.Entity, err error) {
 	if er.ElementRef.XRef != nil {
-		library, ok := spec.libraryIndex[er.ElementRef.XRef.Document()]
-		if !ok {
-		} else {
-			referenceID, label := referenceInfo(library, er.ElementRef.XRef)
-			entity = entityFinder.findEntityByReference(referenceID, label, er.ElementRef.XRef)
-			if entity != nil && entity.EntityType() != er.Element {
+		var ok bool
+		entity, ok = referenceEntity[types.Entity](spec, er.ElementRef.XRef, entityFinder)
+		if ok {
+			if entity.EntityType() != er.Element {
 				slog.Error("Element Requirement references wrong entity type", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterRef.ID.HexString()), slog.String("clusterName", er.ClusterRef.Name), log.Path("source", er))
+				spec.addError(&ReferenceTypeMismatch{Element: entity.EntityType(), Entity: entity, Source: er.ElementRef.XRef})
 				entity = nil
 			}
+		} else {
+			return
 		}
 	}
 	switch er.Element {

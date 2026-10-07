@@ -6,7 +6,9 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 type CrossReference struct {
@@ -103,4 +105,32 @@ func referenceInfo(library *Library, reference *asciidoc.CrossReference) (refere
 		label = buildReferenceName(library, reference, reference.Elements)
 	}
 	return
+}
+
+func referenceEntity[T types.Entity](spec *Specification, reference *asciidoc.CrossReference, entityFinder entityFinder) (entity T, ok bool) {
+	var library *Library
+	library, ok = spec.libraryIndex[reference.Document()]
+	if !ok {
+		slog.Warn("Missing library for cross-reference", log.Path("source", reference))
+		return
+	}
+
+	referenceID, label := referenceInfo(library, reference)
+	e := entityFinder.findEntityByReference(referenceID, label, reference)
+	switch e := e.(type) {
+	case T:
+		entity = e
+		ok = true
+		return
+	case nil:
+		slog.Warn("No entity found for reference", slog.String("referenceID", referenceID), slog.String("label", label), log.Path("source", reference))
+		ok = false
+		return
+	default:
+		slog.Warn("Entity type mismatch for reference", slog.String("expectedEntityType", entity.EntityType().String()), slog.String("actualEntityType", e.EntityType().String()), log.Path("source", reference))
+		spec.addError(&ReferenceTypeMismatch{Element: entity.EntityType(), Entity: entity, Source: reference})
+		ok = false
+		return
+	}
+
 }

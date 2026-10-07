@@ -24,6 +24,7 @@ const (
 	ErrorTypeUnknownSuperset
 	ErrorTypeUnknownClusterRequirement
 	ErrorTypeUnknownElementRequirementCluster
+	ErrorTypeReferenceTypeMismatch
 	ErrorTypeElementRequirementUnreferencedCluster
 	ErrorTypeElementRequirementUnknownElement
 	ErrorTypeComposingDeviceTypeRequirementUnknownDeviceType
@@ -46,7 +47,6 @@ const (
 	ErrorTypeClusterReferenceNameMismatch
 	ErrorTypeDeviceTypeReferenceIDMismatch
 	ErrorTypeDeviceTypeReferenceNameMismatch
-	ErrorTypeDeviceTypeReferenceTypeMismatch
 	ErrorTypeNamespaceNameMismatch
 	ErrorTypeUnknownBaseCluster
 	ErrorTypeUnknownConformanceIdentifier
@@ -635,23 +635,22 @@ func (ddt DeviceTypeReferenceNameMismatch) Error() string {
 	return fmt.Sprintf("device type reference has mismatched name: %s vs. %s", ddt.DeviceType.Name, ddt.Name)
 }
 
-type DeviceTypeReferenceTypeMismatch struct {
-	DeviceType *matter.DeviceType
-	Element    types.EntityType
-	Source     log.Source
-	Entity     types.Entity
+type ReferenceTypeMismatch struct {
+	Entity  types.Entity
+	Element types.EntityType
+	Source  log.Source
 }
 
-func (ddt DeviceTypeReferenceTypeMismatch) Type() ErrorType {
-	return ErrorTypeDeviceTypeReferenceTypeMismatch
+func (rtm ReferenceTypeMismatch) Type() ErrorType {
+	return ErrorTypeReferenceTypeMismatch
 }
 
-func (ddt DeviceTypeReferenceTypeMismatch) Origin() (path string, line int) {
-	return ddt.Source.Origin()
+func (rtm ReferenceTypeMismatch) Origin() (path string, line int) {
+	return rtm.Source.Origin()
 }
 
-func (ddt DeviceTypeReferenceTypeMismatch) Error() string {
-	return fmt.Sprintf("device type reference has mismatched type: %s vs. %s", ddt.Entity.EntityType().String(), ddt.Element.String())
+func (rtm ReferenceTypeMismatch) Error() string {
+	return fmt.Sprintf("reference points to %s but %s was expected", rtm.Entity.EntityType().String(), rtm.Element.String())
 }
 
 type UnknownConformanceIdentifierError struct {
