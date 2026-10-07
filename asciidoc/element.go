@@ -45,8 +45,8 @@ type HasChild interface {
 }
 
 type HasParent interface {
-	Parent() Element
-	SetParent(e Element)
+	Parent() ParentElement
+	SetParent(e ParentElement)
 }
 
 type ChildElement interface {

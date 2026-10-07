@@ -65,7 +65,7 @@ func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Elemen
 					rows = append(rows, currentTableRow)
 					cellIndex = 0
 				}
-				cell.Parent = currentTableRow
+				cell.Row = currentTableRow
 				for cellIndex < table.ColumnCount {
 					skip, ok := colSkip[cellIndex]
 					if !ok || skip == 0 {
@@ -83,6 +83,7 @@ func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Elemen
 					cellIndex = 0
 				}
 				currentTableRow.Append(cell)
+				cell.SetParent(currentTableRow)
 				if cell.Format != nil {
 					rowSpan := cell.Format.Span.Row.Value
 					colSpan := cell.Format.Span.Column.Value
@@ -95,7 +96,9 @@ func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Elemen
 					}
 					if colSpan > 1 {
 						for i := 0; i < colSpan-1; i++ {
-							currentTableRow.Append(&asciidoc.TableCell{Blank: true})
+							blank := &asciidoc.TableCell{Blank: true}
+							blank.SetParent(currentTableRow)
+							currentTableRow.Append(blank)
 							cellIndex++
 						}
 					}
@@ -241,12 +244,8 @@ func ReparseTable(table *asciidoc.Table, elements asciidoc.Elements) (err error)
 					err = parseBlockCell(c)
 				case asciidoc.TableCellStyleLiteral: // Leave the strings alone for a literal cell
 				default:
-					var tcels asciidoc.Elements
-					tcels, err = trimCell(c)
-					if err != nil {
-						return
-					}
-					c.SetChildren(tcels)
+
+					c.SetChildren(trimCell(c))
 				}
 				if err != nil {
 					return
