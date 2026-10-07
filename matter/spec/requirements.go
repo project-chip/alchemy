@@ -35,7 +35,10 @@ func (library *Library) toClusterRequirements(reader asciidoc.Reader, d *asciido
 
 func (library *Library) toClusterRequirement(reader asciidoc.Reader, deviceType *matter.DeviceType, ti *TableInfo, row *asciidoc.TableRow) (cr *matter.ClusterRequirement, err error) {
 	cr = matter.NewClusterRequirement(deviceType, row)
-	cr.ClusterRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.Cluster, matter.TableColumnCluster, matter.TableColumnName)
+	cr.ClusterRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.Cluster, matter.TableColumnClusterName, matter.TableColumnCluster, matter.TableColumnName)
+	if err != nil {
+		return
+	}
 	var q string
 	q, err = ti.ReadString(reader, row, matter.TableColumnQuality)
 	if err != nil {
@@ -252,7 +255,10 @@ func (library *Library) toComposedDeviceTypeElementRequirements(reader asciidoc.
 
 func (library *Library) toElementRequirement(reader asciidoc.Reader, d *asciidoc.Document, ti *TableInfo, row *asciidoc.TableRow, deviceType *matter.DeviceType) (cr matter.ElementRequirement, err error) {
 	cr = matter.NewElementRequirement(deviceType, row)
-	cr.ClusterRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.Cluster, matter.TableColumnClusterName)
+	cr.ClusterRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.Cluster, matter.TableColumnClusterName, matter.TableColumnCluster)
+	if err != nil {
+		return
+	}
 	var e string
 	e, err = ti.ReadString(reader, row, matter.TableColumnElement)
 	if err != nil {
@@ -277,7 +283,9 @@ func (library *Library) toElementRequirement(reader asciidoc.Reader, d *asciidoc
 	}
 
 	cr.ElementRef, err = ti.ReadElementReference(reader, row, cr.Element, matter.TableColumnName, matter.TableColumnField)
-
+	if err != nil {
+		return
+	}
 	cr.Quality, err = ti.ReadQuality(reader, row, cr.Element, matter.TableColumnQuality)
 	if err != nil {
 		return
@@ -318,7 +326,7 @@ func (library *Library) toTagRequirements(reader asciidoc.Reader, d *asciidoc.Do
 func (library *Library) toTagRequirement(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, deviceType *matter.DeviceType, ti *TableInfo, row *asciidoc.TableRow) (tr *matter.TagRequirement, err error) {
 	tr = matter.NewTagRequirement(deviceType, row)
 
-	tr.NamespaceRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.Namespace, matter.TableColumnNamespaceID, matter.TableColumnNamespace)
+	tr.NamespaceRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.Namespace, matter.TableColumnNamespace)
 	if err != nil {
 		return
 	}

@@ -153,11 +153,6 @@ func findTagRequirementNamespace(spec *Specification, ref matter.EntityReference
 				break
 			}
 		}
-		if namespace != nil {
-			if namespace.Name != ref.Name {
-				spec.addError(&NamespaceNameMismatchTagRequirementError{Namespace: namespace, Requirement: requirement})
-			}
-		}
 	}
 	if namespace == nil && ref.Name != "" {
 		for _, ns := range spec.Namespaces {
