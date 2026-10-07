@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
@@ -131,9 +130,6 @@ func (library *Library) toDeviceTypeRequirements(reader asciidoc.Reader, d *asci
 			_, label := referenceInfo(library, dtr.DeviceTypeRef.XRef)
 			if strings.HasSuffix(label, "+") {
 				dtr.AllowsSuperset = true
-				dtr.DeviceTypeRef.XRef.SetChildren(parse.TrimElements(dtr.DeviceTypeRef.XRef.Children(), func(r rune) bool {
-					return r == '+'
-				}))
 			}
 		}
 		if strings.HasSuffix(dtr.DeviceTypeRef.Name, "+") {
