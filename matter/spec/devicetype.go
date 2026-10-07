@@ -74,9 +74,9 @@ func (library *Library) toDeviceTypes(reader asciidoc.Reader, d *asciidoc.Docume
 			}
 		}
 	}
-	/*for _, c := range deviceTypes {
+	for _, c := range deviceTypes {
 		library.addEntity(s, c)
-	}*/
+	}
 	return
 }
 

@@ -39,7 +39,7 @@ type Library struct {
 
 	entities          []types.Entity
 	orderedEntities   []types.Entity
-	entitiesByElement map[asciidoc.Attributable][]types.Entity
+	entitiesByElement map[asciidoc.Element][]types.Entity
 
 	strings map[asciidoc.Parent]string
 
@@ -62,7 +62,7 @@ func NewLibrary(root *asciidoc.Document, config config.Library, errata *errata.C
 		index:              map[string]*asciidoc.Document{},
 		parents:            make(map[*asciidoc.Document][]*asciidoc.Document),
 		children:           make(map[*asciidoc.Document][]*asciidoc.Document),
-		entitiesByElement:  make(map[asciidoc.Attributable][]types.Entity),
+		entitiesByElement:  make(map[asciidoc.Element][]types.Entity),
 		strings:            make(map[asciidoc.Parent]string),
 		cache:              cache,
 		sectionNames:       pipeline.NewConcurrentMap[*asciidoc.Section, string](),
@@ -80,7 +80,7 @@ func (library *Library) CrossReferencesForDoc(doc *asciidoc.Document) map[string
 	return library.crossReferencesByDoc[doc]
 }
 
-func (library *Library) EntitiesForElement(element asciidoc.Attributable) (entities []types.Entity, ok bool) {
+func (library *Library) EntitiesForElement(element asciidoc.Element) (entities []types.Entity, ok bool) {
 	entities, ok = library.entitiesByElement[element]
 	return
 }
@@ -117,7 +117,7 @@ func (library *Library) indexCrossReferences() {
 	})
 }
 
-func (library *Library) addEntity(element *asciidoc.Section, entity types.Entity) {
+func (library *Library) addEntity(element asciidoc.Element, entity types.Entity) {
 	library.entities = append(library.entities, entity)
 	library.orderedEntities = append(library.orderedEntities, entity)
 	library.entitiesByElement[element] = append(library.entitiesByElement[element], entity)

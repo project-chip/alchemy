@@ -57,6 +57,7 @@ func (library *Library) toConditions(reader asciidoc.Reader, d *asciidoc.Documen
 			}
 		}
 		conditions = append(conditions, c)
+		library.entitiesByElement[row] = append(library.entitiesByElement[row], c)
 	}
 	return
 }
@@ -106,6 +107,7 @@ func (library *Library) toBaseDeviceTypeConditions(reader asciidoc.Reader, d *as
 				}
 			}
 			conditions = append(conditions, c)
+			library.entitiesByElement[row] = append(library.entitiesByElement[row], c)
 		}
 		return
 	}
@@ -128,6 +130,7 @@ func (library *Library) toBaseDeviceTypeConditions(reader asciidoc.Reader, d *as
 		c := matter.NewCondition(row, dt)
 		c.Feature = sb.String()
 		conditions = append(conditions, c)
+		library.entitiesByElement[row] = append(library.entitiesByElement[row], c)
 	}
 	return
 }
