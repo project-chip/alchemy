@@ -3,8 +3,8 @@ package provisional
 import (
 	"iter"
 	"log/slog"
-	"reflect"
 
+	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -27,16 +27,16 @@ type EntityState[T types.Entity] struct {
 }
 
 func (es EntityState[T]) Presence() (p Presence) {
-	if !isNil(es.Base) {
+	if !internal.IsNil(es.Base) {
 		p |= PresenceBase
 	}
-	if !isNil(es.BaseInProgress) {
+	if !internal.IsNil(es.BaseInProgress) {
 		p |= PresenceBaseInProgress
 	}
-	if !isNil(es.Head) {
+	if !internal.IsNil(es.Head) {
 		p |= PresenceHead
 	}
-	if !isNil(es.HeadInProgress) {
+	if !internal.IsNil(es.HeadInProgress) {
 		p |= PresenceHeadInProgress
 	}
 	return
@@ -77,13 +77,13 @@ func compare(specs spec.SpecPullRequest) (violationsByPath map[string][]spec.Vio
 
 func getEntityState[T ComparableEntity, Parent types.Entity](e T, parentState EntityState[Parent], iterator func(p Parent) iter.Seq[T]) EntityState[T] {
 	state := EntityState[T]{HeadInProgress: e}
-	if !isNil(parentState.Head) {
+	if !internal.IsNil(parentState.Head) {
 		state.Head = findExistingEntity(e, iterator(parentState.Head))
 	}
-	if !isNil(parentState.BaseInProgress) {
+	if !internal.IsNil(parentState.BaseInProgress) {
 		state.BaseInProgress = findExistingEntity(e, iterator(parentState.BaseInProgress))
 	}
-	if !isNil(parentState.Base) {
+	if !internal.IsNil(parentState.Base) {
 		state.Base = findExistingEntity(e, iterator(parentState.Base))
 	}
 	return state
@@ -101,16 +101,6 @@ func findExistingEntity[T ComparableEntity](needle ComparableEntity, haystack it
 		}
 	}
 	return
-}
-
-func isNil[T any](val T) bool {
-	rValue := reflect.ValueOf(val)
-	switch rValue.Kind() {
-	case reflect.Ptr, reflect.Slice, reflect.Map, reflect.Chan, reflect.Func, reflect.Interface:
-		return rValue.IsNil()
-	default:
-		return false
-	}
 }
 
 func checkProvisionalityOfNewEntity(s *spec.Specification, e types.Entity) (violationType spec.ViolationType) {
