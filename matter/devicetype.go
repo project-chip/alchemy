@@ -72,8 +72,8 @@ func NewClusterRequirement(parent *DeviceType, source asciidoc.Element) *Cluster
 
 type ClusterRequirement struct {
 	entity
-	ClusterID   *Number         `json:"clusterId,omitempty"`
-	ClusterName string          `json:"clusterName,omitempty"`
+	ClusterRef EntityReference `json:"clusterRef,omitempty"`
+
 	Quality     Quality         `json:"quality,omitempty"`
 	Conformance conformance.Set `json:"conformance,omitempty"`
 	Interface   Interface       `json:"interface,omitempty"`
@@ -90,24 +90,16 @@ func (cr *ClusterRequirement) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
-	if cr.ClusterID.Valid() && ocr.ClusterID.Valid() {
-		if !cr.ClusterID.Equals(ocr.ClusterID) {
-			return false
-		}
-	} else if cr.ClusterName != ocr.ClusterName {
-		return false
-	}
-	return true
+	return cr.ClusterRef.Equals(ocr.ClusterRef)
 }
 
 func (cr *ClusterRequirement) Clone() *ClusterRequirement {
 	cer := &ClusterRequirement{
-		entity:      entity{source: cr.source},
-		ClusterID:   cr.ClusterID.Clone(),
-		ClusterName: cr.ClusterName,
-		Interface:   cr.Interface,
-		Quality:     cr.Quality,
-		Cluster:     cr.Cluster,
+		entity:     entity{source: cr.source},
+		ClusterRef: cr.ClusterRef.Clone(),
+		Interface:  cr.Interface,
+		Quality:    cr.Quality,
+		Cluster:    cr.Cluster,
 	}
 	if len(cr.Conformance) > 0 {
 		cer.Conformance = cr.Conformance.CloneSet()
@@ -121,11 +113,9 @@ func NewElementRequirement(parent types.Entity, source asciidoc.Element) Element
 
 type ElementRequirement struct {
 	entity
-	ClusterID   *Number          `json:"clusterId,omitempty"`
-	ClusterName string           `json:"clusterName,omitempty"`
-	Element     types.EntityType `json:"element,omitempty"`
-	Name        string           `json:"name,omitempty"`
-	Field       string           `json:"field,omitempty"`
+	ClusterRef EntityReference  `json:"clusterRef,omitempty"`
+	Element    types.EntityType `json:"element,omitempty"`
+	ElementRef ElementReference `json:"elementRef,omitempty"`
 
 	Entity types.Entity `json:"entity,omitempty"`
 
@@ -146,17 +136,10 @@ func (er *ElementRequirement) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
-	if er.ClusterID.Valid() && oer.ClusterID.Valid() {
-		if !er.ClusterID.Equals(oer.ClusterID) {
-			return false
-		}
-	} else if er.ClusterName != oer.ClusterName {
+	if !er.ClusterRef.Equals(oer.ClusterRef) {
 		return false
 	}
-	if er.Element != oer.Element {
-		return false
-	}
-	if er.Field != oer.Field {
+	if !er.ElementRef.Equals(oer.ElementRef) {
 		return false
 	}
 	if er.Entity != nil {
@@ -173,15 +156,12 @@ func (er *ElementRequirement) Equals(e types.Entity) bool {
 
 func (er *ElementRequirement) Clone() *ElementRequirement {
 	cer := &ElementRequirement{
-		entity:      entity{source: er.source},
-		ClusterID:   er.ClusterID.Clone(),
-		ClusterName: er.ClusterName,
-		Element:     er.Element,
-		Name:        er.Name,
-		Field:       er.Field,
-		Quality:     er.Quality,
-		Access:      er.Access,
-		Cluster:     er.Cluster,
+		entity:     entity{source: er.source},
+		ClusterRef: er.ClusterRef.Clone(),
+		ElementRef: er.ElementRef,
+		Quality:    er.Quality,
+		Access:     er.Access,
+		Cluster:    er.Cluster,
 	}
 	if er.Constraint != nil {
 		cer.Constraint = er.Constraint.Clone()
@@ -197,11 +177,8 @@ type TagRequirement struct {
 	Constraint  constraint.Constraint `json:"constraint,omitempty"`
 	Conformance conformance.Set       `json:"conformance,omitempty"`
 
-	NamespaceID   *Number `json:"namespaceId,omitempty"`
-	NamespaceName string  `json:"namespaceName,omitempty"`
-
-	SemanticTagID   *Number `json:"semanticTagId,omitempty"`
-	SemanticTagName string  `json:"semanticTagName,omitempty"`
+	NamespaceRef   EntityReference `json:"namespaceRef,omitempty"`
+	SemanticTagRef EntityReference `json:"semanticTagRef,omitempty"`
 
 	Namespace   *Namespace   `json:"namespace,omitempty"`
 	SemanticTag *SemanticTag `json:"semanticTag,omitempty"`
@@ -209,12 +186,10 @@ type TagRequirement struct {
 
 func (dtcr *TagRequirement) Clone() *TagRequirement {
 	return &TagRequirement{
-		NamespaceID:     dtcr.NamespaceID,
-		NamespaceName:   dtcr.NamespaceName,
-		SemanticTagID:   dtcr.SemanticTagID,
-		SemanticTagName: dtcr.SemanticTagName,
-		Namespace:       dtcr.Namespace,
-		SemanticTag:     dtcr.SemanticTag,
+		NamespaceRef:   dtcr.NamespaceRef.Clone(),
+		SemanticTagRef: dtcr.SemanticTagRef.Clone(),
+		Namespace:      dtcr.Namespace,
+		SemanticTag:    dtcr.SemanticTag,
 	}
 }
 
@@ -252,8 +227,7 @@ func (s DeviceTypeRequirementLocation) String() string {
 
 type DeviceTypeRequirement struct {
 	entity
-	DeviceTypeID   *Number                       `json:"deviceTypeId,omitempty"`
-	DeviceTypeName string                        `json:"deviceTypeName,omitempty"`
+	DeviceTypeRef  EntityReference               `json:"deviceTypeRef,omitempty"`
 	Constraint     constraint.Constraint         `json:"constraint,omitempty"`
 	Conformance    conformance.Set               `json:"conformance,omitempty"`
 	AllowsSuperset bool                          `json:"allowsSuperset,omitempty"`
@@ -271,21 +245,13 @@ func (dtr *DeviceTypeRequirement) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
-	if dtr.DeviceTypeID.Valid() && odtr.DeviceTypeID.Valid() {
-		if !dtr.DeviceTypeID.Equals(odtr.DeviceTypeID) {
-			return false
-		}
-	} else if dtr.DeviceTypeName != odtr.DeviceTypeName {
-		return false
-	}
-	return true
+	return dtr.DeviceTypeRef.Equals(odtr.DeviceTypeRef)
 }
 
 func (dtr *DeviceTypeRequirement) Clone() *DeviceTypeRequirement {
 	cdtr := &DeviceTypeRequirement{
 		entity:         entity{source: dtr.source},
-		DeviceTypeID:   dtr.DeviceTypeID.Clone(),
-		DeviceTypeName: dtr.DeviceTypeName,
+		DeviceTypeRef:  dtr.DeviceTypeRef.Clone(),
 		AllowsSuperset: dtr.AllowsSuperset,
 		DeviceType:     dtr.DeviceType,
 	}

@@ -106,25 +106,10 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 		copy(reqs, deviceType.ClusterRequirements)
 		slices.SortStableFunc(reqs, sortClusterRequirements)
 		for _, cr := range reqs {
-			clx := cx.CreateElement("cluster")
-			clx.CreateAttr("id", cr.ClusterID.HexString())
-			clx.CreateAttr("name", cr.ClusterName)
-			switch cr.Interface {
-			case matter.InterfaceClient:
-				clx.CreateAttr("side", "client")
-			case matter.InterfaceServer:
-				clx.CreateAttr("side", "server")
-			}
-			renderQuality(clx, cr.Quality)
-			err = renderConformanceElement(cr.Conformance, clx, nil)
+			err = renderClusterRequirement(cx, deviceType, cr, true)
 			if err != nil {
 				return
 			}
-			err = renderElementRequirements(deviceType, cr, clx)
-			if err != nil {
-				return
-			}
-
 		}
 	}
 
@@ -193,22 +178,14 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 				reqs := make([]*matter.DeviceTypeClusterRequirement, len(dtr.clusterRequirements))
 				copy(reqs, dtr.clusterRequirements)
 				slices.SortStableFunc(reqs, func(a, b *matter.DeviceTypeClusterRequirement) int {
-					cmp := a.ClusterRequirement.ClusterID.Compare(b.ClusterRequirement.ClusterID)
+					cmp := a.ClusterRequirement.ClusterRef.ID.Compare(b.ClusterRequirement.ClusterRef.ID)
 					if cmp != 0 {
 						return cmp
 					}
 					return a.ClusterRequirement.Interface.Compare(b.ClusterRequirement.Interface)
 				})
 				for _, cr := range reqs {
-					clx := crx.CreateElement("cluster")
-					clx.CreateAttr("id", cr.ClusterRequirement.ClusterID.HexString())
-					clx.CreateAttr("name", cr.ClusterRequirement.ClusterName)
-					err = renderConformanceElement(cr.ClusterRequirement.Conformance, clx, nil)
-					if err != nil {
-						return
-					}
-					renderQuality(clx, cr.ClusterRequirement.Quality)
-					renderElementRequirements(dt, cr.ClusterRequirement, clx)
+					renderClusterRequirement(crx, deviceType, cr.ClusterRequirement, false)
 				}
 			}
 		}
@@ -221,25 +198,10 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 		copy(reqs, deviceType.ClusterRequirements)
 		slices.SortStableFunc(reqs, sortClusterRequirements)
 		for _, cr := range reqs {
-			clx := cx.CreateElement("cluster")
-			clx.CreateAttr("id", cr.ClusterID.HexString())
-			clx.CreateAttr("name", cr.ClusterName)
-			switch cr.Interface {
-			case matter.InterfaceClient:
-				clx.CreateAttr("side", "client")
-			case matter.InterfaceServer:
-				clx.CreateAttr("side", "server")
-			}
-			renderQuality(clx, cr.Quality)
-			err = renderConformanceElement(cr.Conformance, clx, nil)
+			err = renderClusterRequirement(cx, deviceType, cr, true)
 			if err != nil {
 				return
 			}
-			err = renderElementRequirements(deviceType, cr, clx)
-			if err != nil {
-				return
-			}
-
 		}
 	}
 
@@ -251,8 +213,38 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 	return
 }
 
+func renderClusterRequirement(parent *etree.Element, deviceType *matter.DeviceType, cr *matter.ClusterRequirement, renderInterface bool) (err error) {
+	clx := parent.CreateElement("cluster")
+	cluster := cr.Cluster
+	if cluster != nil {
+		clx.CreateAttr("id", cluster.ID.HexString())
+		clx.CreateAttr("name", cluster.Name)
+	} else {
+		clx.CreateAttr("id", cr.ClusterRef.ID.HexString())
+		clx.CreateAttr("name", cr.ClusterRef.Name)
+	}
+	if renderInterface {
+		switch cr.Interface {
+		case matter.InterfaceClient:
+			clx.CreateAttr("side", "client")
+		case matter.InterfaceServer:
+			clx.CreateAttr("side", "server")
+		}
+	}
+	renderQuality(clx, cr.Quality)
+	err = renderConformanceElement(cr.Conformance, clx, nil)
+	if err != nil {
+		return
+	}
+	err = renderElementRequirements(deviceType, cr, clx)
+	if err != nil {
+		return
+	}
+	return
+}
+
 func sortClusterRequirements(a, b *matter.ClusterRequirement) int {
-	cmp := a.ClusterID.Compare(b.ClusterID)
+	cmp := a.ClusterRef.ID.Compare(b.ClusterRef.ID)
 	if cmp != 0 {
 		return cmp
 	}
@@ -268,7 +260,7 @@ type commandRequirement struct {
 func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.ClusterRequirement, clx *etree.Element) (err error) {
 	erMap := make(map[types.EntityType][]*matter.ElementRequirement)
 	for _, er := range deviceType.ElementRequirements {
-		if er.ClusterID.Equals(cr.ClusterID) {
+		if er.ClusterRef.ID.Equals(cr.ClusterRef.ID) {
 			erMap[er.Element] = append(erMap[er.Element], er)
 		}
 	}
@@ -277,7 +269,7 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 	var commandRequirements []*commandRequirement
 	var eventRequirements []*matter.ElementRequirement
 	for _, er := range deviceType.ElementRequirements {
-		if er.ClusterID.Equals(cr.ClusterID) {
+		if er.ClusterRef.ID.Equals(cr.ClusterRef.ID) {
 			switch er.Element {
 			case types.EntityTypeFeature:
 				featureRequirements = append(featureRequirements, er)
@@ -297,14 +289,14 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 					var isCommand bool
 					cmd, isCommand = parent.(*matter.Command)
 					if !isCommand {
-						slog.Warn("Missing parent command on element requirement", slog.String("deviceType", deviceType.Name), slog.String("commandName", er.Name), slog.String("clusterName", cr.ClusterName))
+						slog.Warn("Missing parent command on element requirement", slog.String("deviceType", deviceType.Name), slog.String("commandName", er.ElementRef.Name), slog.String("clusterName", cr.ClusterRef.Name))
 					}
 				case nil:
 				default:
 					err = fmt.Errorf("unexpected entity type on command or command field requirement: %T", entity)
 				}
 				if cmd == nil {
-					slog.Warn("Unknown command on element requirement", slog.String("deviceType", deviceType.Name), slog.String("commandName", er.Name), slog.String("clusterName", cr.ClusterName))
+					slog.Warn("Unknown command on element requirement", slog.String("deviceType", deviceType.Name), slog.String("commandName", er.ElementRef.Name), slog.String("clusterName", cr.ClusterRef.Name))
 					break
 				}
 				var cr *commandRequirement
@@ -335,7 +327,7 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 			case *matter.Feature:
 				ex.CreateAttr("code", feature.Code)
 			case nil:
-				slog.Warn("Unknown feature on element requirement", slog.String("deviceType", deviceType.Name), slog.String("featureName", fr.Name), slog.String("clusterName", cr.ClusterName))
+				slog.Warn("Unknown feature on element requirement", slog.String("deviceType", deviceType.Name), slog.String("featureName", fr.ElementRef.Name), slog.String("clusterName", cr.ClusterRef.Name))
 				continue
 			}
 			err = renderConformanceElement(fr.Conformance, ex, nil)
@@ -378,7 +370,7 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 			}
 			for _, fr := range cr.fields {
 				fx := ex.CreateElement("field")
-				fx.CreateAttr("name", fr.Field)
+				fx.CreateAttr("name", fr.ElementRef.Field)
 				err = renderConformanceElement(fr.Conformance, fx, nil)
 				if err != nil {
 					return
@@ -400,7 +392,7 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 					return
 				}
 			case nil:
-				slog.Warn("Unknown event on element requirement", slog.String("deviceType", deviceType.Name), slog.String("eventName", er.Name), slog.String("clusterName", cr.ClusterName))
+				slog.Warn("Unknown event on element requirement", slog.String("deviceType", deviceType.Name), slog.String("eventName", er.ElementRef.Name), slog.String("clusterName", cr.ClusterRef.Name))
 			}
 		}
 	}
@@ -414,7 +406,7 @@ func renderAttributeRequirement(deviceType *matter.DeviceType, er *matter.Elemen
 	var dataType *types.DataType
 	if er.Cluster != nil {
 		for _, a := range er.Cluster.Attributes {
-			if a.Name == er.Name {
+			if a.Name == er.ElementRef.Name {
 				attribute = a
 				dataType = a.Type
 				break
@@ -426,7 +418,7 @@ func renderAttributeRequirement(deviceType *matter.DeviceType, er *matter.Elemen
 	}
 	ex := parent.CreateElement("attribute")
 	ex.CreateAttr("code", code)
-	ex.CreateAttr("name", er.Name)
+	ex.CreateAttr("name", er.ElementRef.Name)
 
 	renderAttributeAccess(ex, er.Access)
 	renderQuality(ex, er.Quality)

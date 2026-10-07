@@ -124,7 +124,9 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 		return
 	}
 
-	sp.resolveClusterDataTypeReferences(true)
+	specEntityFinder := newSpecEntityFinder(sp.Spec, nil, nil)
+
+	sp.resolveBaseClusterDataTypeReferences(specEntityFinder)
 	sp.resolveGlobalDataTypeReferences()
 
 	if sp.patchForSdk {
@@ -145,7 +147,7 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 		return
 	}
 
-	sp.resolveClusterDataTypeReferences(false)
+	sp.resolveInheritedClusterDataTypeReferences(specEntityFinder)
 
 	sp.ResolveConformances()
 	sp.resolveConstraints()

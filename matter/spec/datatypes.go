@@ -2,7 +2,6 @@ package spec
 
 import (
 	"log/slog"
-	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
@@ -78,46 +77,57 @@ func (library *Library) toDataTypes(spec *Specification, reader asciidoc.Reader,
 	return
 }
 
-func (sp *Builder) resolveClusterDataTypeReferences(onlyBaseClusters bool) {
-	specEntityFinder := newSpecEntityFinder(sp.Spec, nil, nil)
+func (sp *Builder) resolveClusterDataTypeReferences(cluster *matter.Cluster, specEntityFinder *specEntityFinder) {
+	specEntityFinder.cluster = cluster
+	clusterFinder := newClusterEntityFinder(cluster, specEntityFinder)
+
+	library, ok := sp.Spec.LibraryRefs[cluster]
+	if !ok {
+		return
+	}
+
+	for _, a := range cluster.Attributes {
+		clusterFinder.setIdentity(a)
+		sp.resolveFieldDataTypes(library, cluster, cluster.Attributes, a, a.Type, clusterFinder)
+	}
+	for _, s := range cluster.Structs {
+		for _, f := range s.Fields {
+			clusterFinder.setIdentity(f)
+			sp.resolveFieldDataTypes(library, cluster, s.Fields, f, f.Type, clusterFinder)
+		}
+	}
+	for _, event := range cluster.Events {
+		for _, f := range event.Fields {
+			clusterFinder.setIdentity(f)
+			sp.resolveFieldDataTypes(library, cluster, event.Fields, f, f.Type, clusterFinder)
+		}
+	}
+	for _, command := range cluster.Commands {
+		for _, f := range command.Fields {
+			clusterFinder.setIdentity(f)
+			sp.resolveFieldDataTypes(library, cluster, command.Fields, f, f.Type, clusterFinder)
+		}
+		clusterFinder.setIdentity(command)
+		sp.resolveCommandResponseDataType(library, cluster, command, clusterFinder)
+	}
+}
+
+func (sp *Builder) resolveBaseClusterDataTypeReferences(specEntityFinder *specEntityFinder) {
 	for cluster := range sp.Spec.Clusters {
-		inheritedCluster := cluster.Hierarchy != "Base"
-		if (onlyBaseClusters && inheritedCluster) || (!onlyBaseClusters && !inheritedCluster) {
+		if cluster.Hierarchy != "Base" {
 			continue
 		}
 
-		specEntityFinder.cluster = cluster
-		clusterFinder := newClusterEntityFinder(cluster, specEntityFinder)
+		sp.resolveClusterDataTypeReferences(cluster, specEntityFinder)
+	}
+}
 
-		library, ok := sp.Spec.LibraryRefs[cluster]
-		if !ok {
+func (sp *Builder) resolveInheritedClusterDataTypeReferences(specEntityFinder *specEntityFinder) {
+	for cluster := range sp.Spec.Clusters {
+		if cluster.Hierarchy == "Base" {
 			continue
 		}
-
-		for _, a := range cluster.Attributes {
-			clusterFinder.setIdentity(a)
-			sp.resolveFieldDataTypes(library, cluster, cluster.Attributes, a, a.Type, clusterFinder)
-		}
-		for _, s := range cluster.Structs {
-			for _, f := range s.Fields {
-				clusterFinder.setIdentity(f)
-				sp.resolveFieldDataTypes(library, cluster, s.Fields, f, f.Type, clusterFinder)
-			}
-		}
-		for _, event := range cluster.Events {
-			for _, f := range event.Fields {
-				clusterFinder.setIdentity(f)
-				sp.resolveFieldDataTypes(library, cluster, event.Fields, f, f.Type, clusterFinder)
-			}
-		}
-		for _, command := range cluster.Commands {
-			for _, f := range command.Fields {
-				clusterFinder.setIdentity(f)
-				sp.resolveFieldDataTypes(library, cluster, command.Fields, f, f.Type, clusterFinder)
-			}
-			clusterFinder.setIdentity(command)
-			sp.resolveCommandResponseDataType(library, cluster, command, clusterFinder)
-		}
+		sp.resolveClusterDataTypeReferences(cluster, specEntityFinder)
 	}
 }
 
@@ -268,18 +278,7 @@ func (sp *Builder) getCustomDataType(library *Library, dataType *types.DataType,
 
 func (sp *Builder) getCustomDataTypeFromFieldReference(library *Library, cluster *matter.Cluster, reference *asciidoc.CrossReference, finder entityFinder) (e types.Entity) {
 
-	referenceID := library.elementIdentifier(library, reference, reference, reference.ID)
-	var label string
-	if len(reference.Elements) > 0 {
-		var s strings.Builder
-		for _, el := range reference.Elements {
-			switch el := el.(type) {
-			case *asciidoc.String:
-				s.WriteString(el.Value)
-			}
-		}
-		label = s.String()
-	}
+	referenceID, label := referenceInfo(library, reference)
 	e = finder.findEntityByReference(referenceID, label, reference)
 	if e != nil {
 		return
@@ -292,6 +291,7 @@ func (sp *Builder) getCustomDataTypeFromFieldReference(library *Library, cluster
 
 func (spec *Specification) ResolveDataTypeReferences() {
 	builder := &Builder{Spec: spec}
-	builder.resolveClusterDataTypeReferences(true)
-	builder.resolveClusterDataTypeReferences(false)
+	specEntityFinder := newSpecEntityFinder(spec, nil, nil)
+	builder.resolveBaseClusterDataTypeReferences(specEntityFinder)
+	builder.resolveInheritedClusterDataTypeReferences(specEntityFinder)
 }

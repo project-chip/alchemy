@@ -35,8 +35,8 @@ func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, de
 
 	for _, c := range deviceType.ClusterRequirements {
 		row := newDBRow()
-		row.values[matter.TableColumnID] = c.ClusterID.IntString()
-		row.values[matter.TableColumnName] = c.ClusterName
+		row.values[matter.TableColumnID] = c.ClusterRef.ID.IntString()
+		row.values[matter.TableColumnName] = c.ClusterRef.Name
 		row.values[matter.TableColumnQuality] = c.Quality.String()
 		if c.Conformance != nil {
 			row.values[matter.TableColumnConformance] = c.Conformance.ASCIIDocString()
@@ -58,8 +58,8 @@ func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, de
 
 	for _, dr := range deviceType.DeviceTypeRequirements {
 		row := newDBRow()
-		row.values[matter.TableColumnID] = dr.DeviceTypeID.IntString()
-		row.values[matter.TableColumnName] = dr.DeviceTypeName
+		row.values[matter.TableColumnID] = dr.DeviceTypeRef.ID.IntString()
+		row.values[matter.TableColumnName] = dr.DeviceTypeRef.Name
 		if dr.Conformance != nil {
 			row.values[matter.TableColumnConformance] = dr.Conformance.ASCIIDocString()
 		}

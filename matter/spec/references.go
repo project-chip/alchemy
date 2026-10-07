@@ -96,3 +96,11 @@ func referenceNameFromAttributes(reader asciidoc.Reader, el asciidoc.Attributabl
 	}
 	return ""
 }
+
+func referenceInfo(library *Library, reference *asciidoc.CrossReference) (referenceID string, label string) {
+	referenceID = library.elementIdentifier(library, reference, reference, reference.ID)
+	if len(reference.Elements) > 0 {
+		label = buildReferenceName(library, reference, reference.Elements)
+	}
+	return
+}

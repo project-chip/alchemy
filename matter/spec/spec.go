@@ -195,11 +195,29 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 	for _, anchor := range anchors {
 		switch el := anchor.Element.(type) {
 		case *asciidoc.Section:
-
 			entities := library.entitiesByElement[el]
 			discoveredEntities = append(discoveredEntities, entities...)
+		case *asciidoc.Anchor:
+			var parent asciidoc.ParentElement = anchor.Parent
+			for parent != nil {
+				var entities []types.Entity
+				switch element := parent.(type) {
+				case asciidoc.ChildElement:
+					entities = library.entitiesByElement[element]
+					parent = element.Parent()
+				case asciidoc.Element:
+					entities = library.entitiesByElement[element]
+					parent = nil
+				default:
+					parent = nil
+				}
+				if len(entities) > 0 {
+					discoveredEntities = append(discoveredEntities, entities...)
+					break
+				}
+			}
 		default:
-			slog.Warn("unexpected type of anchor element", log.Type("type", el), log.Path("source", anchor.Source))
+			slog.Warn("unexpected type of anchor element", log.Type("type", anchor.Element), log.Path("source", anchor.Source))
 		}
 	}
 	switch len(discoveredEntities) {
@@ -219,7 +237,7 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 			slog.Warn("ambiguous reference", matter.LogEntity("entity", m), log.Path("source", source))
 		}
 	}
-	if e != nil && label != "" {
+	if e != nil && label != "" && label != matter.EntityName(e) {
 
 		switch entity := e.(type) {
 		case *matter.Enum:
@@ -273,7 +291,7 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 			}
 			slog.Warn("Unhandled reference constant with label", slog.String("clusterName", sef.cluster.Name), slog.String("constant", entity.Name), slog.String("label", label), matter.LogEntity("entity", e), log.Path("source", source))
 		default:
-			slog.Warn("Unhandled reference type with label", slog.String("clusterName", sef.cluster.Name), log.Type("entityType", e), slog.String("label", label), matter.LogEntity("entity", e), log.Path("source", source))
+			slog.Warn("Unhandled reference type with label", slog.String("clusterName", matter.EntityName(sef.cluster)), log.Type("entityType", e), slog.String("label", label), matter.LogEntity("entity", e), log.Path("source", source))
 		}
 	}
 	return
