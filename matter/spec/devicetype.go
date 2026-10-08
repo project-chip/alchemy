@@ -419,7 +419,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 	for _, tr := range dt.ComposedDeviceTagRequirements {
 
 		if tr.DeviceType == nil {
-			referencedDeviceType := findDeviceTypeRequirementDeviceType(spec, tr.DeviceTypeRef, dt, entityFinder)
+			referencedDeviceType := findDeviceTypeRequirementDeviceType(spec, tr.DeviceTypeRef, tr, entityFinder)
 			if referencedDeviceType == nil {
 				slog.Error("unknown device type ID for cluster requirement on composing device type",
 					slog.String("deviceTypeId", tr.DeviceTypeRef.ID.HexString()),
@@ -544,7 +544,7 @@ func findDeviceTypeRequirementDeviceType(spec *Specification, ref matter.EntityR
 	if deviceType != nil {
 		if ref.ID.Valid() && !ref.ID.Equals(deviceType.ID) {
 			slog.Error("Mismatch between device type ID and reference device type ID", slog.String("deviceTypeId", ref.ID.HexString()), slog.String("deviceTypeID", deviceType.ID.HexString()), slog.String("requirementName", ref.Name), log.Path("source", entity))
-			spec.addError(&DeviceTypeReferenceNameMismatch{DeviceType: deviceType, Name: ref.Name, Source: entity})
+			spec.addError(&DeviceTypeReferenceIDMismatch{DeviceType: deviceType, ID: ref.ID, Source: entity})
 		}
 		if ref.Name != "" && ref.Name != deviceType.Name {
 			slog.Error("Mismatch between device type ID and device type name", slog.String("deviceTypeId", ref.ID.HexString()), slog.String("deviceTypeName", deviceType.Name), slog.String("requirementName", ref.Name), log.Path("source", entity))
@@ -644,8 +644,9 @@ func associateElementRequirementFromCluster(spec *Specification, er *matter.Elem
 		if ok {
 			if entity.EntityType() != er.Element {
 				slog.Error("Element Requirement references wrong entity type", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterRef.ID.HexString()), slog.String("clusterName", er.ClusterRef.Name), log.Path("source", er))
-				spec.addError(&ReferenceTypeMismatch{Element: entity.EntityType(), Entity: entity, Source: er.ElementRef.XRef})
+				spec.addError(&ReferenceTypeMismatch{Element: er.Element, Entity: entity, Source: er.ElementRef.XRef})
 				entity = nil
+				err = newGenericParseError(er, "element requirement references wrong entity type")
 			}
 			return
 		}

@@ -284,12 +284,12 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 			if strings.EqualFold(entity.Name, label) {
 				return
 			}
-			slog.Warn("Unhandled reference field with label", slog.String("clusterName", sef.cluster.Name), slog.String("field", entity.Name), slog.String("label", label), matter.LogEntity("entity", e), log.Path("source", source))
+			slog.Warn("Unhandled reference field with label", slog.String("clusterName", matter.EntityName(sef.cluster)), slog.String("field", entity.Name), slog.String("label", label), matter.LogEntity("entity", e), log.Path("source", source))
 		case *matter.Constant:
 			if strings.EqualFold(entity.Name, label) {
 				return
 			}
-			slog.Warn("Unhandled reference constant with label", slog.String("clusterName", sef.cluster.Name), slog.String("constant", entity.Name), slog.String("label", label), matter.LogEntity("entity", e), log.Path("source", source))
+			slog.Warn("Unhandled reference constant with label", slog.String("clusterName", matter.EntityName(sef.cluster)), slog.String("constant", entity.Name), slog.String("label", label), matter.LogEntity("entity", e), log.Path("source", source))
 		default:
 			slog.Warn("Unhandled reference type with label", slog.String("clusterName", matter.EntityName(sef.cluster)), log.Type("entityType", e), slog.String("label", label), matter.LogEntity("entity", e), log.Path("source", source))
 		}

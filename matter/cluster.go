@@ -249,6 +249,27 @@ func (c *Cluster) Contains(e types.Entity) bool {
 		switch e.EntityType() {
 		case types.EntityTypeAttribute:
 			return c.Attributes.Contains(e)
+		case types.EntityTypeCommandField:
+			for _, cmd := range c.Commands {
+				if cmd.Fields.Contains(e) {
+					return true
+				}
+			}
+			return false
+		case types.EntityTypeEventField:
+			for _, ev := range c.Events {
+				if ev.Fields.Contains(e) {
+					return true
+				}
+			}
+			return false
+		case types.EntityTypeStructField:
+			for _, s := range c.Structs {
+				if s.Fields.Contains(e) {
+					return true
+				}
+			}
+			return false
 		default:
 			return false
 		}

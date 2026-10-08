@@ -170,6 +170,8 @@ func (ti *TableInfo) ReadEntityReference(reader asciidoc.Reader, row *asciidoc.T
 		if err != nil {
 			return
 		}
+	} else {
+		ref.ID = matter.InvalidID
 	}
 	if len(nameColumns) > 0 {
 		ref.Name, ref.XRef, err = ti.ReadName(reader, row, nameColumns...)

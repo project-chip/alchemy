@@ -185,7 +185,10 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 					return a.ClusterRequirement.Interface.Compare(b.ClusterRequirement.Interface)
 				})
 				for _, cr := range reqs {
-					renderClusterRequirement(crx, dt, cr.ClusterRequirement, false)
+					err = renderClusterRequirement(crx, dt, cr.ClusterRequirement, false)
+					if err != nil {
+						return
+					}
 				}
 			}
 		}
@@ -258,12 +261,6 @@ type commandRequirement struct {
 }
 
 func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.ClusterRequirement, clx *etree.Element) (err error) {
-	erMap := make(map[types.EntityType][]*matter.ElementRequirement)
-	for _, er := range deviceType.ElementRequirements {
-		if er.ClusterRef.ID.Equals(cr.ClusterRef.ID) {
-			erMap[er.Element] = append(erMap[er.Element], er)
-		}
-	}
 	var featureRequirements []*matter.ElementRequirement
 	var attributeRequirements []*matter.ElementRequirement
 	var commandRequirements []*commandRequirement
@@ -404,7 +401,10 @@ func renderAttributeRequirement(deviceType *matter.DeviceType, er *matter.Elemen
 	var code string
 	var attribute *matter.Field
 	var dataType *types.DataType
-	if er.Cluster != nil {
+	if field, ok := er.Entity.(*matter.Field); ok {
+		attribute = field
+		dataType = field.Type
+	} else if er.Cluster != nil {
 		for _, a := range er.Cluster.Attributes {
 			if a.Name == er.ElementRef.Name {
 				attribute = a

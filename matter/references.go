@@ -33,21 +33,21 @@ func (er EntityReference) Clone() EntityReference {
 }
 
 func (er EntityReference) Equals(oer EntityReference) bool {
-	if er.ID != nil && er.ID.Valid() && oer.ID != nil && oer.ID.Valid() {
-		return er.ID.Equals(oer.ID)
-	}
-	if er.Name != "" && oer.Name != "" {
-		return er.Name == oer.Name
-	}
-	if er.XRef != nil {
-		if oer.XRef == nil {
+	if er.ID.Valid() || oer.ID.Valid() {
+		if er.ID.Valid() && oer.ID.Valid() {
+			return er.ID.Equals(oer.ID)
+		}
+		if er.Name == "" || oer.Name == "" {
 			return false
 		}
-		return er.XRef.Equals(oer.XRef)
-	} else if oer.XRef != nil {
-		return false
 	}
-	return true
+	if er.Name != "" || oer.Name != "" {
+		return er.Name == oer.Name
+	}
+	if er.XRef != nil && oer.XRef != nil {
+		return er.XRef.Equals(oer.XRef)
+	}
+	return er.XRef == nil && oer.XRef == nil
 }
 
 type ElementReference struct {
@@ -57,21 +57,14 @@ type ElementReference struct {
 }
 
 func (er ElementReference) Equals(oer ElementReference) bool {
-	if er.Name != "" {
-		if er.Name != oer.Name {
-			return false
-		}
+	if er.Name != oer.Name {
+		return false
 	}
 	if er.Field != oer.Field {
 		return false
 	}
-	if er.XRef != nil {
-		if oer.XRef == nil {
-			return false
-		}
+	if er.XRef != nil && oer.XRef != nil {
 		return er.XRef.Equals(oer.XRef)
-	} else if oer.XRef != nil {
-		return false
 	}
-	return true
+	return er.XRef == nil && oer.XRef == nil
 }

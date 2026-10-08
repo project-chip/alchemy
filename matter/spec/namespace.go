@@ -158,12 +158,12 @@ func findTagRequirementNamespace(spec *Specification, ref matter.EntityReference
 		for _, ns := range spec.Namespaces {
 			if ns.Name == ref.Name {
 				namespace = ns
+				slog.Warn("linking tag requirement namespace by name since namespace ID was not recognized",
+					slog.String("namespaceId", ref.ID.HexString()),
+					slog.String("namespaceName", ref.Name),
+					log.Path("source", requirement))
 				break
 			}
-			slog.Warn("linking tag requirement namespace by name since namespace ID was not recognized",
-				slog.String("namespaceId", ref.ID.HexString()),
-				slog.String("namespaceName", ref.Name),
-				log.Path("source", requirement))
 		}
 	}
 	if namespace != nil {
@@ -215,6 +215,9 @@ func findTagRequirementTag(spec *Specification, namespace *matter.Namespace, ref
 	}
 
 	if tag != nil {
+		if ref.ID.Valid() && !tag.ID.Equals(ref.ID) {
+			spec.addError(&TagIDMismatchTagRequirementError{SemanticTag: tag, Requirement: requirement})
+		}
 		if tag.Name != ref.Name {
 			spec.addError(&TagNameMismatchTagRequirementError{SemanticTag: tag, Requirement: requirement})
 		}
