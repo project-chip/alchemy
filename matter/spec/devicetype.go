@@ -419,7 +419,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 	for _, tr := range dt.ComposedDeviceTagRequirements {
 
 		if tr.DeviceType == nil {
-			referencedDeviceType := findDeviceTypeRequirementDeviceType(spec, tr.DeviceTypeRef, tr, entityFinder)
+			referencedDeviceType := findDeviceTypeRequirementDeviceType(spec, tr.DeviceTypeRef, dt, entityFinder)
 			if referencedDeviceType == nil {
 				slog.Error("unknown device type ID for cluster requirement on composing device type",
 					slog.String("deviceTypeId", tr.DeviceTypeRef.ID.HexString()),
