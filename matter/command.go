@@ -2,6 +2,7 @@ package matter
 
 import (
 	"iter"
+	"slices"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -106,4 +107,8 @@ func (cs CommandSet) Iterate() iter.Seq[types.Entity] {
 			}
 		}
 	}
+}
+
+func (cs CommandSet) Contains(e *Command) bool {
+	return slices.Contains(cs, e)
 }

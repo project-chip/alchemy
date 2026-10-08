@@ -1,13 +1,13 @@
 package asciidoc
 
 type child struct {
-	parent Element
+	parent ParentElement
 }
 
-func (c child) Parent() Element {
+func (c child) Parent() ParentElement {
 	return c.parent
 }
 
-func (c *child) SetParent(e Element) {
+func (c *child) SetParent(e ParentElement) {
 	c.parent = e
 }

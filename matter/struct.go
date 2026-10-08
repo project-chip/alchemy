@@ -2,6 +2,7 @@ package matter
 
 import (
 	"iter"
+	"slices"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/types"
@@ -72,4 +73,8 @@ func (ss StructSet) Iterate() iter.Seq[types.Entity] {
 			}
 		}
 	}
+}
+
+func (ss StructSet) Contains(e *Struct) bool {
+	return slices.Contains(ss, e)
 }

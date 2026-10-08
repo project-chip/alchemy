@@ -72,7 +72,7 @@ func (library *Library) GetHeaderCellString(reader asciidoc.Reader, cell *asciid
 		return "", nil
 	}
 	var v strings.Builder
-	err := readRowCellValueElements(reader, cell.Parent, cell, cellElements, &v)
+	err := readRowCellValueElements(reader, cell.Row, cell, cellElements, &v)
 	if err != nil {
 		return "", newGenericParseError(cell, "error reading table header cell: %w", err)
 	}

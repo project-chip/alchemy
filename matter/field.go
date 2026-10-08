@@ -2,6 +2,7 @@ package matter
 
 import (
 	"iter"
+	"slices"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -166,4 +167,8 @@ func (fs FieldSet) Iterate() iter.Seq[types.Entity] {
 			}
 		}
 	}
+}
+
+func (fs FieldSet) Contains(e *Field) bool {
+	return slices.Contains(fs, e)
 }

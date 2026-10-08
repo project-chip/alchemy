@@ -164,6 +164,43 @@ func (ti *TableInfo) ReadNameAtOffset(reader asciidoc.Reader, row *asciidoc.Tabl
 	return strings.TrimSpace(value.String()), xref, nil
 }
 
+func (ti *TableInfo) ReadEntityReference(reader asciidoc.Reader, row *asciidoc.TableRow, idColumns []matter.TableColumn, nameColumns ...matter.TableColumn) (ref matter.EntityReference, err error) {
+	if len(idColumns) > 0 {
+		ref.ID, err = ti.ReadID(reader, row, idColumns...)
+		if err != nil {
+			return
+		}
+	} else {
+		ref.ID = matter.InvalidID
+	}
+	if len(nameColumns) > 0 {
+		ref.Name, ref.XRef, err = ti.ReadName(reader, row, nameColumns...)
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+func (ti *TableInfo) ReadElementReference(reader asciidoc.Reader, row *asciidoc.TableRow, elementType types.EntityType, nameColumn matter.TableColumn, fieldColumn matter.TableColumn) (ref matter.ElementReference, err error) {
+	ref.Name, ref.XRef, err = ti.ReadName(reader, row, nameColumn)
+	if err != nil {
+		return
+	}
+	switch elementType {
+	case types.EntityTypeCommandField:
+		parts := strings.FieldsFunc(ref.Name, func(r rune) bool { return r == '.' })
+		if len(parts) == 2 {
+			ref.Name = parts[0]
+			ref.Field = parts[1]
+		}
+	}
+	if ref.Field == "" && fieldColumn != matter.TableColumnUnknown {
+		ref.Field, err = ti.ReadString(reader, row, fieldColumn)
+	}
+	return
+}
+
 func (ti *TableInfo) ReadValue(reader asciidoc.Reader, row *asciidoc.TableRow, columns ...matter.TableColumn) (string, error) {
 	for _, column := range columns {
 		offset, ok := ti.ColumnMap[column]

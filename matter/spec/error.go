@@ -24,6 +24,7 @@ const (
 	ErrorTypeUnknownSuperset
 	ErrorTypeUnknownClusterRequirement
 	ErrorTypeUnknownElementRequirementCluster
+	ErrorTypeReferenceTypeMismatch
 	ErrorTypeElementRequirementUnreferencedCluster
 	ErrorTypeElementRequirementUnknownElement
 	ErrorTypeComposingDeviceTypeRequirementUnknownDeviceType
@@ -38,10 +39,14 @@ const (
 	ErrorTypeConditionRequirementUnknownCondition
 	ErrorTypeTagRequirementUnreferencedDeviceType
 	ErrorTypeTagRequirementUnknownNamespace
+	ErrorTypeTagRequirementNamespaceIDMismatch
 	ErrorTypeTagRequirementNamespaceNameMismatch
 	ErrorTypeTagRequirementUnknownTag
+	ErrorTypeTagRequirementTagIDMismatch
 	ErrorTypeTagRequirementTagNameMismatch
+	ErrorTypeClusterReferenceIDMismatch
 	ErrorTypeClusterReferenceNameMismatch
+	ErrorTypeDeviceTypeReferenceIDMismatch
 	ErrorTypeDeviceTypeReferenceNameMismatch
 	ErrorTypeNamespaceNameMismatch
 	ErrorTypeUnknownBaseCluster
@@ -218,7 +223,7 @@ func (ddt UnknownClusterRequirementError) Origin() (path string, line int) {
 }
 
 func (ddt UnknownClusterRequirementError) Error() string {
-	return fmt.Sprintf("unknown cluster requirement: %s", ddt.Requirement.ClusterName)
+	return fmt.Sprintf("unknown cluster requirement: %s", ddt.Requirement.ClusterRef.Name)
 }
 
 type UnknownElementRequirementClusterError struct {
@@ -234,7 +239,7 @@ func (ddt UnknownElementRequirementClusterError) Origin() (path string, line int
 }
 
 func (ddt UnknownElementRequirementClusterError) Error() string {
-	return fmt.Sprintf("unknown element requirement cluster: %s", ddt.Requirement.ClusterName)
+	return fmt.Sprintf("unknown element requirement cluster: %s", ddt.Requirement.ClusterRef.Name)
 }
 
 type ElementRequirementUnreferencedClusterError struct {
@@ -250,7 +255,7 @@ func (ddt ElementRequirementUnreferencedClusterError) Origin() (path string, lin
 }
 
 func (ddt ElementRequirementUnreferencedClusterError) Error() string {
-	return fmt.Sprintf("unreferenced element requirement cluster: %s", ddt.Requirement.ClusterName)
+	return fmt.Sprintf("unreferenced element requirement cluster: %s", ddt.Requirement.ClusterRef.Name)
 }
 
 type ElementRequirementUnknownElementError struct {
@@ -266,7 +271,7 @@ func (ddt ElementRequirementUnknownElementError) Origin() (path string, line int
 }
 
 func (ddt ElementRequirementUnknownElementError) Error() string {
-	return fmt.Sprintf("element requirement references unknown element: %s %s", ddt.Requirement.Element.String(), ddt.Requirement.Name)
+	return fmt.Sprintf("element requirement references unknown element: %s %s", ddt.Requirement.Element.String(), ddt.Requirement.ElementRef.Name)
 }
 
 type UnknownConditionRequirementDeviceTypeError struct {
@@ -282,7 +287,7 @@ func (ddt UnknownConditionRequirementDeviceTypeError) Origin() (path string, lin
 }
 
 func (ddt UnknownConditionRequirementDeviceTypeError) Error() string {
-	return fmt.Sprintf("condition requirement references unknown device type: %s", ddt.Requirement.DeviceTypeName)
+	return fmt.Sprintf("condition requirement references unknown device type: %s", ddt.Requirement.DeviceTypeRef.Name)
 }
 
 type UnreferencedConditionRequirementDeviceTypeError struct {
@@ -298,7 +303,7 @@ func (ddt UnreferencedConditionRequirementDeviceTypeError) Origin() (path string
 }
 
 func (ddt UnreferencedConditionRequirementDeviceTypeError) Error() string {
-	return fmt.Sprintf("unreferenced condition requirement device type: %s", ddt.Requirement.DeviceTypeName)
+	return fmt.Sprintf("unreferenced condition requirement device type: %s", ddt.Requirement.DeviceTypeRef.Name)
 }
 
 type UnknownConditionRequirementConditionError struct {
@@ -314,7 +319,7 @@ func (ddt UnknownConditionRequirementConditionError) Origin() (path string, line
 }
 
 func (ddt UnknownConditionRequirementConditionError) Error() string {
-	return fmt.Sprintf("condition requirement references unknown condition: %s", ddt.Requirement.ConditionName)
+	return fmt.Sprintf("condition requirement references unknown condition: %s", ddt.Requirement.ConditionRef.Name)
 }
 
 type UnknownComposingDeviceTypeRequirementDeviceTypeError struct {
@@ -330,7 +335,7 @@ func (ddt UnknownComposingDeviceTypeRequirementDeviceTypeError) Origin() (path s
 }
 
 func (ddt UnknownComposingDeviceTypeRequirementDeviceTypeError) Error() string {
-	return fmt.Sprintf("unknown composing device device type requirement: %s", ddt.Requirement.DeviceTypeName)
+	return fmt.Sprintf("unknown composing device device type requirement: %s", ddt.Requirement.DeviceTypeRef.Name)
 }
 
 type UnknownComposingDeviceTypeRequirementClusterError struct {
@@ -346,7 +351,7 @@ func (ddt UnknownComposingDeviceTypeRequirementClusterError) Origin() (path stri
 }
 
 func (ddt UnknownComposingDeviceTypeRequirementClusterError) Error() string {
-	return fmt.Sprintf("unknown composing device cluster requirement: %s", ddt.Requirement.ClusterRequirement.ClusterName)
+	return fmt.Sprintf("unknown composing device cluster requirement: %s", ddt.Requirement.ClusterRequirement.ClusterRef.Name)
 }
 
 type UnknownComposingDeviceTypeClusterRequirementDeviceTypeError struct {
@@ -362,7 +367,7 @@ func (ddt UnknownComposingDeviceTypeClusterRequirementDeviceTypeError) Origin() 
 }
 
 func (ddt UnknownComposingDeviceTypeClusterRequirementDeviceTypeError) Error() string {
-	return fmt.Sprintf("unknown composing device cluster requirement device type: %s", ddt.Requirement.DeviceTypeName)
+	return fmt.Sprintf("unknown composing device cluster requirement device type: %s", ddt.Requirement.DeviceTypeRef.Name)
 }
 
 type UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError struct {
@@ -378,7 +383,7 @@ func (ddt UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError) Orig
 }
 
 func (ddt UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError) Error() string {
-	return fmt.Sprintf("unreferenced composing device cluster requirement device type: %s", ddt.Requirement.DeviceTypeName)
+	return fmt.Sprintf("unreferenced composing device cluster requirement device type: %s", ddt.Requirement.DeviceTypeRef.Name)
 }
 
 type UnknownComposingElementRequirementClusterError struct {
@@ -394,7 +399,7 @@ func (ddt UnknownComposingElementRequirementClusterError) Origin() (path string,
 }
 
 func (ddt UnknownComposingElementRequirementClusterError) Error() string {
-	return fmt.Sprintf("unknown composing device element requirement cluster: %s", ddt.Requirement.ElementRequirement.ClusterName)
+	return fmt.Sprintf("unknown composing device element requirement cluster: %s", ddt.Requirement.ElementRequirement.ClusterRef.Name)
 }
 
 type UnknownComposingDeviceTypeElementRequirementDeviceTypeError struct {
@@ -410,7 +415,7 @@ func (ddt UnknownComposingDeviceTypeElementRequirementDeviceTypeError) Origin() 
 }
 
 func (ddt UnknownComposingDeviceTypeElementRequirementDeviceTypeError) Error() string {
-	return fmt.Sprintf("unknown composing device element requirement device type: %s", ddt.Requirement.DeviceTypeName)
+	return fmt.Sprintf("unknown composing device element requirement device type: %s", ddt.Requirement.DeviceTypeRef.Name)
 }
 
 type UnreferencedComposingDeviceTypeElementRequirementDeviceTypeError struct {
@@ -426,7 +431,7 @@ func (ddt UnreferencedComposingDeviceTypeElementRequirementDeviceTypeError) Orig
 }
 
 func (ddt UnreferencedComposingDeviceTypeElementRequirementDeviceTypeError) Error() string {
-	return fmt.Sprintf("unreferenced composing device element requirement device type: %s", ddt.Requirement.DeviceTypeName)
+	return fmt.Sprintf("unreferenced composing device element requirement device type: %s", ddt.Requirement.DeviceTypeRef.Name)
 }
 
 type UnknownComposingDeviceTypeTagRequirementDeviceTypeError struct {
@@ -442,7 +447,7 @@ func (ddt UnknownComposingDeviceTypeTagRequirementDeviceTypeError) Origin() (pat
 }
 
 func (ddt UnknownComposingDeviceTypeTagRequirementDeviceTypeError) Error() string {
-	return fmt.Sprintf("unknown device tag requirement device type: %s", ddt.Requirement.DeviceTypeName)
+	return fmt.Sprintf("unknown device tag requirement device type: %s", ddt.Requirement.DeviceTypeRef.Name)
 }
 
 type UnreferencedTagRequirementDeviceTypeError struct {
@@ -458,7 +463,7 @@ func (ddt UnreferencedTagRequirementDeviceTypeError) Origin() (path string, line
 }
 
 func (ddt UnreferencedTagRequirementDeviceTypeError) Error() string {
-	return fmt.Sprintf("unreferenced composing device cluster requirement device type: %s", ddt.Requirement.DeviceTypeName)
+	return fmt.Sprintf("unreferenced composing device cluster requirement device type: %s", ddt.Requirement.DeviceTypeRef.Name)
 }
 
 type UnknownNamespaceTagRequirementError struct {
@@ -474,7 +479,24 @@ func (ddt UnknownNamespaceTagRequirementError) Origin() (path string, line int) 
 }
 
 func (ddt UnknownNamespaceTagRequirementError) Error() string {
-	return fmt.Sprintf("unrecognized namespace in tag requirement: %s", ddt.Requirement.NamespaceName)
+	return fmt.Sprintf("unrecognized namespace in tag requirement: %s", ddt.Requirement.NamespaceRef.Name)
+}
+
+type NamespaceIDMismatchTagRequirementError struct {
+	Requirement *matter.TagRequirement
+	Namespace   *matter.Namespace
+}
+
+func (ddt NamespaceIDMismatchTagRequirementError) Type() ErrorType {
+	return ErrorTypeTagRequirementNamespaceIDMismatch
+}
+
+func (ddt NamespaceIDMismatchTagRequirementError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt NamespaceIDMismatchTagRequirementError) Error() string {
+	return fmt.Sprintf("mismatched namespace id in tag requirement: %s vs. %s", ddt.Requirement.NamespaceRef.ID.HexString(), ddt.Namespace.ID.HexString())
 }
 
 type NamespaceNameMismatchTagRequirementError struct {
@@ -491,7 +513,7 @@ func (ddt NamespaceNameMismatchTagRequirementError) Origin() (path string, line 
 }
 
 func (ddt NamespaceNameMismatchTagRequirementError) Error() string {
-	return fmt.Sprintf("mismatched namespace name in tag requirement: %s vs. %s", ddt.Requirement.NamespaceName, ddt.Namespace.Name)
+	return fmt.Sprintf("mismatched namespace name in tag requirement: %s vs. %s", ddt.Requirement.NamespaceRef.Name, ddt.Namespace.Name)
 }
 
 type UnknownTagRequirementError struct {
@@ -507,7 +529,24 @@ func (ddt UnknownTagRequirementError) Origin() (path string, line int) {
 }
 
 func (ddt UnknownTagRequirementError) Error() string {
-	return fmt.Sprintf("unrecognized tag in tag requirement: %s", ddt.Requirement.SemanticTagName)
+	return fmt.Sprintf("unrecognized tag in tag requirement: %s", ddt.Requirement.SemanticTagRef.Name)
+}
+
+type TagIDMismatchTagRequirementError struct {
+	Requirement *matter.TagRequirement
+	SemanticTag *matter.SemanticTag
+}
+
+func (ddt TagIDMismatchTagRequirementError) Type() ErrorType {
+	return ErrorTypeTagRequirementTagIDMismatch
+}
+
+func (ddt TagIDMismatchTagRequirementError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt TagIDMismatchTagRequirementError) Error() string {
+	return fmt.Sprintf("mismatched tag id in tag requirement: %s vs. %s", ddt.Requirement.SemanticTagRef.ID.HexString(), ddt.SemanticTag.ID.HexString())
 }
 
 type TagNameMismatchTagRequirementError struct {
@@ -524,7 +563,7 @@ func (ddt TagNameMismatchTagRequirementError) Origin() (path string, line int) {
 }
 
 func (ddt TagNameMismatchTagRequirementError) Error() string {
-	return fmt.Sprintf("mismatched tag name in tag requirement: %s vs. %s", ddt.Requirement.SemanticTagName, ddt.SemanticTag.Name)
+	return fmt.Sprintf("mismatched tag name in tag requirement: %s vs. %s", ddt.Requirement.SemanticTagRef.Name, ddt.SemanticTag.Name)
 }
 
 type UnknownBaseClusterError struct {
@@ -561,6 +600,42 @@ func (ddt ClusterReferenceNameMismatch) Error() string {
 	return fmt.Sprintf("cluster reference has mismatched name: %s vs. %s", ddt.Cluster.Name, ddt.Name)
 }
 
+type ClusterReferenceIDMismatch struct {
+	Cluster *matter.Cluster
+	ID      *matter.Number
+	Source  log.Source
+}
+
+func (ddt ClusterReferenceIDMismatch) Type() ErrorType {
+	return ErrorTypeClusterReferenceIDMismatch
+}
+
+func (ddt ClusterReferenceIDMismatch) Origin() (path string, line int) {
+	return ddt.Source.Origin()
+}
+
+func (ddt ClusterReferenceIDMismatch) Error() string {
+	return fmt.Sprintf("cluster reference has mismatched id: %s vs. %s", ddt.Cluster.ID.HexString(), ddt.ID.HexString())
+}
+
+type DeviceTypeReferenceIDMismatch struct {
+	DeviceType *matter.DeviceType
+	ID         *matter.Number
+	Source     log.Source
+}
+
+func (ddt DeviceTypeReferenceIDMismatch) Type() ErrorType {
+	return ErrorTypeDeviceTypeReferenceIDMismatch
+}
+
+func (ddt DeviceTypeReferenceIDMismatch) Origin() (path string, line int) {
+	return ddt.Source.Origin()
+}
+
+func (ddt DeviceTypeReferenceIDMismatch) Error() string {
+	return fmt.Sprintf("device type reference has mismatched id: %s vs. %s", ddt.DeviceType.ID.HexString(), ddt.ID.HexString())
+}
+
 type DeviceTypeReferenceNameMismatch struct {
 	DeviceType *matter.DeviceType
 	Name       string
@@ -577,6 +652,24 @@ func (ddt DeviceTypeReferenceNameMismatch) Origin() (path string, line int) {
 
 func (ddt DeviceTypeReferenceNameMismatch) Error() string {
 	return fmt.Sprintf("device type reference has mismatched name: %s vs. %s", ddt.DeviceType.Name, ddt.Name)
+}
+
+type ReferenceTypeMismatch struct {
+	Entity  types.Entity
+	Element types.EntityType
+	Source  log.Source
+}
+
+func (rtm ReferenceTypeMismatch) Type() ErrorType {
+	return ErrorTypeReferenceTypeMismatch
+}
+
+func (rtm ReferenceTypeMismatch) Origin() (path string, line int) {
+	return rtm.Source.Origin()
+}
+
+func (rtm ReferenceTypeMismatch) Error() string {
+	return fmt.Sprintf("reference points to %s but %s was expected", rtm.Entity.EntityType().String(), rtm.Element.String())
 }
 
 type UnknownConformanceIdentifierError struct {

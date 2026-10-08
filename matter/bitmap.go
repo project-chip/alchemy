@@ -141,6 +141,10 @@ func (bm *Bitmap) Inherit(parent *Bitmap) error {
 	return nil
 }
 
+func (bm *Bitmap) Contains(b Bit) bool {
+	return slices.Contains(bm.Bits, b)
+}
+
 func SortBits(bits []Bit) {
 	slices.SortStableFunc(bits, func(a, b Bit) int {
 		return strings.Compare(a.Bit(), b.Bit())
@@ -166,6 +170,10 @@ func (bs BitSet) Iterate() iter.Seq[types.Entity] {
 			}
 		}
 	}
+}
+
+func (bs BitmapSet) Contains(e *Bitmap) bool {
+	return slices.Contains(bs, e)
 }
 
 type Bit interface {

@@ -34,19 +34,9 @@ func (library *Library) toClusterRequirements(reader asciidoc.Reader, d *asciido
 
 func (library *Library) toClusterRequirement(reader asciidoc.Reader, deviceType *matter.DeviceType, ti *TableInfo, row *asciidoc.TableRow) (cr *matter.ClusterRequirement, err error) {
 	cr = matter.NewClusterRequirement(deviceType, row)
-	cr.ClusterID, err = ti.ReadID(reader, row, matter.IDColumns.Cluster...)
+	cr.ClusterRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.Cluster, matter.TableColumnClusterName, matter.TableColumnCluster, matter.TableColumnName)
 	if err != nil {
 		return
-	}
-	cr.ClusterName, err = ti.ReadValue(library, row, matter.TableColumnClusterName, matter.TableColumnCluster)
-	if err != nil {
-		return
-	}
-	if cr.ClusterName == "" {
-		cr.ClusterName, _, err = ti.ReadName(library, row, matter.TableColumnName)
-		if err != nil {
-			return
-		}
 	}
 	var q string
 	q, err = ti.ReadString(reader, row, matter.TableColumnQuality)
@@ -97,8 +87,7 @@ func (library *Library) toElementRequirements(reader asciidoc.Reader, d *asciido
 
 			cr := matter.NewClusterRequirement(deviceType, row)
 			cr.Interface = matter.InterfaceServer
-			cr.ClusterID = er.ClusterID
-			cr.ClusterName = er.ClusterName
+			cr.ClusterRef = er.ClusterRef
 			cr.Quality = er.Quality
 			if len(er.Conformance) > 0 {
 				cr.Conformance = er.Conformance.CloneSet()
@@ -131,15 +120,21 @@ func (library *Library) toDeviceTypeRequirements(reader asciidoc.Reader, d *asci
 			deviceId = deviceId[:len(deviceId)-1]
 			dtr.AllowsSuperset = true
 		}
-		dtr.DeviceTypeID = matter.ParseNumber(deviceId)
+		dtr.DeviceTypeRef.ID = matter.ParseNumber(deviceId)
 
-		dtr.DeviceTypeName, _, err = ti.ReadName(library, row, matter.TableColumnDeviceName, matter.TableColumnName)
+		dtr.DeviceTypeRef.Name, dtr.DeviceTypeRef.XRef, err = ti.ReadName(library, row, matter.TableColumnDeviceName, matter.TableColumnName)
 		if err != nil {
 			return
 		}
-		if strings.HasSuffix(dtr.DeviceTypeName, "+") {
+		if dtr.DeviceTypeRef.XRef != nil {
+			_, label := referenceInfo(library, dtr.DeviceTypeRef.XRef)
+			if strings.HasSuffix(label, "+") {
+				dtr.AllowsSuperset = true
+			}
+		}
+		if strings.HasSuffix(dtr.DeviceTypeRef.Name, "+") {
 			dtr.AllowsSuperset = true
-			dtr.DeviceTypeName = dtr.DeviceTypeName[:len(dtr.DeviceTypeName)-1]
+			dtr.DeviceTypeRef.Name = dtr.DeviceTypeRef.Name[:len(dtr.DeviceTypeRef.Name)-1]
 		}
 		dtr.Constraint = ti.ReadConstraint(library, row, matter.TableColumnConstraint)
 		dtr.Conformance = ti.ReadConformance(library, row, matter.TableColumnConformance)
@@ -171,11 +166,7 @@ func (library *Library) toComposedDeviceTypeClusterRequirements(reader asciidoc.
 		}
 
 		dtcr := matter.NewDeviceTypeClusterRequirement(deviceType, cr, row)
-		dtcr.DeviceTypeID, err = ti.ReadID(reader, row, matter.TableColumnDeviceID)
-		if err != nil {
-			return
-		}
-		dtcr.DeviceTypeName, _, err = ti.ReadName(library, row, matter.TableColumnDeviceName, matter.TableColumnDevice)
+		dtcr.DeviceTypeRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.DeviceType, matter.TableColumnDeviceName, matter.TableColumnDevice)
 		if err != nil {
 			return
 		}
@@ -197,15 +188,11 @@ func (library *Library) toConditionRequirements(reader asciidoc.Reader, d *ascii
 	}
 	for row := range ti.ContentRows() {
 		cr := matter.NewConditionRequirement(deviceType, row)
-		cr.DeviceTypeID, err = ti.ReadID(reader, row, matter.TableColumnDeviceID)
+		cr.DeviceTypeRef, err = ti.ReadEntityReference(library, row, matter.IDColumns.DeviceType, matter.TableColumnDeviceName, matter.TableColumnDevice)
 		if err != nil {
 			return
 		}
-		cr.DeviceTypeName, _, err = ti.ReadName(library, row, matter.TableColumnDeviceName, matter.TableColumnDevice)
-		if err != nil {
-			return
-		}
-		cr.ConditionName, _, err = ti.ReadName(library, row, matter.TableColumnCondition)
+		cr.ConditionRef, err = ti.ReadEntityReference(library, row, []matter.TableColumn{}, matter.TableColumnCondition)
 		if err != nil {
 			return
 		}
@@ -237,11 +224,7 @@ func (library *Library) toComposedDeviceTypeElementRequirements(reader asciidoc.
 			return
 		}
 		dter := matter.NewDeviceTypeElementRequirement(deviceType, &er, row)
-		dter.DeviceTypeID, err = ti.ReadID(reader, row, matter.TableColumnDeviceID)
-		if err != nil {
-			return
-		}
-		dter.DeviceTypeName, _, err = ti.ReadName(library, row, matter.TableColumnDeviceName, matter.TableColumnDevice)
+		dter.DeviceTypeRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.DeviceType, matter.TableColumnDeviceName, matter.TableColumnDevice)
 		if err != nil {
 			return
 		}
@@ -253,12 +236,10 @@ func (library *Library) toComposedDeviceTypeElementRequirements(reader asciidoc.
 			cr := matter.NewClusterRequirement(deviceType, row)
 			// These always only apply to the server
 			cr.Interface = matter.InterfaceServer
-			cr.ClusterID = dter.ElementRequirement.ClusterID
-			cr.ClusterName = dter.ElementRequirement.ClusterName
+			cr.ClusterRef = dter.ElementRequirement.ClusterRef
 			cr.Quality = dter.ElementRequirement.Quality
 			dtcr := matter.NewDeviceTypeClusterRequirement(deviceType, cr, row)
-			dtcr.DeviceTypeID = dter.DeviceTypeID
-			dtcr.DeviceTypeName = dter.DeviceTypeName
+			dtcr.DeviceTypeRef = dter.DeviceTypeRef
 			if len(dter.ElementRequirement.Conformance) > 0 {
 				dtcr.ClusterRequirement.Conformance = dter.ElementRequirement.Conformance.CloneSet()
 			}
@@ -270,11 +251,7 @@ func (library *Library) toComposedDeviceTypeElementRequirements(reader asciidoc.
 
 func (library *Library) toElementRequirement(reader asciidoc.Reader, d *asciidoc.Document, ti *TableInfo, row *asciidoc.TableRow, deviceType *matter.DeviceType) (cr matter.ElementRequirement, err error) {
 	cr = matter.NewElementRequirement(deviceType, row)
-	cr.ClusterID, err = ti.ReadID(reader, row, matter.IDColumns.Cluster...)
-	if err != nil {
-		return
-	}
-	cr.ClusterName, _, err = ti.ReadName(library, row, matter.TableColumnClusterName, matter.TableColumnCluster)
+	cr.ClusterRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.Cluster, matter.TableColumnClusterName, matter.TableColumnCluster)
 	if err != nil {
 		return
 	}
@@ -295,28 +272,15 @@ func (library *Library) toElementRequirement(reader asciidoc.Reader, d *asciidoc
 	case "event":
 		cr.Element = types.EntityTypeEvent
 	case "":
-		slog.Warn("Blank element in element requirements; treating as a cluster requirement", slog.String("clusterName", cr.ClusterName), log.Path("source", row))
+		slog.Warn("Blank element in element requirements; treating as a cluster requirement", slog.String("clusterName", cr.ClusterRef.Name), log.Path("source", row))
 	default:
 		err = newGenericParseError(row, "unknown element type: \"%s\"", e)
 		return
 	}
 
-	cr.Name, err = ti.ReadString(reader, row, matter.TableColumnName)
+	cr.ElementRef, err = ti.ReadElementReference(reader, row, cr.Element, matter.TableColumnName, matter.TableColumnField)
 	if err != nil {
 		return
-	}
-	if cr.Element == types.EntityTypeCommandField {
-		parts := strings.FieldsFunc(cr.Name, func(r rune) bool { return r == '.' })
-		if len(parts) == 2 {
-			cr.Name = parts[0]
-			cr.Field = parts[1]
-		}
-	}
-	if cr.Field == "" {
-		cr.Field, err = ti.ReadString(reader, row, matter.TableColumnField)
-		if err != nil {
-			return
-		}
 	}
 	cr.Quality, err = ti.ReadQuality(reader, row, cr.Element, matter.TableColumnQuality)
 	if err != nil {
@@ -358,19 +322,11 @@ func (library *Library) toTagRequirements(reader asciidoc.Reader, d *asciidoc.Do
 func (library *Library) toTagRequirement(reader asciidoc.Reader, d *asciidoc.Document, s *asciidoc.Section, deviceType *matter.DeviceType, ti *TableInfo, row *asciidoc.TableRow) (tr *matter.TagRequirement, err error) {
 	tr = matter.NewTagRequirement(deviceType, row)
 
-	tr.NamespaceID, err = ti.ReadID(reader, row, matter.TableColumnNamespaceID)
+	tr.NamespaceRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.Namespace, matter.TableColumnNamespace)
 	if err != nil {
 		return
 	}
-	tr.NamespaceName, _, err = ti.ReadName(library, row, matter.TableColumnNamespace)
-	if err != nil {
-		return
-	}
-	tr.SemanticTagID, err = ti.ReadID(reader, row, matter.TableColumnTagID)
-	if err != nil {
-		return
-	}
-	tr.SemanticTagName, _, err = ti.ReadName(library, row, matter.TableColumnTag)
+	tr.SemanticTagRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.Tag, matter.TableColumnTag)
 	if err != nil {
 		return
 	}
@@ -400,11 +356,7 @@ func (library *Library) toDeviceTypeTagRequirements(reader asciidoc.Reader, d *a
 	}
 	for row := range ti.ContentRows() {
 		dttr := matter.NewDeviceTypeTagRequirement(deviceType, row)
-		dttr.DeviceTypeID, err = ti.ReadID(reader, row, matter.TableColumnDeviceID)
-		if err != nil {
-			return
-		}
-		dttr.DeviceTypeName, _, err = ti.ReadName(library, row, matter.TableColumnDeviceName, matter.TableColumnDevice)
+		dttr.DeviceTypeRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.DeviceType, matter.TableColumnDeviceName, matter.TableColumnDevice)
 		if err != nil {
 			return
 		}

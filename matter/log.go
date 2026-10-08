@@ -78,8 +78,8 @@ func LogEntity(key string, en types.Entity) slog.Attr {
 		args = append(args, log.Path("source", entity))
 	case *ClusterRequirement:
 		args = append(args, slog.String("type", "clusterRequirement"))
-		args = append(args, slog.String("clusterId", entity.ClusterID.HexString()))
-		args = append(args, slog.String("clusterName", entity.ClusterName))
+		args = append(args, slog.String("clusterId", entity.ClusterRef.ID.HexString()))
+		args = append(args, slog.String("clusterName", entity.ClusterRef.Name))
 		args = append(args, slog.String("interface", entity.Interface.String()))
 		args = append(args, log.Path("source", entity))
 	case *Constant:

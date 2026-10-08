@@ -130,59 +130,109 @@ func (tf *tagFinder) suggestIdentifiers(identifier string, suggestions map[types
 	}
 }
 
-func findTagRequirementNamespace(spec *Specification, id *matter.Number, name string, requirement *matter.TagRequirement) (namespace *matter.Namespace) {
-	if id.Valid() {
+func findTagRequirementNamespace(spec *Specification, ref matter.EntityReference, requirement *matter.TagRequirement, entityFinder entityFinder) (namespace *matter.Namespace) {
+	if ref.XRef != nil {
+		library, ok := spec.libraryIndex[ref.XRef.Document()]
+		if !ok {
+		} else {
+			referenceID, label := referenceInfo(library, ref.XRef)
+			entity := entityFinder.findEntityByReference(referenceID, label, ref.XRef)
+			switch entity := entity.(type) {
+			case *matter.Namespace:
+				namespace = entity
+			case nil:
+			default:
+				slog.Error("Tag Requirement links to non-namespace", log.Path("source", ref.XRef))
+			}
+		}
+	}
+	if namespace == nil && ref.ID.Valid() {
 		for _, ns := range spec.Namespaces {
-			if ns.ID.Equals(id) {
+			if ns.ID.Equals(ref.ID) {
 				namespace = ns
 				break
 			}
 		}
-		if namespace != nil {
-			if namespace.Name != name {
-				spec.addError(&NamespaceNameMismatchTagRequirementError{Namespace: namespace, Requirement: requirement})
+	}
+	if namespace == nil && ref.Name != "" {
+		for _, ns := range spec.Namespaces {
+			if ns.Name == ref.Name {
+				namespace = ns
+				slog.Warn("linking tag requirement namespace by name since namespace ID was not recognized",
+					slog.String("namespaceId", ref.ID.HexString()),
+					slog.String("namespaceName", ref.Name),
+					log.Path("source", requirement))
+				break
 			}
-			return
 		}
 	}
-	for _, ns := range spec.Namespaces {
-		if ns.Name == name {
-			namespace = ns
-			break
+	if namespace != nil {
+		if ref.ID.Valid() && !namespace.ID.Equals(ref.ID) {
+			spec.addError(&NamespaceIDMismatchTagRequirementError{Namespace: namespace, Requirement: requirement})
 		}
-		slog.Warn("linking tag requirement namespace by name since namespace ID was not recognized",
-			slog.String("namespaceId", id.HexString()),
-			slog.String("namespaceName", name),
-			log.Path("source", requirement))
+		if ref.Name != "" && ref.Name != namespace.Name {
+			spec.addError(&NamespaceNameMismatchTagRequirementError{Namespace: namespace, Requirement: requirement})
+		}
 	}
-
 	return
 }
 
-func findTagRequirementTag(spec *Specification, namespace *matter.Namespace, id *matter.Number, name string, requirement *matter.TagRequirement) (tag *matter.SemanticTag) {
-	if id.Valid() {
+func findTagRequirementTag(spec *Specification, namespace *matter.Namespace, ref matter.EntityReference, requirement *matter.TagRequirement, entityFinder entityFinder) (tag *matter.SemanticTag) {
+	if ref.XRef != nil {
+		library, ok := spec.libraryIndex[ref.XRef.Document()]
+		if !ok {
+		} else {
+			referenceID, label := referenceInfo(library, ref.XRef)
+			entity := entityFinder.findEntityByReference(referenceID, label, ref.XRef)
+			switch entity := entity.(type) {
+			case *matter.SemanticTag:
+				tag = entity
+			case nil:
+			default:
+				slog.Error("Tag Requirement links to non-semantic-tag", log.Path("source", ref.XRef))
+			}
+		}
+	}
+	if tag == nil && ref.ID.Valid() {
 		for _, t := range namespace.SemanticTags {
-			if t.ID.Equals(id) {
+			if t.ID.Equals(ref.ID) {
 				tag = t
 				break
 			}
 		}
-		if tag != nil {
-			if tag.Name != name {
-				spec.addError(&TagNameMismatchTagRequirementError{SemanticTag: tag, Requirement: requirement})
+	}
+	if tag == nil && ref.Name != "" {
+		for _, t := range namespace.SemanticTags {
+			if t.Name == ref.Name {
+				tag = t
+				slog.Warn("linking tag requirement tag by name since tag ID was not recognized",
+					slog.String("tagId", t.ID.HexString()),
+					slog.String("tagName", t.Name),
+					log.Path("source", requirement))
+				break
 			}
-			return
 		}
 	}
-	for _, t := range namespace.SemanticTags {
-		if t.Name == name {
-			tag = t
-			slog.Warn("linking tag requirement tag by name since tag ID was not recognized",
-				slog.String("tagId", id.HexString()),
-				slog.String("tagName", name),
-				log.Path("source", requirement))
-			break
+
+	if tag != nil {
+		if ref.ID.Valid() && !tag.ID.Equals(ref.ID) {
+			spec.addError(&TagIDMismatchTagRequirementError{SemanticTag: tag, Requirement: requirement})
 		}
+		if tag.Name != ref.Name {
+			spec.addError(&TagNameMismatchTagRequirementError{SemanticTag: tag, Requirement: requirement})
+		}
+		inNamespace := false
+		for _, t := range namespace.SemanticTags {
+			if t == tag {
+				inNamespace = true
+				break
+			}
+		}
+		if !inNamespace {
+			spec.addError(&NamespaceNameMismatchTagRequirementError{Namespace: namespace, Requirement: requirement})
+		}
+		return
 	}
+
 	return
 }

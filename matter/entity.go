@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -38,6 +39,9 @@ func (e entity) Cluster() *Cluster {
 }
 
 func EntityName(e types.Entity) string {
+	if internal.IsNil(e) {
+		return "unknown"
+	}
 	switch entity := e.(type) {
 	case *Cluster:
 		return entity.Name

@@ -58,8 +58,7 @@ func (s RequirementOrigin) String() string {
 
 type DeviceTypeClusterRequirement struct {
 	entity
-	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
-	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
+	DeviceTypeRef EntityReference `json:"deviceTypeRef,omitempty"`
 
 	ClusterRequirement *ClusterRequirement
 	Origin             RequirementOrigin
@@ -74,8 +73,7 @@ func NewDeviceTypeClusterRequirement(parent types.Entity, clusterRequirement *Cl
 
 func (dtcr *DeviceTypeClusterRequirement) Clone() *DeviceTypeClusterRequirement {
 	return &DeviceTypeClusterRequirement{
-		DeviceTypeID:          dtcr.DeviceTypeID,
-		DeviceTypeName:        dtcr.DeviceTypeName,
+		DeviceTypeRef:         dtcr.DeviceTypeRef,
 		ClusterRequirement:    dtcr.ClusterRequirement,
 		Origin:                dtcr.Origin,
 		DeviceType:            dtcr.DeviceType,
@@ -85,8 +83,7 @@ func (dtcr *DeviceTypeClusterRequirement) Clone() *DeviceTypeClusterRequirement 
 
 type DeviceTypeElementRequirement struct {
 	entity
-	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
-	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
+	DeviceTypeRef EntityReference `json:"deviceTypeRef,omitempty"`
 
 	ElementRequirement *ElementRequirement
 	Origin             RequirementOrigin
@@ -101,8 +98,7 @@ func NewDeviceTypeElementRequirement(parent types.Entity, elementRequirement *El
 
 func (dter *DeviceTypeElementRequirement) Clone() *DeviceTypeElementRequirement {
 	return &DeviceTypeElementRequirement{
-		DeviceTypeID:          dter.DeviceTypeID,
-		DeviceTypeName:        dter.DeviceTypeName,
+		DeviceTypeRef:         dter.DeviceTypeRef,
 		ElementRequirement:    dter.ElementRequirement,
 		Origin:                dter.Origin,
 		DeviceType:            dter.DeviceType,
@@ -148,8 +144,7 @@ type DeviceTypeTagRequirement struct {
 	entity
 	TagRequirement *TagRequirement
 
-	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
-	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
+	DeviceTypeRef EntityReference `json:"deviceTypeRef,omitempty"`
 
 	DeviceType            *DeviceType `json:"deviceType,omitempty"`
 	DeviceTypeRequirement *DeviceTypeRequirement
@@ -157,10 +152,10 @@ type DeviceTypeTagRequirement struct {
 
 func (dtcr *DeviceTypeTagRequirement) Clone() *DeviceTypeTagRequirement {
 	return &DeviceTypeTagRequirement{
-		DeviceTypeID:   dtcr.DeviceTypeID,
-		DeviceTypeName: dtcr.DeviceTypeName,
-		DeviceType:     dtcr.DeviceType,
-		TagRequirement: dtcr.TagRequirement,
+		DeviceTypeRef:         dtcr.DeviceTypeRef,
+		DeviceType:            dtcr.DeviceType,
+		DeviceTypeRequirement: dtcr.DeviceTypeRequirement,
+		TagRequirement:        dtcr.TagRequirement,
 	}
 }
 

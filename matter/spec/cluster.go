@@ -158,6 +158,7 @@ func (library *Library) toClusters(spec *Specification, reader asciidoc.Reader, 
 				return
 			}
 		}
+		library.addEntity(section, c)
 	}
 
 	return

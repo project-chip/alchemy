@@ -65,13 +65,15 @@ func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Elemen
 					rows = append(rows, currentTableRow)
 					cellIndex = 0
 				}
-				cell.Parent = currentTableRow
+				cell.Row = currentTableRow
 				for cellIndex < table.ColumnCount {
 					skip, ok := colSkip[cellIndex]
 					if !ok || skip == 0 {
 						break
 					}
-					currentTableRow.Append(&asciidoc.TableCell{Blank: true})
+					blank := &asciidoc.TableCell{Blank: true, Row: currentTableRow}
+					blank.SetParent(currentTableRow)
+					currentTableRow.Append(blank)
 					colSkip[cellIndex] = skip - 1
 					cellIndex++
 				}
@@ -83,6 +85,7 @@ func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Elemen
 					cellIndex = 0
 				}
 				currentTableRow.Append(cell)
+				cell.SetParent(currentTableRow)
 				if cell.Format != nil {
 					rowSpan := cell.Format.Span.Row.Value
 					colSpan := cell.Format.Span.Column.Value
@@ -95,7 +98,9 @@ func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Elemen
 					}
 					if colSpan > 1 {
 						for i := 0; i < colSpan-1; i++ {
-							currentTableRow.Append(&asciidoc.TableCell{Blank: true})
+							blank := &asciidoc.TableCell{Blank: true, Row: currentTableRow}
+							blank.SetParent(currentTableRow)
+							currentTableRow.Append(blank)
 							cellIndex++
 						}
 					}
@@ -241,12 +246,8 @@ func ReparseTable(table *asciidoc.Table, elements asciidoc.Elements) (err error)
 					err = parseBlockCell(c)
 				case asciidoc.TableCellStyleLiteral: // Leave the strings alone for a literal cell
 				default:
-					var tcels asciidoc.Elements
-					tcels, err = trimCell(c)
-					if err != nil {
-						return
-					}
-					c.SetChildren(tcels)
+
+					c.SetChildren(trimCell(c))
 				}
 				if err != nil {
 					return
@@ -289,38 +290,42 @@ func parseBlockCell(tc *asciidoc.TableCell) error {
 	return nil
 }
 
-func trimCell(tc *asciidoc.TableCell) (els asciidoc.Elements, err error) {
+func trimCell(tc *asciidoc.TableCell) (els asciidoc.Elements) {
 	els = tc.Children()
+	return TrimElements(els, unicode.IsSpace)
+}
+
+func TrimElements(in asciidoc.Elements, f func(rune) bool) (out asciidoc.Elements) {
+	out = in
 	leftIndex := 0
-	rightIndex := len(els) - 1
-	switch len(els) {
+	rightIndex := len(out) - 1
+	switch len(out) {
 	case 0:
 	case 1:
-		switch e := els[0].(type) {
+		switch e := out[0].(type) {
 		case *asciidoc.String:
-			e.Value = strings.TrimSpace(e.Value)
+			e.Value = strings.TrimFunc(e.Value, f)
 		}
 	default:
-		switch e := els[leftIndex].(type) {
+		switch e := out[leftIndex].(type) {
 		case *asciidoc.String:
-			e.Value = strings.TrimLeftFunc(e.Value, unicode.IsSpace)
+			e.Value = strings.TrimLeftFunc(e.Value, f)
 			if len(e.Value) == 0 {
 				leftIndex = 1
 			}
 		}
-		switch e := els[rightIndex].(type) {
+		switch e := out[rightIndex].(type) {
 		case *asciidoc.String:
-			e.Value = strings.TrimRightFunc(e.Value, unicode.IsSpace)
+			e.Value = strings.TrimRightFunc(e.Value, f)
 			if len(e.Value) == 0 {
 				rightIndex -= 1
 			}
 		}
 	}
-	if leftIndex == 0 && rightIndex == len(els)-1 {
+	if leftIndex == 0 && rightIndex == len(out)-1 {
 		return
 	}
 
-	els = els[leftIndex : rightIndex+1]
-
-	return
+	out = out[leftIndex : rightIndex+1]
+	return trim(out)
 }

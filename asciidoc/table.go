@@ -223,8 +223,10 @@ func (tcf *TableCellFormat) AsciiDocString() string {
 
 type TableCell struct {
 	position
+	child
+
 	Format *TableCellFormat
-	Parent *TableRow
+	Row    *TableRow
 
 	Elements
 
@@ -337,7 +339,8 @@ func (tr *TableRow) Clone() Element {
 		switch e := e.(type) {
 		case *TableCell:
 			tc := e.Clone().(*TableCell)
-			tc.Parent = ctr
+			tc.Row = ctr
+			tc.SetParent(ctr)
 			ctr.Elements = append(ctr.Elements, tc)
 		default:
 			ctr.Elements = append(ctr.Elements, e.Clone())

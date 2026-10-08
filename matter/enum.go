@@ -96,6 +96,10 @@ func (e *Enum) Inherit(parent *Enum) error {
 	return nil
 }
 
+func (e *Enum) Contains(ev *EnumValue) bool {
+	return slices.Contains(e.Values, ev)
+}
+
 type EnumSet []*Enum
 
 func (es EnumSet) Identifier(name string) (types.Entity, bool) {
@@ -115,6 +119,10 @@ func (es EnumSet) Iterate() iter.Seq[types.Entity] {
 			}
 		}
 	}
+}
+
+func (es EnumSet) Contains(e *Enum) bool {
+	return slices.Contains(es, e)
 }
 
 type EnumValue struct {

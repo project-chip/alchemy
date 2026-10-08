@@ -38,9 +38,9 @@ func (c *Condition) GetConformance() conformance.Set {
 
 type ConditionRequirement struct {
 	entity
-	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
-	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
-	ConditionName  string  `json:"conditionName,omitempty"`
+
+	DeviceTypeRef EntityReference `json:"deviceTypeRef,omitempty"`
+	ConditionRef  EntityReference `json:"conditionRef,omitempty"`
 
 	DeviceType *DeviceType                   `json:"deviceType,omitempty"`
 	Location   DeviceTypeRequirementLocation `json:"location,omitempty"`
@@ -58,14 +58,10 @@ func (cr *ConditionRequirement) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
-	if cr.DeviceTypeID.Valid() && ocr.DeviceTypeID.Valid() {
-		if !cr.DeviceTypeID.Equals(ocr.DeviceTypeID) {
-			return false
-		}
-	} else if cr.DeviceTypeName != ocr.DeviceTypeName {
+	if !cr.DeviceTypeRef.Equals(ocr.DeviceTypeRef) {
 		return false
 	}
-	return cr.ConditionName == ocr.ConditionName
+	return cr.ConditionRef.Equals(ocr.ConditionRef)
 }
 
 func NewConditionRequirement(parent types.Entity, source asciidoc.Element) *ConditionRequirement {

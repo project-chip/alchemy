@@ -18,10 +18,10 @@ type Anchor struct {
 	ID            asciidoc.Elements
 	LabelElements asciidoc.Elements
 	Element       asciidoc.Element
-	Parent        asciidoc.Parent
+	Parent        asciidoc.ParentElement
 }
 
-func NewAnchor(library *Library, doc *asciidoc.Document, id asciidoc.Elements, element asciidoc.Element, parent asciidoc.Parent, label ...asciidoc.Element) *Anchor {
+func NewAnchor(library *Library, doc *asciidoc.Document, id asciidoc.Elements, element asciidoc.Element, parent asciidoc.ParentElement, label ...asciidoc.Element) *Anchor {
 	return &Anchor{
 		Library:       library,
 		Document:      doc,
@@ -152,7 +152,7 @@ func (library *Library) findAnchors(reader asciidoc.Reader) (anchors map[string]
 	return
 }
 
-func (library *Library) makeAnchor(doc *asciidoc.Document, parent asciidoc.Parent, element asciidoc.Element, crossReferences map[string][]*CrossReference) *Anchor {
+func (library *Library) makeAnchor(doc *asciidoc.Document, parent asciidoc.ParentElement, element asciidoc.Element, crossReferences map[string][]*CrossReference) *Anchor {
 	// If there's a cross-reference for it, then we'll need to make an anchor
 	id, labelSet := library.getAnchorElements(doc, element, crossReferences)
 	if len(id) == 0 {

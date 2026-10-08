@@ -196,7 +196,7 @@ func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.
 
 	state, err = req.ClusterRequirement.Conformance.Eval(cxt)
 	if err != nil {
-		err = fmt.Errorf("error evaluating conformance of cluster requirement %s: %w", req.ClusterRequirement.ClusterName, err)
+		err = fmt.Errorf("error evaluating conformance of cluster requirement %s: %w", req.ClusterRequirement.ClusterRef.Name, err)
 		return
 
 	}
@@ -233,7 +233,7 @@ func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.
 		var deviceState conformance.ConformanceState
 		deviceState, err = req.DeviceTypeRequirement.Conformance.Eval(cxt)
 		if err != nil {
-			err = fmt.Errorf("error evaluating conformance of device requirement %s: %w", req.ClusterRequirement.ClusterName, err)
+			err = fmt.Errorf("error evaluating conformance of device requirement %s: %w", req.ClusterRequirement.ClusterRef.Name, err)
 			return
 		}
 		switch deviceState.State {
