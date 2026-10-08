@@ -139,9 +139,7 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 	if sp.patchForSdk {
 		resolveAtomicOperations(spec)
 	}
-	if !sp.ignoreHierarchy {
-		sp.resolveHierarchy()
-	}
+	sp.resolveHierarchy()
 	err = spec.associateDeviceTypeRequirements()
 	if err != nil {
 		return
@@ -411,15 +409,21 @@ func (sp *Builder) resolveHierarchy() {
 			sp.Spec.addError(&UnknownBaseClusterError{Cluster: c})
 			continue
 		}
-		_, err := c.Inherit(base)
-		if err != nil {
-			slog.Warn("Failed to inherit from base cluster", "cluster", c.Name, "baseCluster", c.Hierarchy, "error", err)
+		if !sp.ignoreHierarchy {
+			_, err := c.Inherit(base)
+			if err != nil {
+				slog.Warn("Failed to inherit from base cluster", "cluster", c.Name, "baseCluster", c.Hierarchy, "error", err)
+			}
+			doc, ok := sp.Spec.DocRefs[c]
+			if ok {
+				// We may have created some new entities during the inherit, so make sure their doc refs are set
+				sp.noteDocRefs(doc, c)
+			}
+		} else {
+			// If we've been told not to follow the hierarchy, just set the parent so that subsequent resolutions work
+			c.ParentCluster = base
 		}
-		doc, ok := sp.Spec.DocRefs[c]
-		if ok {
-			// We may have created some new entities during the inherit, so make sure their doc refs are set
-			sp.noteDocRefs(doc, c)
-		}
+
 	}
 }
 

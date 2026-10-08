@@ -128,7 +128,7 @@ func referenceEntity[T types.Entity](spec *Specification, reference *asciidoc.Cr
 		return
 	default:
 		slog.Warn("Entity type mismatch for reference", slog.String("expectedEntityType", entity.EntityType().String()), slog.String("actualEntityType", e.EntityType().String()), log.Path("source", reference))
-		spec.addError(&ReferenceTypeMismatch{Element: entity.EntityType(), Entity: entity, Source: reference})
+		spec.addError(&ReferenceTypeMismatch{Element: entity.EntityType(), Entity: e, Source: reference})
 		ok = false
 		return
 	}

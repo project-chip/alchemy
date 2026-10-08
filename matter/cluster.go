@@ -1,6 +1,8 @@
 package matter
 
 import (
+	"log/slog"
+
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
@@ -238,6 +240,49 @@ func (c *Cluster) IterateDataTypes() EntityIterator {
 
 func (c *Cluster) TraverseDataTypes(callback EntityCallback) {
 	traverseEntities(c, callback)
+}
+
+func (c *Cluster) Contains(e types.Entity) bool {
+	if c.ParentCluster != nil && c.ParentCluster.Contains(e) {
+		return true
+	}
+	switch e := e.(type) {
+	case *Field:
+		switch e.EntityType() {
+		case types.EntityTypeAttribute:
+			return c.Attributes.Contains(e)
+		default:
+			return false
+		}
+	case *Event:
+		return c.Events.Contains(e)
+	case *Feature:
+		return c.Features.Contains(e)
+	case *Command:
+		return c.Commands.Contains(e)
+	case *Bitmap:
+		return c.Bitmaps.Contains(e)
+	case *Enum:
+		return c.Enums.Contains(e)
+	case *EnumValue:
+		for _, en := range c.Enums {
+			if en.Contains(e) {
+				return true
+			}
+		}
+		return false
+	case Bit:
+		for _, bm := range c.Bitmaps {
+			if bm.Contains(e) {
+				return true
+			}
+		}
+		return false
+	case *Struct:
+		return c.Structs.Contains(e)
+	default:
+		return false
+	}
 }
 
 func findCluster(entity types.Entity) *Cluster {

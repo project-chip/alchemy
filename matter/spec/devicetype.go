@@ -483,8 +483,8 @@ func findDeviceTypeRequirementCluster(spec *Specification, ref matter.EntityRefe
 
 	if cluster != nil {
 		if ref.ID.Valid() && !ref.ID.Equals(cluster.ID) {
-			slog.Error("Mismatch between cluster requirement ID and cluster name", slog.String("clusterId", ref.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("requirementName", ref.Name), log.Path("source", entity))
-			spec.addError(&ClusterReferenceNameMismatch{Cluster: cluster, Name: ref.Name, Source: entity})
+			slog.Error("Mismatch between cluster requirement ID and cluster name", slog.String("clusterId", ref.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("requirementID", ref.ID.HexString()), log.Path("source", entity))
+			spec.addError(&ClusterReferenceIDMismatch{Cluster: cluster, ID: ref.ID, Source: entity})
 		}
 		if ref.Name != "" && ref.Name != cluster.Name {
 			slog.Error("Mismatch between cluster requirement ID and cluster name", slog.String("clusterId", ref.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("requirementName", ref.Name), log.Path("source", entity))
@@ -510,7 +510,11 @@ func findDeviceTypeRequirementCondition(spec *Specification, ref matter.EntityRe
 
 	if condition != nil {
 		if ref.Name != "" && ref.Name != condition.Feature {
-			slog.Error("Mismatch between condition requirement name and condition name", slog.String("clusterId", ref.ID.HexString()), slog.String("conditionName", condition.Feature), slog.String("requirementName", ref.Name), log.Path("source", deviceType))
+			slog.Error("Mismatch between condition requirement name and condition name", slog.String("conditionName", condition.Feature), slog.String("requirementName", ref.Name), log.Path("source", deviceType))
+		}
+		if !deviceType.Contains(condition) {
+			slog.Error("Condition requirement on device type refers to unknown condition", slog.String("condition", condition.Feature), slog.String("deviceType", deviceType.Name), log.Path("source", deviceType))
+			condition = nil
 		}
 	}
 	return
@@ -628,15 +632,7 @@ func associateElementRequirement(spec *Specification, dt *matter.DeviceType, er 
 		if er.Entity != nil {
 			break
 		}
-		if cluster.ParentCluster == nil {
-			if cluster.ClusterClassification.Hierarchy != "Base" {
-				cluster = spec.ClustersByName[cluster.ClusterClassification.Hierarchy]
-			} else {
-				break
-			}
-		} else {
-			cluster = cluster.ParentCluster
-		}
+		cluster = cluster.ParentCluster
 	}
 	return
 }
@@ -651,7 +647,6 @@ func associateElementRequirementFromCluster(spec *Specification, er *matter.Elem
 				spec.addError(&ReferenceTypeMismatch{Element: entity.EntityType(), Entity: entity, Source: er.ElementRef.XRef})
 				entity = nil
 			}
-		} else {
 			return
 		}
 	}
@@ -725,35 +720,16 @@ func validateElementRequirement(spec *Specification, dt *matter.DeviceType, er *
 	if !ok {
 		slog.Error("Element Requirement references non-required cluster", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterRef.ID.HexString()), slog.String("clusterName", er.ClusterRef.Name), log.Path("source", er))
 		spec.addError(ElementRequirementUnreferencedClusterError{Requirement: er})
+
 		return
 	}
-	switch er.Element {
-	case types.EntityTypeAttribute:
-		if er.Entity == nil {
-			slog.Error("Element Requirement references unknown attribute", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterRef.ID.HexString()), slog.String("clusterName", er.ClusterRef.Name), slog.String("attributeName", er.ElementRef.Name), log.Path("source", er))
-			spec.addError(ElementRequirementUnknownElementError{Requirement: er})
-		}
-	case types.EntityTypeFeature:
-		if er.Entity == nil {
-			slog.Error("Element Requirement references unknown feature", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterRef.ID.HexString()), slog.String("clusterName", er.ClusterRef.Name), slog.String("featureName", er.ElementRef.Name), log.Path("source", er))
-			spec.addError(ElementRequirementUnknownElementError{Requirement: er})
-		}
-	case types.EntityTypeCommand:
-		if er.Entity == nil {
-			slog.Error("Element Requirement references unknown command", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterRef.ID.HexString()), slog.String("clusterName", er.ClusterRef.Name), slog.String("commandName", er.ElementRef.Name), log.Path("source", er))
-			spec.addError(ElementRequirementUnknownElementError{Requirement: er})
-		}
-	case types.EntityTypeCommandField:
-		if er.Entity == nil {
-			slog.Error("Element Requirement references unknown command field", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterRef.ID.HexString()), slog.String("clusterName", er.ClusterRef.Name), slog.String("commandName", er.ElementRef.Name), slog.String("commandField", er.ElementRef.Field), log.Path("source", er))
-			spec.addError(ElementRequirementUnknownElementError{Requirement: er})
-		}
-	case types.EntityTypeEvent:
-		if er.Entity == nil {
-			slog.Error("Element Requirement references unknown event", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterRef.ID.HexString()), slog.String("clusterName", er.ClusterRef.Name), slog.String("commandName", er.ElementRef.Name), log.Path("source", er))
-			spec.addError(ElementRequirementUnknownElementError{Requirement: er})
-		}
-	default:
-		slog.Error("Unknown entity type", slog.String("entityType", er.Element.String()))
+	if er.Entity == nil {
+		slog.Error("Element Requirement references unknown element", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterRef.ID.HexString()), slog.String("clusterName", er.ClusterRef.Name), slog.String("elementRef", er.ElementRef.Name), log.Path("source", er))
+		spec.addError(ElementRequirementUnknownElementError{Requirement: er})
+		return
+	}
+	if !er.Cluster.Contains(er.Entity) {
+		slog.Error("Element Requirement references entity that does not belong to cluster", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterRef.ID.HexString()), slog.String("clusterName", er.ClusterRef.Name), slog.String("entityName", matter.EntityName(er.Entity)), log.Path("source", er))
+		spec.addError(ElementRequirementUnknownElementError{Requirement: er})
 	}
 }

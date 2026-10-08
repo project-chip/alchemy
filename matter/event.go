@@ -2,6 +2,7 @@ package matter
 
 import (
 	"iter"
+	"slices"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -101,4 +102,8 @@ func (es EventSet) Iterate() iter.Seq[types.Entity] {
 			}
 		}
 	}
+}
+
+func (es EventSet) Contains(e *Event) bool {
+	return slices.Contains(es, e)
 }

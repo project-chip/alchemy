@@ -185,7 +185,7 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 					return a.ClusterRequirement.Interface.Compare(b.ClusterRequirement.Interface)
 				})
 				for _, cr := range reqs {
-					renderClusterRequirement(crx, deviceType, cr.ClusterRequirement, false)
+					renderClusterRequirement(crx, dt, cr.ClusterRequirement, false)
 				}
 			}
 		}

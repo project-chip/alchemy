@@ -54,6 +54,15 @@ func (fs *Features) Identifier(id string) (types.Entity, bool) {
 	return fs.Bitmap.Identifier(id)
 }
 
+func (fs *Features) Contains(e *Feature) bool {
+	for f := range fs.FeatureBits() {
+		if f == e {
+			return true
+		}
+	}
+	return false
+}
+
 func (fs *Features) AddFeatureBit(b *Feature) {
 	b.parent = fs
 	fs.Bits = append(fs.Bits, b)

@@ -2,6 +2,7 @@ package matter
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -64,6 +65,17 @@ func (dt *DeviceType) Equals(e types.Entity) bool {
 		return dt.ID.Equals(odt.ID)
 	}
 	return dt.Name == odt.Name
+}
+
+func (dt *DeviceType) Contains(e types.Entity) bool {
+	if dt.SubsetDeviceType != nil && dt.SubsetDeviceType.Contains(e) {
+		return true
+	}
+	switch e := e.(type) {
+	case *Condition:
+		return slices.Contains(dt.Conditions, e)
+	}
+	return false
 }
 
 func NewClusterRequirement(parent *DeviceType, source asciidoc.Element) *ClusterRequirement {

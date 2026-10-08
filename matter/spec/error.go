@@ -44,6 +44,7 @@ const (
 	ErrorTypeTagRequirementUnknownTag
 	ErrorTypeTagRequirementTagIDMismatch
 	ErrorTypeTagRequirementTagNameMismatch
+	ErrorTypeClusterReferenceIDMismatch
 	ErrorTypeClusterReferenceNameMismatch
 	ErrorTypeDeviceTypeReferenceIDMismatch
 	ErrorTypeDeviceTypeReferenceNameMismatch
@@ -597,6 +598,24 @@ func (ddt ClusterReferenceNameMismatch) Origin() (path string, line int) {
 
 func (ddt ClusterReferenceNameMismatch) Error() string {
 	return fmt.Sprintf("cluster reference has mismatched name: %s vs. %s", ddt.Cluster.Name, ddt.Name)
+}
+
+type ClusterReferenceIDMismatch struct {
+	Cluster *matter.Cluster
+	ID      *matter.Number
+	Source  log.Source
+}
+
+func (ddt ClusterReferenceIDMismatch) Type() ErrorType {
+	return ErrorTypeClusterReferenceIDMismatch
+}
+
+func (ddt ClusterReferenceIDMismatch) Origin() (path string, line int) {
+	return ddt.Source.Origin()
+}
+
+func (ddt ClusterReferenceIDMismatch) Error() string {
+	return fmt.Sprintf("cluster reference has mismatched id: %s vs. %s", ddt.Cluster.ID.HexString(), ddt.ID.HexString())
 }
 
 type DeviceTypeReferenceIDMismatch struct {
