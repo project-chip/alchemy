@@ -1,6 +1,6 @@
 module github.com/project-chip/alchemy
 
-go 1.25
+go 1.27
 
 require (
 	github.com/Masterminds/semver v1.5.0
