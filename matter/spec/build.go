@@ -25,7 +25,8 @@ type Builder struct {
 	errata *errata.Collection
 
 	ignoreHierarchy bool
-	patchForSdk     bool
+
+	patchers []Patcher
 
 	conformanceFailures map[any]referenceFailure
 	constraintFailures  map[any]referenceFailure
@@ -101,6 +102,13 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 		}
 	}
 
+	for _, p := range sp.patchers {
+		err = p.BeforeParse(spec)
+		if err != nil {
+			return
+		}
+	}
+
 	var basicInformationCluster, bridgedDeviceBasicInformationCluster *matter.Cluster
 	basicInformationCluster, bridgedDeviceBasicInformationCluster, err = sp.readEntities(spec, libraries)
 	if err != nil {
@@ -126,20 +134,25 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 
 	specEntityFinder := newSpecEntityFinder(sp.Spec, nil, nil)
 
-	sp.resolveBaseClusterDataTypeReferences(specEntityFinder)
-	sp.resolveGlobalDataTypeReferences()
-
-	if sp.patchForSdk {
-		err = patchSpecForSdk(spec)
+	for _, p := range sp.patchers {
+		err = p.AfterParse(spec)
 		if err != nil {
 			return
 		}
 	}
 
-	if sp.patchForSdk {
-		resolveAtomicOperations(spec)
-	}
 	sp.resolveHierarchy()
+
+	for _, p := range sp.patchers {
+		err = p.BeforeDataModelResolution(spec)
+		if err != nil {
+			return
+		}
+	}
+
+	sp.resolveBaseClusterDataTypeReferences(specEntityFinder)
+	sp.resolveGlobalDataTypeReferences()
+
 	err = spec.associateDeviceTypeRequirements()
 	if err != nil {
 		return
@@ -147,15 +160,22 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 
 	sp.resolveInheritedClusterDataTypeReferences(specEntityFinder)
 
-	sp.ResolveConformances()
+	sp.resolveConformances()
 	sp.resolveConstraints()
 	err = updateBridgedBasicInformationCluster(spec, basicInformationCluster, bridgedDeviceBasicInformationCluster)
 	if err != nil {
 		return
 	}
 
-	spec.BuildClusterReferences()
-	spec.BuildDataTypeReferences()
+	for _, p := range sp.patchers {
+		err = p.AfterDataModelResolution(spec)
+		if err != nil {
+			return
+		}
+	}
+
+	sp.buildClusterReferences()
+	sp.buildDataTypeReferences()
 
 	sp.noteConformanceResolutionFailures(spec)
 	sp.noteConstraintResolutionFailures(spec)
@@ -208,7 +228,6 @@ func (sp *Builder) readEntities(spec *Specification, libraries []*Library) (basi
 					} else {
 						spec.DeviceTypesByID[entity.ID.Value()] = entity
 					}
-
 				}
 				existing, ok := spec.DeviceTypesByName[entity.Name]
 				if ok {
@@ -268,10 +287,10 @@ func (sp *Builder) readEntities(spec *Specification, libraries []*Library) (basi
 	return
 }
 
-func (spec *Specification) BuildClusterReferences() {
-	TraverseEntities(spec, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
+func (sp *Builder) buildClusterReferences() {
+	TraverseEntities(sp.Spec, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
 		if parentCluster != nil {
-			spec.ClusterRefs.Add(parentCluster, entity)
+			sp.Spec.ClusterRefs.Add(parentCluster, entity)
 		}
 		return parse.SearchShouldContinue
 	})

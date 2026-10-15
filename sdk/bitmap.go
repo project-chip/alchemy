@@ -9,18 +9,18 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func applyErrataToBitmap(bitmap *matter.Bitmap, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
+func (p *patch) applyErrataToBitmap(bitmap *matter.Bitmap, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
 	if typeOverrides != nil {
 		override, ok := typeOverrides.Bitmaps[bitmap.Name]
 
 		if ok && override != nil {
-			applyBitmapOverride(bitmap, override)
+			p.applyBitmapOverride(bitmap, override)
 		}
 	}
 	bitmap.Name = applyTypeName(typeNames, bitmap.Name)
 }
 
-func applyBitmapOverride(bitmap *matter.Bitmap, override *errata.SDKType) {
+func (p *patch) applyBitmapOverride(bitmap *matter.Bitmap, override *errata.SDKType) {
 	if override == nil {
 		return
 	}
