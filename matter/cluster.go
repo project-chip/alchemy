@@ -99,7 +99,7 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 	c.ParentCluster = parent
 	if parent.Features != nil {
 		if c.Features == nil || len(c.Features.Bits) == 0 {
-			c.Features = parent.Features.Clone()
+			c.Features = parent.Features.CloneTo(c)
 		} else {
 			err = c.Features.Inherit(&parent.Features.Bitmap)
 			if err != nil {
@@ -123,9 +123,8 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
-			matching = pbm.Clone()
+			matching = pbm.CloneTo(c)
 			c.Bitmaps = append(c.Bitmaps, matching)
-			matching.parent = c
 			linkedEntities = append(linkedEntities, matching)
 			continue
 		}
@@ -144,9 +143,8 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
-			matching = pe.Clone()
+			matching = pe.CloneTo(c)
 			c.Enums = append(c.Enums, matching)
-			matching.parent = c
 			linkedEntities = append(linkedEntities, matching)
 			continue
 		}
@@ -165,9 +163,8 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
-			matching = ps.Clone()
+			matching = ps.CloneTo(c)
 			c.Structs = append(c.Structs, matching)
-			matching.parent = c
 			linkedEntities = append(linkedEntities, matching)
 			continue
 		}
@@ -183,8 +180,7 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
-			matching = pe.Clone()
-			matching.parent = c
+			matching = pe.CloneTo(c)
 			c.Events = append(c.Events, matching)
 			continue
 		}
@@ -200,8 +196,7 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
-			matching = pc.Clone()
-			matching.parent = c
+			matching = pc.CloneTo(c)
 			c.Commands = append(c.Commands, matching)
 			continue
 		}
@@ -217,8 +212,7 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
-			matching = pc.Clone()
-			matching.parent = c
+			matching = pc.CloneTo(c)
 			c.Constants = append(c.Constants, matching)
 			continue
 		}

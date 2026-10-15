@@ -102,12 +102,15 @@ func (cr *ClusterRequirement) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
+	if !cr.sameParent(ocr) {
+		return false
+	}
 	return cr.ClusterRef.Equals(ocr.ClusterRef)
 }
 
-func (cr *ClusterRequirement) Clone() *ClusterRequirement {
+func (cr *ClusterRequirement) CloneTo(newParent types.Entity) *ClusterRequirement {
 	cer := &ClusterRequirement{
-		entity:     entity{source: cr.source},
+		entity:     entity{source: cr.source, parent: newParent},
 		ClusterRef: cr.ClusterRef.Clone(),
 		Interface:  cr.Interface,
 		Quality:    cr.Quality,
@@ -148,6 +151,9 @@ func (er *ElementRequirement) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
+	if !er.sameParent(oer) {
+		return false
+	}
 	if !er.ClusterRef.Equals(oer.ClusterRef) {
 		return false
 	}
@@ -169,9 +175,9 @@ func (er *ElementRequirement) Equals(e types.Entity) bool {
 	return true
 }
 
-func (er *ElementRequirement) Clone() *ElementRequirement {
+func (er *ElementRequirement) CloneTo(newParent types.Entity) *ElementRequirement {
 	cer := &ElementRequirement{
-		entity:     entity{source: er.source},
+		entity:     entity{source: er.source, parent: newParent},
 		ClusterRef: er.ClusterRef.Clone(),
 		ElementRef: er.ElementRef,
 		Element:    er.Element,
@@ -200,12 +206,34 @@ type TagRequirement struct {
 	SemanticTag *SemanticTag `json:"semanticTag,omitempty"`
 }
 
-func (dtcr *TagRequirement) Clone() *TagRequirement {
+func (tr *TagRequirement) EntityType() types.EntityType {
+	return types.EntityTypeTagRequirement
+}
+
+func (tr *TagRequirement) Equals(other types.Entity) bool {
+	otr, ok := other.(*TagRequirement)
+	if !ok {
+		return false
+	}
+	if !tr.sameParent(otr) {
+		return false
+	}
+	if !tr.NamespaceRef.Equals(otr.NamespaceRef) {
+		return false
+	}
+	if !tr.SemanticTagRef.Equals(otr.SemanticTagRef) {
+		return false
+	}
+	return true
+}
+
+func (tr *TagRequirement) CloneTo(newParent types.Entity) *TagRequirement {
 	return &TagRequirement{
-		NamespaceRef:   dtcr.NamespaceRef.Clone(),
-		SemanticTagRef: dtcr.SemanticTagRef.Clone(),
-		Namespace:      dtcr.Namespace,
-		SemanticTag:    dtcr.SemanticTag,
+		entity:         entity{source: tr.source, parent: newParent},
+		NamespaceRef:   tr.NamespaceRef.Clone(),
+		SemanticTagRef: tr.SemanticTagRef.Clone(),
+		Namespace:      tr.Namespace,
+		SemanticTag:    tr.SemanticTag,
 	}
 }
 
@@ -261,12 +289,15 @@ func (dtr *DeviceTypeRequirement) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
+	if !dtr.sameParent(odtr) {
+		return false
+	}
 	return dtr.DeviceTypeRef.Equals(odtr.DeviceTypeRef)
 }
 
-func (dtr *DeviceTypeRequirement) Clone() *DeviceTypeRequirement {
+func (dtr *DeviceTypeRequirement) CloneTo(newParent types.Entity) *DeviceTypeRequirement {
 	cdtr := &DeviceTypeRequirement{
-		entity:         entity{source: dtr.source},
+		entity:         entity{source: dtr.source, parent: newParent},
 		DeviceTypeRef:  dtr.DeviceTypeRef.Clone(),
 		AllowsSuperset: dtr.AllowsSuperset,
 		DeviceType:     dtr.DeviceType,

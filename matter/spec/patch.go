@@ -85,7 +85,7 @@ func patchContentLaunchCluster(spec *Specification) {
 			continue
 		}
 		spec.ClusterRefs.Remove(contentLaunchCluster, s)
-		clone := s.Clone()
+		clone := s.CloneTo(contentLaunchCluster)
 		contentLaunchCluster.MoveEnum(clone)
 		spec.ClusterRefs.Add(contentLaunchCluster, clone)
 		// Update any references to the enum on the Content Launch cluster
@@ -138,7 +138,7 @@ func patchLabelCluster(spec *Specification) {
 			fixedLabelCluster.MoveStruct(s)
 			spec.DataTypeRefs.Add(fixedLabelCluster, s)
 
-			clone := s.Clone()
+			clone := s.CloneTo(userLabelCluster)
 			userLabelCluster.MoveStruct(clone)
 			spec.DataTypeRefs.Add(userLabelCluster, clone)
 
@@ -197,7 +197,7 @@ func patchLevelControlCluster(spec *Specification) {
 			continue
 		}
 		for _, f := range matchingCommand.Fields {
-			clone := f.Clone()
+			clone := f.CloneTo(c)
 			clone.Type.Entity = f.Type.Entity
 			c.Fields = append(c.Fields, clone)
 		}

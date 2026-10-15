@@ -27,12 +27,6 @@ func NewFeatures(source asciidoc.Element, parent types.Entity) *Features {
 	return f
 }
 
-func (fs *Features) Clone() *Features {
-	fc := &Features{Bitmap: *fs.Bitmap.Clone()}
-	fc.entity.parent = fs.parent
-	return fc
-}
-
 func (fs *Features) CloneTo(cluster *Cluster) *Features {
 	f := &Features{Bitmap: *fs.Bitmap.CloneTo(cluster)}
 	return f
@@ -110,14 +104,13 @@ func (f *Feature) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
+	if !f.sameParent(of) {
+		return false
+	}
 	if of.Code == f.Code {
 		return true
 	}
 	return false
-}
-
-func (f *Feature) Clone() Bit {
-	return f.CloneTo(f.parent)
 }
 
 func (f *Feature) CloneTo(parent types.Entity) Bit {

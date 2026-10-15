@@ -39,8 +39,7 @@ func clusterAttributesHelper(spec *spec.Specification, filter ProvisionalFilter,
 	return func(cluster matter.Cluster, options *raymond.Options) raymond.SafeString {
 		cas := make(matter.FieldSet, 0, len(commonAttributes))
 		for _, ca := range commonAttributes {
-			ca = ca.Clone()
-			ca.SetParent(&cluster)
+			ca = ca.CloneTo(&cluster)
 			cas = append(cas, ca)
 		}
 		attributes := filterEntities(spec, filter, cluster.Attributes, cas)
