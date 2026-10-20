@@ -74,3 +74,63 @@ func TestCommandOverlayInvokePrivilege(t *testing.T) {
 		})
 	}
 }
+
+func TestCommandOverlayInheritedAccessDirection(t *testing.T) {
+	for _, test := range []struct {
+		name       string
+		directions []matter.Interface
+		baseID     uint64
+		want       string
+	}{
+		{"response", []matter.Interface{matter.InterfaceClient}, 9, ""},
+		{"request", []matter.Interface{matter.InterfaceServer}, 9, "manage"},
+		{"ancestor_response", []matter.Interface{matter.InterfaceUnknown, matter.InterfaceClient}, 9, ""},
+		{"ancestor_request", []matter.Interface{matter.InterfaceUnknown, matter.InterfaceServer}, 9, "manage"},
+		{"unresolved", []matter.Interface{matter.InterfaceUnknown}, 9, "manage"},
+		{"no_base", nil, 9, "manage"},
+		{"different_id", []matter.Interface{matter.InterfaceClient}, 10, "manage"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			derived := matter.NewCluster(nil)
+			cluster := derived
+			for _, direction := range test.directions {
+				base := matter.NewCluster(nil)
+				command := matter.NewCommand(nil, base)
+				command.ID = matter.NewNumber(test.baseID)
+				command.Name = "SyntheticCommand"
+				command.Direction = direction
+				sibling := matter.NewCommand(nil, base)
+				sibling.ID = matter.NewNumber(test.baseID)
+				sibling.Name = "DifferentCommand"
+				sibling.Direction = matter.InterfaceServer
+				base.Commands = matter.CommandSet{sibling, command}
+				cluster.ParentCluster = base
+				cluster = base
+			}
+			overlay := matter.NewCommand(nil, derived)
+			overlay.ID = matter.NewNumber(9)
+			overlay.Name = "SyntheticCommand"
+			overlay.Access.Invoke = matter.PrivilegeManage
+			overlay.Conformance = conformance.Set{}
+			document := etree.NewDocument()
+			if err := renderCommands(matter.CommandSet{overlay}, document.CreateElement("cluster")); err != nil {
+				t.Fatal(err)
+			}
+			rendered := document.FindElement("cluster/commands/command")
+			if rendered == nil {
+				t.Fatal("command missing")
+			}
+			if overlay.Direction != matter.InterfaceUnknown || rendered.SelectAttr("direction") != nil {
+				t.Fatal("direction lookup must not mutate the overlay or emit a direction")
+			}
+			access := rendered.FindElements("access")
+			if test.want == "" {
+				if len(access) != 0 {
+					t.Fatal("inherited response acquired invoke access")
+				}
+			} else if len(access) != 1 || access[0].SelectAttrValue("invokePrivilege", "") != test.want {
+				t.Fatalf("expected exactly one access element with invokePrivilege=%q", test.want)
+			}
+		})
+	}
+}

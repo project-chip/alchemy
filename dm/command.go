@@ -76,10 +76,11 @@ func renderCommands(cs matter.CommandSet, c *etree.Element) (err error) {
 				cx.CreateElement("quality").CreateAttr("largeMessage", "true")
 			}
 		}
+		emitInvoke := cmd.Access.Invoke != matter.PrivilegeUnknown && commandAccessDirection(cmd) != matter.InterfaceClient
 		if cmd.Direction != matter.InterfaceClient &&
-			(cmd.Access.Invoke != matter.PrivilegeUnknown || cmd.Access.IsFabricScoped() || cmd.Access.IsTimed()) {
+			(emitInvoke || cmd.Access.IsFabricScoped() || cmd.Access.IsTimed()) {
 			a := cx.CreateElement("access")
-			if cmd.Access.Invoke != matter.PrivilegeUnknown {
+			if emitInvoke {
 				a.CreateAttr("invokePrivilege", strings.ToLower(matter.PrivilegeNamesShort[cmd.Access.Invoke]))
 			}
 			if cmd.Access.IsFabricScoped() {
@@ -130,4 +131,24 @@ func renderCommands(cs matter.CommandSet, c *etree.Element) (err error) {
 	}
 
 	return
+}
+
+func commandAccessDirection(cmd *matter.Command) matter.Interface {
+	if cmd.Direction != matter.InterfaceUnknown {
+		return cmd.Direction
+	}
+	for cluster := cmd.Cluster(); cluster != nil && cluster.ParentCluster != nil; cluster = cluster.ParentCluster {
+		entity, found := cluster.ParentCluster.Commands.Identifier(cmd.Name)
+		if !found {
+			continue
+		}
+		base := entity.(*matter.Command)
+		if cmd.ID.Valid() && base.ID.Valid() && !cmd.ID.Equals(base.ID) {
+			return matter.InterfaceUnknown
+		}
+		if base.Direction != matter.InterfaceUnknown {
+			return base.Direction
+		}
+	}
+	return matter.InterfaceUnknown
 }
