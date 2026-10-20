@@ -75,17 +75,18 @@ func renderCommands(cs matter.CommandSet, c *etree.Element) (err error) {
 			if cmd.Quality.Has(matter.QualityLargeMessage) {
 				cx.CreateElement("quality").CreateAttr("largeMessage", "true")
 			}
-			if cmd.Access.Invoke != matter.PrivilegeUnknown || cmd.Access.IsFabricScoped() || cmd.Access.IsTimed() {
-				a := cx.CreateElement("access")
-				if cmd.Access.Invoke != matter.PrivilegeUnknown {
-					a.CreateAttr("invokePrivilege", strings.ToLower(matter.PrivilegeNamesShort[cmd.Access.Invoke]))
-				}
-				if cmd.Access.IsFabricScoped() {
-					a.CreateAttr("fabricScoped", "true")
-				}
-				if cmd.Access.IsTimed() {
-					a.CreateAttr("timed", "true")
-				}
+		}
+		if cmd.Direction != matter.InterfaceClient &&
+			(cmd.Access.Invoke != matter.PrivilegeUnknown || cmd.Access.IsFabricScoped() || cmd.Access.IsTimed()) {
+			a := cx.CreateElement("access")
+			if cmd.Access.Invoke != matter.PrivilegeUnknown {
+				a.CreateAttr("invokePrivilege", strings.ToLower(matter.PrivilegeNamesShort[cmd.Access.Invoke]))
+			}
+			if cmd.Access.IsFabricScoped() {
+				a.CreateAttr("fabricScoped", "true")
+			}
+			if cmd.Access.IsTimed() {
+				a.CreateAttr("timed", "true")
 			}
 		}
 
