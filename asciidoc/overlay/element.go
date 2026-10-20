@@ -12,6 +12,11 @@ type elementOverlay struct {
 
 type elementOverlays map[asciidoc.Element]*elementOverlay
 
+type elementOccurrence struct {
+	parent asciidoc.Parent
+	child  *asciidoc.Element
+}
+
 func (eo elementOverlays) remove(el asciidoc.Element) {
 	if existing, ok := eo[el]; ok {
 		existing.action |= overlayActionRemove
