@@ -4,7 +4,6 @@ import (
 	"log/slog"
 
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
@@ -46,22 +45,22 @@ func (sp *Builder) resolveConformances() {
 			if cr.Cluster != nil {
 				finder = newFeatureFinder(cr.Cluster.Features, conditionFinder)
 			}
-			sp.resolveEntityConformanceReferences(cr.Cluster, finder, cr, cr.Conformance)
+			sp.resolveEntityConformance(cr.Cluster, finder, cr, cr.Conformance)
 		}
 		for _, er := range deviceType.ElementRequirements {
 			var finder entityFinder = conditionFinder
 			if er.Cluster != nil {
 				finder = newFeatureFinder(er.Cluster.Features, conditionFinder)
 			}
-			sp.resolveEntityConformanceReferences(er.Cluster, finder, er, er.Conformance)
+			sp.resolveEntityConformance(er.Cluster, finder, er, er.Conformance)
 		}
 		for _, dtr := range deviceType.DeviceTypeRequirements {
-			sp.resolveEntityConformanceReferences(nil, conditionFinder, dtr, dtr.Conformance)
+			sp.resolveEntityConformance(nil, conditionFinder, dtr, dtr.Conformance)
 		}
 	}
 }
 
-func (sp *Builder) noteConformanceResolutionFailures(spec *Specification) {
+/*func (sp *Builder) noteConformanceResolutionFailures(spec *Specification) {
 	for exp, failure := range sp.conformanceFailures {
 		switch exp := exp.(type) {
 		case *conformance.ReferenceExpression:
@@ -94,14 +93,14 @@ func (sp *Builder) noteConformanceResolutionFailures(spec *Specification) {
 			slog.Warn("Unexpected failed conformance entity", log.Type("type", exp), log.Path("source", failure.source))
 		}
 	}
-}
+}*/
 
 func (sp *Builder) resolveFeatureConformances(cluster *matter.Cluster, finder *featureFinder) {
 	if finder.features == nil {
 		return
 	}
 	for feature := range finder.features.FeatureBits() {
-		sp.resolveEntityConformanceReferences(cluster, finder, feature, feature.Conformance())
+		sp.resolveEntityConformance(cluster, finder, feature, feature.Conformance())
 	}
 }
 
@@ -109,7 +108,7 @@ func (sp *Builder) resolveFieldConformances(cluster *matter.Cluster, finder enti
 
 	fieldFinder := newFieldFinder(fieldSet, finder)
 
-	sp.resolveEntityConformanceReferences(cluster, fieldFinder, field, field.Conformance)
+	sp.resolveEntityConformance(cluster, fieldFinder, field, field.Conformance)
 }
 
 func (sp *Builder) resolveBitmapConformances(cluster *matter.Cluster, finder entityFinder) {
@@ -117,7 +116,7 @@ func (sp *Builder) resolveBitmapConformances(cluster *matter.Cluster, finder ent
 		bitmapValueFinder := makeEntityFinder(bm, finder)
 		for _, bmv := range bm.Bits {
 			bitmapValueFinder.setIdentity(bmv)
-			sp.resolveEntityConformanceReferences(cluster, bitmapValueFinder, bmv, bmv.Conformance())
+			sp.resolveEntityConformance(cluster, bitmapValueFinder, bmv, bmv.Conformance())
 		}
 	}
 }
@@ -127,7 +126,7 @@ func (sp *Builder) resolveEnumConformances(cluster *matter.Cluster, finder entit
 		enumValueFinder := makeEntityFinder(e, finder)
 		for _, ev := range e.Values {
 			enumValueFinder.setIdentity(ev)
-			sp.resolveEntityConformanceReferences(cluster, enumValueFinder, ev, ev.Conformance)
+			sp.resolveEntityConformance(cluster, enumValueFinder, ev, ev.Conformance)
 		}
 	}
 }
@@ -137,7 +136,7 @@ func (sp *Builder) resolveCommandConformances(cluster *matter.Cluster, finder en
 
 	for _, command := range cluster.Commands {
 		commandFinder.setIdentity(command)
-		sp.resolveEntityConformanceReferences(cluster, commandFinder, command, command.Conformance)
+		sp.resolveEntityConformance(cluster, commandFinder, command, command.Conformance)
 		for _, field := range command.Fields {
 			fieldFinder := newFieldFinder(command.Fields, finder)
 			fieldFinder.setIdentity(field)
@@ -152,7 +151,9 @@ func (sp *Builder) resolveEventConformances(cluster *matter.Cluster, finder enti
 
 	for _, event := range cluster.Events {
 		eventFinder.setIdentity(event)
-		sp.resolveEntityConformanceReferences(cluster, eventFinder, event, event.Conformance)
+		for _, exp := range conformance.TraverseExpressions(event.Conformance) {
+			sp.resolveEntityConformanceExpressionReferences(cluster, eventFinder, event, exp)
+		}
 		for _, field := range event.Fields {
 			fieldFinder := newFieldFinder(event.Fields, finder)
 			fieldFinder.setIdentity(field)
@@ -161,15 +162,18 @@ func (sp *Builder) resolveEventConformances(cluster *matter.Cluster, finder enti
 	}
 }
 
-func (sp *Builder) resolveEntityConformanceReferences(cluster *matter.Cluster, finder entityFinder, source types.Entity, con conformance.Conformance) {
-	switch con := con.(type) {
+func (sp *Builder) resolveEntityConformance(cluster *matter.Cluster, finder entityFinder, source types.Entity, con conformance.Conformance) {
+	for _, exp := range conformance.TraverseExpressions(con) {
+		sp.resolveEntityConformanceExpressionReferences(cluster, finder, source, exp)
+	}
+	/*switch con := con.(type) {
 	case *conformance.Mandatory:
 		sp.resolveEntityConformanceExpressionReferences(cluster, finder, source, con.Expression)
 	case *conformance.Optional:
 		sp.resolveEntityConformanceExpressionReferences(cluster, finder, source, con.Expression)
 	case conformance.Set:
 		for _, c := range con {
-			sp.resolveEntityConformanceReferences(cluster, finder, source, c)
+			sp.resolveEntityConformance(cluster, finder, source, c)
 		}
 	case *conformance.Disallowed, *conformance.Provisional, *conformance.Described, *conformance.Deprecated, *conformance.Obsolete:
 	case *conformance.Generic:
@@ -179,7 +183,7 @@ func (sp *Builder) resolveEntityConformanceReferences(cluster *matter.Cluster, f
 		}
 	default:
 		slog.Warn("Unexpected field conformance type", log.Type("type", con))
-	}
+	}*/
 }
 
 func (sp *Builder) resolveEntityConformanceExpressionReferences(cluster *matter.Cluster, finder entityFinder, source types.Entity, exp conformance.Expression) (resolved types.Entity, failed bool) {
@@ -189,7 +193,7 @@ func (sp *Builder) resolveEntityConformanceExpressionReferences(cluster *matter.
 			exp.Entity = finder.findEntityByReference(exp.Reference, exp.Label, source)
 			if exp.Entity == nil {
 				//slog.Warn("failed to resolve conformance expression reference", "ref", exp.Reference, log.Path("source", source))
-				sp.conformanceFailures[exp] = referenceFailure{source: source, finder: finder}
+				//sp.conformanceFailures[exp] = referenceFailure{source: source, finder: finder}
 				failed = true
 				return
 			}
@@ -209,7 +213,7 @@ func (sp *Builder) resolveEntityConformanceExpressionReferences(cluster *matter.
 			exp.Entity = finder.findEntityByIdentifier(exp.ID, source)
 			if exp.Entity == nil {
 				//slog.Warn("failed to resolve conformance expression identifier", "ref", exp.ID, log.Path("source", source))
-				sp.conformanceFailures[exp] = referenceFailure{source: source, finder: finder}
+				//sp.conformanceFailures[exp] = referenceFailure{source: source, finder: finder}
 				failed = true
 				return
 			}
@@ -252,42 +256,96 @@ func (sp *Builder) resolveEntityConformanceExpressionReferences(cluster *matter.
 }
 
 func (sp *Builder) resolveEntityConformanceValueReferences(cluster *matter.Cluster, finder entityFinder, source types.Entity, cv conformance.ComparisonValue) (resolved types.Entity, failed bool) {
-	switch cv := cv.(type) {
-	case *conformance.IdentifierValue:
-		if cv.Entity == nil {
-			cv.Entity = finder.findEntityByIdentifier(cv.ID, source)
-			if cv.Entity == nil {
-				sp.conformanceFailures[cv] = referenceFailure{source: source, finder: finder}
-				failed = true
-				return
+	for v := range conformance.TraverseComparisonValue(cv) {
+		switch v := v.(type) {
+		case *conformance.IdentifierValue:
+			if v.Entity == nil {
+				v.Entity = finder.findEntityByIdentifier(v.ID, source)
+				if v.Entity == nil {
+					//sp.conformanceFailures[cv] = referenceFailure{source: source, finder: finder}
+					failed = true
+					return
+				}
+				resolved = v.Entity
+				if v.Entity != nil && v.Field != nil {
+					resolved, failed = sp.resolveEntityConformanceValueReferences(cluster, finder, source, v.Field)
+				}
+			} else {
+				resolved = v.Entity
 			}
-			resolved = cv.Entity
-			if cv.Entity != nil && cv.Field != nil {
-				resolved, failed = sp.resolveEntityConformanceValueReferences(cluster, finder, source, cv.Field)
-			}
-		} else {
-			resolved = cv.Entity
-		}
-	case *conformance.ReferenceValue:
-		if cv.Entity == nil {
-			cv.Entity = finder.findEntityByReference(cv.Reference, cv.Label, source)
-			if cv.Entity == nil {
-				sp.conformanceFailures[cv] = referenceFailure{source: source, finder: finder}
+		case *conformance.ReferenceValue:
+			if v.Entity == nil {
+				v.Entity = finder.findEntityByReference(v.Reference, v.Label, source)
+				if v.Entity == nil {
+					//sp.conformanceFailures[cv] = referenceFailure{source: source, finder: finder}
 
-				//slog.Warn("failed to resolve conformance value reference", "ref", cv.Reference, log.Path("source", source), slog.Any("entity", cv.Entity))
-				failed = true
-				return
+					//slog.Warn("failed to resolve conformance value reference", "ref", cv.Reference, log.Path("source", source), slog.Any("entity", cv.Entity))
+					failed = true
+					return
+				}
+				resolved = v.Entity
+				if v.Entity != nil && v.Field != nil {
+					resolved, failed = sp.resolveEntityConformanceValueReferences(cluster, makeEntityFinder(v.Entity, finder), source, v.Field)
+				}
+			} else {
+				resolved = v.Entity
 			}
-			resolved = cv.Entity
-			if cv.Entity != nil && cv.Field != nil {
-				resolved, failed = sp.resolveEntityConformanceValueReferences(cluster, makeEntityFinder(cv.Entity, finder), source, cv.Field)
-			}
-		} else {
-			resolved = cv.Entity
 		}
-	case *conformance.MathOperation:
-		sp.resolveEntityConformanceValueReferences(cluster, finder, source, cv.Left)
-		sp.resolveEntityConformanceValueReferences(cluster, finder, source, cv.Right)
 	}
+
 	return
+}
+
+func validateConformance(spec *Specification, source types.Entity, c conformance.Conformance) {
+	for c := range conformance.Traverse(c) {
+		switch c := c.(type) {
+		case *conformance.Generic:
+			if conformance.IsBlank(c) {
+				spec.addError(&InvalidConformanceError{Source: source, Conformance: c.RawText()})
+			}
+		default:
+			for _, exp := range conformance.TraverseExpressions(c) {
+				switch exp := exp.(type) {
+				case *conformance.ReferenceExpression:
+					if exp.Entity != nil {
+						continue
+					}
+					slog.Error("Failed to resolve conformance expression reference", "ref", exp.Reference, log.Path("source", source))
+					spec.addError(&UnknownConformanceReferenceError{Entity: source, Reference: exp.Reference})
+				case *conformance.IdentifierExpression:
+					if exp.Entity != nil {
+						continue
+					}
+					slog.Error("Failed to resolve conformance expression identifier", "ref", exp.ID, log.Path("source", source))
+					spec.addError(&UnknownConformanceIdentifierError{Entity: source, Identifier: exp.ID})
+				//failure.finder.suggestIdentifiers(exp.ID, suggestions)
+				//suggest.ListPossibilities(exp.ID, suggestions)
+				case *conformance.ComparisonExpression:
+					validateComparisonValue(spec, source, exp.Left)
+					validateComparisonValue(spec, source, exp.Right)
+				}
+			}
+		}
+	}
+}
+
+func validateComparisonValue(spec *Specification, source types.Entity, cv conformance.ComparisonValue) {
+	for cv := range conformance.TraverseComparisonValue(cv) {
+		switch cv := cv.(type) {
+		case *conformance.IdentifierValue:
+			if cv.Entity != nil {
+				continue
+			}
+			spec.addError(&UnknownConformanceIdentifierError{Entity: source, Identifier: cv.ID})
+			//suggestions := make(map[types.Entity]int)
+			//failure.finder.suggestIdentifiers(exp.ID, suggestions)
+			//suggest.ListPossibilities(exp.ID, suggestions)
+		case *conformance.ReferenceValue:
+			if cv.Entity != nil {
+				continue
+			}
+			slog.Error("failed to resolve conformance value reference", "ref", cv.Reference, log.Path("source", source))
+			spec.addError(&UnknownConformanceReferenceError{Entity: source, Reference: cv.Reference})
+		}
+	}
 }
