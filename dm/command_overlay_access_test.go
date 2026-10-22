@@ -134,3 +134,89 @@ func TestCommandOverlayInheritedAccessDirection(t *testing.T) {
 		})
 	}
 }
+
+func TestCommandOverlayResponseAccessFlags(t *testing.T) {
+	for _, direction := range []struct {
+		name     string
+		overlay  matter.Interface
+		base     matter.Interface
+		response bool
+	}{
+		{"direct_response", matter.InterfaceClient, matter.InterfaceClient, true},
+		{"inherited_response", matter.InterfaceUnknown, matter.InterfaceClient, true},
+		{"inherited_request", matter.InterfaceUnknown, matter.InterfaceServer, false},
+	} {
+		t.Run(direction.name, func(t *testing.T) {
+			for _, flags := range []struct {
+				name         string
+				fabricScoped bool
+				timed        bool
+			}{
+				{"none", false, false},
+				{"fabric_scoped", true, false},
+				{"timed", false, true},
+				{"fabric_scoped_timed", true, true},
+			} {
+				t.Run(flags.name, func(t *testing.T) {
+					base := matter.NewCluster(nil)
+					baseCommand := matter.NewCommand(nil, base)
+					baseCommand.ID = matter.NewNumber(9)
+					baseCommand.Name = "SyntheticCommand"
+					baseCommand.Direction = direction.base
+					base.Commands = matter.CommandSet{baseCommand}
+					derived := matter.NewCluster(nil)
+					derived.ParentCluster = base
+					command := matter.NewCommand(nil, derived)
+					command.ID = matter.NewNumber(9)
+					command.Name = "SyntheticCommand"
+					command.Direction = direction.overlay
+					command.Access.Invoke = matter.PrivilegeManage
+					if flags.fabricScoped {
+						command.Access.FabricScoping = matter.FabricScopingScoped
+					}
+					if flags.timed {
+						command.Access.Timing = matter.TimingTimed
+					}
+					command.Conformance = conformance.Set{}
+					document := etree.NewDocument()
+					if err := renderCommands(matter.CommandSet{command}, document.CreateElement("cluster")); err != nil {
+						t.Fatal(err)
+					}
+					rendered := document.FindElement("cluster/commands/command")
+					if rendered == nil {
+						t.Fatal("command missing")
+					}
+					if command.Direction != direction.overlay {
+						t.Fatal("direction lookup mutated the command")
+					}
+					if direction.overlay == matter.InterfaceUnknown && rendered.SelectAttr("direction") != nil {
+						t.Fatal("inherited direction must remain absent")
+					}
+					access := rendered.FindElements("access")
+					if direction.response && !flags.fabricScoped {
+						if len(access) != 0 {
+							t.Fatal("non-fabric-scoped response acquired access")
+						}
+						return
+					}
+					if len(access) != 1 {
+						t.Fatalf("access elements = %d, want 1", len(access))
+					}
+					wantInvoke := "manage"
+					if direction.response {
+						wantInvoke = ""
+					}
+					if got := access[0].SelectAttrValue("invokePrivilege", ""); got != wantInvoke {
+						t.Fatalf("invokePrivilege = %q, want %q", got, wantInvoke)
+					}
+					if got := access[0].SelectAttrValue("fabricScoped", "") == "true"; got != flags.fabricScoped {
+						t.Fatalf("fabricScoped = %t, want %t", got, flags.fabricScoped)
+					}
+					if got := access[0].SelectAttrValue("timed", "") == "true"; got != flags.timed {
+						t.Fatalf("timed = %t, want %t", got, flags.timed)
+					}
+				})
+			}
+		})
+	}
+}
