@@ -32,9 +32,10 @@ type OverlayContext interface {
 
 func Build(cxt OverlayContext, rootDoc *asciidoc.Document, rootPath string, attributes []asciidoc.AttributeName) (reader *Reader, err error) {
 	pps := &overlayState{
-		attributes: make(map[string]any),
-		counters:   map[string]*asciidoc.CounterState{},
-		overlays:   map[asciidoc.Element]*elementOverlay{},
+		attributes:        make(map[string]any),
+		counters:          map[string]*asciidoc.CounterState{},
+		overlays:          map[asciidoc.Element]*elementOverlay{},
+		removedCharacters: map[*asciidoc.Element]bool{},
 	}
 
 	for _, a := range attributes {
@@ -51,7 +52,7 @@ func Build(cxt OverlayContext, rootDoc *asciidoc.Document, rootPath string, attr
 	if err != nil {
 		return
 	}
-	reader = &Reader{overlays: pps.overlays}
+	reader = &Reader{overlays: pps.overlays, removedCharacters: pps.removedCharacters}
 	buildDocTree(cxt, ppfs, rootDoc)
 	return
 }
@@ -63,7 +64,9 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 	var addToCell bool
 	cxt.AddDocument(d)
 
-	parse.Traverse(d, asciidoc.RawReader, parent, els, func(doc *asciidoc.Document, el asciidoc.Element, parent asciidoc.ParentElement, index int) (should parse.SearchShould) {
+	// Traversed titles and attribute values need not be children of the callback's parent.
+	reader := &occurrenceReader{Reader: asciidoc.RawReader}
+	parse.Traverse(d, reader, parent, els, func(doc *asciidoc.Document, el asciidoc.Element, parent asciidoc.ParentElement, index int) (should parse.SearchShould) {
 		var remove, replace bool
 		var replaceElements asciidoc.Elements
 		switch el := el.(type) {
@@ -72,7 +75,7 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 				remove = true
 			} else {
 				var sectionName string
-				sectionName, err = cxt.MakeSectionName(&Reader{overlays: pps.state.overlays}, el, pps)
+				sectionName, err = cxt.MakeSectionName(&Reader{overlays: pps.state.overlays, removedCharacters: pps.state.removedCharacters}, el, pps)
 				if err != nil {
 					should = parse.SearchShouldStop
 					return
@@ -291,7 +294,11 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 
 		}
 		if remove {
-			pps.state.overlays.remove(el)
+			if _, character := el.(asciidoc.SpecialCharacter); character {
+				pps.state.removedCharacters[reader.child] = true
+			} else {
+				pps.state.overlays.remove(el)
+			}
 		} else if replace {
 			pps.state.overlays.replace(el, replaceElements)
 		}
@@ -301,7 +308,7 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 }
 
 func buildDocTree(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Document) {
-	iterator := &Reader{overlays: pps.state.overlays}
+	iterator := &Reader{overlays: pps.state.overlays, removedCharacters: pps.state.removedCharacters}
 	for el := range parse.Skim[asciidoc.Element](iterator, d, iterator.Children(d)) {
 		switch el := el.(type) {
 		case *asciidoc.Section:
