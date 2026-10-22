@@ -35,7 +35,7 @@ func Build(cxt OverlayContext, rootDoc *asciidoc.Document, rootPath string, attr
 		attributes:        make(map[string]any),
 		counters:          map[string]*asciidoc.CounterState{},
 		overlays:          map[asciidoc.Element]*elementOverlay{},
-		removedCharacters: map[elementOccurrence]bool{},
+		removedCharacters: map[*asciidoc.Element]bool{},
 	}
 
 	for _, a := range attributes {
@@ -64,8 +64,9 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 	var addToCell bool
 	cxt.AddDocument(d)
 
-	initialParent := parent
-	parse.Traverse(d, asciidoc.RawReader, parent, els, func(doc *asciidoc.Document, el asciidoc.Element, parent asciidoc.ParentElement, index int) (should parse.SearchShould) {
+	// Traversed titles and attribute values need not be children of the callback's parent.
+	reader := &occurrenceReader{Reader: asciidoc.RawReader}
+	parse.Traverse(d, reader, parent, els, func(doc *asciidoc.Document, el asciidoc.Element, parent asciidoc.ParentElement, index int) (should parse.SearchShould) {
 		var remove, replace bool
 		var replaceElements asciidoc.Elements
 		switch el := el.(type) {
@@ -294,11 +295,7 @@ func preparseFile(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 		}
 		if remove {
 			if _, character := el.(asciidoc.SpecialCharacter); character {
-				children := parent.Children()
-				if parent == initialParent {
-					children = els
-				}
-				pps.state.removedCharacters[elementOccurrence{parent: parent, child: &children[index]}] = true
+				pps.state.removedCharacters[reader.child] = true
 			} else {
 				pps.state.overlays.remove(el)
 			}
