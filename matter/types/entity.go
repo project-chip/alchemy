@@ -120,6 +120,16 @@ func (es EntitySet[S]) Iterate() iter.Seq[Entity] {
 	}
 }
 
+func (es EntitySet[S]) OfType[T Entity]() (out []T) {
+	for e := range es {
+		t, ok := e.(T)
+		if ok {
+			out = append(out, t)
+		}
+	}
+	return
+}
+
 func FilterSet[T Entity, S any](set EntitySet[S]) (out []T) {
 	for e := range set {
 		t, ok := e.(T)
