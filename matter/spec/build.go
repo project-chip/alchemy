@@ -27,9 +27,6 @@ type Builder struct {
 	ignoreHierarchy bool
 
 	patchers []Patcher
-
-	//conformanceFailures map[any]referenceFailure
-	//constraintFailures  map[any]referenceFailure
 }
 
 func NewBuilder(specRoot string, config *config.Config, errata *errata.Collection, options ...BuilderOption) Builder {
@@ -37,8 +34,6 @@ func NewBuilder(specRoot string, config *config.Config, errata *errata.Collectio
 		specRoot: specRoot,
 		config:   config,
 		errata:   errata,
-		//conformanceFailures: make(map[any]referenceFailure),
-		//constraintFailures:  make(map[any]referenceFailure),
 	}
 	for _, o := range options {
 		o(&b)
@@ -177,9 +172,6 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 	sp.buildClusterReferences()
 	sp.buildDataTypeReferences()
 
-	//sp.noteConformanceResolutionFailures(spec)
-	//sp.noteConstraintResolutionFailures(spec)
-
 	Validate(spec)
 
 	return
@@ -302,7 +294,6 @@ func (sp *Builder) addCluster(doc *asciidoc.Document, cluster *matter.Cluster) {
 		existing, ok := sp.Spec.ClustersByID[cluster.ID.Value()]
 		if ok {
 			slog.Error("Duplicate cluster ID", slog.String("clusterId", cluster.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("existingClusterName", existing.Name))
-			sp.Spec.addError(&DuplicateEntityIDError{Entity: cluster, Previous: existing})
 		}
 		sp.Spec.ClustersByID[cluster.ID.Value()] = cluster
 	} else {
@@ -418,6 +409,7 @@ func clusterName(cluster *matter.Cluster) string {
 }
 
 func (sp *Builder) resolveHierarchy() {
+	sp.Spec.ignoredHierarchy = sp.ignoreHierarchy
 	for _, c := range sp.Spec.ClustersByName {
 		if c.Hierarchy == "Base" {
 			continue
@@ -425,7 +417,6 @@ func (sp *Builder) resolveHierarchy() {
 		base, ok := sp.Spec.ClustersByName[c.Hierarchy]
 		if !ok {
 			slog.Warn("Failed to find base cluster", "cluster", c.Name, "baseCluster", c.Hierarchy)
-			sp.Spec.addError(&UnknownBaseClusterError{Cluster: c})
 			continue
 		}
 		if !sp.ignoreHierarchy {

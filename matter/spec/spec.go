@@ -49,7 +49,8 @@ type Specification struct {
 
 	Errors []Error
 
-	libraryIndex map[*asciidoc.Document]*Library
+	libraryIndex     map[*asciidoc.Document]*Library
+	ignoredHierarchy bool
 }
 
 func newSpec(specRoot string, config *config.Config, errata *errata.Collection) *Specification {

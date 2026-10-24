@@ -1,8 +1,10 @@
 package spec
 
 import (
+	"log/slog"
 	"strings"
 
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -10,12 +12,12 @@ import (
 )
 
 func Validate(spec *Specification) {
-	validateAttributes(spec)
-	validateCommands(spec)
-	validateEvents(spec)
-	validateBitmaps(spec)
-	validateEnums(spec)
-	validateStructs(spec)
+	validateClusters(spec)
+	validateCommands(spec, nil, spec.GlobalObjects.OfType[*matter.Command]())
+	validateEvents(spec, nil, spec.GlobalObjects.OfType[*matter.Event]())
+	validateBitmaps(spec, spec.GlobalObjects.OfType[*matter.Bitmap]())
+	validateEnums(spec, spec.GlobalObjects.OfType[*matter.Enum]())
+	validateStructs(spec, nil, spec.GlobalObjects.OfType[*matter.Struct]())
 	validateDeviceTypes(spec)
 	validateNamespaces(spec)
 }
@@ -30,6 +32,20 @@ func stripNonAlphabeticalCharacters(s string) string {
 		}
 	}
 	return result.String()
+}
+
+func checkEntityReference[EntityT types.Entity, SourceT types.Entity](spec *Specification, er matter.EntityReference, entity EntityT, source SourceT) {
+	entityID := matter.EntityID(entity)
+	if entityID.Valid() && er.ID.Valid() && !entityID.Equals(er.ID) {
+		slog.Error("Mismatch between entity ID and reference entity ID", slog.String("entityId", entityID.HexString()), slog.String("referenceEntityId", er.ID.HexString()), log.Path("source", source))
+		spec.addError(&ReferenceIDMismatchError[EntityT, SourceT]{Entity: entity, ID: er.ID, Source: source})
+	}
+	refName := stripNonAlphabeticalCharacters(er.Name)
+	entityName := stripNonAlphabeticalCharacters(matter.EntityName(entity))
+	if refName != "" && !strings.EqualFold(refName, entityName) {
+		slog.Error("Mismatch between entity name and reference entity name", slog.String("entityName", entityName), slog.String("referenceEntityName", refName), slog.String("entityId", entityID.HexString()), log.Path("source", source))
+		spec.addError(&ReferenceNameMismatchError[EntityT, SourceT]{Entity: entity, Name: er.Name, Source: source})
+	}
 }
 
 type idUniqueness[T types.Entity] map[uint64]T
