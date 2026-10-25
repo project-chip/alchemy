@@ -41,16 +41,7 @@ func validateDeviceType(spec *Specification, dt *matter.DeviceType) {
 
 	validateDeviceTypeClusterRequirements(spec, dt, requiredDeviceTypes, dt.ComposedDeviceTypeClusterRequirements)
 	validateDeviceTypeElementRequirements(spec, dt, dt.ComposedDeviceTypeElementRequirements, requiredDeviceTypes, referencedClusters)
-
-	/*
-
-
-		DeviceTypeRequirements                []*DeviceTypeRequirement        `json:"deviceTypeRequirements,omitempty"`
-		ComposedDeviceTypeClusterRequirements []*DeviceTypeClusterRequirement `json:"composedDeviceTypeClusterRequirements,omitempty"`
-		ComposedDeviceTypeElementRequirements []*DeviceTypeElementRequirement `json:"composedDeviceTypeElementRequirements,omitempty"`
-
-		ComposedDeviceTagRequirements []*DeviceTypeTagRequirement `json
-	*/
+	validateDeviceTypeTagRequirements(spec, dt, dt.ComposedDeviceTagRequirements, requiredDeviceTypes)
 }
 
 func checkDeviceReference[SourceT types.Entity](spec *Specification, deviceTypeRef matter.EntityReference, deviceType *matter.DeviceType, source SourceT) {
@@ -175,6 +166,29 @@ func validateDeviceTypeElementRequirements(spec *Specification, deviceType *matt
 		}
 		validateElementRequirement(spec, deviceType, cer.ElementRequirement, referencedClusters)
 		cv.add(cer, cer.ElementRequirement.Conformance)
+	}
+	cv.check(spec)
+}
+
+func validateDeviceTypeTagRequirements(spec *Specification, deviceType *matter.DeviceType, tagRequirements []*matter.DeviceTypeTagRequirement, referencedDeviceTypes map[*matter.DeviceType]*matter.DeviceTypeRequirement) {
+	cv := make(conformanceValidation)
+	for _, cer := range tagRequirements {
+		if cer.DeviceType == nil {
+			slog.Error("unknown device type ID for cluster requirement on composing device type",
+				slog.String("deviceTypeId", cer.DeviceTypeRef.ID.HexString()),
+				slog.String("deviceTypeName", cer.DeviceTypeRef.Name),
+				slog.String("deviceType", deviceType.Name),
+				log.Path("source", cer.TagRequirement))
+			spec.addError(&UnknownEntityError[*matter.DeviceTypeTagRequirement]{EntityType: types.EntityTypeDeviceType, EntityReference: &cer.DeviceTypeRef, Source: cer})
+		} else {
+			checkDeviceReference(spec, cer.DeviceTypeRef, cer.DeviceType, cer)
+			if _, ok := referencedDeviceTypes[cer.DeviceType]; !ok {
+				slog.Error("Composing Device Type Element Requirement device type not reachable", slog.String("deviceType", deviceType.Name), slog.String("deviceTypeRef", cer.DeviceTypeRef.Name), slog.String("referencedName", cer.DeviceType.Name), log.Path("source", cer))
+				spec.addError(&UnreferencedEntityError[*matter.DeviceType, *matter.DeviceTypeTagRequirement]{Entity: cer.DeviceType, Source: cer})
+			}
+		}
+		validateTagRequirement(spec, deviceType, cer.TagRequirement)
+		cv.add(cer, cer.TagRequirement.Conformance)
 	}
 	cv.check(spec)
 }
