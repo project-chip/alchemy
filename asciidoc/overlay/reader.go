@@ -10,29 +10,12 @@ import (
 )
 
 type Reader struct {
-	overlays          elementOverlays
-	removedCharacters map[*asciidoc.Element]bool
-}
-
-type occurrenceReader struct {
-	asciidoc.Reader
-	child *asciidoc.Element
-}
-
-func (r *occurrenceReader) Iterate(parent asciidoc.Parent, elements asciidoc.Elements) asciidoc.ElementIterator {
-	return func(yield func(asciidoc.Element) bool) {
-		for index, element := range elements {
-			r.child = &elements[index]
-			if !yield(element) {
-				return
-			}
-		}
-	}
+	overlays elementOverlays
 }
 
 func (r *Reader) Iterate(parent asciidoc.Parent, elements asciidoc.Elements) asciidoc.ElementIterator {
 	return func(yield func(asciidoc.Element) bool) {
-		if !r.iterate(parent, elements, yield) {
+		if !r.iterate(elements, yield) {
 			return
 		}
 		var parentOverlay *elementOverlay
@@ -50,11 +33,8 @@ func (r *Reader) Iterate(parent asciidoc.Parent, elements asciidoc.Elements) asc
 	}
 }
 
-func (r *Reader) iterate(parent asciidoc.Parent, elements asciidoc.Elements, yield func(asciidoc.Element) bool) bool {
-	for index, el := range elements {
-		if _, character := el.(asciidoc.SpecialCharacter); character && r.removedCharacters[&elements[index]] {
-			continue
-		}
+func (r *Reader) iterate(elements asciidoc.Elements, yield func(asciidoc.Element) bool) bool {
+	for _, el := range elements {
 		elementOverlay, ok := r.overlays[el]
 		if !ok {
 			if !yield(el) {
@@ -65,7 +45,7 @@ func (r *Reader) iterate(parent asciidoc.Parent, elements asciidoc.Elements, yie
 				continue
 			}
 			if elementOverlay.action.Replace() {
-				if !r.iterate(nil, elementOverlay.replace, yield) {
+				if !r.iterate(elementOverlay.replace, yield) {
 					return false
 				}
 				continue
