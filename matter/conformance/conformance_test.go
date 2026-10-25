@@ -21,7 +21,6 @@ type conformanceTestSuite struct {
 
 func (cts *conformanceTestSuite) run(t *testing.T) {
 	conformance, err := TryParseConformance(cts.Conformance)
-	//t.Logf("testing %s: %T", cts.Conformance, conformance)
 	if err != nil {
 		if cts.InvalidConformance {
 			return
@@ -32,10 +31,6 @@ func (cts *conformanceTestSuite) run(t *testing.T) {
 	if cts.InvalidConformance {
 		t.Errorf("parsed conformance that should have been invalid %s: %v", cts.Conformance, err)
 	}
-	//t.Logf("\tconformance set: %d", len(conformance))
-	/*for _, c := range conformance {
-		t.Logf("\ttesting %s: %T %v", cts.Conformance, c, c)
-	}*/
 	for _, test := range cts.Tests {
 		result, err := conformance.Eval(test.Context)
 		if err != nil {

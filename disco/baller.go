@@ -8,7 +8,6 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
-	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -112,18 +111,12 @@ func (b *Baller) disco(cxt context.Context, doc *asciidoc.Document) error {
 	}
 
 	if b.options.ReorderSections {
-		//	slog.Info("Renaming sections!")
 		parse.Search(doc, asciidoc.RawReader, topLevelSection, topLevelSection.Children(), func(doc *asciidoc.Document, section *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
 			sectionType := dc.library.SectionType(section)
 			if sectionType != matter.SectionUnknown {
 				canonicalSectionName := matter.CanonicalSectionTypeName(sectionType)
-				//	slog.Info("Renaming section!", "from", doc.SectionName(section), "to", canonicalSectionName)
 				if canonicalSectionName != "" && canonicalSectionName != dc.library.SectionName(section) {
-					slog.Info("Renaming section!", "new name", canonicalSectionName, log.Path("source", section))
-					if setSectionTitle(dc, doc, section, canonicalSectionName) {
-						slog.Info("Renamed section!", "new name", canonicalSectionName)
-
-					}
+					setSectionTitle(dc, doc, section, canonicalSectionName)
 				}
 			}
 			return parse.SearchShouldContinue
@@ -255,5 +248,3 @@ func (b *Baller) discoBallTopLevelSection(dc *discoContext, top *asciidoc.Sectio
 	b.postCleanUpStrings(dc.doc, top)
 	return nil
 }
-
-

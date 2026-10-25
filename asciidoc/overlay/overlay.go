@@ -307,9 +307,7 @@ func buildDocTree(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 		case *asciidoc.Section:
 			sectionLevel := cxt.SectionLevel(el)
 			if pps.state.lastSection != nil {
-				//		slog.Info("lastSection", "name", l.SectionName(pps.state.lastSection), "lastLevel", pps.state.lastSectionLevel)
 				if sectionLevel > pps.state.lastSectionLevel {
-					//	slog.Info("adding section as child of last section", "name", l.SectionName(el), "parent", l.SectionName(pps.state.lastSection), log.Path("source", el))
 					pps.state.overlays.appendChild(pps.state.lastSection, el)
 					pps.state.overlays.setParent(el, pps.state.lastSection)
 				} else if sectionLevel <= pps.state.lastSectionLevel {
@@ -329,20 +327,15 @@ func buildDocTree(cxt OverlayContext, pps *overlayFileState, d *asciidoc.Documen
 						parent = iterator.Parent(parentSection)
 					}
 					if found {
-						//	slog.Info("adding section as child of parent", "name", l.SectionName(el), "parent", l.SectionName(parentSection), log.Path("source", el))
 						pps.state.overlays.appendChild(parentSection, el)
 						pps.state.overlays.setParent(el, parentSection)
 					} else { // No parent smaller
-						//slog.Info("adding section as child of doc", "name", l.SectionName(el), log.Path("source", el))
 						pps.state.overlays.appendChild(pps.rootDoc, el)
 						pps.state.lastSection = nil
-						//pps.state.overlays.setParent(el, library.Root)
 					}
 				}
 			} else {
-				//slog.Info("adding root section as child of doc", "name", title.String(), log.Path("source", el))
 				pps.state.overlays.appendChild(pps.rootDoc, el)
-				//pps.state.overlays.setParent(el, library.Root)
 			}
 			pps.state.lastSection = el
 			pps.state.lastSectionLevel = sectionLevel

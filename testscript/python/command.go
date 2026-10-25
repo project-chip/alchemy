@@ -114,8 +114,6 @@ func commandArgValue(name string, cluster *matter.Cluster, command *matter.Comma
 			slog.Warn("unknown bitmap arg type", slog.String("cluster", cluster.Name), slog.String("command", command.Name), slog.String("field", name), log.Type("type", value), slog.Any("value", value))
 		}
 	case *matter.Struct:
-		//Clusters.Objects.ApplicationLauncher.Structs.ApplicationStruct.({CatalogVendorID: catalogVendorId, ApplicationID: NonAvailableApp}))
-		/// preset = cluster.Structs.PresetStruct(presetHandle=presetHandle, presetScenario=presetScenario, builtIn=builtIn)
 		parentEntity = entity.Parent()
 		objectGroup = "Structs"
 		objectName = entity.Name
@@ -204,64 +202,5 @@ func commandArgsHelper(spec *spec.Specification) func(test testscript.Test, step
 		}
 
 		return raymond.SafeString(strings.Join(args, ", "))
-		/*clusterName, cluster := getCluster(spec, &test, &step)
-		if cluster == nil {
-			return raymond.SafeString(fmt.Sprintf("error: unknown cluster: %s", clusterName))
-		}
-		var command *matter.Command
-		for _, cmd := range cluster.Commands {
-			if strings.EqualFold(cmd.Name, step.Command) {
-				command = cmd
-				break
-			}
-		}
-		if command == nil {
-			slog.Warn("Unknown command in test", slog.String("testId", test.ID), slog.String("step", step.Label), slog.String("clusterName", clusterName), slog.String("commandName", step.Command))
-		}
-		var args []string
-		if len(step.Arguments.Values) > 0 {
-			for _, v := range step.Arguments.Values {
-				var name string
-				var value any
-				switch v := v.(type) {
-				case map[string]any:
-					var ok bool
-					name, value, ok = getArg(v)
-					if !ok {
-						continue
-					}
-
-				case yaml.MapSlice:
-					n, ok := parse.ValueFromMapSlice(v, "name")
-					if !ok {
-						continue
-					}
-					name, ok = n.(string)
-					if !ok {
-						continue
-					}
-					value, ok = parse.ValueFromMapSlice(v, "value")
-					if !ok {
-						continue
-					}
-				}
-				if name == "" {
-					continue
-				}
-				var field *matter.Field
-				for _, f := range command.Fields {
-					if strings.EqualFold(name, f.Name) {
-						field = f
-						break
-					}
-				}
-				if field == nil {
-					slog.Warn("Unknown command field in test", slog.String("clusterName", clusterName), slog.String("commandName", command.Name), slog.String("fieldName", name))
-				}
-				args = append(args, commandArgValue(name, cluster, command, field, value))
-			}
-		}
-
-		return raymond.SafeString(strings.Join(args, ", "))*/
 	}
 }

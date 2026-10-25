@@ -91,7 +91,6 @@ func renderRow(cxt Target, cells []*tableCell, colOffsets []int, columns []*asci
 	if len(cells) == 0 {
 		return nil
 	}
-	//var row strings.Builder
 	var index int
 
 	for i, c := range cells {
@@ -316,7 +315,6 @@ func writeCellValue(out Target, c *tableCell, width int, indent int, effectiveFo
 		count = utf8.RuneCountInString(v)
 		return
 	}
-	//length := out.Len()
 	isAsciiDoc := effectiveFormat != nil && effectiveFormat.Style.Value == asciidoc.TableCellStyleAsciiDoc
 	for i, line := range lines {
 		if !isAsciiDoc {

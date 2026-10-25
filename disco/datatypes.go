@@ -342,7 +342,6 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *asciidoc.Section, suffi
 		dataTypeSection.Append(table)
 		dataTypeSection.Append(bl)
 
-		//newAttr := make(asciidoc.AttributeList)
 		tableIDAttribute := table.GetAttributeByName(asciidoc.AttributeNameID)
 		var newID string
 		if tableIDAttribute != nil {

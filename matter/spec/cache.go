@@ -52,13 +52,11 @@ func (dc DocCache) include(path asciidoc.Path, parent asciidoc.Parent) (doc *asc
 	} else {
 		existing, ok := dc.cache.LoadAndDelete(path.Relative)
 		if ok {
-			//	slog.Info("returning existing file", "path", path.Relative)
 			doc = existing
 			return
 		}
 	}
 
-	//slog.Info("including non-existent file", "path", path.Relative)
 	var contents *os.File
 	contents, err = os.Open(path.Absolute)
 	if err != nil {

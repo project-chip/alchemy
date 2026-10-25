@@ -82,11 +82,6 @@ func (sp *Patcher[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (
 			fmt.Fprintf(targetOut, "+++ %s\n", path)
 			fmt.Fprintln(targetOut, diff)
 		}
-
-		/*edits := myers.ComputeEdits(span.URIFromPath(path), existing, string(i.Content))
-		if len(edits) > 0 {
-			fmt.Fprintln(sp.out, gotextdiff.ToUnified(path, path, existing, edits))
-		}*/
 	}
 	return
 }

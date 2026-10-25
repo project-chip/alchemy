@@ -48,7 +48,6 @@ func constraintHelper(c constraint.Constraint, dataType types.DataType) raymond.
 		return raymond.SafeString("{valrange} " + c.ASCIIDocString(&dataType))
 	}
 	return raymond.SafeString("")
-	//return raymond.SafeString(fmt.Sprintf("unimplemented constraint type: %T", c))
 }
 
 func listConstraintHelper(c constraint.Constraint) raymond.SafeString {
@@ -62,7 +61,6 @@ func listConstraintHelper(c constraint.Constraint) raymond.SafeString {
 		return raymond.SafeString("{valrange}")
 	}
 	return raymond.SafeString("")
-	//return raymond.SafeString(fmt.Sprintf("unimplemented constraint type: %T", c))
 }
 
 func limitString(cluster *matter.Cluster, limit constraint.Limit) string {

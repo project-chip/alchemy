@@ -32,13 +32,7 @@ func (library *Library) parseEntities(spec *Specification) iter.Seq2[*asciidoc.D
 			sectionType := library.SectionType(section)
 			switch sectionType {
 			case matter.SectionTop:
-				dt, _ := library.DocType(doc)
-				switch dt {
-				case matter.DocTypeAppClusterIndex:
-					//currentDomain = ParseDomain(library.SectionName(section))
-				}
 			case matter.SectionCluster:
-				//slog.Info("parsing cluster in library doc", "path", library.Root.Path.Relative, "doc", doc.Path.Relative, "sectionName", library.SectionName(section), "sectionType", sectionType.String(), log.Path("source", section))
 				var clusterOrGroup types.Entity
 				clusterOrGroup, err = library.toClusters(spec, library, doc, section, currentDomain)
 				if err == nil && !yield(doc, clusterOrGroup) {
@@ -46,7 +40,6 @@ func (library *Library) parseEntities(spec *Specification) iter.Seq2[*asciidoc.D
 				}
 				skip = true
 			case matter.SectionDataTypeBitmap:
-				//slog.Info("parsing bitmap in library doc", "path", library.Root.Path.Relative, "doc", doc.Path.Relative, "sectionName", library.SectionName(section), "sectionType", sectionType.String(), log.Path("source", section))
 				var bm *matter.Bitmap
 				bm, err = library.toBitmap(library, doc, section, nil)
 				if err == nil && !yield(doc, bm) {
@@ -54,7 +47,6 @@ func (library *Library) parseEntities(spec *Specification) iter.Seq2[*asciidoc.D
 				}
 				skip = true
 			case matter.SectionDataTypeEnum:
-				//	slog.Info("parsing enum in library doc", "path", library.Root.Path.Relative, "doc", doc.Path.Relative, "sectionName", library.SectionName(section), "sectionType", sectionType.String(), log.Path("source", section))
 				var s *matter.Enum
 				s, err = library.toEnum(library, doc, section, nil)
 				if err == nil && !yield(doc, s) {
@@ -86,7 +78,6 @@ func (library *Library) parseEntities(spec *Specification) iter.Seq2[*asciidoc.D
 				skip = true
 
 			case matter.SectionDeviceType:
-				//	slog.Info("parsing device type in library doc", "path", library.Root.Path.Relative, "doc", doc.Path.Relative, "sectionName", library.SectionName(section), "sectionType", sectionType.String(), log.Path("source", section))
 				var deviceTypes []*matter.DeviceType
 				var docType matter.DocType
 				docType, err = library.DocType(doc)

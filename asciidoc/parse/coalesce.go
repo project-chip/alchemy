@@ -20,7 +20,6 @@ func coalesce(els asciidoc.Elements) (out asciidoc.Elements, err error) {
 	}
 	var state coalesceState
 	for _, e := range els {
-		//fmt.Printf("coalesce: %s %T\n", asciidoc.Describe(e), e)
 		var el asciidoc.Element
 		switch e := e.(type) {
 		case *asciidoc.Admonition:
@@ -36,7 +35,6 @@ func coalesce(els asciidoc.Elements) (out asciidoc.Elements, err error) {
 		case asciidoc.Element:
 			el = e
 		default:
-			//fmt.Printf("unexpected non-element in coalesce: %T\n", e)
 			continue
 		}
 
@@ -88,12 +86,10 @@ func coalesce(els asciidoc.Elements) (out asciidoc.Elements, err error) {
 				state.appendInlineElement(el)
 			}
 		default:
-			//fmt.Printf("unexpected element type in coalesce: %T\n", e)
 		}
 	}
 	state.flushText()
 	out = state.flushInline(out)
-	//fmt.Printf("coalesced: %d elements\n", len(els))
 	return
 }
 

@@ -180,7 +180,6 @@ func (library *Library) SectionType(s *asciidoc.Section) (st matter.Section) {
 }
 
 func (library *Library) SetSectionType(s *asciidoc.Section, st matter.Section) {
-	//slog.Info("Setting section", "name", library.SectionName(s), "type", st.String(), log.Path("source", s))
 	library.sectionTypes.Store(s, st)
 }
 

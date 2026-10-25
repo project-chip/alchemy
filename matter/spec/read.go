@@ -60,51 +60,6 @@ func readString(contents string, path string, rootPath string) (doc *asciidoc.Do
 	return parse.Bytes(p, []byte(contents))
 }
 
-/*
-func read(b []byte, path asciidoc.Path, rootPath string) (doc *asciidoc.Document, err error) {
-	d, err := parse.Bytes(path, b)
-	if err != nil {
-		return nil, fmt.Errorf("read error in \"%s\": %w", path, err)
-	}
-
-	doc, err = newDoc(d, p)
-	if err != nil {
-		return nil, err
-	}
-	return doc, nil
-}*/
-
-/*type Reader struct {
-	name string
-	Root string
-}
-
-func NewReader(name string, rootPath string) (Reader, error) {
-	if !filepath.IsAbs(rootPath) {
-		var err error
-		rootPath, err = filepath.Abs(rootPath)
-		if err != nil {
-			return Reader{}, err
-		}
-	}
-	return Reader{name: name, Root: rootPath}, nil
-}
-
-func (r Reader) Name() string {
-	return r.name
-}
-
-func (r Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[struct{}], err error) {
-	var doc *Doc
-	doc, err = ReadFile(input.Path, r.Root)
-	if err != nil {
-		return
-	}
-	AssignSectionNames(doc)
-	outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
-	return
-}*/
-
 type StringReader struct {
 	name     string
 	rootPath string
