@@ -21057,25 +21057,25 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 								&asciidoc.Monospace{
 									AttributeList: nil,
 									Elements: asciidoc.Elements{
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: "<",
 										},
 										&asciidoc.String{
 											Value: "filename",
 										},
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: ">",
 										},
 										&asciidoc.String{
 											Value: "-docinfo.",
 										},
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: "<",
 										},
 										&asciidoc.String{
 											Value: "ext",
 										},
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: ">",
 										},
 									},
@@ -21090,13 +21090,13 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 										&asciidoc.String{
 											Value: "docinfo.",
 										},
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: "<",
 										},
 										&asciidoc.String{
 											Value: "ext",
 										},
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: ">",
 										},
 									},
@@ -21111,13 +21111,13 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 										&asciidoc.String{
 											Value: "docinfo.",
 										},
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: "<",
 										},
 										&asciidoc.String{
 											Value: "ext",
 										},
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: ">",
 										},
 									},
@@ -21128,25 +21128,25 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 								&asciidoc.Monospace{
 									AttributeList: nil,
 									Elements: asciidoc.Elements{
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: "<",
 										},
 										&asciidoc.String{
 											Value: "filename",
 										},
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: ">",
 										},
 										&asciidoc.String{
 											Value: "-docinfo.",
 										},
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: "<",
 										},
 										&asciidoc.String{
 											Value: "ext",
 										},
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: ">",
 										},
 									},
@@ -21161,13 +21161,13 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 								&asciidoc.Monospace{
 									AttributeList: nil,
 									Elements: asciidoc.Elements{
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: "<",
 										},
 										&asciidoc.String{
 											Value: "filename",
 										},
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: ">",
 										},
 									},
@@ -21182,13 +21182,13 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 								&asciidoc.Monospace{
 									AttributeList: nil,
 									Elements: asciidoc.Elements{
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: "<",
 										},
 										&asciidoc.String{
 											Value: "ext",
 										},
-										asciidoc.SpecialCharacter{
+										&asciidoc.SpecialCharacter{
 											Character: ">",
 										},
 									},

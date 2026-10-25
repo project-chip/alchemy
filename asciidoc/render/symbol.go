@@ -13,7 +13,7 @@ func renderFormattedText(cxt Target, el asciidoc.BlockElement, wrapper string) (
 	return
 }
 
-func renderSpecialCharacter(cxt Target, s asciidoc.SpecialCharacter) error {
+func renderSpecialCharacter(cxt Target, s *asciidoc.SpecialCharacter) error {
 	cxt.WriteString(s.Character)
 	return nil
 }

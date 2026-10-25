@@ -517,13 +517,13 @@ var paragraphsTestNormalParagraphShouldHonorExplicitSubsList = &asciidoc.Documen
 				&asciidoc.Bold{
 					AttributeList: nil,
 					Elements: asciidoc.Elements{
-						asciidoc.SpecialCharacter{
+						&asciidoc.SpecialCharacter{
 							Character: "<",
 						},
 						&asciidoc.String{
 							Value: "Hey Jude",
 						},
-						asciidoc.SpecialCharacter{
+						&asciidoc.SpecialCharacter{
 							Character: ">",
 						},
 					},
@@ -556,13 +556,13 @@ var paragraphsTestNormalParagraphShouldHonorSpecialcharsShorthand = &asciidoc.Do
 				&asciidoc.Bold{
 					AttributeList: nil,
 					Elements: asciidoc.Elements{
-						asciidoc.SpecialCharacter{
+						&asciidoc.SpecialCharacter{
 							Character: "<",
 						},
 						&asciidoc.String{
 							Value: "Hey Jude",
 						},
-						asciidoc.SpecialCharacter{
+						&asciidoc.SpecialCharacter{
 							Character: ">",
 						},
 					},
