@@ -97,7 +97,7 @@ func TestBitmapIncludeOperatorPreservation(t *testing.T) {
 							switch child := child.(type) {
 							case *asciidoc.String:
 								text.WriteString(child.Value)
-							case asciidoc.SpecialCharacter:
+							case *asciidoc.SpecialCharacter:
 								text.WriteString(child.Character)
 							default:
 								t.Fatalf("unexpected synthetic expression child: %T", child)

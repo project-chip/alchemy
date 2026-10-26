@@ -94,7 +94,7 @@ func dumpElements(reader Reader, parent asciidoc.Parent, els asciidoc.Elements, 
 			fmt.Printf("{doc xref}\n")
 			dumpAttributes(reader, el.Attributes(), indent+1)
 			dumpElements(reader, &el.ReferencePath, el.ReferencePath, indent+1)
-		case asciidoc.SpecialCharacter:
+		case *asciidoc.SpecialCharacter:
 			fmt.Printf("{sc: %s}\n", el.Character)
 		case *asciidoc.Link:
 			fmt.Printf("{link: ")

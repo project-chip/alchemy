@@ -47,24 +47,24 @@ type SpecialCharacter struct {
 	Character string
 }
 
-func NewSpecialCharacter(character string) SpecialCharacter {
-	return SpecialCharacter{Character: character}
+func NewSpecialCharacter(character string) *SpecialCharacter {
+	return &SpecialCharacter{Character: character}
 }
 
-func (SpecialCharacter) Type() ElementType {
+func (*SpecialCharacter) Type() ElementType {
 	return ElementTypeInlineLiteral
 }
 
-func (s SpecialCharacter) Equals(e Element) bool {
-	os, ok := e.(SpecialCharacter)
+func (s *SpecialCharacter) Equals(e Element) bool {
+	os, ok := e.(*SpecialCharacter)
 	if !ok {
 		return false
 	}
 	return os.Character == s.Character
 }
 
-func (s SpecialCharacter) Clone() Element {
-	return SpecialCharacter{Character: s.Character}
+func (s *SpecialCharacter) Clone() Element {
+	return &SpecialCharacter{Character: s.Character}
 }
 
 type LineContinuation struct {

@@ -121,7 +121,7 @@ func Describe(el Element) string {
 		return fmt.Sprintf("table row (%d)", len(el.TableCells()))
 	case *Table:
 		return fmt.Sprintf("table (%d)", len(el.Elements))
-	case SpecialCharacter:
+	case *SpecialCharacter:
 		return fmt.Sprintf("SpecialCharacter %s", el.Character)
 	case URL:
 		return fmt.Sprintf("URL %s %v", el.Scheme, el.Path)

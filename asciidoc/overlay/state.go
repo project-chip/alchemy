@@ -16,8 +16,7 @@ type overlayState struct {
 	attributes map[string]any
 	counters   map[string]*asciidoc.CounterState
 
-	overlays          elementOverlays
-	removedCharacters map[*asciidoc.Element]bool
+	overlays elementOverlays
 
 	lastSection      *asciidoc.Section
 	lastSectionLevel int
