@@ -48,21 +48,20 @@ func (cr *configuratorRenderer) setQualityAttributes(element *etree.Element, q m
 	if cr.generator.options.ExtendedQuality {
 		setQualityAttribute(element, "nullable", q, matter.QualityNullable)
 		setQualityAttribute(element, "scene", q, matter.QualityScene)
-		setQualityAttribute(element, "fixed", q, matter.QualityFixed)
 		setQualityAttribute(element, "diagnostics", q, matter.QualityDiagnostics)
 		setQualityAttribute(element, "singleton", q, matter.QualitySingleton)
 		setQualityAttribute(element, "sourceAttribution", q, matter.QualitySourceAttribution)
 		setQualityAttribute(element, "atomicWrite", q, matter.QualityAtomicWrite)
 		setQualityAttribute(element, "quieterReporting", q, matter.QualityQuieterReporting)
-		if q.Has(matter.QualityNonVolatile) {
-			element.CreateAttr("persistence", "nonVolatile")
-		} else {
-			element.RemoveAttr("persistence")
-		}
-	} else if q.Has(matter.QualityFixed) {
-		// ZAP's ZCL loader reads the persistence attribute of quality, but not the fixed attribute
+		element.RemoveAttr("fixed")
+	}
+	switch {
+	case q.Has(matter.QualityFixed):
+		// ZAP's ZCL loader reads the persistence attribute of quality, but not a fixed attribute
 		element.CreateAttr("persistence", "fixed")
-	} else {
+	case cr.generator.options.ExtendedQuality && q.Has(matter.QualityNonVolatile):
+		element.CreateAttr("persistence", "nonVolatile")
+	default:
 		element.RemoveAttr("persistence")
 	}
 }

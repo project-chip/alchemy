@@ -67,9 +67,11 @@ func TestAttributeQualityPersistence(t *testing.T) {
 		// Default mode writes persistence only for F, so any other persistence value is removed.
 		{"existing_non_volatile", false, matter.QualityChangedOmitted | matter.QualityNonVolatile, `<attribute><quality changeOmitted="true" persistence="nonVolatile"/></attribute>`, map[string]string{"changeOmitted": "true"}},
 		{"existing_fixed_quality_removed", false, matter.QualityNone, `<attribute><quality persistence="fixed"/></attribute>`, nil},
-		{"extended_fixed", true, matter.QualityFixed, "", map[string]string{"fixed": "true"}},
+		{"extended_fixed", true, matter.QualityFixed, "", map[string]string{"persistence": "fixed"}},
 		{"extended_non_volatile", true, matter.QualityNonVolatile, "", map[string]string{"persistence": "nonVolatile"}},
-		{"extended_existing_persistence_fixed", true, matter.QualityFixed, `<attribute><quality persistence="fixed"/></attribute>`, map[string]string{"fixed": "true"}},
+		{"extended_existing_persistence_fixed", true, matter.QualityFixed, `<attribute><quality persistence="fixed"/></attribute>`, map[string]string{"persistence": "fixed"}},
+		{"extended_existing_fixed_attribute", true, matter.QualityFixed, `<attribute><quality fixed="true"/></attribute>`, map[string]string{"persistence": "fixed"}},
+		{"extended_existing_fixed_no_longer_fixed", true, matter.QualityChangedOmitted, `<attribute><quality changeOmitted="true" fixed="true" persistence="fixed"/></attribute>`, map[string]string{"changeOmitted": "true"}},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cluster := matter.NewCluster(nil)
@@ -100,10 +102,14 @@ func TestFieldQualityPersistence(t *testing.T) {
 		name       string
 		parentType types.EntityType
 		fieldType  types.EntityType
+		extended   bool
 	}{
-		{"struct_field", types.EntityTypeStruct, types.EntityTypeStructField},
-		{"command_field", types.EntityTypeCommand, types.EntityTypeCommandField},
-		{"event_field", types.EntityTypeEvent, types.EntityTypeEventField},
+		{"struct_field", types.EntityTypeStruct, types.EntityTypeStructField, false},
+		{"command_field", types.EntityTypeCommand, types.EntityTypeCommandField, false},
+		{"event_field", types.EntityTypeEvent, types.EntityTypeEventField, false},
+		{"extended_struct_field", types.EntityTypeStruct, types.EntityTypeStructField, true},
+		{"extended_command_field", types.EntityTypeCommand, types.EntityTypeCommandField, true},
+		{"extended_event_field", types.EntityTypeEvent, types.EntityTypeEventField, true},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			field := matter.NewField(nil, nil, test.fieldType)
@@ -112,7 +118,7 @@ func TestFieldQualityPersistence(t *testing.T) {
 			field.Quality = matter.QualityFixed
 			field.Conformance = conformance.Set{&conformance.Mandatory{}}
 			element := etree.NewElement("item")
-			newQualityTestRenderer(false).setFieldAttributes(element, test.parentType, field, matter.FieldSet{field}, false)
+			newQualityTestRenderer(test.extended).setFieldAttributes(element, test.parentType, field, matter.FieldSet{field}, false)
 			checkQualityAttributes(t, element, map[string]string{"persistence": "fixed"})
 		})
 	}
