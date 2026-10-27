@@ -134,7 +134,6 @@ func (library *Library) toCommands(spec *Specification, reader asciidoc.Reader, 
 					cmd.Direction.String()),
 				slog.String("previousCommand", existing.Name),
 			)
-			spec.addError(&DuplicateEntityIDError{Entity: cmd, Previous: existing})
 		}
 
 		cmdMap[cmd.Direction][cmd.ID.Value()] = cmd

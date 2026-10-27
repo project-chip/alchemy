@@ -216,7 +216,6 @@ func (sp *Builder) readEntities(spec *Specification, libraries []*Library) (basi
 				if entity.ID.Valid() {
 					if existing, ok := spec.DeviceTypesByID[entity.ID.Value()]; ok {
 						slog.Error("duplicate device type ID", slog.String("deviceTypeId", entity.ID.HexString()), log.Path("previousSource", existing), log.Path("newSource", entity))
-						spec.addError(&DuplicateEntityIDError{Entity: entity, Previous: existing})
 					} else {
 						spec.DeviceTypesByID[entity.ID.Value()] = entity
 					}
@@ -224,7 +223,6 @@ func (sp *Builder) readEntities(spec *Specification, libraries []*Library) (basi
 				existing, ok := spec.DeviceTypesByName[entity.Name]
 				if ok {
 					slog.Warn("Duplicate Device Type Name", slog.String("deviceTypeId", entity.ID.HexString()), slog.String("deviceTypeName", entity.Name), slog.String("existingDeviceTypeId", existing.ID.HexString()))
-					spec.addError(&DuplicateEntityNameError{Entity: entity, Previous: existing})
 				}
 				spec.DeviceTypesByName[entity.Name] = entity
 				switch entity.Name {
@@ -310,8 +308,6 @@ func (sp *Builder) addCluster(doc *asciidoc.Document, cluster *matter.Cluster) {
 	existing, ok := sp.Spec.ClustersByName[cluster.Name]
 	if ok {
 		slog.Error("Duplicate cluster Name", slog.String("clusterId", cluster.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("existingClusterId", existing.ID.HexString()))
-		sp.Spec.addError(&DuplicateEntityNameError{Entity: cluster, Previous: existing})
-
 	}
 	sp.Spec.ClustersByName[cluster.Name] = cluster
 

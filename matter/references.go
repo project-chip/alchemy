@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 var DisallowedReferenceSuffixes = []string{"Command", "Feature", "Attribute", "Field", "Event"}
@@ -22,6 +23,8 @@ type EntityReference struct {
 	ID   *Number                  `json:"id,omitempty"`
 	Name string                   `json:"name,omitempty"`
 	XRef *asciidoc.CrossReference `json:"-"`
+
+	Resolved types.Entity
 }
 
 func (er EntityReference) Clone() EntityReference {
