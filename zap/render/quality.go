@@ -15,7 +15,7 @@ func (cr *configuratorRenderer) requiresQuality(entityType types.EntityType, q m
 	if cr.generator.options.ExtendedQuality {
 		return q.Any(allowed)
 	}
-	return q.Any(allowed & (matter.QualityChangedOmitted | matter.QualityLargeMessage))
+	return q.Any(allowed & (matter.QualityChangedOmitted | matter.QualityLargeMessage | matter.QualityFixed))
 }
 
 func (cr *configuratorRenderer) setQuality(parent *etree.Element, entityType types.EntityType, q matter.Quality, alternatives ...string) {
@@ -59,6 +59,11 @@ func (cr *configuratorRenderer) setQualityAttributes(element *etree.Element, q m
 		} else {
 			element.RemoveAttr("persistence")
 		}
+	} else if q.Has(matter.QualityFixed) {
+		// ZAP's ZCL loader reads the persistence attribute of quality, but not the fixed attribute
+		element.CreateAttr("persistence", "fixed")
+	} else {
+		element.RemoveAttr("persistence")
 	}
 }
 
