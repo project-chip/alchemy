@@ -31,6 +31,8 @@ func parseQuality(d *xml.Decoder, e xml.StartElement) (q matter.Quality, err err
 			q |= matter.QualityAtomicWrite
 		case "persistence":
 			switch a.Value {
+			case "fixed":
+				q |= matter.QualityFixed
 			case "nonVolatile":
 				q |= matter.QualityNonVolatile
 			}
