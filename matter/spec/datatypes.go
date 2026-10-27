@@ -201,7 +201,6 @@ func (sp *Builder) resolveFieldDataTypes(library *Library, cluster *matter.Clust
 			sp.getCustomDataType(library, dataType, cluster, field, finder)
 			if dataType.Entity == nil {
 				slog.Error("unknown custom data type", slog.String("cluster", clusterName(cluster)), slog.String("field", field.Name), slog.String("type", dataType.Name), log.Path("source", field), log.Type("element", dataType.Source))
-				sp.Spec.addError(&UnknownCustomDataTypeError{Field: field, DataType: dataType})
 			} else {
 				dataType.Name = matter.EntityName(dataType.Entity)
 			}

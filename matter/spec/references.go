@@ -107,7 +107,7 @@ func referenceInfo(library *Library, reference *asciidoc.CrossReference) (refere
 	return
 }
 
-func referenceEntity[T types.Entity](spec *Specification, reference *asciidoc.CrossReference, entityFinder entityFinder) (entity T, ok bool) {
+func findEntityByReference(spec *Specification, reference *asciidoc.CrossReference, entityFinder entityFinder) (entity types.Entity, ok bool) {
 	var library *Library
 	library, ok = spec.libraryIndex[reference.Document()]
 	if !ok {
@@ -116,21 +116,117 @@ func referenceEntity[T types.Entity](spec *Specification, reference *asciidoc.Cr
 	}
 
 	referenceID, label := referenceInfo(library, reference)
-	e := entityFinder.findEntityByReference(referenceID, label, reference)
-	switch e := e.(type) {
-	case T:
-		entity = e
-		ok = true
-		return
-	case nil:
+	entity = entityFinder.findEntityByReference(referenceID, label, reference)
+	if entity == nil {
 		slog.Warn("No entity found for reference", slog.String("referenceID", referenceID), slog.String("label", label), log.Path("source", reference))
-		ok = false
-		return
-	default:
-		slog.Warn("Entity type mismatch for reference", slog.String("expectedEntityType", entity.EntityType().String()), slog.String("actualEntityType", e.EntityType().String()), log.Path("source", reference))
-		spec.addError(&ReferenceTypeMismatch{Element: entity.EntityType(), Entity: e, Source: reference})
-		ok = false
-		return
+	}
+	return
+}
+
+func resolveEntityReference[T types.Entity](spec *Specification, ref *matter.EntityReference, entityFinder entityFinder, findByID findEntityByID[T], findByName findEntityByName[T], source types.Entity) (entity T, ok bool) {
+	if ref.XRef != nil {
+		ref.Resolved, ok = findEntityByReference(spec, ref.XRef, entityFinder)
+		if ok {
+			switch e := ref.Resolved.(type) {
+			case T:
+				entity = e
+				ok = true
+				return
+			case nil:
+			default:
+				slog.Warn("Entity type mismatch for reference", slog.String("expectedEntityType", entity.EntityType().String()), slog.String("actualEntityType", e.EntityType().String()), log.Path("source", source))
+			}
+		}
+	}
+	if ref.Resolved == nil && findByID != nil && ref.ID.Valid() {
+		entity, ok = findByID(ref.ID)
+		if ok {
+			ref.Resolved = entity
+		}
+	}
+	if ref.Resolved == nil && findByName != nil && ref.Name != "" {
+		entity, ok = findByName(ref.Name)
+		if ok {
+			slog.Warn("linking entity reference by name since ID was not recognized",
+				slog.String("ID", ref.ID.HexString()),
+				slog.String("name", ref.Name),
+				log.Path("source", entity))
+			ref.Resolved = entity
+		}
+	}
+	return
+}
+
+func resolveElementReference(spec *Specification, er *matter.ElementRequirement, entityFinder entityFinder, cluster *matter.Cluster, source types.Entity) (err error) {
+	if er.ElementRef.XRef != nil {
+		e, ok := findEntityByReference(spec, er.ElementRef.XRef, entityFinder)
+		if ok {
+			if e.EntityType() != er.Element {
+				slog.Warn("Entity type mismatch for reference", slog.String("expectedEntityType", er.Element.String()), slog.String("actualEntityType", e.EntityType().String()), log.Path("source", source))
+			}
+			er.Entity = e
+			return
+		}
 	}
 
+	switch er.Element {
+	case types.EntityTypeAttribute:
+		for _, a := range cluster.Attributes {
+			if strings.EqualFold(a.Name, er.ElementRef.Name) {
+				er.Entity = a
+				return
+			}
+		}
+	case types.EntityTypeFeature:
+		if cluster.Features == nil {
+			slog.Error("Element Requirement references missing features", slog.String("clusterName", cluster.Name), slog.String("clusterId", cluster.ID.HexString()), slog.String("feature", er.ElementRef.Name), log.Path("source", er))
+			return
+		}
+		for _, fb := range cluster.Features.Bits {
+			f, ok := fb.(*matter.Feature)
+			if !ok {
+				continue
+			}
+			if f.Code == er.ElementRef.Name || strings.EqualFold(f.Name(), er.ElementRef.Name) {
+				er.Entity = f
+				return
+			}
+		}
+	case types.EntityTypeCommand:
+		for _, cmd := range cluster.Commands {
+			if strings.EqualFold(cmd.Name, er.ElementRef.Name) {
+				er.Entity = cmd
+				return
+			}
+		}
+	case types.EntityTypeCommandField:
+		var command *matter.Command
+		for _, cmd := range cluster.Commands {
+			if strings.EqualFold(cmd.Name, er.ElementRef.Name) {
+				command = cmd
+				break
+			}
+		}
+		if command == nil {
+			break
+		}
+		for _, f := range command.Fields {
+			if strings.EqualFold(f.Name, er.ElementRef.Field) {
+				er.Entity = f
+				return
+			}
+		}
+	case types.EntityTypeEvent:
+		for _, e := range cluster.Events {
+			if strings.EqualFold(e.Name, er.ElementRef.Name) {
+				er.Entity = e
+				return
+			}
+		}
+
+	default:
+		slog.Error("Unexpected entity type", slog.String("entityType", er.Element.String()), log.Path("source", er))
+
+	}
+	return
 }

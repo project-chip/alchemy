@@ -4,6 +4,8 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -34,18 +36,64 @@ func stripNonAlphabeticalCharacters(s string) string {
 	return result.String()
 }
 
-func checkEntityReference[EntityT types.Entity, SourceT types.Entity](spec *Specification, er matter.EntityReference, entity EntityT, source SourceT) {
-	entityID := matter.EntityID(entity)
-	if entityID.Valid() && er.ID.Valid() && !entityID.Equals(er.ID) {
-		slog.Error("Mismatch between entity ID and reference entity ID", slog.String("entityId", entityID.HexString()), slog.String("referenceEntityId", er.ID.HexString()), log.Path("source", source))
-		spec.addError(&ReferenceIDMismatchError[EntityT, SourceT]{Entity: entity, ID: er.ID, Source: source})
+func checkEntityRefCrossReference[EntityT types.Entity, SourceT types.Entity](spec *Specification, ref any, xref *asciidoc.CrossReference, entity EntityT, resolvedEntity types.Entity, entityType types.EntityType, source SourceT) bool {
+	if xref == nil {
+		return true
 	}
-	refName := stripNonAlphabeticalCharacters(er.Name)
+	if any(entity) != nil {
+		return true
+	}
+	if resolvedEntity != nil && resolvedEntity.EntityType() != entityType {
+		// We found an entity, but it was the wrong type
+		slog.Error("Reference points to wrong entity type", slog.String("expectedEntityType", entityType.String()), slog.String("actualEntityType", resolvedEntity.EntityType().String()), log.Path("source", xref))
+		spec.addError(&ReferenceTypeMismatch{Element: entityType, Entity: resolvedEntity, Source: xref})
+	} else {
+		slog.Error("unknown entity reference",
+			slog.String("entityType", entityType.String()),
+			log.Path("source", source))
+		switch ref := ref.(type) {
+		case matter.EntityReference:
+			spec.addError(&UnknownEntityError[SourceT]{EntityType: entityType, EntityReference: &ref, Source: source})
+		case matter.ElementReference:
+			spec.addError(&UnknownEntityError[SourceT]{EntityType: entityType, ElementReference: &ref, Source: source})
+		default:
+		}
+	}
+	return false
+}
+
+func checkEntityRefMismatch[EntityT types.Entity, SourceT types.Entity](spec *Specification, refID *matter.Number, refName string, entity EntityT, source SourceT) {
+	entityID := matter.EntityID(entity)
+	if entityID.Valid() && refID.Valid() && !entityID.Equals(refID) {
+		slog.Error("Mismatch between entity ID and reference entity ID", slog.String("entityId", entityID.HexString()), slog.String("referenceEntityId", refID.HexString()), log.Path("source", source))
+		spec.addError(&ReferenceIDMismatchError[EntityT, SourceT]{Entity: entity, ID: refID, Source: source})
+	}
+	refName = stripNonAlphabeticalCharacters(refName)
 	entityName := stripNonAlphabeticalCharacters(matter.EntityName(entity))
 	if refName != "" && !strings.EqualFold(refName, entityName) {
 		slog.Error("Mismatch between entity name and reference entity name", slog.String("entityName", entityName), slog.String("referenceEntityName", refName), slog.String("entityId", entityID.HexString()), log.Path("source", source))
-		spec.addError(&ReferenceNameMismatchError[EntityT, SourceT]{Entity: entity, Name: er.Name, Source: source})
+		spec.addError(&ReferenceNameMismatchError[EntityT, SourceT]{Entity: entity, Name: refName, Source: source})
 	}
+}
+
+func checkEntityReference[EntityT types.Entity, SourceT types.Entity](spec *Specification, er matter.EntityReference, entity EntityT, entityType types.EntityType, source SourceT) bool {
+	if !checkEntityRefCrossReference(spec, er, er.XRef, entity, er.Resolved, entityType, source) {
+		return false
+	}
+	if internal.IsNil(entity) {
+		if er.ID.Valid() || er.Name != "" {
+			slog.Error("unknown entity on entity reference",
+				slog.String("entityId", er.ID.HexString()),
+				slog.String("entityName", er.Name),
+				slog.String("entityType", entityType.String()),
+				log.Path("source", source))
+
+			spec.addError(&UnknownEntityError[SourceT]{EntityType: entityType, EntityReference: &er, Source: source})
+		}
+		return false
+	}
+	checkEntityRefMismatch(spec, er.ID, er.Name, entity, source)
+	return true
 }
 
 type idUniqueness[T types.Entity] map[uint64]T

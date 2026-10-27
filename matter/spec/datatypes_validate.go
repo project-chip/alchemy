@@ -24,7 +24,7 @@ func validateDataType(spec *Specification, cluster *matter.Cluster, field *matte
 	}
 	if cluster != nil && cluster.Hierarchy != "Base" {
 		// If this data type's parent is not the cluster it belongs to, then we should have
-		// redirected it to the local copy of this data type back up in resolveFieldDataTypes
+		// redirected it to the local copy of this data type in resolveFieldDataTypes
 		parentCluster, hasParentCluster := field.Type.Entity.Parent().(*matter.Cluster)
 		if hasParentCluster && parentCluster != cluster {
 			slog.Error("failed to find local cloned entity for data type reference", slog.String("name", matter.EntityName(field.Type.Entity)), slog.String("field", field.Name), slog.String("cluster", cluster.Name))

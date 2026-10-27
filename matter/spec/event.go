@@ -122,7 +122,6 @@ func (library *Library) toEvents(spec *Specification, reader asciidoc.Reader, d 
 				slog.String("eventId", ev.ID.IntString()),
 				slog.String("previousEvent", existing.Name),
 			)
-			spec.addError(&DuplicateEntityIDError{Entity: ev, Previous: existing})
 		}
 		existing, ok = eventNameMap[ev.Name]
 		if ok {
@@ -133,7 +132,6 @@ func (library *Library) toEvents(spec *Specification, reader asciidoc.Reader, d 
 				slog.String("eventId", ev.ID.IntString()),
 				slog.String("previousEvent", existing.Name),
 			)
-			spec.addError(&DuplicateEntityNameError{Entity: ev, Previous: existing})
 		}
 		eventMap[ev.ID.Value()] = ev
 		eventNameMap[ev.Name] = ev

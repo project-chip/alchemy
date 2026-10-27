@@ -26,7 +26,7 @@ const (
 	ErrorTypeReferenceIDMismatch
 	ErrorTypeReferenceNameMismatch
 	ErrorTypeReferenceTypeMismatch
-	ErrorTypeTagRequirementNamespaceNameMismatch
+	ErrorTypeNamespaceUnknownTag
 	ErrorTypeUnknownBaseCluster
 	ErrorTypeUnreferencedEntity
 
@@ -238,21 +238,21 @@ func (uee UnreferencedEntityError[EntityT, SourceT]) Error() string {
 	return fmt.Sprintf("%s unreferenced on %s: %s (%s)", uee.Entity.EntityType().String(), matter.EntityName(uee.Source), matter.EntityName(uee.Entity), matter.EntityID(uee.Entity).HexString())
 }
 
-type NamespaceNameMismatchTagRequirementError struct {
+type NamespaceUnknownTagError struct {
 	Requirement *matter.TagRequirement
 	Namespace   *matter.Namespace
 }
 
-func (ddt NamespaceNameMismatchTagRequirementError) Type() ErrorType {
-	return ErrorTypeTagRequirementNamespaceNameMismatch
+func (ddt NamespaceUnknownTagError) Type() ErrorType {
+	return ErrorTypeNamespaceUnknownTag
 }
 
-func (ddt NamespaceNameMismatchTagRequirementError) Origin() (path string, line int) {
+func (ddt NamespaceUnknownTagError) Origin() (path string, line int) {
 	return ddt.Requirement.Origin()
 }
 
-func (ddt NamespaceNameMismatchTagRequirementError) Error() string {
-	return fmt.Sprintf("mismatched namespace name in tag requirement: %s vs. %s", ddt.Requirement.NamespaceRef.Name, ddt.Namespace.Name)
+func (ddt NamespaceUnknownTagError) Error() string {
+	return fmt.Sprintf("unknown tag in namespace: %s for namespace %s", ddt.Requirement.SemanticTagRef.Name, ddt.Namespace.Name)
 }
 
 type UnknownBaseClusterError struct {
