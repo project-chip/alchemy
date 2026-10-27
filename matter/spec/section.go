@@ -83,23 +83,9 @@ func (emptyVariableStore) IsSet(name string) bool {
 func (emptyVariableStore) Set(name string, value any) {}
 func (emptyVariableStore) Unset(name string)          {}
 
-func AssignSectionNames(sectionInfoCache SectionInfoCache, reader asciidoc.Reader, doc *asciidoc.Document) error {
-	vs := &emptyVariableStore{}
-	parse.Search(doc, reader, doc, reader.Children(doc), func(doc *asciidoc.Document, section *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
-		var sb strings.Builder
-		buildSectionTitle(vs, section, reader, &sb, section.Title...)
-		slog.Info("assigning name", "name", sb.String())
-		sectionInfoCache.SetSectionName(section, sb.String())
-		return parse.SearchShouldContinue
-	})
-	return nil
-}
-
 func AssignSectionTypes(sectionInfoCache SectionInfoCache, docInfoCache DocumentInfoCache, reader asciidoc.Reader, doc *asciidoc.Document, top *asciidoc.Section) (err error) {
-	//slog.Info("Assigning section type", "path", doc.Path.Relative, log.Path("source", top))
 	var lastDoc *asciidoc.Document
 	parse.Search(doc, reader, doc, reader.Children(doc), func(doc *asciidoc.Document, section *asciidoc.Section, parent asciidoc.ParentElement, index int) parse.SearchShould {
-		//slog.Info("Searching section type", "section", sectionInfoCache.SectionName(section), "path", doc.Path.Relative, log.Path("source", top))
 
 		parentSection, _ := parent.(*asciidoc.Section)
 		if doc != lastDoc {

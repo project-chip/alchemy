@@ -158,8 +158,6 @@ func (library *Library) makeAnchor(doc *asciidoc.Document, parent asciidoc.Paren
 	if len(id) == 0 {
 		return nil
 	}
-	//anchorId := library.anchorId(library, parent, element, id)
-	//slog.Info("Creating anchor for section with cross reference", slog.String("path", doc.Path.Relative), log.Address("elementAddress", element))
 	a := NewAnchor(library, doc, id, element, parent, labelSet...)
 	return a
 }

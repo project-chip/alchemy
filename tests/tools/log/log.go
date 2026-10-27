@@ -33,7 +33,6 @@ func main() {
 	rules := make(map[string]*ruleCollection)
 	var rcs []*ruleCollection
 	for path, count := range calls {
-		//fmt.Printf("%s: %d\n", path, count.count)
 		rule, ok := rules[count.rule]
 		if !ok {
 			rule = &ruleCollection{rule: count.rule, calls: make(map[string]*callCount)}

@@ -167,7 +167,6 @@ func populateTable(cxt *mms.Context, t *memory.Table, tableName string, parentTa
 			if ok {
 				row = append(row, v)
 			} else {
-				//slog.Info("missing val", "name", e.Name)
 				row = append(row, nil)
 			}
 		}

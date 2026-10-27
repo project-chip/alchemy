@@ -657,7 +657,6 @@ func TestConstraints(t *testing.T) {
 		minField.Type = ct.dataType
 		min := c.Min(&constraintTestContext{fields: ct.fields, field: minField})
 		if !min.Equals(ct.min) {
-			//t.Errorf("incorrect min value for \"%s\": expected %s, got %s", ct.constraint, ct.min.DataModelString(ct.dataType), min.DataModelString(ct.dataType))
 			t.Errorf("incorrect min value for \"%v\": expected %v, got %v", ct.constraint, ct.min, min)
 		}
 		maxField := &field{}

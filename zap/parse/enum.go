@@ -36,8 +36,6 @@ func (sp *ZapParser) readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.En
 		switch t := tok.(type) {
 		case xml.StartElement:
 			switch t.Name.Local {
-			//case "access":
-			//	err = readAccess(d, t, a)
 			case "description":
 				en.Description, err = readSimpleElement(d, t.Name.Local)
 			case "item":

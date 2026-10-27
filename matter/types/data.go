@@ -55,8 +55,6 @@ func ParseDataType(typeName string, rank DataTypeRank) *DataType {
 		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: ParseDataType(typeName, DataTypeRankScalar)}
 	}
 	typeName = strings.TrimSpace(typeName)
-	//typeName = strings.TrimPrefix(typeName, "ref_")
-	//typeName = strings.TrimPrefix(typeName, "DataType")
 	dt := &DataType{Name: typeName}
 
 	var nameOverride string

@@ -57,7 +57,6 @@ func parseBytes(document *asciidoc.Document, b []byte, opts ...Option) (elements
 
 	switch vals := vals.(type) {
 	case asciidoc.Elements:
-		//		fmt.Printf("coalescing asciidoc...\n")
 		err = reparseTables(vals)
 		if err != nil {
 			return
