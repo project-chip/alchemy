@@ -2,7 +2,6 @@ package render
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 
 	"github.com/project-chip/alchemy/asciidoc"
@@ -107,7 +106,7 @@ func (tg *DependencyTracer) findDataTypeDependencies(spec *spec.Specification, d
 	}
 	entityDoc, ok := spec.DocRefs[dt.Entity]
 	if !ok {
-		slog.Warn("missing document for data type", "name", dt.Name, "entity", dt.Entity, "pointer", fmt.Sprintf("%p", dt.Entity))
+		slog.Warn("missing document for data type; if this data type was added through errata, this is normal", slog.String("name", dt.Name), slog.String("entity", matter.EntityName(dt.Entity)))
 		return
 	}
 	_, isGlobal := spec.GlobalObjects[dt.Entity]

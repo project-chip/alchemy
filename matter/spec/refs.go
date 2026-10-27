@@ -47,10 +47,10 @@ func (cr *EntityRefs[T]) Get(m types.Entity) (pipeline.Map[T, struct{}], bool) {
 	return cm, ok
 }
 
-func (spec *Specification) BuildDataTypeReferences() {
-	TraverseEntities(spec, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
+func (sp *Builder) buildDataTypeReferences() {
+	TraverseEntities(sp.Spec, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
 		if parent != nil {
-			spec.DataTypeRefs.Add(parent, entity)
+			sp.Spec.DataTypeRefs.Add(parent, entity)
 		}
 		return parse.SearchShouldContinue
 	})

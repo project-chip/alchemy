@@ -23,14 +23,11 @@ type TestPlan struct {
 
 func (c *TestPlan) Run(cc *Context) (err error) {
 
+	sdkPatcher := sdk.NewPatcher()
+
 	var specDocs spec.DocSet
 	var specification *spec.Specification
-	specification, specDocs, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, nil, c.ASCIIDocAttributes.ToList())
-	if err != nil {
-		return
-	}
-
-	err = sdk.ApplyErrata(specification)
+	specification, specDocs, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, []spec.BuilderOption{spec.Patch(sdkPatcher)}, c.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
 	}

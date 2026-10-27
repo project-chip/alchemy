@@ -33,13 +33,10 @@ type IDLRegen struct {
 
 func (z *IDLRegen) Run(cc *Context) (err error) {
 
-	var specification *spec.Specification
-	specification, _, err = spec.Parse(cc, z.ParserOptions, z.ProcessingOptions, []spec.BuilderOption{spec.PatchForSdk(true)}, z.ASCIIDocAttributes.ToList())
-	if err != nil {
-		return
-	}
+	sdkPatcher := sdk.NewPatcher(sdk.WithSkipSharedEntities(true))
 
-	err = sdk.ApplyErrata(specification, sdk.WithSkipSharedEntities(true))
+	var specification *spec.Specification
+	specification, _, err = spec.Parse(cc, z.ParserOptions, z.ProcessingOptions, []spec.BuilderOption{spec.Patch(sdkPatcher)}, z.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
 	}
@@ -96,13 +93,11 @@ type IDLControllerClusters struct {
 }
 
 func (z *IDLControllerClusters) Run(cc *Context) (err error) {
-	var specification *spec.Specification
-	specification, _, err = spec.Parse(cc, z.ParserOptions, z.ProcessingOptions, []spec.BuilderOption{spec.PatchForSdk(true)}, z.ASCIIDocAttributes.ToList())
-	if err != nil {
-		return
-	}
 
-	err = sdk.ApplyErrata(specification, sdk.WithSkipSharedEntities(true))
+	sdkPatcher := sdk.NewPatcher(sdk.WithSkipSharedEntities(true))
+
+	var specification *spec.Specification
+	specification, _, err = spec.Parse(cc, z.ParserOptions, z.ProcessingOptions, []spec.BuilderOption{spec.Patch(sdkPatcher)}, z.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
 	}

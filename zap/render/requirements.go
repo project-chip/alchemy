@@ -258,7 +258,7 @@ func (p *DeviceTypesPatcher) renderFeatureRequirements(spec *spec.Specification,
 		}
 
 		if feature == nil {
-			slog.Warn("Unrecognized feature", slog.String("deviceType", deviceType.Name), slog.String("clusterName", clusterComposition.Cluster.Name), slog.Any("featureCode", featureCode), slog.Any("featureName", featureName))
+			slog.Warn("Unrecognized feature", slog.String("deviceType", deviceType.Name), slog.String("clusterName", clusterComposition.Cluster.Name), slog.Any("featureCode", featureCode.Value), slog.Any("featureName", featureName.Value))
 			fse.RemoveChild(fe)
 			continue
 		}

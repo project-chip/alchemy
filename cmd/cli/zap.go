@@ -28,12 +28,10 @@ func (z *ZAP) Run(cc *Context) (err error) {
 
 	var specDocs spec.DocSet
 	var specification *spec.Specification
-	specification, specDocs, err = spec.Parse(cc, z.ParserOptions, z.ProcessingOptions, []spec.BuilderOption{spec.PatchForSdk(true)}, z.ASCIIDocAttributes.ToList())
-	if err != nil {
-		return
-	}
 
-	err = sdk.ApplyErrata(specification)
+	sdkPatcher := sdk.NewPatcher()
+
+	specification, specDocs, err = spec.Parse(cc, z.ParserOptions, z.ProcessingOptions, []spec.BuilderOption{spec.Patch(sdkPatcher)}, z.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
 	}

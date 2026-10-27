@@ -1,9 +1,11 @@
 package sdk
 
 import (
+	"fmt"
 	"log/slog"
 	"slices"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
@@ -12,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, errata errata.SDK, options applyErrataOptions) error {
+func (p *patch) applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, errata errata.SDK, options applyErrataOptions) (err error) {
 	if errata.Types != nil {
 		ac, ok := errata.Types.Clusters[cluster.Name]
 		if ok {
@@ -31,7 +33,7 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 			if !ok {
 				continue
 			}
-			err := applyErrataToField(a, ao)
+			err := p.applyErrataToField(a, ao)
 			if err != nil {
 				return err
 			}
@@ -39,31 +41,48 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 		if cluster.Features != nil {
 			fc, ok := errata.Types.Bitmaps["Features"]
 			if ok {
-				applyBitmapOverride(&cluster.Features.Bitmap, fc)
+				p.applyBitmapOverride(&cluster.Features.Bitmap, fc)
 			}
 		}
 	}
 
+	doc, ok := spec.DocRefs[cluster]
+	if !ok {
+		return fmt.Errorf("Unable to apply errata for cluster %s; unable to find cluster in spec", cluster.Name)
+	}
+
 	for _, bm := range cluster.Bitmaps {
-		applyErrataToBitmap(bm, errata.TypeNames, errata.Types)
+		p.applyErrataToBitmap(bm, errata.TypeNames, errata.Types)
 	}
+	if errata.Types != nil && errata.Types.Bitmaps != nil {
+		cluster.Bitmaps = p.applyErrataLocality(doc, errata.Types.Bitmaps, p.globalBitmaps, cluster.Bitmaps)
+	}
+
 	for _, en := range cluster.Enums {
-		applyErrataToEnum(en, errata.TypeNames, errata.Types)
+		p.applyErrataToEnum(en, errata.TypeNames, errata.Types)
 	}
+	if errata.Types != nil && errata.Types.Enums != nil {
+		cluster.Enums = p.applyErrataLocality(doc, errata.Types.Enums, p.globalEnums, cluster.Enums)
+	}
+
 	for _, s := range cluster.Structs {
-		err := applyErrataToStruct(s, errata.TypeNames, errata.Types)
+		err := p.applyErrataToStruct(s, errata.TypeNames, errata.Types)
 		if err != nil {
 			return err
 		}
 	}
+	if errata.Types != nil && errata.Types.Structs != nil {
+		cluster.Structs = p.applyErrataLocality(doc, errata.Types.Structs, p.globalStructs, cluster.Structs)
+	}
+
 	for _, cmd := range cluster.Commands {
-		err := applyErrataToCommand(cmd, errata.TypeNames, errata.Types)
+		err := p.applyErrataToCommand(cmd, errata.TypeNames, errata.Types)
 		if err != nil {
 			return err
 		}
 	}
 	for _, ev := range cluster.Events {
-		err := applyErrataToEvent(ev, errata.TypeNames, errata.Types)
+		err := p.applyErrataToEvent(ev, errata.TypeNames, errata.Types)
 		if err != nil {
 			return err
 		}
@@ -126,7 +145,7 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 					for bitmapName := range errata.SharedBitmaps {
 						for _, bm := range cluster.Bitmaps {
 							if matter.EntityName(bm) == bitmapName {
-								applyErrataToBitmap(bm, parentErrata.SDK.TypeNames, parentErrata.SDK.Types)
+								p.applyErrataToBitmap(bm, parentErrata.SDK.TypeNames, parentErrata.SDK.Types)
 								break
 							}
 						}
@@ -134,7 +153,7 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 					for enumName := range errata.SharedEnums {
 						for _, en := range cluster.Enums {
 							if matter.EntityName(en) == enumName {
-								applyErrataToEnum(en, parentErrata.SDK.TypeNames, parentErrata.SDK.Types)
+								p.applyErrataToEnum(en, parentErrata.SDK.TypeNames, parentErrata.SDK.Types)
 								break
 							}
 						}
@@ -142,9 +161,9 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 					for structName := range errata.SharedStructs {
 						for _, st := range cluster.Structs {
 							if matter.EntityName(st) == structName {
-								err := applyErrataToStruct(st, parentErrata.SDK.TypeNames, parentErrata.SDK.Types)
+								err = p.applyErrataToStruct(st, parentErrata.SDK.TypeNames, parentErrata.SDK.Types)
 								if err != nil {
-									return err
+									return
 								}
 								break
 							}
@@ -162,7 +181,33 @@ func applyErrataToCluster(spec *spec.Specification, cluster *matter.Cluster, err
 		}
 	}
 
-	return nil
+	return
+}
+
+func (p *patch) applyErrataLocality[T types.Entity](doc *asciidoc.Document, types map[string]*errata.SDKType, globals map[string]T, list []T) []T {
+	for name, entry := range types {
+		var local T
+		var localIndex int
+		global := globals[name]
+		for i, e := range list {
+			if matter.EntityName(e) == name {
+				local = e
+				localIndex = i
+				break
+			}
+		}
+		if entry.ForceLocal || entry.Keep {
+			if any(local) == nil && any(global) != nil {
+				list = append(list, global)
+			}
+		} else if entry.ForceGlobal {
+			if any(global) == nil && any(local) != nil {
+				list = slices.Delete(list, localIndex, localIndex+1)
+				p.spec.GlobalObjects[local] = doc
+			}
+		}
+	}
+	return list
 }
 
 func replaceSharedEntity[T types.Entity](spec *spec.Specification, cluster *matter.Cluster, parentCluster *matter.Cluster, entityName string, parentList []T, targetList []T, sharedEntities map[types.Entity]types.Entity) []T {

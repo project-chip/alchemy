@@ -58,13 +58,10 @@ func (c *Yaml2Python) Run(cc *Context) (err error) {
 		return
 	}
 
-	var specification *spec.Specification
-	specification, _, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, []spec.BuilderOption{spec.PatchForSdk(true)}, c.ASCIIDocAttributes.ToList())
-	if err != nil {
-		return
-	}
+	sdkPatcher := sdk.NewPatcher()
 
-	err = sdk.ApplyErrata(specification)
+	var specification *spec.Specification
+	specification, _, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, []spec.BuilderOption{spec.Patch(sdkPatcher)}, c.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
 	}

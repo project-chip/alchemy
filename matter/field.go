@@ -49,6 +49,9 @@ func (f *Field) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
+	if !f.sameParent(of) {
+		return false
+	}
 	if f.ID.Valid() && of.ID.Valid() {
 		return f.ID.Equals(of.ID)
 	}
@@ -81,11 +84,11 @@ func (f *Field) Inherit(parent *Field) {
 	f.Access.Inherit(parent.Access)
 }
 
-func (f *Field) Clone() *Field {
+func (f *Field) CloneTo(newParent types.Entity) *Field {
 	nf := &Field{
 		entity: entity{
 			source: f.source,
-			parent: f.parent,
+			parent: newParent,
 		},
 		ID:         f.ID.Clone(),
 		Name:       f.Name,
@@ -141,8 +144,7 @@ func (fs FieldSet) Inherit(parent types.Entity, fields FieldSet) (nfs FieldSet) 
 			}
 		}
 		if matching == nil {
-			cf := pf.Clone()
-			cf.parent = parent
+			cf := pf.CloneTo(parent)
 			nfs = append(nfs, cf)
 			continue
 		}

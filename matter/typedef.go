@@ -30,11 +30,14 @@ func (td *TypeDef) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
+	if !td.sameParent(otd) {
+		return false
+	}
 	return td.Name == otd.Name
 }
 
-func (td *TypeDef) Clone() *TypeDef {
-	ns := &TypeDef{Name: td.Name, Description: td.Description, Type: td.Type}
+func (td *TypeDef) CloneTo(newParent types.Entity) *TypeDef {
+	ns := &TypeDef{entity: entity{source: td.source, parent: newParent}, Name: td.Name, Description: td.Description, Type: td.Type}
 	return ns
 }
 
