@@ -365,7 +365,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 				log.Path("source", tr))
 		} else if tr.TagRequirement.SemanticTag == nil {
 			tr.TagRequirement.SemanticTag, _ = resolveEntityReference(spec, &tr.TagRequirement.SemanticTagRef, entityFinder, findTagByID(tr.TagRequirement.Namespace), findTagByName(tr.TagRequirement.Namespace), tr.TagRequirement)
-			if tr.TagRequirement.SemanticTag == nil {
+			if tr.TagRequirement.SemanticTag == nil && !tr.TagRequirement.SemanticTagRef.Empty() {
 				slog.Error("unknown semantic tag for tag requirement on composing device type",
 					slog.String("semanticTagId", tr.TagRequirement.SemanticTagRef.ID.HexString()),
 					slog.String("semanticTagName", tr.TagRequirement.SemanticTagRef.Name),
