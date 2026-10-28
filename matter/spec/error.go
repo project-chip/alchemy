@@ -109,7 +109,7 @@ func (ddt DuplicateEntityIDError) Origin() (path string, line int) {
 }
 
 func (ddt DuplicateEntityIDError) Error() string {
-	return fmt.Sprintf("duplicate %s ID: %s", ddt.Entity.EntityType().String(), matter.EntityName(ddt.Entity))
+	return fmt.Sprintf("duplicate %s ID: %s", ddt.Entity.EntityType().FriendlyString(), matter.EntityName(ddt.Entity))
 }
 
 type DuplicateEntityNameError struct {
@@ -126,7 +126,7 @@ func (ddt DuplicateEntityNameError) Origin() (path string, line int) {
 }
 
 func (ddt DuplicateEntityNameError) Error() string {
-	return fmt.Sprintf("duplicate %s name: %s", ddt.Entity.EntityType().String(), matter.EntityName(ddt.Entity))
+	return fmt.Sprintf("duplicate %s name: %s", ddt.Entity.EntityType().FriendlyString(), matter.EntityName(ddt.Entity))
 }
 
 type UnknownConstraintIdentifierError struct {
@@ -213,12 +213,12 @@ func (uee UnknownEntityError[SourceT]) Origin() (path string, line int) {
 
 func (uee UnknownEntityError[SourceT]) Error() string {
 	if uee.EntityReference != nil {
-		return fmt.Sprintf("unknown %s: \"%s\" (%s) for %s", uee.EntityType.String(), uee.EntityReference.Name, uee.EntityReference.ID.HexString(), matter.EntityName(uee.Source))
+		return fmt.Sprintf("unknown %s: \"%s\" (%s) for %s", uee.EntityType.FriendlyString(), uee.EntityReference.Name, uee.EntityReference.ID.HexString(), matter.EntityName(uee.Source))
 	}
 	if uee.ElementReference != nil {
-		return fmt.Sprintf("unknown %s: \"%s\" (%s) for %s", uee.EntityType.String(), uee.ElementReference.Name, uee.ElementReference.Name, matter.EntityName(uee.Source))
+		return fmt.Sprintf("unknown %s: \"%s\" (%s) for %s", uee.EntityType.FriendlyString(), uee.ElementReference.Name, uee.ElementReference.Name, matter.EntityName(uee.Source))
 	}
-	return fmt.Sprintf("unknown %s on %s", uee.EntityType.String(), matter.EntityName(uee.Source))
+	return fmt.Sprintf("unknown %s on %s", uee.EntityType.FriendlyString(), matter.EntityName(uee.Source))
 }
 
 type UnreferencedEntityError[EntityT, SourceT types.Entity] struct {
@@ -235,7 +235,7 @@ func (uee UnreferencedEntityError[EntityT, SourceT]) Origin() (path string, line
 }
 
 func (uee UnreferencedEntityError[EntityT, SourceT]) Error() string {
-	return fmt.Sprintf("%s unreferenced on %s: %s (%s)", uee.Entity.EntityType().String(), matter.EntityName(uee.Source), matter.EntityName(uee.Entity), matter.EntityID(uee.Entity).HexString())
+	return fmt.Sprintf("%s unreferenced on %s: %s (%s)", uee.Entity.EntityType().FriendlyString(), matter.EntityName(uee.Source), matter.EntityName(uee.Entity), matter.EntityID(uee.Entity).HexString())
 }
 
 type NamespaceUnknownTagError struct {
@@ -286,7 +286,7 @@ func (rtm ReferenceTypeMismatch) Origin() (path string, line int) {
 }
 
 func (rtm ReferenceTypeMismatch) Error() string {
-	return fmt.Sprintf("reference points to %s but %s was expected", rtm.Entity.EntityType().String(), rtm.Element.String())
+	return fmt.Sprintf("reference points to %s but %s was expected", rtm.Entity.EntityType().FriendlyString(), rtm.Element.String())
 }
 
 type ReferenceIDMismatchError[EntityT types.Entity, SourceT types.Entity] struct {
@@ -304,7 +304,7 @@ func (rim ReferenceIDMismatchError[EntityT, SourceT]) Origin() (path string, lin
 }
 
 func (rim ReferenceIDMismatchError[EntityT, SourceT]) Error() string {
-	return fmt.Sprintf("reference id mismatch: %s %s vs. %s (%s) on %s", rim.Entity.EntityType().String(), rim.ID.HexString(), matter.EntityID(rim.Entity).HexString(), matter.EntityName(rim.Entity), rim.Source.EntityType().String())
+	return fmt.Sprintf("reference id mismatch: %s %s vs. %s (%s) on %s", rim.Entity.EntityType().FriendlyString(), rim.ID.HexString(), matter.EntityID(rim.Entity).HexString(), matter.EntityName(rim.Entity), rim.Source.EntityType().FriendlyString())
 }
 
 type ReferenceNameMismatchError[EntityT types.Entity, SourceT types.Entity] struct {
@@ -322,7 +322,7 @@ func (rim ReferenceNameMismatchError[EntityT, SourceT]) Origin() (path string, l
 }
 
 func (rim ReferenceNameMismatchError[EntityT, SourceT]) Error() string {
-	return fmt.Sprintf("reference name mismatch: %s vs. %s on %s", rim.Name, matter.EntityName(rim.Entity), rim.Source.EntityType().String())
+	return fmt.Sprintf("reference name mismatch: %s vs. %s on %s", rim.Name, matter.EntityName(rim.Entity), rim.Source.EntityType().FriendlyString())
 }
 
 type UnknownConformanceIdentifierError struct {

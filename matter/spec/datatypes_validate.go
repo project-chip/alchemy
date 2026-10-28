@@ -22,7 +22,7 @@ func validateDataType(spec *Specification, cluster *matter.Cluster, field *matte
 	if field.Type.Entity == nil {
 		return
 	}
-	if cluster != nil && cluster.Hierarchy != "Base" {
+	if cluster != nil && cluster.Hierarchy != "Base" && !spec.ignoredHierarchy {
 		// If this data type's parent is not the cluster it belongs to, then we should have
 		// redirected it to the local copy of this data type in resolveFieldDataTypes
 		parentCluster, hasParentCluster := field.Type.Entity.Parent().(*matter.Cluster)

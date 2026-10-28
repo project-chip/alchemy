@@ -53,6 +53,10 @@ func (er EntityReference) Equals(oer EntityReference) bool {
 	return er.XRef == nil && oer.XRef == nil
 }
 
+func (er EntityReference) Empty() bool {
+	return er.XRef == nil && !er.ID.Valid() && er.Name == ""
+}
+
 type ElementReference struct {
 	Name  string                   `json:"name,omitempty"`
 	Field string                   `json:"field,omitempty"`
