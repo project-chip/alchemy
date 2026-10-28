@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 var DisallowedReferenceSuffixes = []string{"Command", "Feature", "Attribute", "Field", "Event"}
@@ -22,6 +23,8 @@ type EntityReference struct {
 	ID   *Number                  `json:"id,omitempty"`
 	Name string                   `json:"name,omitempty"`
 	XRef *asciidoc.CrossReference `json:"-"`
+
+	Resolved types.Entity
 }
 
 func (er EntityReference) Clone() EntityReference {
@@ -48,6 +51,10 @@ func (er EntityReference) Equals(oer EntityReference) bool {
 		return er.XRef.Equals(oer.XRef)
 	}
 	return er.XRef == nil && oer.XRef == nil
+}
+
+func (er EntityReference) Empty() bool {
+	return er.XRef == nil && !er.ID.Valid() && er.Name == ""
 }
 
 type ElementReference struct {

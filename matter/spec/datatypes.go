@@ -180,9 +180,8 @@ func (sp *Builder) resolveFieldDataTypes(library *Library, cluster *matter.Clust
 				local := finder.findEntityByIdentifier(matter.EntityName(dataType.Entity), field)
 				if local != nil {
 					dataType.Entity = local
-				} else {
+				} else if !sp.ignoreHierarchy {
 					slog.Error("failed to find local cloned entity for data type reference", slog.String("name", matter.EntityName(dataType.Entity)), slog.String("field", field.Name), slog.String("cluster", cluster.Name))
-					sp.Spec.addError(&MissingClonedEntityError{Entity: dataType.Entity, Field: field})
 				}
 			}
 		}
@@ -202,7 +201,6 @@ func (sp *Builder) resolveFieldDataTypes(library *Library, cluster *matter.Clust
 			sp.getCustomDataType(library, dataType, cluster, field, finder)
 			if dataType.Entity == nil {
 				slog.Error("unknown custom data type", slog.String("cluster", clusterName(cluster)), slog.String("field", field.Name), slog.String("type", dataType.Name), log.Path("source", field), log.Type("element", dataType.Source))
-				sp.Spec.addError(&UnknownCustomDataTypeError{Field: field, DataType: dataType})
 			} else {
 				dataType.Name = matter.EntityName(dataType.Entity)
 			}
@@ -287,11 +285,4 @@ func (sp *Builder) getCustomDataTypeFromFieldReference(library *Library, cluster
 		e = finder.findEntityByIdentifier(label, reference)
 	}
 	return
-}
-
-func (spec *Specification) ResolveDataTypeReferences() {
-	builder := &Builder{Spec: spec}
-	specEntityFinder := newSpecEntityFinder(spec, nil, nil)
-	builder.resolveBaseClusterDataTypeReferences(specEntityFinder)
-	builder.resolveInheritedClusterDataTypeReferences(specEntityFinder)
 }

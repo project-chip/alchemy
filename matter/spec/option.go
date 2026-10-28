@@ -15,12 +15,6 @@ func IgnoreHierarchy(ignore bool) BuilderOption {
 	}
 }
 
-func PatchForSdk(patch bool) BuilderOption {
-	return func(b *Builder) {
-		b.patchForSdk = patch
-	}
-}
-
 type BuilderOptions struct {
 	IgnoreHierarchy bool `default:"false" help:"ignore hierarchy" group:"Spec:"`
 }

@@ -5,7 +5,6 @@ import (
 
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -62,8 +61,81 @@ func (bf *entityFinderCommon) findEntityByReference(reference string, label stri
 	return nil
 }
 
-type referenceFailure struct {
-	source    types.Entity
-	reference constraint.Limit
-	finder    entityFinder
+type findEntityByID[T types.Entity] func(id *matter.Number) (T, bool)
+type findEntityByName[T types.Entity] func(name string) (T, bool)
+type findEntityByNameAndField[T types.Entity] func(name, field string) (T, bool)
+
+func (s *Specification) findClusterByID(id *matter.Number) (cluster *matter.Cluster, ok bool) {
+	cluster, ok = s.ClustersByID[id.Value()]
+	return
+}
+
+func (s *Specification) findClusterByName(name string) (cluster *matter.Cluster, ok bool) {
+	cluster, ok = s.ClustersByName[name]
+	return
+}
+
+func (s *Specification) findDeviceTypeByID(id *matter.Number) (deviceType *matter.DeviceType, ok bool) {
+	deviceType, ok = s.DeviceTypesByID[id.Value()]
+	return
+}
+
+func (s *Specification) findDeviceTypeByName(name string) (deviceType *matter.DeviceType, ok bool) {
+	deviceType, ok = s.DeviceTypesByName[name]
+	return
+}
+
+func (s *Specification) findNamespaceByID(id *matter.Number) (*matter.Namespace, bool) {
+	for _, ns := range s.Namespaces {
+		if ns.ID.Equals(id) {
+			return ns, true
+		}
+	}
+	return nil, false
+}
+
+func (s *Specification) findNamespaceByName(name string) (*matter.Namespace, bool) {
+	for _, ns := range s.Namespaces {
+		if ns.Name == name {
+			return ns, true
+		}
+	}
+	return nil, false
+}
+
+func findTagByID(namespace *matter.Namespace) func(id *matter.Number) (*matter.SemanticTag, bool) {
+	return func(id *matter.Number) (*matter.SemanticTag, bool) {
+		if id.Valid() {
+			for _, t := range namespace.SemanticTags {
+				if t.ID.Equals(id) {
+					return t, true
+				}
+			}
+		}
+		return nil, false
+	}
+}
+
+func findTagByName(namespace *matter.Namespace) func(name string) (*matter.SemanticTag, bool) {
+	return func(name string) (*matter.SemanticTag, bool) {
+		if name != "" {
+			for _, t := range namespace.SemanticTags {
+				if t.Name == name {
+					return t, true
+				}
+			}
+		}
+		return nil, false
+	}
+}
+
+func findConditionByName(deviceType *matter.DeviceType) func(string) (*matter.Condition, bool) {
+	return func(name string) (*matter.Condition, bool) {
+		for _, condition := range deviceType.Conditions {
+			if condition.Feature == name {
+				return condition, true
+			}
+		}
+		return nil, false
+	}
 }

@@ -29,12 +29,14 @@ func (c *Constant) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
+	if !c.sameParent(e) {
+		return false
+	}
 	return c.Name == oc.Name
 }
 
-func (s *Constant) Clone() *Constant {
-	ns := &Constant{Name: s.Name, Value: s.Value}
-	return ns
+func (s *Constant) CloneTo(newParent types.Entity) *Constant {
+	return &Constant{entity: entity{source: s.source, parent: newParent}, Name: s.Name, Value: s.Value}
 }
 
 func (s *Constant) Inherit(parent *Constant) {

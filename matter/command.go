@@ -40,6 +40,9 @@ func (c *Command) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
+	if !c.sameParent(e) {
+		return false
+	}
 	if c.Direction != oc.Direction {
 		return false
 	}
@@ -53,14 +56,14 @@ func (c *Command) GetConformance() conformance.Set {
 	return c.Conformance
 }
 
-func (c *Command) Clone() *Command {
-	nc := &Command{entity: entity{source: c.source, parent: c.parent}, ID: c.ID.Clone(), Name: c.Name, Description: c.Description, Direction: c.Direction, Response: c.Response, Quality: c.Quality, Access: c.Access}
+func (c *Command) CloneTo(newParent types.Entity) *Command {
+	nc := &Command{entity: entity{source: c.source, parent: newParent}, ID: c.ID.Clone(), Name: c.Name, Description: c.Description, Direction: c.Direction, Response: c.Response, Quality: c.Quality, Access: c.Access}
 	if len(c.Conformance) > 0 {
 		nc.Conformance = c.Conformance.CloneSet()
 	}
 	nc.Fields = make(FieldSet, 0, len(c.Fields))
 	for _, f := range c.Fields {
-		nc.Fields = append(nc.Fields, f.Clone())
+		nc.Fields = append(nc.Fields, f.CloneTo(nc))
 	}
 	return nc
 }

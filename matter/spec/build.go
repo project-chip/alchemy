@@ -25,19 +25,15 @@ type Builder struct {
 	errata *errata.Collection
 
 	ignoreHierarchy bool
-	patchForSdk     bool
 
-	conformanceFailures map[any]referenceFailure
-	constraintFailures  map[any]referenceFailure
+	patchers []Patcher
 }
 
 func NewBuilder(specRoot string, config *config.Config, errata *errata.Collection, options ...BuilderOption) Builder {
 	b := Builder{
-		specRoot:            specRoot,
-		config:              config,
-		errata:              errata,
-		conformanceFailures: make(map[any]referenceFailure),
-		constraintFailures:  make(map[any]referenceFailure),
+		specRoot: specRoot,
+		config:   config,
+		errata:   errata,
 	}
 	for _, o := range options {
 		o(&b)
@@ -101,6 +97,13 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 		}
 	}
 
+	for _, p := range sp.patchers {
+		err = p.BeforeParse(spec)
+		if err != nil {
+			return
+		}
+	}
+
 	var basicInformationCluster, bridgedDeviceBasicInformationCluster *matter.Cluster
 	basicInformationCluster, bridgedDeviceBasicInformationCluster, err = sp.readEntities(spec, libraries)
 	if err != nil {
@@ -126,20 +129,25 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 
 	specEntityFinder := newSpecEntityFinder(sp.Spec, nil, nil)
 
-	sp.resolveBaseClusterDataTypeReferences(specEntityFinder)
-	sp.resolveGlobalDataTypeReferences()
-
-	if sp.patchForSdk {
-		err = patchSpecForSdk(spec)
+	for _, p := range sp.patchers {
+		err = p.AfterParse(spec)
 		if err != nil {
 			return
 		}
 	}
 
-	if sp.patchForSdk {
-		resolveAtomicOperations(spec)
-	}
 	sp.resolveHierarchy()
+
+	for _, p := range sp.patchers {
+		err = p.BeforeDataModelResolution(spec)
+		if err != nil {
+			return
+		}
+	}
+
+	sp.resolveBaseClusterDataTypeReferences(specEntityFinder)
+	sp.resolveGlobalDataTypeReferences()
+
 	err = spec.associateDeviceTypeRequirements()
 	if err != nil {
 		return
@@ -147,18 +155,22 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 
 	sp.resolveInheritedClusterDataTypeReferences(specEntityFinder)
 
-	sp.ResolveConformances()
+	sp.resolveConformances()
 	sp.resolveConstraints()
 	err = updateBridgedBasicInformationCluster(spec, basicInformationCluster, bridgedDeviceBasicInformationCluster)
 	if err != nil {
 		return
 	}
 
-	spec.BuildClusterReferences()
-	spec.BuildDataTypeReferences()
+	for _, p := range sp.patchers {
+		err = p.AfterDataModelResolution(spec)
+		if err != nil {
+			return
+		}
+	}
 
-	sp.noteConformanceResolutionFailures(spec)
-	sp.noteConstraintResolutionFailures(spec)
+	sp.buildClusterReferences()
+	sp.buildDataTypeReferences()
 
 	Validate(spec)
 
@@ -204,16 +216,13 @@ func (sp *Builder) readEntities(spec *Specification, libraries []*Library) (basi
 				if entity.ID.Valid() {
 					if existing, ok := spec.DeviceTypesByID[entity.ID.Value()]; ok {
 						slog.Error("duplicate device type ID", slog.String("deviceTypeId", entity.ID.HexString()), log.Path("previousSource", existing), log.Path("newSource", entity))
-						spec.addError(&DuplicateEntityIDError{Entity: entity, Previous: existing})
 					} else {
 						spec.DeviceTypesByID[entity.ID.Value()] = entity
 					}
-
 				}
 				existing, ok := spec.DeviceTypesByName[entity.Name]
 				if ok {
 					slog.Warn("Duplicate Device Type Name", slog.String("deviceTypeId", entity.ID.HexString()), slog.String("deviceTypeName", entity.Name), slog.String("existingDeviceTypeId", existing.ID.HexString()))
-					spec.addError(&DuplicateEntityNameError{Entity: entity, Previous: existing})
 				}
 				spec.DeviceTypesByName[entity.Name] = entity
 				switch entity.Name {
@@ -268,10 +277,10 @@ func (sp *Builder) readEntities(spec *Specification, libraries []*Library) (basi
 	return
 }
 
-func (spec *Specification) BuildClusterReferences() {
-	TraverseEntities(spec, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
+func (sp *Builder) buildClusterReferences() {
+	TraverseEntities(sp.Spec, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
 		if parentCluster != nil {
-			spec.ClusterRefs.Add(parentCluster, entity)
+			sp.Spec.ClusterRefs.Add(parentCluster, entity)
 		}
 		return parse.SearchShouldContinue
 	})
@@ -283,7 +292,6 @@ func (sp *Builder) addCluster(doc *asciidoc.Document, cluster *matter.Cluster) {
 		existing, ok := sp.Spec.ClustersByID[cluster.ID.Value()]
 		if ok {
 			slog.Error("Duplicate cluster ID", slog.String("clusterId", cluster.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("existingClusterName", existing.Name))
-			sp.Spec.addError(&DuplicateEntityIDError{Entity: cluster, Previous: existing})
 		}
 		sp.Spec.ClustersByID[cluster.ID.Value()] = cluster
 	} else {
@@ -300,8 +308,6 @@ func (sp *Builder) addCluster(doc *asciidoc.Document, cluster *matter.Cluster) {
 	existing, ok := sp.Spec.ClustersByName[cluster.Name]
 	if ok {
 		slog.Error("Duplicate cluster Name", slog.String("clusterId", cluster.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("existingClusterId", existing.ID.HexString()))
-		sp.Spec.addError(&DuplicateEntityNameError{Entity: cluster, Previous: existing})
-
 	}
 	sp.Spec.ClustersByName[cluster.Name] = cluster
 
@@ -399,6 +405,7 @@ func clusterName(cluster *matter.Cluster) string {
 }
 
 func (sp *Builder) resolveHierarchy() {
+	sp.Spec.ignoredHierarchy = sp.ignoreHierarchy
 	for _, c := range sp.Spec.ClustersByName {
 		if c.Hierarchy == "Base" {
 			continue
@@ -406,7 +413,6 @@ func (sp *Builder) resolveHierarchy() {
 		base, ok := sp.Spec.ClustersByName[c.Hierarchy]
 		if !ok {
 			slog.Warn("Failed to find base cluster", "cluster", c.Name, "baseCluster", c.Hierarchy)
-			sp.Spec.addError(&UnknownBaseClusterError{Cluster: c})
 			continue
 		}
 		if !sp.ignoreHierarchy {
