@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"fmt"
 	"log/slog"
 	"strings"
 
@@ -65,13 +66,13 @@ func checkEntityRefCrossReference[EntityT types.Entity, SourceT types.Entity](sp
 func checkEntityRefMismatch[EntityT types.Entity, SourceT types.Entity](spec *Specification, refID *matter.Number, refName string, entity EntityT, source SourceT) {
 	entityID := matter.EntityID(entity)
 	if entityID.Valid() && refID.Valid() && !entityID.Equals(refID) {
-		slog.Error("Mismatch between entity ID and reference entity ID", slog.String("entityId", entityID.HexString()), slog.String("referenceEntityId", refID.HexString()), log.Path("source", source))
+		slog.Error(fmt.Sprintf("Mismatch between %s ID and reference ID", entity.EntityType().FriendlyString()), slog.String(entity.EntityType().String()+"Id", entityID.HexString()), slog.String("referenceId", refID.HexString()), log.Path("source", source))
 		spec.addError(&ReferenceIDMismatchError[EntityT, SourceT]{Entity: entity, ID: refID, Source: source})
 	}
 	refName = stripNonAlphabeticalCharacters(refName)
 	entityName := stripNonAlphabeticalCharacters(matter.EntityName(entity))
 	if refName != "" && !strings.EqualFold(refName, entityName) {
-		slog.Error("Mismatch between entity name and reference entity name", slog.String("entityName", entityName), slog.String("referenceEntityName", refName), slog.String("entityId", entityID.HexString()), log.Path("source", source))
+		slog.Error(fmt.Sprintf("Mismatch between %s name and reference name", entity.EntityType().FriendlyString()), slog.String(entity.EntityType().String()+"Name", entityName), slog.String("referenceName", refName), slog.String(entity.EntityType().String()+"Id", entityID.HexString()), log.Path("source", source))
 		spec.addError(&ReferenceNameMismatchError[EntityT, SourceT]{Entity: entity, Name: refName, Source: source})
 	}
 }
