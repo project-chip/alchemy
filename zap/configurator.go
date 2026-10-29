@@ -98,10 +98,12 @@ func NewConfigurator(spec *spec.Specification, docs []*asciidoc.Document, entiti
 }
 
 func (c *Configurator) addCluster(parentEntity types.Entity, v *matter.Cluster) {
-	for _, name := range c.Errata.ClusterSkip {
-		if name == v.Name {
-			return
-		}
+	if c.isClusterSkipped(v) {
+		// Skipped clusters (e.g. base clusters without an ID, like Mode Base) don't get a cluster element,
+		// but any data types they own that are shared with other clusters (see the shared-* errata on
+		// derived clusters) still need to be rendered, so their cluster codes stay up to date
+		c.addSharedTypesFromSkippedCluster(v)
+		return
 	}
 	c.addTypes(parentEntity, v.Attributes)
 	if v.Features != nil {
@@ -140,6 +142,58 @@ func (c *Configurator) addCluster(parentEntity types.Entity, v *matter.Cluster) 
 		}
 	}
 	c.Clusters[v] = false
+}
+
+func (c *Configurator) isClusterSkipped(cluster *matter.Cluster) bool {
+	if c.Errata == nil {
+		return false
+	}
+	for _, name := range c.Errata.ClusterSkip {
+		if name == cluster.Name {
+			return true
+		}
+	}
+	return false
+}
+
+// addSharedTypesFromSkippedCluster adds the bitmaps, enums and structs owned by a skipped cluster
+// which are referenced by at least one other cluster with a valid ID. Only the IDs of those other
+// clusters are recorded, as the skipped cluster itself is not rendered.
+func (c *Configurator) addSharedTypesFromSkippedCluster(cluster *matter.Cluster) {
+	for _, bm := range cluster.Bitmaps {
+		if clusterIDs := c.getSharingClusterCodes(cluster, bm); len(clusterIDs) > 0 {
+			c.Bitmaps[bm] = clusterIDs
+		}
+	}
+	for _, en := range cluster.Enums {
+		if clusterIDs := c.getSharingClusterCodes(cluster, en); len(clusterIDs) > 0 {
+			c.Enums[en] = clusterIDs
+		}
+	}
+	for _, s := range cluster.Structs {
+		if clusterIDs := c.getSharingClusterCodes(cluster, s); len(clusterIDs) > 0 {
+			c.Structs[s] = clusterIDs
+		}
+	}
+}
+
+// getSharingClusterCodes returns the sorted IDs of the clusters, other than the owner, that reference the entity
+func (c *Configurator) getSharingClusterCodes(owner *matter.Cluster, entity types.Entity) (clusterIDs []*matter.Number) {
+	if c.Spec == nil {
+		return
+	}
+	refs, ok := c.Spec.ClusterRefs.Get(entity)
+	if !ok {
+		return
+	}
+	refs.Range(func(cluster *matter.Cluster, value struct{}) bool {
+		if cluster != owner && cluster.ID.Valid() {
+			clusterIDs = append(clusterIDs, cluster.ID)
+		}
+		return true
+	})
+	matter.SortNumbers(clusterIDs)
+	return
 }
 
 func (c *Configurator) addTypes(parentEntity types.Entity, fs matter.FieldSet) {
