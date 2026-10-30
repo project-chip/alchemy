@@ -108,6 +108,13 @@ func (library *Library) parseEntities(spec *Specification) iter.Seq2[*asciidoc.D
 					return parse.SearchShouldStop
 				}
 				skip = true
+			case matter.SectionMasterList:
+				var ml *matter.MasterList
+				ml, err = library.toMasterList(library, doc, section)
+				if err == nil && ml != nil && !yield(doc, ml) {
+					return parse.SearchShouldStop
+				}
+				skip = true
 			case matter.SectionRevisionHistory,
 				matter.SectionIntroduction,
 				matter.SectionCommand,

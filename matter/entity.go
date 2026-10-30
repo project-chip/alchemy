@@ -91,6 +91,10 @@ func EntityName(e types.Entity) string {
 		return entity.Name()
 	case *EnumValue:
 		return entity.Name
+	case *MasterListEntry:
+		return entity.Name
+	case *ElementRequirement:
+		return EntityName(e.Parent())
 	default:
 		slog.Error("Unknown entity type for name", LogEntity("entity", e))
 		return ""

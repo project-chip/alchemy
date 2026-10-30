@@ -23,6 +23,7 @@ func Validate(spec *Specification) {
 	validateStructs(spec, nil, spec.GlobalObjects.OfType[*matter.Struct]())
 	validateDeviceTypes(spec)
 	validateNamespaces(spec)
+	validateMasterLists(spec)
 }
 
 func stripNonAlphabeticalCharacters(s string) string {
@@ -121,9 +122,18 @@ func (nu nameUniqueness[T]) check(spec *Specification, entity T) {
 		spec.addError(&DuplicateEntityNameError{Entity: entity, Previous: previous})
 		return
 	}
-
 	nu[name] = entity
+}
 
+type picsUniqueness[T types.Entity] map[string]T
+
+func (pu picsUniqueness[T]) check(spec *Specification, pics string, entity T) {
+	pics = strings.ToLower(pics)
+	if previous, ok := pu[pics]; ok {
+		spec.addError(&DuplicateEntityPICSError{Entity: entity, Previous: previous, PICS: pics})
+		return
+	}
+	pu[pics] = entity
 }
 
 type conformanceValidation map[types.Entity][]conformance.Set

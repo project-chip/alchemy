@@ -39,6 +39,8 @@ const (
 	EntityTypeConstant
 	EntityTypeSemanticTag
 	EntityTypeTagRequirement
+	EntityTypeMasterList
+	EntityTypeMasterListEntry
 )
 
 type Entity interface {
@@ -88,6 +90,8 @@ var (
 		EntityTypeDeviceTypeElementRequirement: "deviceTypeElementRequirement",
 		EntityTypeDeviceTypeTagRequirement:     "deviceTypeTagRequirement",
 		EntityTypeTagRequirement:               "tagRequirement",
+		EntityTypeMasterList:                   "masterList",
+		EntityTypeMasterListEntry:              "masterListEntry",
 	}
 
 	entityTypeFriendlyNames = map[EntityType]string{
@@ -120,6 +124,8 @@ var (
 		EntityTypeDeviceTypeElementRequirement: "Device Type Element Requirement",
 		EntityTypeDeviceTypeTagRequirement:     "Device Type Tag Requirement",
 		EntityTypeTagRequirement:               "Tag Requirement",
+		EntityTypeMasterList:                   "Master List",
+		EntityTypeMasterListEntry:              "Master List Entry",
 	}
 )
 

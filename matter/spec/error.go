@@ -18,6 +18,7 @@ const (
 	ErrorTypeGenericParse
 	ErrorTypeDuplicateEntityID
 	ErrorTypeDuplicateEntityName
+	ErrorTypeDuplicateEntityPICS
 	ErrorTypeUnknownConstraintIdentifier
 	ErrorTypeUnknownConstraintReference
 	ErrorTypeUnknownCustomDataType
@@ -48,6 +49,10 @@ const (
 
 	ErrorTypeConformanceChoiceOrphan
 	ErrorTypeConformanceChoiceMismatch
+
+	ErrorTypeMasterListMissingEntry
+	ErrorTypeMasterListReservedID
+	ErrorTypeMasterListMismatch
 )
 
 type Error interface {
@@ -127,6 +132,24 @@ func (ddt DuplicateEntityNameError) Origin() (path string, line int) {
 
 func (ddt DuplicateEntityNameError) Error() string {
 	return fmt.Sprintf("duplicate %s name: %s", ddt.Entity.EntityType().FriendlyString(), matter.EntityName(ddt.Entity))
+}
+
+type DuplicateEntityPICSError struct {
+	Entity   types.Entity
+	Previous types.Entity
+	PICS     string
+}
+
+func (dep DuplicateEntityPICSError) Type() ErrorType {
+	return ErrorTypeDuplicateEntityPICS
+}
+
+func (dep DuplicateEntityPICSError) Origin() (path string, line int) {
+	return dep.Entity.Origin()
+}
+
+func (dep DuplicateEntityPICSError) Error() string {
+	return fmt.Sprintf("duplicate %s PICS: %s", dep.Entity.EntityType().FriendlyString(), dep.PICS)
 }
 
 type UnknownConstraintIdentifierError struct {
@@ -595,4 +618,55 @@ func (mcee *MissingClonedEntityError) Origin() (path string, line int) {
 
 func (mcee *MissingClonedEntityError) Error() string {
 	return fmt.Sprintf("failed to find local clone of entity %s for field %s", matter.EntityName(mcee.Entity), mcee.Field.Name)
+}
+
+type MasterListMissingEntryError struct {
+	Entity types.Entity
+}
+
+func (mlme *MasterListMissingEntryError) Type() ErrorType {
+	return ErrorTypeMasterListMissingEntry
+}
+
+func (mlme *MasterListMissingEntryError) Origin() (path string, line int) {
+	return mlme.Entity.Origin()
+}
+
+func (mlme *MasterListMissingEntryError) Error() string {
+	return fmt.Sprintf("master list for %s missing entry for %s", mlme.Entity.EntityType().FriendlyString(), matter.EntityName(mlme.Entity))
+}
+
+type MasterListReservedIDError struct {
+	Entity types.Entity
+}
+
+func (mlme *MasterListReservedIDError) Type() ErrorType {
+	return ErrorTypeMasterListReservedID
+}
+
+func (mlme *MasterListReservedIDError) Origin() (path string, line int) {
+	return mlme.Entity.Origin()
+}
+
+func (mlme *MasterListReservedIDError) Error() string {
+	return fmt.Sprintf("reserved master list entry for %s ID %s is in use by %s", mlme.Entity.EntityType().FriendlyString(), matter.EntityID(mlme.Entity).HexString(), matter.EntityName(mlme.Entity))
+}
+
+type MasterListMismatchError struct {
+	Entity      types.Entity
+	Property    string
+	EntityValue string
+	ListValue   string
+}
+
+func (mlme *MasterListMismatchError) Type() ErrorType {
+	return ErrorTypeMasterListMismatch
+}
+
+func (mlme *MasterListMismatchError) Origin() (path string, line int) {
+	return mlme.Entity.Origin()
+}
+
+func (mlme *MasterListMismatchError) Error() string {
+	return fmt.Sprintf("master list entry for %s %s (ID %s) conflicts on %s (\"%s\" vs. \"%s\")", matter.EntityName(mlme.Entity), mlme.Entity.EntityType().FriendlyString(), matter.EntityID(mlme.Entity).HexString(), mlme.Property, mlme.ListValue, mlme.EntityValue)
 }

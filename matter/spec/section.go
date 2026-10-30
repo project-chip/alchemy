@@ -313,6 +313,9 @@ func deriveSectionType(sectionInfoCache SectionInfoCache, reader asciidoc.Reader
 
 	// Ugh, some heuristics now
 	name := strings.TrimSpace(sectionInfoCache.SectionName(section))
+	if text.HasCaseInsensitiveSuffix(name, " ID List") {
+		return matter.SectionMasterList
+	}
 	if text.HasCaseInsensitiveSuffix(name, "Bitmap Type") || text.HasCaseInsensitiveSuffix(name, "Bitmap") {
 		return matter.SectionDataTypeBitmap
 	}

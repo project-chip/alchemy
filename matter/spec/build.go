@@ -255,7 +255,13 @@ func (sp *Builder) readEntities(spec *Specification, libraries []*Library) (basi
 			case *matter.Event:
 				spec.addEntityByName(entity.Name, entity, nil)
 				spec.GlobalObjects[entity] = doc
-
+			case *matter.MasterList:
+				_, existing := spec.MasterLists[entity.Type]
+				if !existing {
+					spec.MasterLists[entity.Type] = entity
+				} else {
+					slog.Warn("Duplicate master list", slog.String("entityType", entity.Type.String()))
+				}
 			default:
 				slog.Warn("unknown entity type", "path", doc.Path, "type", fmt.Sprintf("%T", entity))
 
