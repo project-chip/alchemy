@@ -23,7 +23,6 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/mle"
 	"github.com/project-chip/alchemy/provisional"
 	"github.com/sethvargo/go-githubactions"
 )
@@ -135,15 +134,9 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 
 	var ve map[string][]spec.Violation = errdiff.ProcessComparison(&specs)
 
-	var vm map[string][]spec.Violation
-	vm, err = mle.Process(headRoot, specs.Head)
-	if err != nil {
-		return fmt.Errorf("failed checking Master List Enforcer status: %v", err)
-	}
-
 	var vev map[string][]spec.Violation = spec.ProcessEventConformanceComparison(&specs)
 
-	violations := spec.MergeViolations(vp, ve, vm, vev)
+	violations := spec.MergeViolations(vp, ve, vev)
 
 	owner, repo := githubContext.Repo()
 
@@ -204,9 +197,6 @@ func (c *MergeGuard) Run(cc *cli.Context) (err error) {
 				}
 				if v.Type.Has(spec.ViolationNewParseError) {
 					vv.Violations = append(vv.Violations, "New Parse Error introduced by this PR: "+v.Text)
-				}
-				if v.Type.Has(spec.ViolationMasterList) {
-					vv.Violations = append(vv.Violations, "Incompatible with Master List: "+v.Text)
 				}
 				if v.Type.Has(spec.ViolationEventConformance) {
 					vv.Violations = append(vv.Violations, "Invalid event conformance: "+v.Text)
@@ -292,11 +282,6 @@ func annotateViolations(action *githubactions.Action, path string, violations []
 		}
 		if v.Type.Has(spec.ViolationNewParseError) {
 			annotation.WriteString("• This PR introduces a new parse error.\n")
-			annotation.WriteString(v.Text)
-			annotation.WriteRune('\n')
-		}
-		if v.Type.Has(spec.ViolationMasterList) {
-			annotation.WriteString("• This PR introduces an incompatibility with the Master List:\n")
 			annotation.WriteString(v.Text)
 			annotation.WriteRune('\n')
 		}

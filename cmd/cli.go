@@ -15,7 +15,6 @@ var commands struct {
 	ZAP           cli.ZAP           `cmd:"" help:"transmute the Matter spec into ZAP templates, optionally filtered to the files specified by filename_pattern" group:"SDK Commands:"`
 	IDL           cli.IDL           `cmd:"" help:"commands for manipulating Matter IDLs" group:"SDK Commands:"`
 	ZAPDiff       cli.ZAPDiff       `cmd:"" name:"zap-diff" help:"Compares two set of ZAP XMLs for any inconsistency." group:"SDK Commands:"`
-	MLE           cli.MLE           `cmd:"" help:"master list enforcer checks for inconsistencies between the master list and spec." group:"Spec Commands:"`
 	Conformance   cli.Conformance   `cmd:"" help:"test conformance values"  group:"Spec Commands:"`
 	Dump          dump.Command      `cmd:"" hidden:"" help:"dump the parse tree of Matter documents specified by filename_pattern"`
 	DM            cli.DataModel     `cmd:"" help:"transmute the Matter spec into data model XML; optionally filtered to the files specified in filename_pattern" group:"SDK Commands:"`
