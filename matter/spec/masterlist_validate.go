@@ -85,7 +85,9 @@ func validateDeviceTypeMasterList(spec *Specification, ml *matter.MasterList) {
 			mle = nu[deviceType.Name]
 		}
 		if mle == nil {
-			spec.addError(&MasterListMissingEntryError{Entity: deviceType})
+			if deviceType != spec.BaseDeviceType {
+				spec.addError(&MasterListMissingEntryError{Entity: deviceType})
+			}
 		} else {
 			switch mle.Name {
 			case "Reserved":

@@ -264,7 +264,7 @@ func (ti *TableInfo) ReadScopeAtOffset(reader asciidoc.Reader, row *asciidoc.Tab
 	switch strings.ToLower(s) {
 	case "node":
 		return matter.ScopeNode, nil
-	case "endpoint":
+	case "endpoint", "ep":
 		return matter.ScopeEndpoint, nil
 	default:
 		return matter.ScopeUnknown, nil
