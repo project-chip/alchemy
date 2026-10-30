@@ -112,7 +112,6 @@ func AssignSectionTypes(sectionInfoCache SectionInfoCache, docInfoCache Document
 					secType = matter.SectionDeviceType
 				case matter.DocTypeNamespace:
 					secType = matter.SectionNamespace
-
 				default:
 					secType = matter.SectionTop
 					if strings.HasSuffix(sectionInfoCache.SectionName(section), " Cluster") {

@@ -104,7 +104,7 @@ func readDeviceTypeIDs(reader asciidoc.Reader, doc *asciidoc.Document, s *asciid
 		if err != nil {
 			return nil, err
 		}
-		c.Scope, err = ti.ReadString(reader, row, matter.TableColumnScope)
+		c.Scope, err = ti.ReadScope(reader, row, matter.TableColumnScope)
 		if err != nil {
 			return nil, err
 		}

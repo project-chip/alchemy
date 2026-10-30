@@ -223,6 +223,84 @@ func (ti *TableInfo) ReadValueByIndex(reader asciidoc.Reader, row *asciidoc.Tabl
 	return strings.TrimSpace(value.String()), nil
 }
 
+func (ti *TableInfo) ReadRole(reader asciidoc.Reader, row *asciidoc.TableRow, columns ...matter.TableColumn) (role matter.Role, err error) {
+	for _, column := range columns {
+		offset, ok := ti.ColumnMap[column]
+		if !ok {
+			continue
+		}
+		s, err := ti.ReadStringAtOffset(reader, row, offset)
+		if err != nil {
+			return matter.RoleUnknown, err
+		}
+		switch strings.ToLower(s) {
+		case "application":
+			return matter.RoleApplication, nil
+		case "utility":
+			return matter.RoleUtility, nil
+		default:
+			return matter.RoleUnknown, nil
+		}
+	}
+	return matter.RoleUnknown, nil
+}
+
+func (ti *TableInfo) ReadScope(reader asciidoc.Reader, row *asciidoc.TableRow, columns ...matter.TableColumn) (scope matter.Scope, err error) {
+	for _, column := range columns {
+		offset, ok := ti.ColumnMap[column]
+		if !ok {
+			continue
+		}
+		return ti.ReadScopeAtOffset(reader, row, offset)
+	}
+	return matter.ScopeUnknown, nil
+}
+
+func (ti *TableInfo) ReadScopeAtOffset(reader asciidoc.Reader, row *asciidoc.TableRow, offset int) (scope matter.Scope, err error) {
+	s, err := ti.ReadStringAtOffset(reader, row, offset)
+	if err != nil {
+		return matter.ScopeUnknown, err
+	}
+	switch strings.ToLower(s) {
+	case "node":
+		return matter.ScopeNode, nil
+	case "endpoint":
+		return matter.ScopeEndpoint, nil
+	default:
+		return matter.ScopeUnknown, nil
+	}
+}
+
+func (ti *TableInfo) ReadCertificationState(reader asciidoc.Reader, row *asciidoc.TableRow, columns ...matter.TableColumn) (cs matter.CertificationState, err error) {
+	for _, column := range columns {
+		offset, ok := ti.ColumnMap[column]
+		if !ok {
+			continue
+		}
+		s, err := ti.ReadStringAtOffset(reader, row, offset)
+		if err != nil {
+			return matter.CertificationStateUnknown, err
+		}
+		switch s {
+		case "A":
+			return matter.CertificationStateAllocated, nil
+		case "P":
+			return matter.CertificationStateProvisional, nil
+		case "C":
+			return matter.CertificationStateCertifiable, nil
+		case "D":
+			return matter.CertificationStateDeprecated, nil
+		case "N":
+			return matter.CertificationStateNotCertifiable, nil
+		case "X":
+			return matter.CertificationStateDoNotUse, nil
+		default:
+			return matter.CertificationStateUnknown, nil
+		}
+	}
+	return matter.CertificationStateUnknown, nil
+}
+
 type CellRenderer func(reader asciidoc.Reader, cellElements asciidoc.Elements, sb *strings.Builder) (source asciidoc.Element)
 
 func (ti *TableInfo) RenderColumn(reader asciidoc.Reader, row *asciidoc.TableRow, renderer CellRenderer, columns ...matter.TableColumn) (value string, source asciidoc.Element, ok bool) {

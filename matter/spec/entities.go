@@ -113,7 +113,6 @@ func (library *Library) parseEntities(spec *Specification) iter.Seq2[*asciidoc.D
 				matter.SectionCommand,
 				matter.SectionField,
 				matter.SectionUnknown:
-
 			default:
 				slog.Debug("Unexpected section type", "st", sectionType.String(), log.Path("source", section))
 			}

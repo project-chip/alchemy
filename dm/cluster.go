@@ -109,9 +109,9 @@ func (p *Renderer) renderAppCluster(doc *asciidoc.Document, entity types.Entity)
 			class.CreateAttr("baseCluster", clusterClassification.Hierarchy)
 		}
 	}
-	class.CreateAttr("role", strings.ToLower(clusterClassification.Role))
+	class.CreateAttr("role", strings.ToLower(clusterClassification.Role.String()))
 	class.CreateAttr("picsCode", clusterClassification.PICS)
-	class.CreateAttr("scope", clusterClassification.Scope)
+	class.CreateAttr("scope", clusterClassification.Scope.String())
 	renderQuality(class, clusterClassification.Quality)
 
 	err = renderFeatures(doc, cluster, c)

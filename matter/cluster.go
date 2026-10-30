@@ -8,8 +8,8 @@ import (
 
 type ClusterClassification struct {
 	Hierarchy string  `json:"hierarchy,omitempty"`
-	Role      string  `json:"role,omitempty"`
-	Scope     string  `json:"scope,omitempty"`
+	Role      Role    `json:"role,omitempty"`
+	Scope     Scope   `json:"scope,omitempty"`
 	PICS      string  `json:"pics,omitempty"`
 	Quality   Quality `json:"quality,omitempty"`
 }
