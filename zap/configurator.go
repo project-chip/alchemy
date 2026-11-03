@@ -188,7 +188,7 @@ func (c *Configurator) getSharingClusterCodes(owner *matter.Cluster, entity type
 		return
 	}
 	refs.Range(func(cluster *matter.Cluster, value struct{}) bool {
-		if cluster != owner && cluster.ID.Valid() {
+		if cluster.Name != owner.Name && cluster.ID.Valid() {
 			clusterIDs = append(clusterIDs, cluster.ID)
 		}
 		return true
