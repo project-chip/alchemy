@@ -115,3 +115,28 @@ func TestSkippedClusterWithoutSharedTypesIsEmpty(t *testing.T) {
 		t.Fatalf("configurator should be empty, got structs=%d enums=%d bitmaps=%d", len(c.Structs), len(c.Enums), len(c.Bitmaps))
 	}
 }
+
+// Distinct cluster objects with the same ID must only produce a single cluster code
+func TestSkippedClusterSharedTypesDeduplicatesClusterCodes(t *testing.T) {
+	s := &spec.Specification{ClusterRefs: spec.NewEntityRefs[*matter.Cluster]()}
+
+	base := newTestCluster("Mode Base", matter.InvalidID)
+	sharedStruct := matter.NewStruct(nil, base)
+	sharedStruct.Name = "ModeOptionStruct"
+	base.Structs = append(base.Structs, sharedStruct)
+
+	derived := newTestCluster("RVC Run Mode", matter.NewNumber(0x0054))
+	duplicate := newTestCluster("RVC Run Mode Duplicate", matter.NewNumber(0x0054))
+	other := newTestCluster("Laundry Washer Mode", matter.NewNumber(0x0051))
+
+	for _, cl := range []*matter.Cluster{base, derived, duplicate, other} {
+		s.ClusterRefs.Add(cl, sharedStruct)
+	}
+
+	sdkErrata := &errata.SDK{ClusterSkip: []string{"Mode Base"}}
+	c, err := NewConfigurator(s, nil, []types.Entity{base}, "mode-base-cluster.xml", sdkErrata, false)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	checkClusterCodes(t, "struct", c.Structs[sharedStruct], "0x0051", "0x0054")
+}

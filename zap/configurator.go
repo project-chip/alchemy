@@ -2,6 +2,7 @@ package zap
 
 import (
 	"log/slog"
+	"slices"
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
@@ -177,7 +178,7 @@ func (c *Configurator) addSharedTypesFromSkippedCluster(cluster *matter.Cluster)
 	}
 }
 
-// getSharingClusterCodes returns the sorted IDs of the clusters, other than the owner, that reference the entity
+// getSharingClusterCodes returns the sorted, deduplicated IDs of the clusters, other than the owner, that reference the entity
 func (c *Configurator) getSharingClusterCodes(owner *matter.Cluster, entity types.Entity) (clusterIDs []*matter.Number) {
 	if c.Spec == nil {
 		return
@@ -193,6 +194,9 @@ func (c *Configurator) getSharingClusterCodes(owner *matter.Cluster, entity type
 		return true
 	})
 	matter.SortNumbers(clusterIDs)
+	clusterIDs = slices.CompactFunc(clusterIDs, func(a, b *matter.Number) bool {
+		return a.Equals(b)
+	})
 	return
 }
 
