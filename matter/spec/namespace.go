@@ -75,21 +75,6 @@ func (library *Library) toNamespace(reader asciidoc.Reader, d *asciidoc.Document
 	return
 }
 
-func validateNamespaces(spec *Specification) {
-	iu := make(idUniqueness[*matter.Namespace])
-	nu := make(nameUniqueness[*matter.Namespace])
-	for _, ns := range spec.Namespaces {
-		iu.check(spec, ns.ID, ns)
-		nu.check(spec, ns)
-		stiu := make(idUniqueness[*matter.SemanticTag])
-		stnu := make(nameUniqueness[*matter.SemanticTag])
-		for _, tag := range ns.SemanticTags {
-			stiu.check(spec, tag.ID, tag)
-			stnu.check(spec, tag)
-		}
-	}
-}
-
 type tagFinder struct {
 	entityFinderCommon
 
@@ -166,14 +151,6 @@ func findTagRequirementNamespace(spec *Specification, ref matter.EntityReference
 			}
 		}
 	}
-	if namespace != nil {
-		if ref.ID.Valid() && !namespace.ID.Equals(ref.ID) {
-			spec.addError(&NamespaceIDMismatchTagRequirementError{Namespace: namespace, Requirement: requirement})
-		}
-		if ref.Name != "" && ref.Name != namespace.Name {
-			spec.addError(&NamespaceNameMismatchTagRequirementError{Namespace: namespace, Requirement: requirement})
-		}
-	}
 	return
 }
 
@@ -212,26 +189,6 @@ func findTagRequirementTag(spec *Specification, namespace *matter.Namespace, ref
 				break
 			}
 		}
-	}
-
-	if tag != nil {
-		if ref.ID.Valid() && !tag.ID.Equals(ref.ID) {
-			spec.addError(&TagIDMismatchTagRequirementError{SemanticTag: tag, Requirement: requirement})
-		}
-		if tag.Name != ref.Name {
-			spec.addError(&TagNameMismatchTagRequirementError{SemanticTag: tag, Requirement: requirement})
-		}
-		inNamespace := false
-		for _, t := range namespace.SemanticTags {
-			if t == tag {
-				inNamespace = true
-				break
-			}
-		}
-		if !inNamespace {
-			spec.addError(&NamespaceNameMismatchTagRequirementError{Namespace: namespace, Requirement: requirement})
-		}
-		return
 	}
 
 	return
