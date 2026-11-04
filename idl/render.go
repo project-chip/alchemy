@@ -3,6 +3,11 @@ package idl
 import (
 	"context"
 	"embed"
+	"log/slog"
+	"path/filepath"
+	"slices"
+	"strings"
+
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/handlebars"
@@ -13,10 +18,6 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/provisional"
-	"log/slog"
-	"path/filepath"
-	"slices"
-	"strings"
 )
 
 //go:embed templates
@@ -154,16 +155,13 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 
 	spec.TraverseEntities(p.spec, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
 
-		ce, ok := clusterEntities[parentCluster]
-		if !ok {
-			return parse.SearchShouldSkip
-		}
-
 		if !entityShouldBeIncluded(p.spec, p.provisionalFilter, entity) || !entityShouldBeIncluded(p.spec, p.provisionalFilter, parent) {
 			return parse.SearchShouldSkip
 		}
 		_, isDirectChildOfCluster := parent.(*matter.Cluster)
 		switch entity := entity.(type) {
+		case *matter.Cluster:
+			return parse.SearchShouldContinue
 		case *matter.Namespace:
 			field, ok := parent.(*matter.Field)
 			if ok {
@@ -178,6 +176,10 @@ func (p IdlRenderer) Process(cxt context.Context, input *pipeline.Data[*File], i
 				// We won't include these entities if they're only referenced by the cluster itself, not any of its attributes, commands or events
 				return parse.SearchShouldSkip
 			}
+		}
+		ce, ok := clusterEntities[parentCluster]
+		if !ok {
+			return parse.SearchShouldSkip
 		}
 		if _, isGlobal := p.spec.GlobalObjects[entity]; isGlobal {
 			globalEntities[entity] = true
