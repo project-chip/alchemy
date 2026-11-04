@@ -8,6 +8,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/errata"
+	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -197,11 +198,11 @@ func (p *patch) applyErrataLocality[T types.Entity](doc *asciidoc.Document, type
 			}
 		}
 		if entry.ForceLocal || entry.Keep {
-			if any(local) == nil && any(global) != nil {
+			if internal.IsNil(local) && !internal.IsNil(global) {
 				list = append(list, global)
 			}
 		} else if entry.ForceGlobal {
-			if any(global) == nil && any(local) != nil {
+			if internal.IsNil(global) && !internal.IsNil(local) {
 				list = slices.Delete(list, localIndex, localIndex+1)
 				p.spec.GlobalObjects[local] = doc
 			}

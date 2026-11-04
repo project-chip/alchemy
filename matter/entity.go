@@ -39,10 +39,15 @@ func (e entity) Cluster() *Cluster {
 }
 
 func (e entity) sameParent(o types.Entity) bool {
-	if e.parent == nil || o.Parent() == nil {
-		return internal.IsNil(e.parent) == internal.IsNil(o.Parent())
+	p1, p2 := e.parent, o.Parent()
+	if p1 == p2 {
+		return true
 	}
-	return e.parent.Equals(o.Parent())
+	p1Nil, p2Nil := internal.IsNil(p1), internal.IsNil(p2)
+	if p1Nil || p2Nil {
+		return p1Nil == p2Nil
+	}
+	return p1.Equals(p2)
 }
 
 func EntityName(e types.Entity) string {
