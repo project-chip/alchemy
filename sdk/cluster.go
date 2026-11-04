@@ -52,21 +52,21 @@ func (p *patch) applyErrataToCluster(spec *spec.Specification, cluster *matter.C
 	}
 
 	for _, bm := range cluster.Bitmaps {
-		p.applyErrataToBitmap(bm, errata.TypeNames, errata.Types)
+		p.applyErrataToBitmap(bm, errata.Types)
 	}
 	if errata.Types != nil && errata.Types.Bitmaps != nil {
 		cluster.Bitmaps = p.applyErrataLocality(doc, errata.Types.Bitmaps, p.globalBitmaps, cluster.Bitmaps)
 	}
 
 	for _, en := range cluster.Enums {
-		p.applyErrataToEnum(en, errata.TypeNames, errata.Types)
+		p.applyErrataToEnum(en, errata.Types)
 	}
 	if errata.Types != nil && errata.Types.Enums != nil {
 		cluster.Enums = p.applyErrataLocality(doc, errata.Types.Enums, p.globalEnums, cluster.Enums)
 	}
 
 	for _, s := range cluster.Structs {
-		err := p.applyErrataToStruct(s, errata.TypeNames, errata.Types)
+		err := p.applyErrataToStruct(s, errata.Types)
 		if err != nil {
 			return err
 		}
@@ -76,13 +76,13 @@ func (p *patch) applyErrataToCluster(spec *spec.Specification, cluster *matter.C
 	}
 
 	for _, cmd := range cluster.Commands {
-		err := p.applyErrataToCommand(cmd, errata.TypeNames, errata.Types)
+		err := p.applyErrataToCommand(cmd, errata.Types)
 		if err != nil {
 			return err
 		}
 	}
 	for _, ev := range cluster.Events {
-		err := p.applyErrataToEvent(ev, errata.TypeNames, errata.Types)
+		err := p.applyErrataToEvent(ev, errata.Types)
 		if err != nil {
 			return err
 		}
@@ -145,7 +145,7 @@ func (p *patch) applyErrataToCluster(spec *spec.Specification, cluster *matter.C
 					for bitmapName := range errata.SharedBitmaps {
 						for _, bm := range cluster.Bitmaps {
 							if matter.EntityName(bm) == bitmapName {
-								p.applyErrataToBitmap(bm, parentErrata.SDK.TypeNames, parentErrata.SDK.Types)
+								p.applyErrataToBitmap(bm, parentErrata.SDK.Types)
 								break
 							}
 						}
@@ -153,7 +153,7 @@ func (p *patch) applyErrataToCluster(spec *spec.Specification, cluster *matter.C
 					for enumName := range errata.SharedEnums {
 						for _, en := range cluster.Enums {
 							if matter.EntityName(en) == enumName {
-								p.applyErrataToEnum(en, parentErrata.SDK.TypeNames, parentErrata.SDK.Types)
+								p.applyErrataToEnum(en, parentErrata.SDK.Types)
 								break
 							}
 						}
@@ -161,7 +161,7 @@ func (p *patch) applyErrataToCluster(spec *spec.Specification, cluster *matter.C
 					for structName := range errata.SharedStructs {
 						for _, st := range cluster.Structs {
 							if matter.EntityName(st) == structName {
-								err = p.applyErrataToStruct(st, parentErrata.SDK.TypeNames, parentErrata.SDK.Types)
+								err = p.applyErrataToStruct(st, parentErrata.SDK.Types)
 								if err != nil {
 									return
 								}

@@ -8,7 +8,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (p *patch) applyErrataToStruct(st *matter.Struct, typeNames map[string]string, typeOverrides *errata.SDKTypes) error {
+func (p *patch) applyErrataToStruct(st *matter.Struct, typeOverrides *errata.SDKTypes) error {
 	if typeOverrides != nil {
 		ast, ok := typeOverrides.Structs[st.Name]
 		if !ok {
@@ -32,7 +32,6 @@ func (p *patch) applyErrataToStruct(st *matter.Struct, typeNames map[string]stri
 			return err
 		}
 	}
-	st.Name = applyTypeName(typeNames, st.Name)
 	return nil
 }
 

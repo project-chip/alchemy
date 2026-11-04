@@ -57,9 +57,26 @@ func (sp *Builder) buildDataTypeReferences() {
 }
 
 func TraverseEntities(spec *Specification, callback func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould) {
-	for _, c := range spec.ClustersByName {
+	for c := range spec.Clusters {
+		switch callback(nil, nil, c) {
+		case parse.SearchShouldStop:
+			return
+		case parse.SearchShouldSkip:
+			continue
+		}
 		traverseClusterEntities(c, func(parent, entity types.Entity) parse.SearchShould {
 			return callback(c, parent, entity)
+		})
+	}
+	for _, dt := range spec.DeviceTypes {
+		switch callback(nil, nil, dt) {
+		case parse.SearchShouldStop:
+			return
+		case parse.SearchShouldSkip:
+			continue
+		}
+		traverseDeviceTypeEntities(dt, func(parent, entity types.Entity) parse.SearchShould {
+			return callback(nil, parent, entity)
 		})
 	}
 	traverseEntityList(nil, nil, spec.GlobalObjects.Iterate(), func(parent, entity types.Entity) parse.SearchShould {

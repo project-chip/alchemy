@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -50,27 +51,23 @@ func (p *patch) patchGlobalObjects() (err error) {
 			continue
 		}
 		typeOverrides := errata.SDK.Types
-		typeNames := errata.SDK.TypeNames
 		switch entity := entity.(type) {
 		case *matter.Bitmap:
-			p.applyErrataToBitmap(entity, typeNames, typeOverrides)
-			p.globalBitmaps[entity.Name] = entity
+			p.applyErrataToBitmap(entity, typeOverrides)
 		case *matter.Enum:
-			p.applyErrataToEnum(entity, typeNames, typeOverrides)
-			p.globalEnums[entity.Name] = entity
+			p.applyErrataToEnum(entity, typeOverrides)
 		case *matter.Struct:
-			err = p.applyErrataToStruct(entity, typeNames, typeOverrides)
+			err = p.applyErrataToStruct(entity, typeOverrides)
 			if err != nil {
 				return err
 			}
-			p.globalStructs[entity.Name] = entity
 		case *matter.Command:
-			err = p.applyErrataToCommand(entity, typeNames, typeOverrides)
+			err = p.applyErrataToCommand(entity, typeOverrides)
 			if err != nil {
 				return err
 			}
 		case *matter.Event:
-			err = p.applyErrataToEvent(entity, typeNames, typeOverrides)
+			err = p.applyErrataToEvent(entity, typeOverrides)
 			if err != nil {
 				return err
 			}
@@ -107,7 +104,6 @@ func (patcher *Patcher) BeforeDataModelResolution(spec *spec.Specification) (err
 			continue
 		}
 		typeOverrides := errata.SDK.Types
-		typeNames := errata.SDK.TypeNames
 		extraTypes := errata.SDK.ExtraTypes
 		doc, ok := spec.Docs[path]
 		if !ok {
@@ -123,21 +119,21 @@ func (patcher *Patcher) BeforeDataModelResolution(spec *spec.Specification) (err
 					return err
 				}
 			case *matter.Bitmap:
-				p.applyErrataToBitmap(entity, typeNames, typeOverrides)
+				p.applyErrataToBitmap(entity, typeOverrides)
 			case *matter.Enum:
-				p.applyErrataToEnum(entity, typeNames, typeOverrides)
+				p.applyErrataToEnum(entity, typeOverrides)
 			case *matter.Struct:
-				err = p.applyErrataToStruct(entity, typeNames, typeOverrides)
+				err = p.applyErrataToStruct(entity, typeOverrides)
 				if err != nil {
 					return err
 				}
 			case *matter.Command:
-				err = p.applyErrataToCommand(entity, typeNames, typeOverrides)
+				err = p.applyErrataToCommand(entity, typeOverrides)
 				if err != nil {
 					return err
 				}
 			case *matter.Event:
-				err = p.applyErrataToEvent(entity, typeNames, typeOverrides)
+				err = p.applyErrataToEvent(entity, typeOverrides)
 				if err != nil {
 					return err
 				}
@@ -158,12 +154,44 @@ func (patcher *Patcher) BeforeDataModelResolution(spec *spec.Specification) (err
 	return
 }
 
-func (patcher *Patcher) AfterDataModelResolution(spec *spec.Specification) (err error) {
-	patchContentLaunchCluster(spec)
+func (p *Patcher) AfterDataModelResolution(s *spec.Specification) (err error) {
+	// We save renames for after data model resolution so that existing names are resolved correctly
+	spec.TraverseEntities(s, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
+		doc, ok := s.DocRefs[entity]
+		if !ok {
+			return parse.SearchShouldContinue
+		}
+		errata := s.Errata.Get(doc.Path.Relative)
+		if errata == nil {
+			return parse.SearchShouldContinue
+		}
+		if !errata.SDK.HasSdkPatch() {
+			return parse.SearchShouldContinue
+		}
+
+		typeNames := errata.SDK.TypeNames
+		switch entity := entity.(type) {
+		case *matter.Cluster:
+			entity.Name = applyTypeName(typeNames, entity.Name)
+		case *matter.Bitmap:
+			entity.Name = applyTypeName(typeNames, entity.Name)
+		case *matter.Enum:
+			entity.Name = applyTypeName(typeNames, entity.Name)
+		case *matter.Struct:
+			entity.Name = applyTypeName(typeNames, entity.Name)
+		case *matter.Command:
+			entity.Name = applyTypeName(typeNames, entity.Name)
+		case *matter.Event:
+			entity.Name = applyTypeName(typeNames, entity.Name)
+		case *matter.DeviceType:
+			entity.Name = applyTypeName(typeNames, entity.Name)
+		}
+		return parse.SearchShouldContinue
+	})
 	return
 }
 
-func (p *patch) applyErrataToCommand(st *matter.Command, typeNames map[string]string, typeOverrides *errata.SDKTypes) error {
+func (p *patch) applyErrataToCommand(st *matter.Command, typeOverrides *errata.SDKTypes) error {
 	if typeOverrides != nil {
 		override, ok := typeOverrides.Commands[st.Name]
 		if !ok {
@@ -190,11 +218,10 @@ func (p *patch) applyErrataToCommand(st *matter.Command, typeNames map[string]st
 			return err
 		}
 	}
-	st.Name = applyTypeName(typeNames, st.Name)
 	return nil
 }
 
-func (p *patch) applyErrataToEvent(ev *matter.Event, typeNames map[string]string, typeOverrides *errata.SDKTypes) error {
+func (p *patch) applyErrataToEvent(ev *matter.Event, typeOverrides *errata.SDKTypes) error {
 	if typeOverrides != nil {
 		override, ok := typeOverrides.Events[ev.Name]
 		if !ok {
@@ -233,7 +260,6 @@ func (p *patch) applyErrataToEvent(ev *matter.Event, typeNames map[string]string
 			return err
 		}
 	}
-	ev.Name = applyTypeName(typeNames, ev.Name)
 	return nil
 }
 
