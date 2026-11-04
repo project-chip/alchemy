@@ -45,6 +45,16 @@ type patch struct {
 }
 
 func (p *patch) patchGlobalObjects() (err error) {
+	for entity := range p.spec.GlobalObjects {
+		switch entity := entity.(type) {
+		case *matter.Bitmap:
+			p.globalBitmaps[entity.Name] = entity
+		case *matter.Enum:
+			p.globalEnums[entity.Name] = entity
+		case *matter.Struct:
+			p.globalStructs[entity.Name] = entity
+		}
+	}
 	for entity, doc := range p.spec.GlobalObjects {
 		errata := p.spec.Errata.Get(doc.Path.Relative)
 		if errata == nil || !errata.SDK.HasSdkPatch() {
