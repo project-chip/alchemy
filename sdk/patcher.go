@@ -104,7 +104,6 @@ func (patcher *Patcher) BeforeDataModelResolution(spec *spec.Specification) (err
 		globalBitmaps: make(map[string]*matter.Bitmap),
 		globalStructs: make(map[string]*matter.Struct),
 	}
-	resolveAtomicOperations(spec)
 	err = p.patchGlobalObjects()
 	if err != nil {
 		return err
@@ -165,6 +164,7 @@ func (patcher *Patcher) BeforeDataModelResolution(spec *spec.Specification) (err
 }
 
 func (p *Patcher) AfterDataModelResolution(s *spec.Specification) (err error) {
+	resolveAtomicOperations(s)
 	// We save renames for after data model resolution so that existing names are resolved correctly
 	spec.TraverseEntities(s, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
 		doc, ok := s.DocRefs[entity]
