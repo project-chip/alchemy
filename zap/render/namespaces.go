@@ -83,8 +83,8 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*
 		enumNames[name] = ns
 	}
 
-	for _, enumElement := range configurator.SelectElements("enum") {
-		configurator.RemoveChild(enumElement)
+	for _, name := range removeEnums(configurator, enumNames) {
+		slog.Warn("removing enum that no spec namespace generates", slog.String("path", namespaceXMLPath), slog.String("enum", name))
 	}
 
 	// Each namespace ID is named after its tag enum, so kPosition pairs with PositionTag.
@@ -129,6 +129,19 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*
 	out = postProcessTemplate(out)
 	outputs = append(outputs, pipeline.NewData(namespaceXMLPath, []byte(out)))
 
+	return
+}
+
+// removeEnums removes every enum from the configurator, and returns the names of the ones that
+// neither a spec namespace nor the namespace ID enum generates.
+func removeEnums(configurator *etree.Element, generated map[string]*matter.Namespace) (unknown []string) {
+	for _, enumElement := range configurator.SelectElements("enum") {
+		name := enumElement.SelectAttrValue("name", "")
+		if _, ok := generated[name]; !ok && name != namespaceIDEnumName {
+			unknown = append(unknown, name)
+		}
+		configurator.RemoveChild(enumElement)
+	}
 	return
 }
 
