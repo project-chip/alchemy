@@ -8,7 +8,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func applyErrataToStruct(st *matter.Struct, typeNames map[string]string, typeOverrides *errata.SDKTypes) error {
+func (p *patch) applyErrataToStruct(st *matter.Struct, typeOverrides *errata.SDKTypes) error {
 	if typeOverrides != nil {
 		ast, ok := typeOverrides.Structs[st.Name]
 		if !ok {
@@ -23,20 +23,19 @@ func applyErrataToStruct(st *matter.Struct, typeNames map[string]string, typeOve
 		case "fabric-scoped":
 			st.FabricScoping = matter.FabricScopingScoped
 		}
-		err := applyErrataToFields(st.Fields, ast)
+		err := p.applyErrataToFields(st.Fields, ast)
 		if err != nil {
 			return err
 		}
-		err = injectExtraFields(st, &st.Fields, types.EntityTypeStructField, ast.ExtraFields)
+		err = p.injectExtraFields(st, &st.Fields, types.EntityTypeStructField, ast.ExtraFields)
 		if err != nil {
 			return err
 		}
 	}
-	st.Name = applyTypeName(typeNames, st.Name)
 	return nil
 }
 
-func injectExtraFields(parent types.Entity, fields *matter.FieldSet, entityType types.EntityType, extraFields []*errata.SDKType) error {
+func (p *patch) injectExtraFields(parent types.Entity, fields *matter.FieldSet, entityType types.EntityType, extraFields []*errata.SDKType) error {
 	for _, f := range extraFields {
 		var found bool
 		for _, field := range *fields {
@@ -55,7 +54,7 @@ func injectExtraFields(parent types.Entity, fields *matter.FieldSet, entityType 
 				}
 				field.Type = types.ParseDataType(f.Type, rank)
 			}
-			err := applyErrataToField(field, f)
+			err := p.applyErrataToField(field, f)
 			if err != nil {
 				return err
 			}
@@ -65,12 +64,12 @@ func injectExtraFields(parent types.Entity, fields *matter.FieldSet, entityType 
 	return nil
 }
 
-func applyErrataToFields(fs matter.FieldSet, override *errata.SDKType) error {
+func (p *patch) applyErrataToFields(fs matter.FieldSet, override *errata.SDKType) error {
 	if len(override.Fields) != 0 {
 		for _, f := range override.Fields {
 			for _, field := range fs {
 				if field.Name == f.Name {
-					err := applyErrataToField(field, f)
+					err := p.applyErrataToField(field, f)
 					if err != nil {
 						return err
 					}
@@ -82,7 +81,7 @@ func applyErrataToFields(fs matter.FieldSet, override *errata.SDKType) error {
 	return nil
 }
 
-func applyErrataToField(field *matter.Field, override *errata.SDKType) error {
+func (p *patch) applyErrataToField(field *matter.Field, override *errata.SDKType) error {
 	if override == nil {
 		return nil
 	}

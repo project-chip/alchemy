@@ -2,6 +2,7 @@ package sdk
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
@@ -131,6 +132,7 @@ func addExtraEntity(cluster *matter.Cluster, e types.Entity) {
 	case *matter.Bitmap:
 		for _, bm := range cluster.Bitmaps {
 			if bm.Name == e.Name {
+				slog.Warn("Attempted to add extra bitmap from errata to cluster, but bitmap already exists", "cluster", cluster.Name, "bitmap", e.Name)
 				return
 			}
 		}
@@ -139,6 +141,7 @@ func addExtraEntity(cluster *matter.Cluster, e types.Entity) {
 	case *matter.Enum:
 		for _, en := range cluster.Enums {
 			if en.Name == e.Name {
+				slog.Warn("Attempted to add extra enum from errata to cluster, but enum already exists", "cluster", cluster.Name, "enum", e.Name)
 				return
 			}
 		}
@@ -147,6 +150,7 @@ func addExtraEntity(cluster *matter.Cluster, e types.Entity) {
 	case *matter.Struct:
 		for _, s := range cluster.Structs {
 			if s.Name == e.Name {
+				slog.Warn("Attempted to add extra struct from errata to cluster, but struct already exists", "cluster", cluster.Name, "struct", e.Name)
 				return
 			}
 		}
@@ -199,6 +203,7 @@ func addExtraEvents(cluster *matter.Cluster, extra *errata.SDKType) error {
 
 	for name, ev := range extra.Events {
 		if _, ok := existingEvents[name]; ok {
+			slog.Warn("Attempted to add extra event from errata to cluster, but event already exists", "cluster", cluster.Name, "event", name)
 			continue
 		}
 		event := matter.NewEvent(nil, cluster)
@@ -218,7 +223,6 @@ func addExtraEvents(cluster *matter.Cluster, extra *errata.SDKType) error {
 		}
 		if ev.Conformance != "" {
 			event.Conformance = conformance.ParseConformance(ev.Conformance)
-			resolveExtraConformance(cluster, event.Conformance)
 		}
 		for i, f := range ev.Fields {
 			field := matter.NewField(nil, event, types.EntityTypeEventField)
@@ -238,7 +242,6 @@ func addExtraEvents(cluster *matter.Cluster, extra *errata.SDKType) error {
 			}
 			if f.Conformance != "" {
 				field.Conformance = conformance.ParseConformance(f.Conformance)
-				resolveExtraConformance(cluster, field.Conformance)
 			}
 			if f.Fallback != "" {
 				field.Fallback = constraint.ParseLimit(f.Fallback)
@@ -261,7 +264,6 @@ func addExtraEvents(cluster *matter.Cluster, extra *errata.SDKType) error {
 	return nil
 }
 
-
 func addExtraAttributes(cluster *matter.Cluster, extra *errata.SDKType) error {
 	existingAttributes := make(map[string]struct{}, len(cluster.Attributes))
 	for _, f := range cluster.Attributes {
@@ -270,6 +272,7 @@ func addExtraAttributes(cluster *matter.Cluster, extra *errata.SDKType) error {
 
 	for name, a := range extra.Attributes {
 		if _, exists := existingAttributes[name]; exists {
+			slog.Warn("Attempted to add extra attribute from errata to cluster, but attribute already exists", "cluster", cluster.Name, "attribute", name)
 			continue
 		}
 		field := matter.NewAttribute(nil, cluster)
@@ -293,7 +296,6 @@ func addExtraAttributes(cluster *matter.Cluster, extra *errata.SDKType) error {
 		}
 		if a.Conformance != "" {
 			field.Conformance = conformance.ParseConformance(a.Conformance)
-			resolveExtraConformance(cluster, field.Conformance)
 		}
 		if a.Constraint != "" {
 			field.Constraint = constraint.ParseString(a.Constraint)
@@ -318,6 +320,7 @@ func addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) error {
 
 	for name, cmd := range extra.Commands {
 		if _, ok := existingCommands[name]; ok {
+			slog.Warn("Attempted to add extra command from errata to cluster, but command already exists", "cluster", cluster.Name, "command", name)
 			continue
 		}
 		command := matter.NewCommand(nil, cluster)
@@ -334,7 +337,6 @@ func addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) error {
 		}
 		if cmd.Conformance != "" {
 			command.Conformance = conformance.ParseConformance(cmd.Conformance)
-			resolveExtraConformance(cluster, command.Conformance)
 		}
 		if cmd.Direction != "" {
 			switch cmd.Direction {
@@ -365,7 +367,6 @@ func addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) error {
 			}
 			if f.Conformance != "" {
 				field.Conformance = conformance.ParseConformance(f.Conformance)
-				resolveExtraConformance(cluster, field.Conformance)
 			}
 			if f.Fallback != "" {
 				field.Fallback = constraint.ParseLimit(f.Fallback)
@@ -406,45 +407,4 @@ func addExtraCommands(cluster *matter.Cluster, extra *errata.SDKType) error {
 		}
 	}
 	return nil
-}
-
-func resolveExtraConformance(cluster *matter.Cluster, conf conformance.Conformance) {
-	if conf == nil {
-		return
-	}
-	switch c := conf.(type) {
-	case conformance.Set:
-		for _, cx := range c {
-			resolveExtraConformance(cluster, cx)
-		}
-	case *conformance.Mandatory:
-		resolveExtraConformanceExpression(cluster, c.Expression)
-	case *conformance.Optional:
-		resolveExtraConformanceExpression(cluster, c.Expression)
-	}
-}
-
-func resolveExtraConformanceExpression(cluster *matter.Cluster, expr conformance.Expression) {
-	if expr == nil {
-		return
-	}
-	switch e := expr.(type) {
-	case *conformance.EqualityExpression:
-		resolveExtraConformanceExpression(cluster, e.Left)
-		resolveExtraConformanceExpression(cluster, e.Right)
-	case *conformance.LogicalExpression:
-		resolveExtraConformanceExpression(cluster, e.Left)
-		for _, re := range e.Right {
-			resolveExtraConformanceExpression(cluster, re)
-		}
-	case *conformance.IdentifierExpression:
-		if e.Entity == nil && cluster.Features != nil {
-			for f := range cluster.Features.FeatureBits() {
-				if f.Code == e.ID || f.Name() == e.ID {
-					e.Entity = f
-					break
-				}
-			}
-		}
-	}
 }

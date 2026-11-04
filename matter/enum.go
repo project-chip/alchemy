@@ -33,6 +33,9 @@ func (en *Enum) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
+	if !en.sameParent(oen) {
+		return false
+	}
 	return en.Name == oen.Name
 }
 
@@ -44,14 +47,14 @@ func (e *Enum) NullValue() uint64 {
 	return e.Type.NullValue()
 }
 
-func (e *Enum) Clone() *Enum {
-	ne := &Enum{entity: entity{source: e.source, parent: e.parent}, Name: e.Name, Description: e.Description}
+func (e *Enum) CloneTo(newParent types.Entity) *Enum {
+	ne := &Enum{entity: entity{source: e.source, parent: newParent}, Name: e.Name, Description: e.Description}
 	if e.Type != nil {
 		ne.Type = e.Type.Clone()
 	}
 	ne.Values = make(EnumValueSet, 0, len(e.Values))
 	for _, ev := range e.Values {
-		ne.Values = append(ne.Values, ev.Clone())
+		ne.Values = append(ne.Values, ev.CloneTo(ne))
 	}
 	return ne
 }
@@ -59,7 +62,7 @@ func (e *Enum) Clone() *Enum {
 func (e *Enum) Inherit(parent *Enum) error {
 	mergedValues := make(EnumValueSet, 0, len(parent.Values))
 	for _, ev := range parent.Values {
-		mergedValues = append(mergedValues, ev.Clone())
+		mergedValues = append(mergedValues, ev.CloneTo(e))
 	}
 	for _, ev := range e.Values {
 		var matching *EnumValue
@@ -70,7 +73,7 @@ func (e *Enum) Inherit(parent *Enum) error {
 			}
 		}
 		if matching == nil {
-			mergedValues = append(mergedValues, ev.Clone())
+			mergedValues = append(mergedValues, ev.CloneTo(e))
 			continue
 		}
 		if len(ev.Summary) > 0 {
@@ -148,14 +151,17 @@ func (ev *EnumValue) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
+	if !ev.sameParent(oev) {
+		return false
+	}
 	if ev.Value.Valid() && oev.Value.Valid() {
 		return ev.Value.Equals(oev.Value)
 	}
 	return ev.Name == oev.Name
 }
 
-func (ev *EnumValue) Clone() *EnumValue {
-	nev := &EnumValue{entity: entity{source: ev.source}, Name: ev.Name, Value: ev.Value.Clone(), Summary: ev.Summary}
+func (ev *EnumValue) CloneTo(newParent types.Entity) *EnumValue {
+	nev := &EnumValue{entity: entity{source: ev.source, parent: newParent}, Name: ev.Name, Value: ev.Value.Clone(), Summary: ev.Summary}
 	if len(ev.Conformance) > 0 {
 		nev.Conformance = ev.Conformance.CloneSet()
 	}

@@ -27,11 +27,11 @@ func (*Struct) EntityType() types.EntityType {
 	return types.EntityTypeStruct
 }
 
-func (s *Struct) Clone() *Struct {
-	ns := &Struct{Name: s.Name, Description: s.Description, FabricScoping: s.FabricScoping}
+func (s *Struct) CloneTo(newParent types.Entity) *Struct {
+	ns := &Struct{entity: entity{source: s.source, parent: newParent}, Name: s.Name, Description: s.Description, FabricScoping: s.FabricScoping}
 	ns.Fields = make(FieldSet, 0, len(s.Fields))
 	for _, f := range s.Fields {
-		ns.Fields = append(ns.Fields, f.Clone())
+		ns.Fields = append(ns.Fields, f.CloneTo(ns))
 	}
 	return ns
 }
@@ -49,6 +49,9 @@ func (s *Struct) Inherit(parent *Struct) {
 func (s *Struct) Equals(e types.Entity) bool {
 	os, ok := e.(*Struct)
 	if !ok {
+		return false
+	}
+	if !s.sameParent(os) {
 		return false
 	}
 	return s.Name == os.Name

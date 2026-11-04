@@ -288,10 +288,3 @@ func (sp *Builder) getCustomDataTypeFromFieldReference(library *Library, cluster
 	}
 	return
 }
-
-func (spec *Specification) ResolveDataTypeReferences() {
-	builder := &Builder{Spec: spec}
-	specEntityFinder := newSpecEntityFinder(spec, nil, nil)
-	builder.resolveBaseClusterDataTypeReferences(specEntityFinder)
-	builder.resolveInheritedClusterDataTypeReferences(specEntityFinder)
-}

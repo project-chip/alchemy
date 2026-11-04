@@ -26,6 +26,9 @@ func (c *Condition) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
+	if !c.sameParent(oc) {
+		return false
+	}
 	if c.ID.Valid() && oc.ID.Valid() {
 		return c.ID.Equals(oc.ID)
 	}
