@@ -40,20 +40,23 @@ func (ev *Event) Equals(e types.Entity) bool {
 	if !ok {
 		return false
 	}
+	if !ev.sameParent(oev) {
+		return false
+	}
 	if ev.ID.Valid() && oev.ID.Valid() {
 		return ev.ID.Equals(oev.ID)
 	}
 	return ev.Name == oev.Name
 }
 
-func (e *Event) Clone() *Event {
-	ne := &Event{entity: entity{source: e.source}, ID: e.ID.Clone(), Name: e.Name, Description: e.Description, Priority: e.Priority, Access: e.Access}
+func (e *Event) CloneTo(newParent types.Entity) *Event {
+	ne := &Event{entity: entity{source: e.source, parent: newParent}, ID: e.ID.Clone(), Name: e.Name, Description: e.Description, Priority: e.Priority, Access: e.Access}
 	if len(e.Conformance) > 0 {
 		ne.Conformance = e.Conformance.CloneSet()
 	}
 	ne.Fields = make(FieldSet, 0, len(e.Fields))
 	for _, f := range e.Fields {
-		ne.Fields = append(ne.Fields, f.Clone())
+		ne.Fields = append(ne.Fields, f.CloneTo(ne))
 	}
 	return ne
 }

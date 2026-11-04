@@ -7,7 +7,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func applyErrataToEnum(en *matter.Enum, typeNames map[string]string, typeOverrides *errata.SDKTypes) {
+func (p *patch) applyErrataToEnum(en *matter.Enum, typeOverrides *errata.SDKTypes) {
 	if typeOverrides != nil {
 		override, ok := typeOverrides.Enums[en.Name]
 		if ok && override != nil {
@@ -51,5 +51,4 @@ func applyErrataToEnum(en *matter.Enum, typeNames map[string]string, typeOverrid
 			}
 		}
 	}
-	en.Name = applyTypeName(typeNames, en.Name)
 }

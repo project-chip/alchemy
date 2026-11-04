@@ -75,10 +75,6 @@ func (bm *Bitmap) AddBit(b Bit) {
 	bm.Bits = append(bm.Bits, b)
 }
 
-func (bm *Bitmap) Clone() *Bitmap {
-	return bm.CloneTo(bm.parent)
-}
-
 func (bm *Bitmap) CloneTo(parent types.Entity) *Bitmap {
 	nbm := &Bitmap{entity: entity{parent: parent, source: bm.source}, Name: bm.Name, Description: bm.Description}
 	if bm.Type != nil {
@@ -109,13 +105,13 @@ func (bm *Bitmap) Inherit(parent *Bitmap) error {
 	mergedBits := make(BitSet, 0, len(parent.Bits))
 
 	for _, b := range parent.Bits {
-		mergedBits = append(mergedBits, b.Clone())
+		mergedBits = append(mergedBits, b.CloneTo(bm))
 	}
 	for _, b := range bm.Bits {
 		var matched bool
 		for i, mb := range mergedBits {
 			if b.Bit() == mb.Bit() {
-				bc := b.Clone()
+				bc := b.CloneTo(bm)
 				err := bc.Inherit(mb)
 				if err != nil {
 					return err
@@ -126,7 +122,7 @@ func (bm *Bitmap) Inherit(parent *Bitmap) error {
 			}
 		}
 		if !matched {
-			mergedBits = append(mergedBits, b.Clone())
+			mergedBits = append(mergedBits, b.CloneTo(bm))
 			continue
 		}
 	}
@@ -190,7 +186,6 @@ type Bit interface {
 	SetParent(parent types.Entity)
 
 	Inherit(parent Bit) error
-	Clone() Bit
 	CloneTo(parent types.Entity) Bit
 	Equals(e types.Entity) bool
 

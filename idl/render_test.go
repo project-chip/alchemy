@@ -53,6 +53,7 @@ func TestEntityShouldBeIncluded(t *testing.T) {
 func TestSuppressProvisionalIntegration(t *testing.T) {
 	// 1. Mock specification
 	specification := &spec.Specification{
+		Clusters:        make(map[*matter.Cluster]struct{}),
 		ClustersByID:    make(map[uint64]*matter.Cluster),
 		ClustersByName:  make(map[string]*matter.Cluster),
 		DeviceTypesByID: make(map[uint64]*matter.DeviceType),
@@ -72,6 +73,7 @@ func TestSuppressProvisionalIntegration(t *testing.T) {
 
 	specification.ClustersByID[1] = cluster
 	specification.ClustersByName["MyCluster"] = cluster
+	specification.Clusters[cluster] = struct{}{}
 
 	provCluster := matter.NewCluster(nil)
 	provCluster.Name = "ProvCluster"
@@ -80,6 +82,7 @@ func TestSuppressProvisionalIntegration(t *testing.T) {
 
 	specification.ClustersByID[2] = provCluster
 	specification.ClustersByName["ProvCluster"] = provCluster
+	specification.Clusters[provCluster] = struct{}{}
 
 	provCluster2 := matter.NewCluster(nil)
 	provCluster2.Name = "ProvCluster2"
@@ -88,6 +91,7 @@ func TestSuppressProvisionalIntegration(t *testing.T) {
 
 	specification.ClustersByID[3] = provCluster2
 	specification.ClustersByName["ProvCluster2"] = provCluster2
+	specification.Clusters[provCluster2] = struct{}{}
 
 	// Enums
 	provEnum := &matter.Enum{Name: "ProvEnum", Type: types.NewDataType(types.BaseDataTypeEnum8, types.DataTypeRankScalar)}

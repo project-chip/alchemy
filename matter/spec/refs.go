@@ -47,19 +47,36 @@ func (cr *EntityRefs[T]) Get(m types.Entity) (pipeline.Map[T, struct{}], bool) {
 	return cm, ok
 }
 
-func (spec *Specification) BuildDataTypeReferences() {
-	TraverseEntities(spec, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
+func (sp *Builder) buildDataTypeReferences() {
+	TraverseEntities(sp.Spec, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
 		if parent != nil {
-			spec.DataTypeRefs.Add(parent, entity)
+			sp.Spec.DataTypeRefs.Add(parent, entity)
 		}
 		return parse.SearchShouldContinue
 	})
 }
 
 func TraverseEntities(spec *Specification, callback func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould) {
-	for _, c := range spec.ClustersByName {
+	for c := range spec.Clusters {
+		switch callback(nil, nil, c) {
+		case parse.SearchShouldStop:
+			return
+		case parse.SearchShouldSkip:
+			continue
+		}
 		traverseClusterEntities(c, func(parent, entity types.Entity) parse.SearchShould {
 			return callback(c, parent, entity)
+		})
+	}
+	for _, dt := range spec.DeviceTypes {
+		switch callback(nil, nil, dt) {
+		case parse.SearchShouldStop:
+			return
+		case parse.SearchShouldSkip:
+			continue
+		}
+		traverseDeviceTypeEntities(dt, func(parent, entity types.Entity) parse.SearchShould {
+			return callback(nil, parent, entity)
 		})
 	}
 	traverseEntityList(nil, nil, spec.GlobalObjects.Iterate(), func(parent, entity types.Entity) parse.SearchShould {

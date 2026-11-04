@@ -38,6 +38,18 @@ func (e entity) Cluster() *Cluster {
 	return findCluster(e.parent)
 }
 
+func (e entity) sameParent(o types.Entity) bool {
+	p1, p2 := e.parent, o.Parent()
+	if p1 == p2 {
+		return true
+	}
+	p1Nil, p2Nil := internal.IsNil(p1), internal.IsNil(p2)
+	if p1Nil || p2Nil {
+		return p1Nil == p2Nil
+	}
+	return p1.Equals(p2)
+}
+
 func EntityName(e types.Entity) string {
 	if internal.IsNil(e) {
 		return "unknown"

@@ -31,10 +31,14 @@ const (
 	EntityTypeDeviceTypeRequirement
 	EntityTypeClusterRequirement
 	EntityTypeConditionRequirement
+	EntityTypeDeviceTypeClusterRequirement
+	EntityTypeDeviceTypeElementRequirement
+	EntityTypeDeviceTypeTagRequirement
 	EntityTypeDef
 	EntityTypeNamespace
 	EntityTypeConstant
 	EntityTypeSemanticTag
+	EntityTypeTagRequirement
 )
 
 type Entity interface {

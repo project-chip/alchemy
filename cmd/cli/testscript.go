@@ -23,6 +23,8 @@ type TestScript struct {
 
 func (cmd *TestScript) Run(cc *Context) (err error) {
 
+	sdkPatcher := sdk.NewPatcher()
+
 	err = sdk.CheckAlchemyVersion(cmd.SDKOptions.SdkRoot)
 
 	if err != nil {
@@ -31,13 +33,8 @@ func (cmd *TestScript) Run(cc *Context) (err error) {
 
 	var specification *spec.Specification
 	var specDocs spec.DocSet
-	specification, specDocs, err = spec.Parse(cc, cmd.ParserOptions, cmd.ProcessingOptions, []spec.BuilderOption{spec.PatchForSdk(true)}, cmd.ASCIIDocAttributes.ToList())
+	specification, specDocs, err = spec.Parse(cc, cmd.ParserOptions, cmd.ProcessingOptions, []spec.BuilderOption{spec.Patch(sdkPatcher)}, cmd.ASCIIDocAttributes.ToList())
 
-	if err != nil {
-		return
-	}
-
-	err = sdk.ApplyErrata(specification)
 	if err != nil {
 		return
 	}

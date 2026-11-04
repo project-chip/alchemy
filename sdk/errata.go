@@ -1,262 +1,158 @@
 package sdk
 
 import (
-	"fmt"
 	"log/slog"
+	"slices"
+	"strings"
 
-	"github.com/project-chip/alchemy/errata"
+	"github.com/project-chip/alchemy/asciidoc/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-type ApplyErrataOption func(*applyErrataOptions)
-
-type applyErrataOptions struct {
-	skipSharedEntities bool
+// patchMiscellaneousErrata is a grab bag of oddities in the spec that need to be corrected for use in the SDK
+func patchMiscellaneousErrata(spec *spec.Specification) {
+	patchLabelCluster(spec)
+	patchLevelControlCluster(spec)
 }
 
-func WithSkipSharedEntities(skip bool) ApplyErrataOption {
-	return func(o *applyErrataOptions) {
-		o.skipSharedEntities = skip
+func patchContentLaunchCluster(spec *spec.Specification) {
+	/*
+		Another hacky workaround: the spec defines CharacteristicEnum under Media Playback, and Content Launcher
+		just has a reference to it; by default, we would share the enums, but the hand-coded ZAP XML has its own copy of the
+		enum. This function makes a copy of the enum and updates references
+	*/
+	contentLaunchCluster, ok := spec.ClustersByName["Content Launcher"]
+	if !ok {
+		slog.Warn("Could not find Content Launch cluster for patching")
+		return
+	}
+	mediaPlaybackCluster, ok := spec.ClustersByName["Media Playback"]
+	if !ok {
+		slog.Warn("Could not find Media Playback cluster for patching")
+		return
+	}
+	for _, s := range mediaPlaybackCluster.Enums {
+		if s.Name != "CharacteristicEnum" {
+			continue
+		}
+		clone := s.CloneTo(contentLaunchCluster)
+		contentLaunchCluster.MoveEnum(clone)
+		spec.ClusterRefs.Add(contentLaunchCluster, clone)
+		// Update any references to the enum on the Content Launch cluster
+		contentLaunchCluster.TraverseDataTypes(func(parent, entity types.Entity) parse.SearchShould {
+			if entity == s {
+				switch parent := parent.(type) {
+				case *matter.Field:
+					fieldType := parent.Type
+					if fieldType == nil {
+						return parse.SearchShouldContinue
+					}
+					if fieldType.IsArray() {
+						fieldType = fieldType.EntryType
+					}
+					if fieldType == nil {
+						return parse.SearchShouldContinue
+					}
+					fieldType.Entity = clone
+				}
+			}
+			return parse.SearchShouldContinue
+		})
+		break
+
 	}
 }
 
-func ApplyErrata(spec *spec.Specification, opts ...ApplyErrataOption) (err error) {
-	var options applyErrataOptions
-	for _, opt := range opts {
-		opt(&options)
+func patchLabelCluster(spec *spec.Specification) {
+	/*
+		Another hacky workaround: the spec defines LabelStruct under a base cluster called Label Cluster, but the
+		ZAP XML has this struct under Fixed Label and User Label
+	*/
+	fixedLabelCluster, ok := spec.ClustersByName["Fixed Label"]
+	if !ok {
+		slog.Warn("Could not find Fixed Label cluster")
+		return
 	}
-
-	for path, errata := range spec.Errata.All() {
-		if !errata.SDK.HasSdkPatch() {
-			continue
-		}
-		typeOverrides := errata.SDK.Types
-		typeNames := errata.SDK.TypeNames
-		extraTypes := errata.SDK.ExtraTypes
-		doc, ok := spec.Docs[path]
-		if !ok {
-			slog.Warn("Errata refers to unknown document", "path", path)
-			continue
-		}
-		entities := spec.EntitiesForDocument(doc)
-		for _, entity := range entities {
-			switch entity := entity.(type) {
-			case *matter.Cluster:
-				err = applyErrataToCluster(spec, entity, errata.SDK, options)
-				if err != nil {
-					return err
-				}
-			case *matter.Bitmap:
-				applyErrataToBitmap(entity, typeNames, typeOverrides)
-			case *matter.Enum:
-				applyErrataToEnum(entity, typeNames, typeOverrides)
-			case *matter.Struct:
-				err = applyErrataToStruct(entity, typeNames, typeOverrides)
-				if err != nil {
-					return err
-				}
-			case *matter.Command:
-				err = applyErrataToCommand(entity, typeNames, typeOverrides)
-				if err != nil {
-					return err
-				}
-			case *matter.Event:
-				err = applyErrataToEvent(entity, typeNames, typeOverrides)
-				if err != nil {
-					return err
-				}
-			case *matter.DeviceType:
-				applyErrataToDeviceType(entity, typeOverrides)
-			}
-		}
-		if extraTypes != nil {
-			err = addExtraTypes(extraTypes, entities)
-			if err != nil {
-				return err
-			}
-
-		}
+	userLabelCluster, ok := spec.ClustersByName["User Label"]
+	if !ok {
+		slog.Warn("Could not find User Label cluster")
+		return
 	}
-	for entity, doc := range spec.GlobalObjects {
-		errata := spec.Errata.Get(doc.Path.Relative)
-		if errata == nil || !errata.SDK.HasSdkPatch() {
-			continue
-		}
-		typeOverrides := errata.SDK.Types
-		typeNames := errata.SDK.TypeNames
-		switch entity := entity.(type) {
-		case *matter.Bitmap:
-			applyErrataToBitmap(entity, typeNames, typeOverrides)
-		case *matter.Enum:
-			applyErrataToEnum(entity, typeNames, typeOverrides)
-		case *matter.Struct:
-			err = applyErrataToStruct(entity, typeNames, typeOverrides)
-			if err != nil {
-				return err
-			}
-		case *matter.Command:
-			err = applyErrataToCommand(entity, typeNames, typeOverrides)
-			if err != nil {
-				return err
-			}
-		case *matter.Event:
-			err = applyErrataToEvent(entity, typeNames, typeOverrides)
-			if err != nil {
-				return err
-			}
-		}
+	labelCluster, ok := spec.ClustersByName["Label"]
+	if !ok {
+		slog.Warn("Could not find Label cluster")
+		return
 	}
-	spec.ResolveDataTypeReferences()
-	spec.BuildDataTypeReferences()
-	spec.BuildClusterReferences()
-	spec.ResolveConformances()
-	return
-}
+	for i, s := range labelCluster.Structs {
+		if s.Name == "LabelStruct" {
+			fixedLabelCluster.MoveStruct(s)
+			spec.DataTypeRefs.Add(fixedLabelCluster, s)
 
-func applyErrataToCommand(st *matter.Command, typeNames map[string]string, typeOverrides *errata.SDKTypes) error {
-	if typeOverrides != nil {
-		override, ok := typeOverrides.Commands[st.Name]
-		if !ok {
-			return nil
-		}
-		if override.OverrideName != "" {
-			st.Name = override.OverrideName
-		}
-		if override.Description != "" {
-			st.Description = override.Description
-		}
-		if override.Conformance != "" {
-			st.Conformance = conformance.ParseConformance(override.Conformance)
-		}
-		if override.Response != "" {
-			st.Response = types.ParseDataType(override.Response, types.DataTypeRankScalar)
-			// Since ApplyErrata runs after type resolution, we must manually resolve the response name
-			// to its command entity so that IDL and other templates can reference it properly.
-			if cluster, ok := st.Parent().(*matter.Cluster); ok {
-				var desiredDirection matter.Interface
-				switch st.Direction {
-				case matter.InterfaceServer:
-					desiredDirection = matter.InterfaceClient
-				case matter.InterfaceClient:
-					desiredDirection = matter.InterfaceServer
-				}
-				for _, cmd := range cluster.Commands {
-					if cmd.Direction == desiredDirection && cmd.Name == override.Response {
-						st.Response.Entity = cmd
-						break
+			clone := s.CloneTo(userLabelCluster)
+			userLabelCluster.MoveStruct(clone)
+			spec.DataTypeRefs.Add(userLabelCluster, clone)
+
+			userLabelCluster.TraverseDataTypes(func(parent, entity types.Entity) parse.SearchShould {
+				if entity == s {
+					switch parent := parent.(type) {
+					case *matter.Field:
+						fieldType := parent.Type
+						if fieldType == nil {
+							return parse.SearchShouldContinue
+						}
+						if fieldType.IsArray() {
+							fieldType = fieldType.EntryType
+						}
+						if fieldType == nil {
+							return parse.SearchShouldContinue
+						}
+						fieldType.Entity = clone
 					}
 				}
-				if st.Response.Entity == nil {
-					slog.Warn("Failed to resolve overridden response", slog.String("command", st.Name), slog.String("response", override.Response))
-				}
+				return parse.SearchShouldContinue
+			})
+
+			labelCluster.Structs = slices.Delete(labelCluster.Structs, i, i+1)
+			break
+		}
+	}
+}
+
+func patchLevelControlCluster(spec *spec.Specification) {
+	levelControlCluster, ok := spec.ClustersByID[0x0008]
+	if !ok {
+		slog.Warn("Unable to patch Level Control cluster; not found")
+		return
+	}
+	// Level Control cluster has a series of OnOff commands that are spec'd to have the same parameters as their non-OnOff versions,
+	// but those parameters aren't explicitly listed in the spec, so we copy them over
+	for _, c := range levelControlCluster.Commands {
+		if !text.HasCaseInsensitiveSuffix(c.Name, "WithOnOff") {
+			continue
+		}
+		if len(c.Fields) > 0 {
+			// Assume that if we have fields already, this has been fixed in the spec
+			continue
+		}
+		baseName := text.TrimCaseInsensitiveSuffix(c.Name, "WithOnOff")
+		var matchingCommand *matter.Command
+		for _, mc := range levelControlCluster.Commands {
+			if strings.EqualFold(mc.Name, baseName) {
+				matchingCommand = mc
+				break
 			}
 		}
-		err := applyErrataToFields(st.Fields, override)
-		if err != nil {
-			return err
+		if matchingCommand == nil {
+			slog.Warn("Unable to find matching command for Level Control cluster", slog.String("commandName", c.Name))
+			continue
 		}
-		err = injectExtraFields(st, &st.Fields, types.EntityTypeCommandField, override.ExtraFields)
-		if err != nil {
-			return err
+		for _, f := range matchingCommand.Fields {
+			clone := f.CloneTo(c)
+			clone.Type.Entity = f.Type.Entity
+			c.Fields = append(c.Fields, clone)
 		}
-	}
-	st.Name = applyTypeName(typeNames, st.Name)
-	return nil
-}
-
-func applyErrataToEvent(ev *matter.Event, typeNames map[string]string, typeOverrides *errata.SDKTypes) error {
-	if typeOverrides != nil {
-		override, ok := typeOverrides.Events[ev.Name]
-		if !ok {
-			return nil
-		}
-		if override.OverrideName != "" {
-			ev.Name = override.OverrideName
-		}
-		if override.Description != "" {
-			ev.Description = override.Description
-		}
-		if override.Priority != "" {
-			ev.Priority = override.Priority
-		}
-		if override.Conformance != "" {
-			ev.Conformance = conformance.ParseConformance(override.Conformance)
-		}
-		switch override.FabricScoping {
-		case "none":
-			ev.Access.FabricScoping = matter.FabricScopingUnscoped
-		case "fabric-scoped":
-			ev.Access.FabricScoping = matter.FabricScopingScoped
-		}
-		switch override.FabricSensitivity {
-		case "none":
-			ev.Access.FabricSensitivity = matter.FabricSensitivityInsensitive
-		case "fabric-sensitive":
-			ev.Access.FabricSensitivity = matter.FabricSensitivitySensitive
-		}
-		err := applyErrataToFields(ev.Fields, override)
-		if err != nil {
-			return err
-		}
-		err = injectExtraFields(ev, &ev.Fields, types.EntityTypeEventField, override.ExtraFields)
-		if err != nil {
-			return err
-		}
-	}
-	ev.Name = applyTypeName(typeNames, ev.Name)
-	return nil
-}
-
-func applyErrataToDeviceType(deviceType *matter.DeviceType, typeOverrides *errata.SDKTypes) {
-	if typeOverrides == nil || typeOverrides.DeviceTypes == nil {
-		return
-	}
-	override, ok := typeOverrides.DeviceTypes[deviceType.Name]
-	if !ok || override == nil {
-		return
-	}
-	if override.OverrideProfileID != "" {
-		deviceType.ProfileID = override.OverrideProfileID
-	}
-}
-
-func applyTypeName(typeNames map[string]string, name string) string {
-	if len(typeNames) == 0 {
-		return name
-	}
-	if override, ok := typeNames[name]; ok {
-		return override
-	}
-	return name
-}
-
-func overrideQuality(override *errata.SDKType, defaultQuality matter.Quality) matter.Quality {
-	if override.Quality == "" {
-		return defaultQuality
-	}
-	switch override.Quality {
-	case "none":
-		return matter.QualityNone
-	default:
-		return matter.ParseQuality(override.Quality)
-	}
-}
-
-func overrideAccess(override *errata.SDKType, entityType types.EntityType, defaultAccess matter.Access) (matter.Access, error) {
-	if override.Access == "" {
-		return defaultAccess, nil
-	}
-	switch override.Access {
-	case "none":
-		return matter.Access{}, nil
-	default:
-		access, parsed := spec.ParseAccess(override.Access, entityType)
-		if parsed {
-			return access, nil
-		}
-		return defaultAccess, fmt.Errorf("failed to parse access string %q for entity type %s", override.Access, entityType)
 	}
 }

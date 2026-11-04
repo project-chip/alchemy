@@ -10,6 +10,16 @@ import (
 
 type EntityCallback func(parent types.Entity, entity types.Entity) parse.SearchShould
 
+func iterateEntityList[T types.Entity](entities []T) iter.Seq[types.Entity] {
+	return func(yield func(types.Entity) bool) {
+		for _, e := range entities {
+			if !yield(e) {
+				return
+			}
+		}
+	}
+}
+
 func traverseYieldEntity(parent types.Entity, entity types.Entity, callback EntityCallback) bool {
 	switch callback(parent, entity) {
 	case parse.SearchShouldStop:
@@ -127,6 +137,28 @@ func traverseClusterEntities(c *matter.Cluster, callback EntityCallback) parse.S
 		}
 	}
 	if !traverseEntityList(nil, c, c.Attributes.Iterate(), callback) {
+		return parse.SearchShouldStop
+	}
+	return parse.SearchShouldContinue
+}
+
+func traverseDeviceTypeEntities(dt *matter.DeviceType, callback EntityCallback) parse.SearchShould {
+	if !traverseEntityList(dt, dt, iterateEntityList(dt.Conditions), callback) {
+		return parse.SearchShouldStop
+	}
+	if !traverseEntityList(dt, dt, iterateEntityList(dt.ClusterRequirements), callback) {
+		return parse.SearchShouldStop
+	}
+	if !traverseEntityList(dt, dt, iterateEntityList(dt.ElementRequirements), callback) {
+		return parse.SearchShouldStop
+	}
+	if !traverseEntityList(dt, dt, iterateEntityList(dt.ConditionRequirements), callback) {
+		return parse.SearchShouldStop
+	}
+	if !traverseEntityList(dt, dt, iterateEntityList(dt.TagRequirements), callback) {
+		return parse.SearchShouldStop
+	}
+	if !traverseEntityList(dt, dt, iterateEntityList(dt.DeviceTypeRequirements), callback) {
 		return parse.SearchShouldStop
 	}
 	return parse.SearchShouldContinue
