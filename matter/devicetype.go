@@ -19,7 +19,7 @@ type DeviceType struct {
 
 	SupersetOf string `json:"supersetOf,omitempty"`
 	Class      string `json:"class,omitempty"`
-	Scope      string `json:"scope,omitempty"`
+	Scope      Scope  `json:"scope,omitempty"`
 
 	ProfileID string `json:"profileId,omitempty"`
 

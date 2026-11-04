@@ -122,7 +122,6 @@ func (library *Library) toEvents(spec *Specification, reader asciidoc.Reader, d 
 				slog.String("eventId", ev.ID.IntString()),
 				slog.String("previousEvent", existing.Name),
 			)
-			spec.addError(&DuplicateEntityIDError{Entity: ev, Previous: existing})
 		}
 		existing, ok = eventNameMap[ev.Name]
 		if ok {
@@ -133,7 +132,6 @@ func (library *Library) toEvents(spec *Specification, reader asciidoc.Reader, d 
 				slog.String("eventId", ev.ID.IntString()),
 				slog.String("previousEvent", existing.Name),
 			)
-			spec.addError(&DuplicateEntityNameError{Entity: ev, Previous: existing})
 		}
 		eventMap[ev.ID.Value()] = ev
 		eventNameMap[ev.Name] = ev
@@ -179,30 +177,4 @@ func (ef *eventFinder) suggestIdentifiers(identifier string, suggestions map[typ
 	if ef.inner != nil {
 		ef.inner.suggestIdentifiers(identifier, suggestions)
 	}
-}
-
-func validateEvents(spec *Specification) {
-	for c := range spec.Clusters {
-		idu := make(idUniqueness[*matter.Event])
-		nu := make(nameUniqueness[*matter.Event])
-		cv := make(conformanceValidation)
-		for _, e := range c.Events {
-			cv.add(e, e.Conformance)
-			validateEvent(spec, e, idu, nu)
-		}
-		cv.check(spec)
-	}
-	idu := make(idUniqueness[*matter.Event])
-	nu := make(nameUniqueness[*matter.Event])
-	for obj := range spec.GlobalObjects {
-		if e, ok := obj.(*matter.Event); ok {
-			validateEvent(spec, e, idu, nu)
-		}
-	}
-}
-
-func validateEvent(spec *Specification, e *matter.Event, idu idUniqueness[*matter.Event], nu nameUniqueness[*matter.Event]) {
-	idu.check(spec, e.ID, e)
-	nu.check(spec, e)
-	validateFields(spec, e, e.Fields)
 }

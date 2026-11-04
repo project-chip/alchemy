@@ -90,6 +90,12 @@ func determineDocType(sectionInfoCache SectionInfoCache, docInfoCache DocumentIn
 				return matter.DocTypeDeviceTypeIndex, nil
 			}
 			return matter.DocTypeDeviceType, nil
+		case "master_lists":
+			name := filepath.Base(path)
+			name = text.TrimCaseInsensitiveSuffix(name, filepath.Ext(name))
+			if text.HasCaseInsensitivePrefix(name, "Master") && text.HasCaseInsensitiveSuffix(name, "List") {
+				return matter.DocTypeMasterList, nil
+			}
 		case "multi_admin":
 			return matter.DocTypeMultiAdmin, nil
 		case "namespaces":

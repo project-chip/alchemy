@@ -328,29 +328,6 @@ func (ff *fieldFinder) suggestIdentifiers(identifier string, suggestions map[typ
 	}
 }
 
-func validateFields(spec *Specification, parent types.Entity, fields matter.FieldSet) {
-	idu := make(idUniqueness[*matter.Field])
-	nu := make(nameUniqueness[*matter.Field])
-	cv := make(conformanceValidation)
-	for _, f := range fields {
-		if !f.ID.Valid() {
-			slog.Warn("Field has invalid ID", log.Path("source", f), matter.LogEntity("parent", parent), slog.String("fieldName", f.Name))
-		}
-		fieldId := f.ID.Value()
-		idu.check(spec, f.ID, f)
-		nu.check(spec, f)
-		if fieldId >= 0xFE && fieldId <= 0x100 {
-			slog.Warn("Struct is using global field ID", log.Path("source", f), matter.LogEntity("parent", parent), slog.String("fieldName", f.Name), slog.String("fieldId", f.ID.HexString()))
-		}
-		cv.add(f, f.Conformance)
-
-		validateAccess(spec, f, f.Access)
-		validateConstraint(spec, f)
-		validateFallback(spec, f)
-	}
-	cv.check(spec)
-}
-
 var nullIndicationPattern = regexp.MustCompile(`(?i)(?:\A|\s|\b)(null)(?:\b|\s|\z)`)
 
 func checkNullText(library *Library, doc *asciidoc.Document, section *asciidoc.Section, field *matter.Field) {

@@ -41,6 +41,8 @@ type Specification struct {
 
 	GlobalObjects types.EntitySet[*asciidoc.Document]
 
+	MasterLists map[types.EntityType]*matter.MasterList
+
 	entitiesByID map[string]map[types.Entity]map[*matter.Cluster]struct{}
 
 	Docs       map[string]*asciidoc.Document
@@ -49,7 +51,8 @@ type Specification struct {
 
 	Errors []Error
 
-	libraryIndex map[*asciidoc.Document]*Library
+	libraryIndex     map[*asciidoc.Document]*Library
+	ignoredHierarchy bool
 }
 
 func newSpec(specRoot string, config *config.Config, errata *errata.Collection) *Specification {
@@ -71,6 +74,7 @@ func newSpec(specRoot string, config *config.Config, errata *errata.Collection) 
 		entityRefs:        make(map[*asciidoc.Document][]types.Entity),
 
 		GlobalObjects: make(types.EntitySet[*asciidoc.Document]),
+		MasterLists:   make(map[types.EntityType]*matter.MasterList),
 
 		entitiesByID:               make(map[string]map[types.Entity]map[*matter.Cluster]struct{}),
 		deviceTypeCompositionCache: make(map[*matter.DeviceType]*matter.DeviceTypeComposition),

@@ -46,6 +46,8 @@ const (
 	SectionGlobalElements
 	SectionDataTypeDef
 	SectionDataTypeConstant
+	SectionMasterLists
+	SectionMasterList
 )
 
 var TopLevelSectionOrders = map[DocType][]Section{
@@ -130,6 +132,8 @@ var sectionTypeStrings = map[Section]string{
 	SectionDerivedClusterNamespace:               "DerivedClusterNamespace",
 	SectionModeTags:                              "ModeTags",
 	SectionGlobalElements:                        "GlobalElements",
+	SectionMasterLists:                           "MasterLists",
+	SectionMasterList:                            "MasterList",
 }
 
 func (st Section) String() string {
