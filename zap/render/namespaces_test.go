@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 )
@@ -42,5 +43,29 @@ func TestRemoveEnumsReportsEnumsNoNamespaceGenerates(t *testing.T) {
 	}
 	if configurator.SelectElement("struct") == nil {
 		t.Error("removeEnums removed a non-enum element")
+	}
+}
+
+func TestSemanticTagNameAppliesErrataOverrideName(t *testing.T) {
+	nsErrata := &errata.Errata{SDK: errata.SDK{Types: &errata.SDKTypes{Enums: map[string]*errata.SDKType{
+		"AreaTypeTag": {Fields: []*errata.SDKType{{Name: "MediaTvRoom", OverrideName: "Media/TV Room"}}},
+	}}}}
+
+	tests := []struct {
+		nsErrata *errata.Errata
+		enumName string
+		tagName  string
+		want     string
+	}{
+		{nsErrata, "AreaTypeTag", "MediaTvRoom", "Media/TV Room"},
+		{nsErrata, "AreaTypeTag", "Kitchen", "Kitchen"},
+		{nsErrata, "LandmarkTag", "MediaTvRoom", "MediaTvRoom"},
+		{errata.DefaultErrata, "AreaTypeTag", "MediaTvRoom", "MediaTvRoom"},
+	}
+	for _, tt := range tests {
+		tag := &matter.SemanticTag{Name: tt.tagName}
+		if got := semanticTagName(tt.nsErrata, tt.enumName, tag); got != tt.want {
+			t.Errorf("semanticTagName(%s, %s) = %q, want %q", tt.enumName, tt.tagName, got, tt.want)
+		}
 	}
 }

@@ -11,6 +11,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/internal/vcs"
@@ -99,13 +100,15 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*
 
 	var docs []*asciidoc.Document
 	for _, ns := range namespaces {
+		enumName := matterNamespaceName(p.spec, ns)
+		nsErrata := namespaceErrata(p.spec, ns)
 		nse := configurator.CreateElement("enum")
-		nse.CreateAttr("name", matterNamespaceName(p.spec, ns))
+		nse.CreateAttr("name", enumName)
 		nse.CreateAttr("type", "enum8")
 		for _, val := range ns.SemanticTags {
 			ve := nse.CreateElement("item")
 			ve.CreateAttr("value", val.ID.ShortHexString())
-			ve.CreateAttr("name", val.Name)
+			ve.CreateAttr("name", semanticTagName(nsErrata, enumName, val))
 		}
 		if ref, ok := p.spec.DocRefs[ns]; ok && !slices.Contains(docs, ref) {
 			docs = append(docs, ref)
@@ -168,11 +171,34 @@ func matterNamespaceName(specification *spec.Specification, ns *matter.Namespace
 		name += "Type"
 	}
 	name = name + "Tag"
-	if doc, ok := specification.DocRefs[ns]; ok {
-		errata := specification.Errata.Get(doc.Path.Relative)
-		if override, ok := errata.SDK.TypeNames[name]; ok {
-			return override
-		}
+	if override, ok := namespaceErrata(specification, ns).SDK.TypeNames[name]; ok {
+		return override
 	}
 	return name
+}
+
+// namespaceErrata returns the errata of the document that defines the namespace.
+func namespaceErrata(specification *spec.Specification, ns *matter.Namespace) *errata.Errata {
+	if doc, ok := specification.DocRefs[ns]; ok {
+		return specification.Errata.Get(doc.Path.Relative)
+	}
+	return errata.DefaultErrata
+}
+
+// semanticTagName names a tag in the tag enum enumName. An errata field of that enum whose name is
+// the tag's spec name replaces it with its override-name, verbatim.
+func semanticTagName(nsErrata *errata.Errata, enumName string, tag *matter.SemanticTag) string {
+	if nsErrata.SDK.Types == nil {
+		return tag.Name
+	}
+	override, ok := nsErrata.SDK.Types.Enums[enumName]
+	if !ok || override == nil {
+		return tag.Name
+	}
+	for _, field := range override.Fields {
+		if field.Name == tag.Name && field.OverrideName != "" {
+			return field.OverrideName
+		}
+	}
+	return tag.Name
 }
