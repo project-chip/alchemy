@@ -193,7 +193,7 @@ func (sp *Builder) resolveFieldDataTypes(library *Library, cluster *matter.Clust
 	}
 	switch dataType.BaseType {
 	case types.BaseDataTypeTag:
-		sp.getTagNamespace(field)
+		sp.getTagNamespace(library, field, finder)
 	case types.BaseDataTypeList:
 		sp.resolveFieldDataTypes(library, cluster, fieldSet, field, dataType.EntryType, finder)
 	case types.BaseDataTypeCustom:
