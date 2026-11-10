@@ -41,7 +41,11 @@ func (c *Choice) Equal(oc *Choice) bool {
 }
 
 func (c *Choice) Clone() *Choice {
-	return &Choice{Set: c.Set, Limit: c.Limit.Clone()}
+	nc := &Choice{Set: c.Set}
+	if c.Limit != nil {
+		nc.Limit = c.Limit.Clone()
+	}
+	return nc
 }
 
 type ChoiceLimit interface {

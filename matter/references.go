@@ -29,9 +29,10 @@ type EntityReference struct {
 
 func (er EntityReference) Clone() EntityReference {
 	return EntityReference{
-		ID:   er.ID.Clone(),
-		Name: er.Name,
-		XRef: er.XRef,
+		ID:       er.ID.Clone(),
+		Name:     er.Name,
+		XRef:     er.XRef,
+		Resolved: er.Resolved,
 	}
 }
 
