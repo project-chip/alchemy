@@ -62,7 +62,7 @@ func (sp *Builder) resolveConformances() {
 			sp.resolveEntityConformance(conditionFinder, dtr, dtr.Conformance)
 		}
 		for _, dtcr := range deviceType.ComposedDeviceTypeClusterRequirements {
-			sp.resolveEntityConformance(conditionFinder, dtcr.ClusterRequirement, dtcr.ClusterRequirement.Conformance)
+			sp.resolveEntityConformance(conditionFinder, dtcr, dtcr.Conformance)
 		}
 		for _, dter := range deviceType.ComposedDeviceTypeElementRequirements {
 			sp.resolveEntityConformance(conditionFinder, dter.ElementRequirement, dter.ElementRequirement.Conformance)

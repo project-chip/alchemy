@@ -18,7 +18,6 @@ func (spec *Specification) ComposeDeviceType(deviceType *matter.DeviceType) (com
 	composedDevices := make(map[*matter.DeviceType]*matter.DeviceTypeComposition)
 
 	if deviceType.SubsetDeviceType != nil {
-
 		var subsetDeviceTypeComposition *matter.DeviceTypeComposition
 		subsetDeviceTypeComposition, err = spec.ComposeDeviceType(deviceType.SubsetDeviceType)
 		if err != nil {
@@ -27,8 +26,8 @@ func (spec *Specification) ComposeDeviceType(deviceType *matter.DeviceType) (com
 
 		for _, cr := range subsetDeviceTypeComposition.ClusterRequirements {
 
-			if cr.ClusterRequirement.Cluster == nil {
-				slog.Warn("cluster requirement missing cluster", slog.String("deviceType", deviceType.Name))
+			if cr.Cluster == nil {
+				slog.Warn("cluster requirement missing cluster", slog.String("deviceType", deviceType.Name), slog.String("clusterName", cr.ClusterRef.Name), log.Path("source", cr))
 				continue
 			}
 			var subsetOrigin = cr.RequirementOrigin
@@ -36,7 +35,7 @@ func (spec *Specification) ComposeDeviceType(deviceType *matter.DeviceType) (com
 				subsetOrigin = matter.RequirementOriginSubsetDeviceType
 			}
 
-			dcr := matter.NewDeviceTypeClusterRequirement(deviceType, cr.ClusterRequirement, cr.Source())
+			dcr := cr.CloneTo(deviceType)
 			dcr.RequirementOrigin = subsetOrigin
 
 			composition.ClusterRequirements = append(composition.ClusterRequirements, dcr)
@@ -85,7 +84,7 @@ func (spec *Specification) ComposeDeviceType(deviceType *matter.DeviceType) (com
 					if cr.RequirementOrigin == matter.RequirementOriginBaseDeviceType {
 						origin = matter.RequirementOriginBaseDeviceType
 					}
-					dtcr := matter.NewDeviceTypeClusterRequirement(deviceType, cr.ClusterRequirement, cr.Source())
+					dtcr := cr.CloneTo(deviceType)
 					dtcr.DeviceTypeRequirement = req
 					dtcr.RequirementOrigin = origin
 
@@ -106,12 +105,12 @@ func (spec *Specification) ComposeDeviceType(deviceType *matter.DeviceType) (com
 	}
 
 	for _, cr := range deviceType.ComposedDeviceTypeClusterRequirements {
-		if cr.ClusterRequirement.Cluster == nil {
-			slog.Warn("Cluster requirement on composed device type missing cluster", log.Path("source", cr.ClusterRequirement))
+		if cr.Cluster == nil {
+			slog.Warn("Cluster requirement on composed device type missing cluster", log.Path("source", cr))
 			continue
 		}
 		if cr.DeviceType == nil {
-			slog.Warn("Cluster requirement on composed device type missing device type", log.Path("source", cr.ClusterRequirement))
+			slog.Warn("Cluster requirement on composed device type missing device type", log.Path("source", cr))
 			continue
 		}
 		var comp *matter.DeviceTypeComposition
@@ -122,11 +121,11 @@ func (spec *Specification) ComposeDeviceType(deviceType *matter.DeviceType) (com
 			var ok bool
 			comp, ok = composedDevices[cr.DeviceType]
 			if !ok {
-				slog.Warn("Cluster requirement on composed device type not found", log.Path("source", cr.ClusterRequirement))
+				slog.Warn("Cluster requirement on composed device type not found", log.Path("source", cr))
 				continue
 			}
 		}
-		cr = cr.Clone()
+		cr = cr.CloneTo(deviceType)
 		cr.RequirementOrigin = matter.RequirementOriginComposedDeviceType
 		comp.ClusterRequirements = append(comp.ClusterRequirements, cr)
 	}
@@ -152,7 +151,7 @@ func (spec *Specification) ComposeDeviceType(deviceType *matter.DeviceType) (com
 				continue
 			}
 		}
-		er = er.Clone()
+		er = er.CloneTo(deviceType)
 		er.RequirementOrigin = matter.RequirementOriginComposedDeviceType
 		comp.ElementRequirements = append(comp.ElementRequirements, er)
 	}
@@ -166,7 +165,12 @@ func (spec *Specification) ComposeDeviceType(deviceType *matter.DeviceType) (com
 		if cr.Cluster == nil {
 			continue
 		}
-		dtcr := matter.NewDeviceTypeClusterRequirement(deviceType, cr, cr.Source())
+		dtcr := matter.NewDeviceTypeClusterRequirement(deviceType, cr.Source())
+		dtcr.Cluster = cr.Cluster
+		dtcr.Interface = cr.Interface
+		dtcr.Quality = cr.Quality
+		dtcr.Conformance = cr.Conformance.CloneSet()
+		dtcr.ClusterRef = cr.ClusterRef.Clone()
 		dtcr.RequirementOrigin = origin
 		composition.ClusterRequirements = append(composition.ClusterRequirements, dtcr)
 	}

@@ -273,28 +273,27 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 		}
 	}
 	for _, cr := range dt.ComposedDeviceTypeClusterRequirements {
-		if cr.ClusterRequirement.Cluster == nil {
+		if cr.Cluster == nil {
 			var ok bool
-			cr.ClusterRequirement.Cluster, ok = resolveEntityReference(spec, &cr.ClusterRequirement.ClusterRef, entityFinder, spec.findClusterByID, spec.findClusterByName, cr)
+			cr.Cluster, ok = resolveEntityReference(spec, &cr.ClusterRef, entityFinder, spec.findClusterByID, spec.findClusterByName, cr)
 			if !ok {
 				slog.Error("unknown cluster ID for cluster requirement on composing device type",
-					slog.String("clusterId", cr.ClusterRequirement.ClusterRef.ID.HexString()),
-					slog.String("clusterName", cr.ClusterRequirement.ClusterRef.Name),
+					slog.String("clusterId", cr.ClusterRef.ID.HexString()),
+					slog.String("clusterName", cr.ClusterRef.Name),
 					slog.String("deviceType", dt.Name),
-					log.Path("source", cr.ClusterRequirement))
+					log.Path("source", cr))
 			}
 		}
 		if cr.DeviceType == nil {
-			cr.DeviceType = findDeviceTypeRequirementDeviceType(spec, cr.DeviceTypeRef, cr.ClusterRequirement, entityFinder)
+			cr.DeviceType = findDeviceTypeRequirementDeviceType(spec, cr.DeviceTypeRef, cr, entityFinder)
 			if cr.DeviceType != nil {
 				if dtr, ok := deviceTypes[cr.DeviceType]; !ok && cr.DeviceType != spec.RootNodeDeviceType && cr.DeviceType != spec.BaseDeviceType {
 					slog.Error("Cluster requirement on composing device type refers to unincluded device type",
 						slog.String("deviceTypeId", cr.DeviceTypeRef.ID.HexString()),
 						slog.String("deviceTypeName", cr.DeviceTypeRef.Name),
 						slog.String("deviceType", dt.Name),
-						log.Path("source", cr.ClusterRequirement))
+						log.Path("source", cr))
 				} else {
-					cr.DeviceType = cr.DeviceType
 					cr.DeviceTypeRequirement = dtr
 				}
 			}

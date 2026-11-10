@@ -51,11 +51,14 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 	elementRequirements := make(map[*matter.Cluster][]*matter.DeviceTypeElementRequirement)
 
 	for _, cr := range dc.ClusterRequirements {
-		switch cr.ClusterRequirement.Interface {
+		if cr.Cluster == nil {
+			continue
+		}
+		switch cr.Interface {
 		case matter.InterfaceServer:
-			servers[cr.ClusterRequirement.Cluster] = append(servers[cr.ClusterRequirement.Cluster], cr)
+			servers[cr.Cluster] = append(servers[cr.Cluster], cr)
 		case matter.InterfaceClient:
-			clients[cr.ClusterRequirement.Cluster] = append(clients[cr.ClusterRequirement.Cluster], cr)
+			clients[cr.Cluster] = append(clients[cr.Cluster], cr)
 		}
 	}
 	for _, er := range dc.ElementRequirements {
@@ -194,9 +197,9 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.DeviceTypeClusterRequirement, elementRequirements map[*matter.Cluster][]*matter.DeviceTypeElementRequirement) (state conformance.ConformanceState, err error) {
 	req := clusterRequirements[len(clusterRequirements)-1]
 
-	state, err = req.ClusterRequirement.Conformance.Eval(cxt)
+	state, err = req.Conformance.Eval(cxt)
 	if err != nil {
-		err = fmt.Errorf("error evaluating conformance of cluster requirement %s: %w", req.ClusterRequirement.ClusterRef.Name, err)
+		err = fmt.Errorf("error evaluating conformance of cluster requirement %s: %w", req.ClusterRef.Name, err)
 		return
 
 	}
@@ -206,7 +209,7 @@ func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.
 		// Normally, we do not include clusters from subset device types...
 
 		var hasElements bool
-		ers := elementRequirements[req.ClusterRequirement.Cluster]
+		ers := elementRequirements[req.Cluster]
 
 		for _, er := range ers {
 			switch er.RequirementOrigin {
@@ -221,7 +224,7 @@ func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.
 			break
 		}
 		// ...or unless the base device/subset requirement is not mandatory, but it evaluates as mandatory in this context
-		if !conformance.IsMandatory(req.ClusterRequirement.Conformance) && state.State == conformance.StateMandatory {
+		if !conformance.IsMandatory(req.Conformance) && state.State == conformance.StateMandatory {
 			break
 		}
 		state.State = conformance.StateUnknown
@@ -233,7 +236,7 @@ func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.
 		var deviceState conformance.ConformanceState
 		deviceState, err = req.DeviceTypeRequirement.Conformance.Eval(cxt)
 		if err != nil {
-			err = fmt.Errorf("error evaluating conformance of device requirement %s: %w", req.ClusterRequirement.ClusterRef.Name, err)
+			err = fmt.Errorf("error evaluating conformance of device requirement %s: %w", req.ClusterRef.Name, err)
 			return
 		}
 		switch deviceState.State {

@@ -12,6 +12,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -106,7 +107,7 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 		copy(reqs, deviceType.ClusterRequirements)
 		slices.SortStableFunc(reqs, sortClusterRequirements)
 		for _, cr := range reqs {
-			err = renderClusterRequirement(cx, deviceType, cr, true)
+			err = renderClusterRequirement(cx, deviceType, cr.Cluster, cr.ClusterRef, cr.Interface, cr.Quality, cr.Conformance)
 			if err != nil {
 				return
 			}
@@ -124,7 +125,7 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 		if cr.DeviceType == nil {
 			continue
 		}
-		if cr.ClusterRequirement.Cluster == nil {
+		if cr.Cluster == nil {
 			continue
 		}
 
@@ -178,14 +179,14 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 				reqs := make([]*matter.DeviceTypeClusterRequirement, len(dtr.clusterRequirements))
 				copy(reqs, dtr.clusterRequirements)
 				slices.SortStableFunc(reqs, func(a, b *matter.DeviceTypeClusterRequirement) int {
-					cmp := a.ClusterRequirement.ClusterRef.ID.Compare(b.ClusterRequirement.ClusterRef.ID)
+					cmp := a.Cluster.ID.Compare(b.Cluster.ID)
 					if cmp != 0 {
 						return cmp
 					}
-					return a.ClusterRequirement.Interface.Compare(b.ClusterRequirement.Interface)
+					return a.Interface.Compare(b.Interface)
 				})
 				for _, cr := range reqs {
-					err = renderClusterRequirement(crx, dt, cr.ClusterRequirement, false)
+					err = renderClusterRequirement(crx, dt, cr.Cluster, cr.ClusterRef, matter.InterfaceUnknown, cr.Quality, cr.Conformance)
 					if err != nil {
 						return
 					}
@@ -201,7 +202,7 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 		copy(reqs, deviceType.ClusterRequirements)
 		slices.SortStableFunc(reqs, sortClusterRequirements)
 		for _, cr := range reqs {
-			err = renderClusterRequirement(cx, deviceType, cr, true)
+			err = renderClusterRequirement(cx, deviceType, cr.Cluster, cr.ClusterRef, cr.Interface, cr.Quality, cr.Conformance)
 			if err != nil {
 				return
 			}
@@ -216,30 +217,28 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 	return
 }
 
-func renderClusterRequirement(parent *etree.Element, deviceType *matter.DeviceType, cr *matter.ClusterRequirement, renderInterface bool) (err error) {
+func renderClusterRequirement(parent *etree.Element, deviceType *matter.DeviceType, cluster *matter.Cluster, clusterRef matter.EntityReference, iface matter.Interface, quality matter.Quality, conformance conformance.Conformance) (err error) {
 	clx := parent.CreateElement("cluster")
-	cluster := cr.Cluster
 	if cluster != nil {
 		clx.CreateAttr("id", cluster.ID.HexString())
 		clx.CreateAttr("name", cluster.Name)
 	} else {
-		clx.CreateAttr("id", cr.ClusterRef.ID.HexString())
-		clx.CreateAttr("name", cr.ClusterRef.Name)
+		clx.CreateAttr("id", clusterRef.ID.HexString())
+		clx.CreateAttr("name", clusterRef.Name)
 	}
-	if renderInterface {
-		switch cr.Interface {
-		case matter.InterfaceClient:
-			clx.CreateAttr("side", "client")
-		case matter.InterfaceServer:
-			clx.CreateAttr("side", "server")
-		}
+	switch iface {
+	case matter.InterfaceClient:
+		clx.CreateAttr("side", "client")
+	case matter.InterfaceServer:
+		clx.CreateAttr("side", "server")
 	}
-	renderQuality(clx, cr.Quality)
-	err = renderConformanceElement(cr.Conformance, clx, nil)
+
+	renderQuality(clx, quality)
+	err = renderConformanceElement(conformance, clx, nil)
 	if err != nil {
 		return
 	}
-	err = renderElementRequirements(deviceType, cr, clx)
+	err = renderElementRequirements(deviceType, clusterRef, clx)
 	if err != nil {
 		return
 	}
@@ -260,13 +259,13 @@ type commandRequirement struct {
 	fields      []*matter.ElementRequirement
 }
 
-func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.ClusterRequirement, clx *etree.Element) (err error) {
+func renderElementRequirements(deviceType *matter.DeviceType, clusterRef matter.EntityReference, clx *etree.Element) (err error) {
 	var featureRequirements []*matter.ElementRequirement
 	var attributeRequirements []*matter.ElementRequirement
 	var commandRequirements []*commandRequirement
 	var eventRequirements []*matter.ElementRequirement
 	for _, er := range deviceType.ElementRequirements {
-		if er.ClusterRef.ID.Equals(cr.ClusterRef.ID) {
+		if er.ClusterRef.ID.Equals(clusterRef.ID) {
 			switch er.Element {
 			case types.EntityTypeFeature:
 				featureRequirements = append(featureRequirements, er)
@@ -286,14 +285,14 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 					var isCommand bool
 					cmd, isCommand = parent.(*matter.Command)
 					if !isCommand {
-						slog.Warn("Missing parent command on element requirement", slog.String("deviceType", deviceType.Name), slog.String("commandName", er.ElementRef.Name), slog.String("clusterName", cr.ClusterRef.Name))
+						slog.Warn("Missing parent command on element requirement", slog.String("deviceType", deviceType.Name), slog.String("commandName", er.ElementRef.Name), slog.String("clusterName", clusterRef.Name))
 					}
 				case nil:
 				default:
 					err = fmt.Errorf("unexpected entity type on command or command field requirement: %T", entity)
 				}
 				if cmd == nil {
-					slog.Warn("Unknown command on element requirement", slog.String("deviceType", deviceType.Name), slog.String("commandName", er.ElementRef.Name), slog.String("clusterName", cr.ClusterRef.Name))
+					slog.Warn("Unknown command on element requirement", slog.String("deviceType", deviceType.Name), slog.String("commandName", er.ElementRef.Name), slog.String("clusterName", clusterRef.Name))
 					break
 				}
 				var cr *commandRequirement
@@ -324,7 +323,7 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 			case *matter.Feature:
 				ex.CreateAttr("code", feature.Code)
 			case nil:
-				slog.Warn("Unknown feature on element requirement", slog.String("deviceType", deviceType.Name), slog.String("featureName", fr.ElementRef.Name), slog.String("clusterName", cr.ClusterRef.Name))
+				slog.Warn("Unknown feature on element requirement", slog.String("deviceType", deviceType.Name), slog.String("featureName", fr.ElementRef.Name), slog.String("clusterName", clusterRef.Name))
 				continue
 			}
 			err = renderConformanceElement(fr.Conformance, ex, nil)
@@ -389,7 +388,7 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 					return
 				}
 			case nil:
-				slog.Warn("Unknown event on element requirement", slog.String("deviceType", deviceType.Name), slog.String("eventName", er.ElementRef.Name), slog.String("clusterName", cr.ClusterRef.Name))
+				slog.Warn("Unknown event on element requirement", slog.String("deviceType", deviceType.Name), slog.String("eventName", er.ElementRef.Name), slog.String("clusterName", clusterRef.Name))
 			}
 		}
 	}

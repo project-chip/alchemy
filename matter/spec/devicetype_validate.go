@@ -106,11 +106,12 @@ func validateTagRequirement(spec *Specification, tr *matter.TagRequirement) {
 func validateDeviceTypeClusterRequirements(spec *Specification, deviceType *matter.DeviceType, referencedDeviceTypes map[*matter.DeviceType]*matter.DeviceTypeRequirement, clusterRequirements []*matter.DeviceTypeClusterRequirement) {
 	cv := make(conformanceValidation)
 	for _, cer := range clusterRequirements {
-		cv.add(cer.ClusterRequirement, cer.ClusterRequirement.Conformance)
+		cv.add(cer, cer.Conformance)
 		if !checkDeviceReference(spec, cer.DeviceTypeRef, cer.DeviceType, referencedDeviceTypes, cer) {
 			continue
 		}
-		validateClusterRequirement(spec, deviceType, cer.ClusterRequirement)
+		checkEntityReference(spec, cer.ClusterRef, cer.Cluster, types.EntityTypeCluster, cer)
+		validateConformance(spec, cer, cer.Conformance)
 	}
 	cv.check(spec)
 }
