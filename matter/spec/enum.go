@@ -186,30 +186,3 @@ func (ef *enumFinder) suggestIdentifiers(identifier string, suggestions map[type
 		ef.inner.suggestIdentifiers(identifier, suggestions)
 	}
 }
-
-func validateEnums(spec *Specification) {
-	for c := range spec.Clusters {
-		for _, e := range c.Enums {
-			validateEnum(spec, e)
-		}
-	}
-	for _, en := range types.FilterSet[*matter.Enum](spec.GlobalObjects) {
-		validateEnum(spec, en)
-	}
-}
-
-func validateEnum(spec *Specification, en *matter.Enum) {
-	idu := make(idUniqueness[*matter.EnumValue])
-	nu := make(nameUniqueness[*matter.EnumValue])
-	cv := make(conformanceValidation)
-	for _, ev := range en.Values {
-		if !ev.Value.Valid() {
-			slog.Warn("Enum value has invalid ID", log.Path("source", ev), matter.LogEntity("parent", en), slog.String("valueName", en.Name))
-			continue
-		}
-		cv.add(ev, ev.Conformance)
-		idu.check(spec, ev.Value, ev)
-		nu.check(spec, ev)
-	}
-	cv.check(spec)
-}

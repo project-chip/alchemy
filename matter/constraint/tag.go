@@ -94,7 +94,10 @@ func (c *TagIdentifierLimit) NeedsParens(topLevel bool) bool {
 }
 
 func (c *TagIdentifierLimit) Clone() Limit {
-	return &TagIdentifierLimit{Tag: c.Tag}
+	return &TagIdentifierLimit{
+		Tag:    c.Tag,
+		Entity: c.Entity,
+	}
 }
 
 func (c *TagIdentifierLimit) MarshalJSON() ([]byte, error) {
