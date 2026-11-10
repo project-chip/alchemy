@@ -23,19 +23,20 @@ func validateClusterRequirement(spec *Specification, deviceType *matter.DeviceTy
 	validateConformance(spec, cr, cr.Conformance)
 }
 
-func validateElementRequirements(spec *Specification, dt *matter.DeviceType, ers []*matter.ElementRequirement, referencedClusters map[*matter.Cluster]struct{}) {
+func validateElementRequirements(spec *Specification, dt *matter.DeviceType, ers []*matter.ElementRequirement) {
 	ercv := make(conformanceValidation)
 	for _, er := range ers {
-		validateElementRequirement(spec, dt, er, referencedClusters)
+		validateElementRequirement(spec, dt, er)
 		ercv.add(er, er.Conformance)
 	}
 	ercv.check(spec)
 }
 
-func validateElementRequirement(spec *Specification, dt *matter.DeviceType, er *matter.ElementRequirement, referencedClusters map[*matter.Cluster]struct{}) {
+func validateElementRequirement(spec *Specification, dt *matter.DeviceType, er *matter.ElementRequirement) {
 	validateConformance(spec, er, er.Conformance)
 	validateConstraint(spec, er, er.Constraint)
 	checkEntityReference(spec, er.ClusterRef, er.Cluster, types.EntityTypeCluster, er)
+
 	validateAccess(spec, er, er.Access)
 	if checkEntityRefCrossReference(spec, er, er.ElementRef.XRef, er.Entity, er.Entity, er.Element, er) {
 		if internal.IsNil(er.Entity) {
@@ -47,17 +48,14 @@ func validateElementRequirement(spec *Specification, dt *matter.DeviceType, er *
 		}
 	}
 
-	if er.Cluster == nil || er.Entity == nil {
-		return
-	}
-	_, ok := referencedClusters[er.Cluster]
-	if !ok {
-		slog.Error("Element Requirement references non-required cluster", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterRef.ID.HexString()), slog.String("clusterName", er.ClusterRef.Name), log.Path("source", er))
-		spec.addError(UnreferencedEntityError[*matter.Cluster, *matter.ElementRequirement]{Entity: er.Cluster, Source: er})
-		return
-	}
-	if !er.Cluster.Contains(er.Entity) {
-		slog.Error("Element Requirement references entity that does not belong to cluster", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterRef.ID.HexString()), slog.String("clusterName", er.ClusterRef.Name), slog.String("entityName", matter.EntityName(er.Entity)), log.Path("source", er))
-		spec.addError(&UnreferencedEntityError[types.Entity, *matter.ElementRequirement]{Entity: er.Entity, Source: er})
+	if er.Cluster != nil {
+		if er.ClusterRequirement == nil {
+			slog.Error("Element Requirement references non-required cluster", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterRef.ID.HexString()), slog.String("clusterName", er.ClusterRef.Name), log.Path("source", er))
+			spec.addError(&UnreferencedEntityError[*matter.Cluster, *matter.ElementRequirement]{Entity: er.Cluster, Source: er})
+		}
+		if er.Entity != nil && !er.Cluster.Contains(er.Entity) {
+			slog.Error("Element Requirement references entity that does not belong to cluster", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterRef.ID.HexString()), slog.String("clusterName", er.ClusterRef.Name), slog.String("entityName", matter.EntityName(er.Entity)), log.Path("source", er))
+			spec.addError(&UnreferencedEntityError[types.Entity, *matter.ElementRequirement]{Entity: er.Entity, Source: er})
+		}
 	}
 }

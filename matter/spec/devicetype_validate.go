@@ -26,36 +26,46 @@ func validateDeviceType(spec *Specification, dt *matter.DeviceType) {
 
 	validateConditions(spec, dt.Conditions)
 
-	referencedClusters := make(map[*matter.Cluster]struct{})
-	buildReferencedClusters(spec.BaseDeviceType, referencedClusters)
-	buildReferencedClusters(dt, referencedClusters)
-
 	validateClusterRequirements(spec, dt, dt.ClusterRequirements)
-	validateElementRequirements(spec, dt, dt.ElementRequirements, referencedClusters)
-
-	requiredDeviceTypes := validateDeviceTypeRequirements(spec, dt.DeviceTypeRequirements)
-
-	validateConditionRequirements(spec, dt, requiredDeviceTypes, dt.ConditionRequirements)
+	validateElementRequirements(spec, dt, dt.ElementRequirements)
 	validateTagRequirements(spec, dt.TagRequirements)
 
-	validateDeviceTypeClusterRequirements(spec, dt, requiredDeviceTypes, dt.ComposedDeviceTypeClusterRequirements)
-	validateDeviceTypeElementRequirements(spec, dt, dt.ComposedDeviceTypeElementRequirements, requiredDeviceTypes, referencedClusters)
-	validateDeviceTypeTagRequirements(spec, dt.ComposedDeviceTagRequirements, requiredDeviceTypes)
+	validateDeviceTypeRequirements(spec, dt.DeviceTypeRequirements)
+	validateConditionRequirements(spec, dt.ConditionRequirements)
+	validateDeviceTypeClusterRequirements(spec, dt.ComposedDeviceTypeClusterRequirements)
+	validateDeviceTypeElementRequirements(spec, dt, dt.ComposedDeviceTypeElementRequirements)
+	validateDeviceTypeTagRequirements(spec, dt.ComposedDeviceTagRequirements)
 }
 
-func checkDeviceReference[SourceT types.Entity](spec *Specification, deviceTypeRef matter.EntityReference, deviceType *matter.DeviceType, referencedDeviceTypes map[*matter.DeviceType]*matter.DeviceTypeRequirement, source SourceT) bool {
+func checkDeviceReference[SourceT types.Entity](spec *Specification, deviceTypeRef matter.EntityReference, deviceType *matter.DeviceType, source SourceT) bool {
 	if deviceType == spec.BaseDeviceType && deviceTypeRef.Name == "Base" {
 		// This is a common abbreviation
-		return true
+		return false
 	}
-	if checkEntityReference(spec, deviceTypeRef, deviceType, types.EntityTypeDeviceType, source) && referencedDeviceTypes != nil {
-		if _, ok := referencedDeviceTypes[deviceType]; !ok && deviceType != spec.RootNodeDeviceType && deviceType != spec.BaseDeviceType {
-			slog.Error("Composing Device Type Element Requirement device type not reachable", slog.String("deviceType", deviceType.Name), slog.String("deviceTypeRef", deviceTypeRef.Name), slog.String("referencedName", deviceType.Name), log.Path("source", source))
-			spec.addError(&UnreferencedEntityError[*matter.DeviceType, SourceT]{Entity: deviceType, Source: source})
-		}
-		return true
+	if !checkEntityReference(spec, deviceTypeRef, deviceType, types.EntityTypeDeviceType, source) {
+		return false
 	}
-	return false
+	return true
+}
+
+func checkComposedDeviceReference[SourceT types.Entity](spec *Specification, deviceTypeRef matter.EntityReference, deviceType *matter.DeviceType, deviceTypeRequirement *matter.DeviceTypeRequirement, source SourceT) {
+	if !checkDeviceReference(spec, deviceTypeRef, deviceType, source) {
+		return
+	}
+	if deviceTypeRequirement == nil && deviceType != spec.BaseDeviceType && deviceType != spec.RootNodeDeviceType {
+		slog.Error("Composing Device Type Element Requirement device type not reachable", slog.String("deviceType", deviceType.Name), slog.String("deviceTypeRef", deviceTypeRef.Name), slog.String("referencedName", deviceType.Name), log.Path("source", source))
+		spec.addError(&UnreferencedEntityError[*matter.DeviceType, SourceT]{Entity: deviceType, Source: source})
+	}
+}
+
+func checkComposedDeviceClusterReference[SourceT types.Entity](spec *Specification, clusterRef matter.EntityReference, cluster *matter.Cluster, clusterRequirement *matter.ClusterRequirement, source SourceT) {
+	if !checkEntityReference(spec, clusterRef, cluster, types.EntityTypeCluster, source) {
+		return
+	}
+	if clusterRequirement == nil {
+		slog.Error("Composing Device Type Cluster Requirement cluster not reachable", slog.String("cluster", cluster.Name), slog.String("clusterRef", clusterRef.Name), log.Path("source", source))
+		spec.addError(&UnreferencedEntityError[*matter.Cluster, SourceT]{Entity: cluster, Source: source})
+	}
 }
 
 func validateDeviceTypeRequirements(spec *Specification, deviceTypeRequirements []*matter.DeviceTypeRequirement) (requiredDeviceTypes map[*matter.DeviceType]*matter.DeviceTypeRequirement) {
@@ -64,7 +74,8 @@ func validateDeviceTypeRequirements(spec *Specification, deviceTypeRequirements 
 	for _, dtr := range deviceTypeRequirements {
 		validateConformance(spec, dtr, dtr.Conformance)
 		cv.add(dtr, dtr.Conformance)
-		checkDeviceReference(spec, dtr.DeviceTypeRef, dtr.DeviceType, nil, dtr)
+		validateConstraint(spec, dtr, dtr.Constraint)
+		checkDeviceReference(spec, dtr.DeviceTypeRef, dtr.DeviceType, dtr)
 		if dtr.DeviceType != nil {
 			requiredDeviceTypes[dtr.DeviceType] = dtr
 		}
@@ -84,11 +95,12 @@ func validateTagRequirements(spec *Specification, tagRequirements []*matter.TagR
 }
 
 func validateTagRequirement(spec *Specification, tr *matter.TagRequirement) {
-	checkEntityReference(spec, tr.SemanticTagRef, tr.SemanticTag, types.EntityTypeSemanticTag, tr)
+	validateConstraint(spec, tr, tr.Constraint)
 	if !checkEntityReference(spec, tr.NamespaceRef, tr.Namespace, types.EntityTypeNamespace, tr) {
 		return
 	}
-	if tr.SemanticTag == nil {
+	checkEntityReference(spec, tr.SemanticTagRef, tr.SemanticTag, types.EntityTypeSemanticTag, tr)
+	if tr.SemanticTag == nil || tr.Namespace == nil {
 		return
 	}
 	inNamespace := false
@@ -103,54 +115,59 @@ func validateTagRequirement(spec *Specification, tr *matter.TagRequirement) {
 	}
 }
 
-func validateDeviceTypeClusterRequirements(spec *Specification, deviceType *matter.DeviceType, referencedDeviceTypes map[*matter.DeviceType]*matter.DeviceTypeRequirement, clusterRequirements []*matter.DeviceTypeClusterRequirement) {
+func validateDeviceTypeClusterRequirements(spec *Specification, clusterRequirements []*matter.DeviceTypeClusterRequirement) {
 	cv := make(conformanceValidation)
 	for _, cer := range clusterRequirements {
 		cv.add(cer, cer.Conformance)
-		if !checkDeviceReference(spec, cer.DeviceTypeRef, cer.DeviceType, referencedDeviceTypes, cer) {
-			continue
-		}
-		checkEntityReference(spec, cer.ClusterRef, cer.Cluster, types.EntityTypeCluster, cer)
+		checkComposedDeviceReference(spec, cer.DeviceTypeRef, cer.DeviceType, cer.DeviceTypeRequirement, cer)
+		checkComposedDeviceClusterReference(spec, cer.ClusterRef, cer.Cluster, cer.ClusterRequirement, cer)
 		validateConformance(spec, cer, cer.Conformance)
 	}
 	cv.check(spec)
 }
 
-func validateDeviceTypeElementRequirements(spec *Specification, deviceType *matter.DeviceType, elementRequirements []*matter.DeviceTypeElementRequirement, referencedDeviceTypes map[*matter.DeviceType]*matter.DeviceTypeRequirement, referencedClusters map[*matter.Cluster]struct{}) {
+func validateDeviceTypeElementRequirements(spec *Specification, deviceType *matter.DeviceType, elementRequirements []*matter.DeviceTypeElementRequirement) {
 	cv := make(conformanceValidation)
 	for _, cer := range elementRequirements {
 		cv.add(cer, cer.ElementRequirement.Conformance)
-		if !checkDeviceReference(spec, cer.DeviceTypeRef, cer.DeviceType, referencedDeviceTypes, cer) {
-			continue
-		}
-		validateElementRequirement(spec, deviceType, cer.ElementRequirement, referencedClusters)
+		checkComposedDeviceReference(spec, cer.DeviceTypeRef, cer.DeviceType, cer.DeviceTypeRequirement, cer)
+		validateElementRequirement(spec, deviceType, cer.ElementRequirement)
 	}
 	cv.check(spec)
 }
 
-func validateDeviceTypeTagRequirements(spec *Specification, tagRequirements []*matter.DeviceTypeTagRequirement, referencedDeviceTypes map[*matter.DeviceType]*matter.DeviceTypeRequirement) {
+func validateDeviceTypeTagRequirements(spec *Specification, tagRequirements []*matter.DeviceTypeTagRequirement) {
 	cv := make(conformanceValidation)
 	for _, cer := range tagRequirements {
 		cv.add(cer, cer.TagRequirement.Conformance)
-		checkDeviceReference(spec, cer.DeviceTypeRef, cer.DeviceType, referencedDeviceTypes, cer)
+		validateConformance(spec, cer.TagRequirement, cer.TagRequirement.Conformance)
+		checkComposedDeviceReference(spec, cer.DeviceTypeRef, cer.DeviceType, cer.DeviceTypeRequirement, cer)
 		validateTagRequirement(spec, cer.TagRequirement)
 	}
 	cv.check(spec)
 }
 
-func buildReferencedClusters(deviceType *matter.DeviceType, referencedClusters map[*matter.Cluster]struct{}) {
+func buildReferencedClusters(spec *Specification, deviceType *matter.DeviceType) (referencedClusters map[*matter.Cluster]*matter.ClusterRequirement) {
+	referencedClusters = map[*matter.Cluster]*matter.ClusterRequirement{}
+	addReferencedClusters(spec.BaseDeviceType, referencedClusters)
+	addReferencedClusters(spec.RootNodeDeviceType, referencedClusters)
+	addReferencedClusters(deviceType, referencedClusters)
+	return
+}
+
+func addReferencedClusters(deviceType *matter.DeviceType, referencedClusters map[*matter.Cluster]*matter.ClusterRequirement) {
 	parent := deviceType.SubsetDeviceType
 	if parent != nil {
-		buildReferencedClusters(parent, referencedClusters)
+		addReferencedClusters(parent, referencedClusters)
 	}
 	for _, rc := range deviceType.ClusterRequirements {
 		if rc.Cluster != nil {
-			referencedClusters[rc.Cluster] = struct{}{}
+			referencedClusters[rc.Cluster] = rc
 		}
 	}
 	for _, dtr := range deviceType.DeviceTypeRequirements {
-		if dtr.DeviceType != nil {
-			buildReferencedClusters(dtr.DeviceType, referencedClusters)
+		if dtr.DeviceType != nil && dtr.Location == matter.DeviceTypeRequirementLocationDeviceEndpoint {
+			addReferencedClusters(dtr.DeviceType, referencedClusters)
 		}
 	}
 }

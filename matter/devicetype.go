@@ -140,7 +140,8 @@ type ElementRequirement struct {
 	Access      Access                `json:"access,omitempty"`
 	Conformance conformance.Set       `json:"conformance,omitempty"`
 
-	Cluster *Cluster `json:"cluster,omitempty"`
+	Cluster            *Cluster            `json:"cluster,omitempty"`
+	ClusterRequirement *ClusterRequirement `json:"-"`
 }
 
 func (er *ElementRequirement) EntityType() types.EntityType {
