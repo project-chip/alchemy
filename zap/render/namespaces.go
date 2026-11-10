@@ -21,7 +21,7 @@ import (
 )
 
 // namespaceIDEnumName names the enum that lists every standard namespace ID.
-const namespaceIDEnumName = "SemanticTagNamespaceId"
+const namespaceIDEnumName = "SemanticTagNamespaceID"
 
 type NamespacePatcher struct {
 	sdkRoot     string
@@ -69,9 +69,8 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*
 		return
 	}
 
-	namespaces := slices.Clone(p.spec.Namespaces)
-	slices.SortStableFunc(namespaces, func(a, b *matter.Namespace) int {
-		return a.ID.Compare(b.ID)
+	namespaces := generatedNamespaces(p.spec.Namespaces, func(ns *matter.Namespace) *errata.Errata {
+		return namespaceErrata(p.spec, ns)
 	})
 
 	enumNames := make(map[string]*matter.Namespace, len(namespaces))
@@ -88,7 +87,7 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*
 		slog.Warn("removing enum that no spec namespace generates", slog.String("path", namespaceXMLPath), slog.String("enum", name))
 	}
 
-	// Each namespace ID is named after its tag enum, so kPosition pairs with PositionTag.
+	// Each namespace ID is named after its tag enum, so kCommonPosition pairs with CommonPositionTag.
 	idEnum := configurator.CreateElement("enum")
 	idEnum.CreateAttr("name", namespaceIDEnumName)
 	idEnum.CreateAttr("type", "enum8")
@@ -135,6 +134,18 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*
 	return
 }
 
+// generatedNamespaces returns the namespaces to generate, in namespace ID order, leaving out those
+// whose document errata sets skip-file.
+func generatedNamespaces(namespaces []*matter.Namespace, errataFor func(*matter.Namespace) *errata.Errata) []*matter.Namespace {
+	generated := slices.DeleteFunc(slices.Clone(namespaces), func(ns *matter.Namespace) bool {
+		return errataFor(ns).SDK.SkipFile
+	})
+	slices.SortStableFunc(generated, func(a, b *matter.Namespace) int {
+		return a.ID.Compare(b.ID)
+	})
+	return generated
+}
+
 // removeEnums removes every enum from the configurator, and returns the names of the ones that
 // neither a spec namespace nor the namespace ID enum generates.
 func removeEnums(configurator *etree.Element, generated map[string]*matter.Namespace) (unknown []string) {
@@ -152,25 +163,10 @@ func namespaceBaseName(ns *matter.Namespace) string {
 	return strings.TrimSpace(text.TrimCaseInsensitiveSuffix(ns.Name, " Namespace"))
 }
 
-// matterNamespaceName names a namespace's tag enum. "Common " is dropped from the name unless
-// another namespace already uses the shorter name, as "Closure" does for "Common Closure".
+// matterNamespaceName names a namespace's tag enum after its spec name, so "Common Area Namespace"
+// is CommonAreaTag. An sdk type-names entry in the namespace document's errata overrides the name.
 func matterNamespaceName(specification *spec.Specification, ns *matter.Namespace) string {
-	baseName := namespaceBaseName(ns)
-	shortName := strings.TrimSpace(text.TrimCaseInsensitivePrefix(baseName, "Common "))
-	if shortName != baseName {
-		for _, other := range specification.Namespaces {
-			if other != ns && strings.EqualFold(namespaceBaseName(other), shortName) {
-				shortName = baseName
-				break
-			}
-		}
-	}
-	name := matter.Case(shortName)
-	if name == "Area" {
-		// Backwards compatibility for one namespace
-		name += "Type"
-	}
-	name = name + "Tag"
+	name := matter.Case(namespaceBaseName(ns)) + "Tag"
 	if override, ok := namespaceErrata(specification, ns).SDK.TypeNames[name]; ok {
 		return override
 	}
