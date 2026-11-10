@@ -16,25 +16,20 @@ func (sp *Builder) resolveConformances() {
 		for _, a := range cluster.Attributes {
 			sp.resolveFieldConformances(clusterFinder, cluster.Attributes, a, a.Type)
 		}
-		for _, s := range cluster.Structs {
-			for _, f := range s.Fields {
-				sp.resolveFieldConformances(clusterFinder, s.Fields, f, f.Type)
-			}
-		}
-		sp.resolveBitmapConformances(cluster, clusterFinder)
-		sp.resolveEnumConformances(cluster, clusterFinder)
-		sp.resolveEventConformances(cluster, clusterFinder)
+
+		sp.resolveBitmapConformances(cluster.Bitmaps, clusterFinder)
+		sp.resolveEnumConformances(cluster.Enums, clusterFinder)
+		sp.resolveStructConformances(cluster.Structs, clusterFinder)
+		sp.resolveEventConformances(cluster.Events, clusterFinder)
 		sp.resolveCommandConformances(cluster.Commands, clusterFinder)
 	}
 	specEntityFinder.cluster = nil
-	globalCommands := sp.Spec.GlobalObjects.OfType[*matter.Command]()
-	sp.resolveCommandConformances(globalCommands, specEntityFinder)
-	globalStructs := sp.Spec.GlobalObjects.OfType[*matter.Struct]()
-	for _, s := range globalStructs {
-		for _, f := range s.Fields {
-			sp.resolveFieldConformances(specEntityFinder, s.Fields, f, f.Type)
-		}
-	}
+
+	sp.resolveBitmapConformances(sp.Spec.GlobalObjects.OfType[*matter.Bitmap](), specEntityFinder)
+	sp.resolveEnumConformances(sp.Spec.GlobalObjects.OfType[*matter.Enum](), specEntityFinder)
+	sp.resolveStructConformances(sp.Spec.GlobalObjects.OfType[*matter.Struct](), specEntityFinder)
+	sp.resolveEventConformances(sp.Spec.GlobalObjects.OfType[*matter.Event](), specEntityFinder)
+	sp.resolveCommandConformances(sp.Spec.GlobalObjects.OfType[*matter.Command](), specEntityFinder)
 
 	for _, deviceType := range sp.Spec.DeviceTypes {
 		conditionFinder := newConditionFinder(deviceType, sp.Spec.BaseDeviceType, specEntityFinder)
@@ -62,19 +57,37 @@ func (sp *Builder) resolveConformances() {
 			sp.resolveEntityConformance(conditionFinder, dtr, dtr.Conformance)
 		}
 		for _, dtcr := range deviceType.ComposedDeviceTypeClusterRequirements {
-			sp.resolveEntityConformance(conditionFinder, dtcr, dtcr.Conformance)
+			var finder entityFinder = conditionFinder
+			if dtcr.DeviceType != nil {
+				finder = newConditionFinder(dtcr.DeviceType, sp.Spec.BaseDeviceType, finder)
+			}
+			if dtcr.Cluster != nil {
+				finder = newFeatureFinder(dtcr.Cluster.Features, finder)
+			}
+			sp.resolveEntityConformance(finder, dtcr, dtcr.Conformance)
 		}
 		for _, dter := range deviceType.ComposedDeviceTypeElementRequirements {
-			sp.resolveEntityConformance(conditionFinder, dter.ElementRequirement, dter.ElementRequirement.Conformance)
+			var finder entityFinder = conditionFinder
+			if dter.DeviceType != nil {
+				finder = newConditionFinder(dter.DeviceType, sp.Spec.BaseDeviceType, finder)
+			}
+			if dter.ElementRequirement.Cluster != nil {
+				finder = newFeatureFinder(dter.ElementRequirement.Cluster.Features, finder)
+			}
+			sp.resolveEntityConformance(finder, dter.ElementRequirement, dter.ElementRequirement.Conformance)
 		}
 		for _, dttr := range deviceType.ComposedDeviceTagRequirements {
-			sp.resolveEntityConformance(conditionFinder, dttr.TagRequirement, dttr.TagRequirement.Conformance)
+			var finder entityFinder = conditionFinder
+			if dttr.DeviceType != nil {
+				finder = newConditionFinder(dttr.DeviceType, sp.Spec.BaseDeviceType, finder)
+			}
+			sp.resolveEntityConformance(finder, dttr.TagRequirement, dttr.TagRequirement.Conformance)
 		}
 	}
 }
 
 func (sp *Builder) resolveFeatureConformances(cluster *matter.Cluster, finder *featureFinder) {
-	if finder.features == nil {
+	if cluster.Features == nil {
 		return
 	}
 	for feature := range finder.features.FeatureBits() {
@@ -89,8 +102,8 @@ func (sp *Builder) resolveFieldConformances(finder entityFinder, fieldSet matter
 	sp.resolveEntityConformance(fieldFinder, field, field.Conformance)
 }
 
-func (sp *Builder) resolveBitmapConformances(cluster *matter.Cluster, finder entityFinder) {
-	for _, bm := range cluster.Bitmaps {
+func (sp *Builder) resolveBitmapConformances(bitmaps matter.BitmapSet, finder entityFinder) {
+	for _, bm := range bitmaps {
 		bitmapValueFinder := makeEntityFinder(bm, finder)
 		for _, bmv := range bm.Bits {
 			bitmapValueFinder.setIdentity(bmv)
@@ -99,12 +112,20 @@ func (sp *Builder) resolveBitmapConformances(cluster *matter.Cluster, finder ent
 	}
 }
 
-func (sp *Builder) resolveEnumConformances(cluster *matter.Cluster, finder entityFinder) {
-	for _, e := range cluster.Enums {
+func (sp *Builder) resolveEnumConformances(enums matter.EnumSet, finder entityFinder) {
+	for _, e := range enums {
 		enumValueFinder := makeEntityFinder(e, finder)
 		for _, ev := range e.Values {
 			enumValueFinder.setIdentity(ev)
 			sp.resolveEntityConformance(enumValueFinder, ev, ev.Conformance)
+		}
+	}
+}
+
+func (sp *Builder) resolveStructConformances(structs matter.StructSet, finder entityFinder) {
+	for _, s := range structs {
+		for _, f := range s.Fields {
+			sp.resolveFieldConformances(finder, s.Fields, f, f.Type)
 		}
 	}
 }
@@ -123,11 +144,11 @@ func (sp *Builder) resolveCommandConformances(commands []*matter.Command, finder
 	}
 }
 
-func (sp *Builder) resolveEventConformances(cluster *matter.Cluster, finder entityFinder) {
+func (sp *Builder) resolveEventConformances(events matter.EventSet, finder entityFinder) {
 
-	eventFinder := newEventFinder(cluster.Events, finder)
+	eventFinder := newEventFinder(events, finder)
 
-	for _, event := range cluster.Events {
+	for _, event := range events {
 		eventFinder.setIdentity(event)
 		for _, exp := range conformance.TraverseExpressions(event.Conformance) {
 			sp.resolveEntityConformanceExpressionReferences(eventFinder, event, exp)
@@ -219,7 +240,7 @@ func (sp *Builder) resolveEntityConformanceValueReferences(finder entityFinder, 
 				v.Entity = finder.findEntityByIdentifier(v.ID, source)
 				if v.Entity == nil {
 					failed = true
-					return
+					continue
 				}
 				resolved = v.Entity
 				if v.Entity != nil && v.Field != nil {
@@ -233,7 +254,7 @@ func (sp *Builder) resolveEntityConformanceValueReferences(finder entityFinder, 
 				v.Entity = finder.findEntityByReference(v.Reference, v.Label, source)
 				if v.Entity == nil {
 					failed = true
-					return
+					continue
 				}
 				resolved = v.Entity
 				if v.Entity != nil && v.Field != nil {

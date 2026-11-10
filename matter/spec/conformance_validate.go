@@ -12,24 +12,24 @@ func validateConformance(spec *Specification, source types.Entity, c conformance
 	for c := range conformance.Traverse(c) {
 		switch c := c.(type) {
 		case *conformance.Generic:
-			if conformance.IsBlank(c) {
+			if !conformance.IsBlank(c) {
 				spec.addError(&InvalidConformanceError{Source: source, Conformance: c.RawText()})
 			}
 		default:
 			for _, exp := range conformance.TraverseExpressions(c) {
 				switch exp := exp.(type) {
 				case *conformance.ReferenceExpression:
-					if exp.Entity != nil {
-						continue
+					if exp.Entity == nil {
+						slog.Error("Failed to resolve conformance expression reference", "ref", exp.Reference, log.Path("source", source))
+						spec.addError(&UnknownConformanceReferenceError{Entity: source, Reference: exp.Reference})
 					}
-					slog.Error("Failed to resolve conformance expression reference", "ref", exp.Reference, log.Path("source", source))
-					spec.addError(&UnknownConformanceReferenceError{Entity: source, Reference: exp.Reference})
+					validateComparisonValue(spec, source, exp.Field)
 				case *conformance.IdentifierExpression:
-					if exp.Entity != nil {
-						continue
+					if exp.Entity == nil {
+						slog.Error("Failed to resolve conformance expression identifier", "ref", exp.ID, log.Path("source", source))
+						spec.addError(&UnknownConformanceIdentifierError{Entity: source, Identifier: exp.ID})
 					}
-					slog.Error("Failed to resolve conformance expression identifier", "ref", exp.ID, log.Path("source", source))
-					spec.addError(&UnknownConformanceIdentifierError{Entity: source, Identifier: exp.ID})
+					validateComparisonValue(spec, source, exp.Field)
 				//failure.finder.suggestIdentifiers(exp.ID, suggestions)
 				//suggest.ListPossibilities(exp.ID, suggestions)
 				case *conformance.ComparisonExpression:

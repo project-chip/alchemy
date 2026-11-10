@@ -19,5 +19,7 @@ func validateEvents(spec *Specification, cluster *matter.Cluster, events []*matt
 func validateEvent(spec *Specification, cluster *matter.Cluster, e *matter.Event, idu idUniqueness[*matter.Event], nu nameUniqueness[*matter.Event]) {
 	idu.check(spec, e.ID, e)
 	nu.check(spec, e)
+	validateAccess(spec, e, e.Access)
+	validateConformance(spec, e, e.Conformance)
 	validateFields(spec, cluster, e, e.Fields, types.EntityTypeEventField)
 }

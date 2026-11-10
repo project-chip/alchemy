@@ -19,6 +19,7 @@ func validateBitmap(spec *Specification, en *matter.Bitmap) {
 	cv := make(conformanceValidation)
 	for _, b := range en.Bits {
 		nu.check(spec, b)
+		validateConformance(spec, b, b.Conformance())
 		cv.add(b, b.Conformance())
 		from, to, err := b.Bits()
 		if err != nil {

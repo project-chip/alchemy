@@ -56,6 +56,9 @@ func (sp *Builder) resolveConstraints() {
 		for _, er := range deviceType.ComposedDeviceTypeElementRequirements {
 			sp.resolveElementRequirementConstraint(er.ElementRequirement, conditionFinder)
 		}
+		for _, cder := range deviceType.ComposedDeviceTagRequirements {
+			sp.resolveFieldConstraintReferences(conditionFinder, cder.TagRequirement, cder.TagRequirement.Constraint)
+		}
 	}
 }
 
