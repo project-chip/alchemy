@@ -213,12 +213,16 @@ func (uee UnknownEntityError[SourceT]) Origin() (path string, line int) {
 
 func (uee UnknownEntityError[SourceT]) Error() string {
 	if uee.EntityReference != nil {
-		return fmt.Sprintf("unknown %s: \"%s\" (%s) for %s", uee.EntityType.FriendlyString(), uee.EntityReference.Name, uee.EntityReference.ID.HexString(), matter.EntityName(uee.Source))
+		return fmt.Sprintf("unknown %s: \"%s\" (%s) for %s", uee.EntityType.FriendlyString(), uee.EntityReference.Name, uee.EntityReference.ID.HexString(), uee.Source.EntityType().FriendlyString())
 	}
 	if uee.ElementReference != nil {
-		return fmt.Sprintf("unknown %s: \"%s\" (%s) for %s", uee.EntityType.FriendlyString(), uee.ElementReference.Name, uee.ElementReference.Name, matter.EntityName(uee.Source))
+		ref := uee.ElementReference.Name
+		if uee.ElementReference.Field != "" {
+			ref += "." + uee.ElementReference.Field
+		}
+		return fmt.Sprintf("unknown %s: \"%s\" for %s", uee.EntityType.FriendlyString(), ref, uee.Source.EntityType().FriendlyString())
 	}
-	return fmt.Sprintf("unknown %s on %s", uee.EntityType.FriendlyString(), matter.EntityName(uee.Source))
+	return fmt.Sprintf("unknown %s on %s", uee.EntityType.FriendlyString(), uee.Source.EntityType().FriendlyString())
 }
 
 type UnreferencedEntityError[EntityT, SourceT types.Entity] struct {
@@ -227,7 +231,7 @@ type UnreferencedEntityError[EntityT, SourceT types.Entity] struct {
 }
 
 func (uee UnreferencedEntityError[EntityT, SourceT]) Type() ErrorType {
-	return ErrorTypeUnknownEntity
+	return ErrorTypeUnreferencedEntity
 }
 
 func (uee UnreferencedEntityError[EntityT, SourceT]) Origin() (path string, line int) {
@@ -235,7 +239,7 @@ func (uee UnreferencedEntityError[EntityT, SourceT]) Origin() (path string, line
 }
 
 func (uee UnreferencedEntityError[EntityT, SourceT]) Error() string {
-	return fmt.Sprintf("%s unreferenced on %s: %s (%s)", uee.Entity.EntityType().FriendlyString(), matter.EntityName(uee.Source), matter.EntityName(uee.Entity), matter.EntityID(uee.Entity).HexString())
+	return fmt.Sprintf("%s unreferenced on %s: %s (%s)", uee.Entity.EntityType().FriendlyString(), uee.Source.EntityType().FriendlyString(), matter.EntityName(uee.Entity), matter.EntityID(uee.Entity).HexString())
 }
 
 type NamespaceUnknownTagError struct {

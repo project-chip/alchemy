@@ -41,7 +41,7 @@ func checkEntityRefCrossReference[EntityT types.Entity, SourceT types.Entity](sp
 	if xref == nil {
 		return true
 	}
-	if any(entity) != nil {
+	if !internal.IsNil(entity) {
 		return true
 	}
 	if resolvedEntity != nil && resolvedEntity.EntityType() != entityType {

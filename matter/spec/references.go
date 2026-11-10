@@ -150,7 +150,7 @@ func resolveEntityReference[T types.Entity](spec *Specification, ref *matter.Ent
 			slog.Warn("linking entity reference by name since ID was not recognized",
 				slog.String("ID", ref.ID.HexString()),
 				slog.String("name", ref.Name),
-				log.Path("source", entity))
+				log.Path("source", source))
 			ref.Resolved = entity
 		}
 	}
