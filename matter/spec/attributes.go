@@ -29,22 +29,3 @@ func (library *Library) toAttributes(spec *Specification, reader asciidoc.Reader
 	err = library.mapFields(reader, d, section, attributeMap)
 	return
 }
-
-func validateAttributes(spec *Specification) {
-	for c := range spec.Clusters {
-		validateFields(spec, c, c.Attributes)
-		for _, a := range c.Attributes {
-			if a.Type == nil {
-				continue
-			}
-			switch et := a.Type.Entity.(type) {
-			case *matter.Struct:
-				if et.FabricScoping == matter.FabricScopingScoped {
-					slog.Error("Fabric-scoped structs may not be used as a singular attribute type, only as a list", matter.LogEntity("attribute", a))
-					spec.addError(&FabricScopedStructNotAllowedError{Entity: et})
-				}
-
-			}
-		}
-	}
-}

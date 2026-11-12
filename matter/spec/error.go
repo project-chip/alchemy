@@ -60,6 +60,8 @@ const (
 	ErrorTypeInvalidConstraintLimit
 	ErrorTypeInvalidFallback
 	ErrorTypeInvalidFallbackLimit
+	ErrorTypeInvalidQuality
+
 	ErrorTypeConformanceChoiceOrphan
 	ErrorTypeConformanceChoiceMismatch
 )
@@ -123,7 +125,7 @@ func (ddt DuplicateEntityIDError) Origin() (path string, line int) {
 }
 
 func (ddt DuplicateEntityIDError) Error() string {
-	return fmt.Sprintf("duplicate %s ID: %s", ddt.Entity.EntityType().String(), matter.EntityName(ddt.Entity))
+	return fmt.Sprintf("duplicate %s ID: %s", ddt.Entity.EntityType().FriendlyString(), matter.EntityName(ddt.Entity))
 }
 
 type DuplicateEntityNameError struct {
@@ -140,7 +142,7 @@ func (ddt DuplicateEntityNameError) Origin() (path string, line int) {
 }
 
 func (ddt DuplicateEntityNameError) Error() string {
-	return fmt.Sprintf("duplicate %s name: %s", ddt.Entity.EntityType().String(), matter.EntityName(ddt.Entity))
+	return fmt.Sprintf("duplicate %s name: %s", ddt.Entity.EntityType().FriendlyString(), matter.EntityName(ddt.Entity))
 }
 
 type UnknownConstraintIdentifierError struct {
@@ -876,6 +878,24 @@ func (ccoe ConformanceChoiceOrphanError) Origin() (path string, line int) {
 
 func (ccoe ConformanceChoiceOrphanError) Error() string {
 	return fmt.Sprintf("conformance choice set \"%s\" is unused by any other conformances", ccoe.Set)
+}
+
+type InvalidQualityError struct {
+	Quality    matter.Quality
+	EntityType types.EntityType
+	Source     types.Entity
+}
+
+func (iqe InvalidQualityError) Type() ErrorType {
+	return ErrorTypeInvalidQuality
+}
+
+func (iqe InvalidQualityError) Origin() (path string, line int) {
+	return iqe.Source.Origin()
+}
+
+func (iqe InvalidQualityError) Error() string {
+	return fmt.Sprintf("invalid quality for %s: %s", iqe.EntityType.String(), iqe.Quality.String())
 }
 
 type ConformanceChoiceMismatchError struct {

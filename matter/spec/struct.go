@@ -47,16 +47,8 @@ func (library *Library) toStruct(spec *Specification, reader asciidoc.Reader, d 
 	return
 }
 
-func validateStructs(spec *Specification) {
-	for c := range spec.Clusters {
-		for _, s := range c.Structs {
-			validateFields(spec, s, s.Fields)
-		}
-	}
-	for obj := range spec.GlobalObjects {
-		switch obj := obj.(type) {
-		case *matter.Struct:
-			validateFields(spec, obj, obj.Fields)
-		}
+func validateStructs(spec *Specification, cluster *matter.Cluster, structs []*matter.Struct) {
+	for _, s := range structs {
+		validateFields(spec, cluster, s, s.Fields, types.EntityTypeStructField)
 	}
 }
