@@ -582,6 +582,7 @@ func validateDeviceTypes(spec *Specification) {
 		buildReferencedClusters(dt, referencedClusters)
 		crcv := make(conformanceValidation)
 		for _, cr := range dt.ClusterRequirements {
+			validateConformance(spec, cr, cr.Conformance)
 			if cr.Cluster == nil {
 				continue
 			}
@@ -596,13 +597,31 @@ func validateDeviceTypes(spec *Specification) {
 		crcv.check(spec)
 		ercv := make(conformanceValidation)
 		for _, er := range dt.ElementRequirements {
+			validateConformance(spec, er, er.Conformance)
+			validateConstraint(spec, er, er.Constraint)
 			validateAccess(spec, er, er.Access)
 			validateElementRequirement(spec, dt, er, referencedClusters)
 			ercv.add(er, er.Conformance)
 		}
 		ercv.check(spec)
+		for _, dtr := range dt.DeviceTypeRequirements {
+			validateConformance(spec, dtr, dtr.Conformance)
+			validateConstraint(spec, dtr, dtr.Constraint)
+		}
+		for _, cr := range dt.ConditionRequirements {
+			validateConformance(spec, cr, cr.Conformance)
+		}
+		for _, tr := range dt.TagRequirements {
+			validateConformance(spec, tr, tr.Conformance)
+			validateConstraint(spec, tr, tr.Constraint)
+		}
+		for _, dtcr := range dt.ComposedDeviceTypeClusterRequirements {
+			validateConformance(spec, dtcr, dtcr.Conformance)
+		}
 		cdercv := make(conformanceValidation)
 		for _, der := range dt.ComposedDeviceTypeElementRequirements {
+			validateConformance(spec, der.ElementRequirement, der.ElementRequirement.Conformance)
+			validateConstraint(spec, der.ElementRequirement, der.ElementRequirement.Constraint)
 			if der.DeviceType == nil {
 				continue
 			}
@@ -611,6 +630,10 @@ func validateDeviceTypes(spec *Specification) {
 			cdercv.add(der.ElementRequirement, der.ElementRequirement.Conformance)
 		}
 		cdercv.check(spec)
+		for _, dttr := range dt.ComposedDeviceTagRequirements {
+			validateConformance(spec, dttr.TagRequirement, dttr.TagRequirement.Conformance)
+			validateConstraint(spec, dttr.TagRequirement, dttr.TagRequirement.Constraint)
+		}
 	}
 }
 
