@@ -110,7 +110,8 @@ func (cr *ClusterRequirement) Equals(e types.Entity) bool {
 
 func (cr *ClusterRequirement) CloneTo(newParent types.Entity) *ClusterRequirement {
 	cer := &ClusterRequirement{
-		entity:     entity{source: cr.source, parent: newParent},
+		parent:     newParent,
+		source:     cr.source,
 		ClusterRef: cr.ClusterRef.Clone(),
 		Interface:  cr.Interface,
 		Quality:    cr.Quality,
@@ -177,7 +178,8 @@ func (er *ElementRequirement) Equals(e types.Entity) bool {
 
 func (er *ElementRequirement) CloneTo(newParent types.Entity) *ElementRequirement {
 	cer := &ElementRequirement{
-		entity:     entity{source: er.source, parent: newParent},
+		parent:     newParent,
+		source:     er.source,
 		ClusterRef: er.ClusterRef.Clone(),
 		ElementRef: er.ElementRef,
 		Element:    er.Element,
@@ -228,13 +230,21 @@ func (tr *TagRequirement) Equals(other types.Entity) bool {
 }
 
 func (tr *TagRequirement) CloneTo(newParent types.Entity) *TagRequirement {
-	return &TagRequirement{
-		entity:         entity{source: tr.source, parent: newParent},
+	ntr := &TagRequirement{
+		parent:         newParent,
+		source:         tr.source,
 		NamespaceRef:   tr.NamespaceRef.Clone(),
 		SemanticTagRef: tr.SemanticTagRef.Clone(),
 		Namespace:      tr.Namespace,
 		SemanticTag:    tr.SemanticTag,
 	}
+	if tr.Constraint != nil {
+		ntr.Constraint = tr.Constraint.Clone()
+	}
+	if len(tr.Conformance) > 0 {
+		ntr.Conformance = tr.Conformance.CloneSet()
+	}
+	return ntr
 }
 
 func NewTagRequirement(parent *DeviceType, source asciidoc.Element) *TagRequirement {
@@ -297,7 +307,8 @@ func (dtr *DeviceTypeRequirement) Equals(e types.Entity) bool {
 
 func (dtr *DeviceTypeRequirement) CloneTo(newParent types.Entity) *DeviceTypeRequirement {
 	cdtr := &DeviceTypeRequirement{
-		entity:         entity{source: dtr.source, parent: newParent},
+		parent:         newParent,
+		source:         dtr.source,
 		DeviceTypeRef:  dtr.DeviceTypeRef.Clone(),
 		AllowsSuperset: dtr.AllowsSuperset,
 		DeviceType:     dtr.DeviceType,
