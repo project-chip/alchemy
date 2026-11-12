@@ -207,6 +207,7 @@ func validateEnum(spec *Specification, en *matter.Enum) {
 			slog.Warn("Enum value has invalid ID", log.Path("source", ev), matter.LogEntity("parent", en), slog.String("valueName", en.Name))
 			continue
 		}
+		validateConformance(spec, ev, ev.Conformance)
 		cv.add(ev, ev.Conformance)
 		idu.check(spec, ev.Value, ev)
 		nu.check(spec, ev)

@@ -27,18 +27,13 @@ type Builder struct {
 	ignoreHierarchy bool
 
 	patchers []Patcher
-
-	conformanceFailures map[any]referenceFailure
-	constraintFailures  map[any]referenceFailure
 }
 
 func NewBuilder(specRoot string, config *config.Config, errata *errata.Collection, options ...BuilderOption) Builder {
 	b := Builder{
-		specRoot:            specRoot,
-		config:              config,
-		errata:              errata,
-		conformanceFailures: make(map[any]referenceFailure),
-		constraintFailures:  make(map[any]referenceFailure),
+		specRoot: specRoot,
+		config:   config,
+		errata:   errata,
 	}
 	for _, o := range options {
 		o(&b)
@@ -176,9 +171,6 @@ func (sp *Builder) buildSpec(cxt context.Context, libraries []*Library) (referen
 
 	sp.buildClusterReferences()
 	sp.buildDataTypeReferences()
-
-	sp.noteConformanceResolutionFailures(spec)
-	sp.noteConstraintResolutionFailures(spec)
 
 	Validate(spec)
 

@@ -219,6 +219,7 @@ func validateCommands(spec *Specification) {
 				idcu.check(spec, command.ID, command)
 			}
 			nu.check(spec, command)
+			validateConformance(spec, command, command.Conformance)
 			cv.add(command, command.Conformance)
 			validateFields(spec, command, command.Fields)
 		}
@@ -238,6 +239,7 @@ func validateCommands(spec *Specification) {
 				idcu.check(spec, command.ID, command)
 			}
 			nu.check(spec, command)
+			validateConformance(spec, command, command.Conformance)
 			validateFields(spec, command, command.Fields)
 		}
 	}

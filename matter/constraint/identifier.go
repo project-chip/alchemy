@@ -64,7 +64,11 @@ func (c *IdentifierLimit) NeedsParens(topLevel bool) bool {
 }
 
 func (c *IdentifierLimit) Clone() Limit {
-	il := &IdentifierLimit{ID: c.ID}
+	il := &IdentifierLimit{
+		ID:     c.ID,
+		Not:    c.Not,
+		Entity: c.Entity,
+	}
 	if c.Field != nil {
 		il.Field = c.Field.Clone()
 	}

@@ -204,5 +204,6 @@ func validateEvents(spec *Specification) {
 func validateEvent(spec *Specification, e *matter.Event, idu idUniqueness[*matter.Event], nu nameUniqueness[*matter.Event]) {
 	idu.check(spec, e.ID, e)
 	nu.check(spec, e)
+	validateConformance(spec, e, e.Conformance)
 	validateFields(spec, e, e.Fields)
 }

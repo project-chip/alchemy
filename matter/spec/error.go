@@ -347,11 +347,11 @@ func (ddt UnknownComposingDeviceTypeRequirementClusterError) Type() ErrorType {
 }
 
 func (ddt UnknownComposingDeviceTypeRequirementClusterError) Origin() (path string, line int) {
-	return ddt.Requirement.ClusterRequirement.Origin()
+	return ddt.Requirement.Origin()
 }
 
 func (ddt UnknownComposingDeviceTypeRequirementClusterError) Error() string {
-	return fmt.Sprintf("unknown composing device cluster requirement: %s", ddt.Requirement.ClusterRequirement.ClusterRef.Name)
+	return fmt.Sprintf("unknown composing device cluster requirement: %s", ddt.Requirement.ClusterRef.Name)
 }
 
 type UnknownComposingDeviceTypeClusterRequirementDeviceTypeError struct {
@@ -363,7 +363,7 @@ func (ddt UnknownComposingDeviceTypeClusterRequirementDeviceTypeError) Type() Er
 }
 
 func (ddt UnknownComposingDeviceTypeClusterRequirementDeviceTypeError) Origin() (path string, line int) {
-	return ddt.Requirement.ClusterRequirement.Origin()
+	return ddt.Requirement.Origin()
 }
 
 func (ddt UnknownComposingDeviceTypeClusterRequirementDeviceTypeError) Error() string {
@@ -379,7 +379,7 @@ func (ddt UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError) Type
 }
 
 func (ddt UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError) Origin() (path string, line int) {
-	return ddt.Requirement.ClusterRequirement.Origin()
+	return ddt.Requirement.Origin()
 }
 
 func (ddt UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError) Error() string {
