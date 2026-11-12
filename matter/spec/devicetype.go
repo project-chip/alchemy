@@ -334,25 +334,25 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 		}
 	}
 	for _, cr := range dt.ComposedDeviceTypeClusterRequirements {
-		if cr.ClusterRequirement.Cluster == nil {
-			cr.ClusterRequirement.Cluster = findDeviceTypeRequirementCluster(spec, cr.ClusterRequirement.ClusterRef, cr.ClusterRequirement, entityFinder)
-			if cr.ClusterRequirement.Cluster == nil {
+		if cr.Cluster == nil {
+			cr.Cluster = findDeviceTypeRequirementCluster(spec, cr.ClusterRef, cr, entityFinder)
+			if cr.Cluster == nil {
 				slog.Error("unknown cluster ID for cluster requirement on composing device type",
-					slog.String("clusterId", cr.ClusterRequirement.ClusterRef.ID.HexString()),
-					slog.String("clusterName", cr.ClusterRequirement.ClusterRef.Name),
+					slog.String("clusterId", cr.ClusterRef.ID.HexString()),
+					slog.String("clusterName", cr.ClusterRef.Name),
 					slog.String("deviceType", dt.Name),
-					log.Path("source", cr.ClusterRequirement))
+					log.Path("source", cr))
 				spec.addError(&UnknownComposingDeviceTypeRequirementClusterError{Requirement: cr})
 			}
 		}
 		if cr.DeviceType == nil {
-			referencedDeviceType := findDeviceTypeRequirementDeviceType(spec, cr.DeviceTypeRef, cr.ClusterRequirement, entityFinder)
+			referencedDeviceType := findDeviceTypeRequirementDeviceType(spec, cr.DeviceTypeRef, cr, entityFinder)
 			if referencedDeviceType == nil {
 				slog.Error("unknown device type ID for cluster requirement on composing device type",
 					slog.String("deviceTypeId", cr.DeviceTypeRef.ID.HexString()),
 					slog.String("deviceTypeName", cr.DeviceTypeRef.Name),
 					slog.String("deviceType", dt.Name),
-					log.Path("source", cr.ClusterRequirement))
+					log.Path("source", cr))
 				spec.addError(&UnknownComposingDeviceTypeClusterRequirementDeviceTypeError{Requirement: cr})
 			} else {
 				if dtr, ok := deviceTypes[referencedDeviceType]; !ok && referencedDeviceType != spec.RootNodeDeviceType && referencedDeviceType != spec.BaseDeviceType {
@@ -360,7 +360,7 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 						slog.String("deviceTypeId", cr.DeviceTypeRef.ID.HexString()),
 						slog.String("deviceTypeName", cr.DeviceTypeRef.Name),
 						slog.String("deviceType", dt.Name),
-						log.Path("source", cr.ClusterRequirement))
+						log.Path("source", cr))
 					spec.addError(&UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError{Requirement: cr})
 				} else {
 					cr.DeviceType = referencedDeviceType
@@ -582,6 +582,7 @@ func validateDeviceTypes(spec *Specification) {
 		buildReferencedClusters(dt, referencedClusters)
 		crcv := make(conformanceValidation)
 		for _, cr := range dt.ClusterRequirements {
+			validateConformance(spec, cr, cr.Conformance)
 			if cr.Cluster == nil {
 				continue
 			}
@@ -596,13 +597,31 @@ func validateDeviceTypes(spec *Specification) {
 		crcv.check(spec)
 		ercv := make(conformanceValidation)
 		for _, er := range dt.ElementRequirements {
+			validateConformance(spec, er, er.Conformance)
+			validateConstraint(spec, er, er.Constraint)
 			validateAccess(spec, er, er.Access)
 			validateElementRequirement(spec, dt, er, referencedClusters)
 			ercv.add(er, er.Conformance)
 		}
 		ercv.check(spec)
+		for _, dtr := range dt.DeviceTypeRequirements {
+			validateConformance(spec, dtr, dtr.Conformance)
+			validateConstraint(spec, dtr, dtr.Constraint)
+		}
+		for _, cr := range dt.ConditionRequirements {
+			validateConformance(spec, cr, cr.Conformance)
+		}
+		for _, tr := range dt.TagRequirements {
+			validateConformance(spec, tr, tr.Conformance)
+			validateConstraint(spec, tr, tr.Constraint)
+		}
+		for _, dtcr := range dt.ComposedDeviceTypeClusterRequirements {
+			validateConformance(spec, dtcr, dtcr.Conformance)
+		}
 		cdercv := make(conformanceValidation)
 		for _, der := range dt.ComposedDeviceTypeElementRequirements {
+			validateConformance(spec, der.ElementRequirement, der.ElementRequirement.Conformance)
+			validateConstraint(spec, der.ElementRequirement, der.ElementRequirement.Constraint)
 			if der.DeviceType == nil {
 				continue
 			}
@@ -611,6 +630,10 @@ func validateDeviceTypes(spec *Specification) {
 			cdercv.add(der.ElementRequirement, der.ElementRequirement.Conformance)
 		}
 		cdercv.check(spec)
+		for _, dttr := range dt.ComposedDeviceTagRequirements {
+			validateConformance(spec, dttr.TagRequirement, dttr.TagRequirement.Conformance)
+			validateConstraint(spec, dttr.TagRequirement, dttr.TagRequirement.Constraint)
+		}
 	}
 }
 

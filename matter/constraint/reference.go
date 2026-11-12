@@ -71,7 +71,16 @@ func (c *ReferenceLimit) NeedsParens(topLevel bool) bool {
 }
 
 func (c *ReferenceLimit) Clone() Limit {
-	return &ReferenceLimit{Reference: c.Reference}
+	nrl := &ReferenceLimit{
+		Reference: c.Reference,
+		Not:       c.Not,
+		Label:     c.Label,
+		Entity:    c.Entity,
+	}
+	if c.Field != nil {
+		nrl.Field = c.Field.Clone()
+	}
+	return nrl
 }
 
 func (c *ReferenceLimit) MarshalJSON() ([]byte, error) {

@@ -115,7 +115,16 @@ func (re *ReferenceExpression) MarshalJSON() ([]byte, error) {
 }
 
 func (re *ReferenceExpression) Clone() Expression {
-	return &ReferenceExpression{Not: re.Not, Reference: re.Reference}
+	nre := &ReferenceExpression{
+		Not:       re.Not,
+		Reference: re.Reference,
+		Label:     re.Label,
+		Entity:    re.Entity,
+	}
+	if re.Field != nil {
+		nre.Field = re.Field.Clone()
+	}
+	return nre
 }
 
 type ReferenceValue struct {
@@ -167,7 +176,15 @@ func (re *ReferenceValue) Equal(e ComparisonValue) bool {
 }
 
 func (ie *ReferenceValue) Clone() ComparisonValue {
-	return &ReferenceValue{Reference: ie.Reference, Label: ie.Label}
+	nie := &ReferenceValue{
+		Reference: ie.Reference,
+		Label:     ie.Label,
+		Entity:    ie.Entity,
+	}
+	if ie.Field != nil {
+		nie.Field = ie.Field.Clone()
+	}
+	return nie
 }
 
 func (ie *ReferenceValue) Value(context Context) (ExpressionResult, error) {

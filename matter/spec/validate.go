@@ -10,12 +10,12 @@ import (
 )
 
 func Validate(spec *Specification) {
-	validateAttributes(spec)
-	validateCommands(spec)
-	validateEvents(spec)
-	validateBitmaps(spec)
-	validateEnums(spec)
-	validateStructs(spec)
+	validateClusters(spec)
+	validateCommands(spec, nil, spec.GlobalObjects.OfType[*matter.Command]())
+	validateEvents(spec, nil, spec.GlobalObjects.OfType[*matter.Event]())
+	validateBitmaps(spec, spec.GlobalObjects.OfType[*matter.Bitmap]())
+	validateEnums(spec, spec.GlobalObjects.OfType[*matter.Enum]())
+	validateStructs(spec, nil, spec.GlobalObjects.OfType[*matter.Struct]())
 	validateDeviceTypes(spec)
 	validateNamespaces(spec)
 }
