@@ -159,19 +159,46 @@ func (library *Library) toComposedDeviceTypeClusterRequirements(reader asciidoc.
 		return
 	}
 	for row := range ti.ContentRows() {
-		var cr *matter.ClusterRequirement
-		cr, err = library.toClusterRequirement(reader, deviceType, ti, row)
-		if err != nil {
-			return
-		}
-
-		dtcr := matter.NewDeviceTypeClusterRequirement(deviceType, cr, row)
-		dtcr.DeviceTypeRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.DeviceType, matter.TableColumnDeviceName, matter.TableColumnDevice)
+		var dtcr *matter.DeviceTypeClusterRequirement
+		dtcr, err = library.toDeviceTypeClusterRequirement(reader, deviceType, ti, row)
 		if err != nil {
 			return
 		}
 		composedClusterRequirements = append(composedClusterRequirements, dtcr)
 	}
+	return
+}
+
+func (library *Library) toDeviceTypeClusterRequirement(reader asciidoc.Reader, deviceType *matter.DeviceType, ti *TableInfo, row *asciidoc.TableRow) (dtcr *matter.DeviceTypeClusterRequirement, err error) {
+	dtcr = matter.NewDeviceTypeClusterRequirement(deviceType, row)
+	dtcr.DeviceTypeRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.DeviceType, matter.TableColumnDeviceName, matter.TableColumnDevice)
+	if err != nil {
+		return
+	}
+	dtcr.ClusterRef, err = ti.ReadEntityReference(reader, row, matter.IDColumns.Cluster, matter.TableColumnClusterName, matter.TableColumnCluster, matter.TableColumnName)
+	if err != nil {
+		return
+	}
+	var cs string
+	cs, err = ti.ReadString(reader, row, matter.TableColumnClientServer)
+	if err != nil {
+		return
+	}
+	switch strings.ToLower(cs) {
+	case "server":
+		dtcr.Interface = matter.InterfaceServer
+	case "client":
+		dtcr.Interface = matter.InterfaceClient
+	default:
+		slog.Error("Unknown client/server value", "value", cs, log.Path("source", row))
+		err = newGenericParseError(row, "unknown client/server value: \"%s\"", cs)
+		return
+	}
+	dtcr.Quality, err = ti.ReadQuality(reader, row, types.EntityTypeDeviceTypeClusterRequirement, matter.TableColumnQuality)
+	if err != nil {
+		return
+	}
+	dtcr.Conformance = ti.ReadConformance(library, row, matter.TableColumnConformance)
 	return
 }
 
@@ -233,15 +260,12 @@ func (library *Library) toComposedDeviceTypeElementRequirements(reader asciidoc.
 			composedElementRequirements = append(composedElementRequirements, dter)
 		} else {
 			// The element is blank; we previously expressed some kinds of composed cluster requirements this way
-			cr := matter.NewClusterRequirement(deviceType, row)
-			// These always only apply to the server
-			cr.Interface = matter.InterfaceServer
-			cr.ClusterRef = dter.ElementRequirement.ClusterRef
-			cr.Quality = dter.ElementRequirement.Quality
-			dtcr := matter.NewDeviceTypeClusterRequirement(deviceType, cr, row)
+			dtcr := matter.NewDeviceTypeClusterRequirement(deviceType, row)
 			dtcr.DeviceTypeRef = dter.DeviceTypeRef
+			dtcr.Interface = matter.InterfaceServer
+			dtcr.ClusterRef = dter.ElementRequirement.ClusterRef
 			if len(dter.ElementRequirement.Conformance) > 0 {
-				dtcr.ClusterRequirement.Conformance = dter.ElementRequirement.Conformance.CloneSet()
+				dtcr.Conformance = dter.ElementRequirement.Conformance.CloneSet()
 			}
 			composedClusterRequirements = append(composedClusterRequirements, dtcr)
 		}

@@ -41,7 +41,7 @@ func (c *StringLimit) NeedsParens(topLevel bool) bool {
 }
 
 func (c *StringLimit) Clone() Limit {
-	return &StringLimit{}
+	return &StringLimit{Value: c.Value}
 }
 
 func (c *StringLimit) MarshalJSON() ([]byte, error) {
