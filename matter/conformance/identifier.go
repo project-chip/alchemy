@@ -122,7 +122,14 @@ func (ie *IdentifierExpression) MarshalJSON() ([]byte, error) {
 }
 
 func (ie *IdentifierExpression) Clone() Expression {
-	return &IdentifierExpression{Not: ie.Not, ID: ie.ID}
+	nie := &IdentifierExpression{
+		Not: ie.Not, ID: ie.ID,
+		Entity: ie.Entity,
+	}
+	if ie.Field != nil {
+		nie.Field = ie.Field.Clone()
+	}
+	return nie
 }
 
 type IdentifierValue struct {
@@ -166,7 +173,14 @@ func (ie *IdentifierValue) Equal(e ComparisonValue) bool {
 }
 
 func (ie *IdentifierValue) Clone() ComparisonValue {
-	return &IdentifierValue{ID: ie.ID}
+	nie := &IdentifierValue{
+		ID:     ie.ID,
+		Entity: ie.Entity,
+	}
+	if ie.Field != nil {
+		nie.Field = ie.Field.Clone()
+	}
+	return nie
 }
 
 func (ie *IdentifierValue) Value(context Context) (ExpressionResult, error) {

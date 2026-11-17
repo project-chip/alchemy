@@ -319,7 +319,6 @@ func (ti *TableInfo) ReadConstraint(library *Library, row *asciidoc.TableRow, co
 	c, err := constraint.TryParseString(s)
 	if err != nil {
 		slog.Error("failed parsing constraint cell", log.Element("source", ti.Doc.Path, source), slog.String("constraint", val))
-		library.Spec.addError(&InvalidConstraintError{Source: row, Constraint: val})
 		return &constraint.GenericConstraint{Value: val}
 	}
 	return c

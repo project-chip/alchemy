@@ -60,6 +60,8 @@ const (
 	ErrorTypeInvalidConstraintLimit
 	ErrorTypeInvalidFallback
 	ErrorTypeInvalidFallbackLimit
+	ErrorTypeInvalidQuality
+
 	ErrorTypeConformanceChoiceOrphan
 	ErrorTypeConformanceChoiceMismatch
 )
@@ -123,7 +125,7 @@ func (ddt DuplicateEntityIDError) Origin() (path string, line int) {
 }
 
 func (ddt DuplicateEntityIDError) Error() string {
-	return fmt.Sprintf("duplicate %s ID: %s", ddt.Entity.EntityType().String(), matter.EntityName(ddt.Entity))
+	return fmt.Sprintf("duplicate %s ID: %s", ddt.Entity.EntityType().FriendlyString(), matter.EntityName(ddt.Entity))
 }
 
 type DuplicateEntityNameError struct {
@@ -140,7 +142,7 @@ func (ddt DuplicateEntityNameError) Origin() (path string, line int) {
 }
 
 func (ddt DuplicateEntityNameError) Error() string {
-	return fmt.Sprintf("duplicate %s name: %s", ddt.Entity.EntityType().String(), matter.EntityName(ddt.Entity))
+	return fmt.Sprintf("duplicate %s name: %s", ddt.Entity.EntityType().FriendlyString(), matter.EntityName(ddt.Entity))
 }
 
 type UnknownConstraintIdentifierError struct {
@@ -347,11 +349,11 @@ func (ddt UnknownComposingDeviceTypeRequirementClusterError) Type() ErrorType {
 }
 
 func (ddt UnknownComposingDeviceTypeRequirementClusterError) Origin() (path string, line int) {
-	return ddt.Requirement.ClusterRequirement.Origin()
+	return ddt.Requirement.Origin()
 }
 
 func (ddt UnknownComposingDeviceTypeRequirementClusterError) Error() string {
-	return fmt.Sprintf("unknown composing device cluster requirement: %s", ddt.Requirement.ClusterRequirement.ClusterRef.Name)
+	return fmt.Sprintf("unknown composing device cluster requirement: %s", ddt.Requirement.ClusterRef.Name)
 }
 
 type UnknownComposingDeviceTypeClusterRequirementDeviceTypeError struct {
@@ -363,7 +365,7 @@ func (ddt UnknownComposingDeviceTypeClusterRequirementDeviceTypeError) Type() Er
 }
 
 func (ddt UnknownComposingDeviceTypeClusterRequirementDeviceTypeError) Origin() (path string, line int) {
-	return ddt.Requirement.ClusterRequirement.Origin()
+	return ddt.Requirement.Origin()
 }
 
 func (ddt UnknownComposingDeviceTypeClusterRequirementDeviceTypeError) Error() string {
@@ -379,7 +381,7 @@ func (ddt UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError) Type
 }
 
 func (ddt UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError) Origin() (path string, line int) {
-	return ddt.Requirement.ClusterRequirement.Origin()
+	return ddt.Requirement.Origin()
 }
 
 func (ddt UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError) Error() string {
@@ -876,6 +878,24 @@ func (ccoe ConformanceChoiceOrphanError) Origin() (path string, line int) {
 
 func (ccoe ConformanceChoiceOrphanError) Error() string {
 	return fmt.Sprintf("conformance choice set \"%s\" is unused by any other conformances", ccoe.Set)
+}
+
+type InvalidQualityError struct {
+	Quality    matter.Quality
+	EntityType types.EntityType
+	Source     types.Entity
+}
+
+func (iqe InvalidQualityError) Type() ErrorType {
+	return ErrorTypeInvalidQuality
+}
+
+func (iqe InvalidQualityError) Origin() (path string, line int) {
+	return iqe.Source.Origin()
+}
+
+func (iqe InvalidQualityError) Error() string {
+	return fmt.Sprintf("invalid quality for %s: %s", iqe.EntityType.String(), iqe.Quality.String())
 }
 
 type ConformanceChoiceMismatchError struct {
