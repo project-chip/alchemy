@@ -40,7 +40,7 @@ func (c *StatusCodeLimit) NeedsParens(topLevel bool) bool {
 }
 
 func (c *StatusCodeLimit) Clone() Limit {
-	return &NullLimit{}
+	return &StatusCodeLimit{StatusCode: c.StatusCode}
 }
 
 func (c *StatusCodeLimit) MarshalJSON() ([]byte, error) {

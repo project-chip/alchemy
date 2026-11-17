@@ -44,7 +44,14 @@ func (c *ListConstraint) NeedsParens(topLevel bool) bool {
 }
 
 func (c *ListConstraint) Clone() Constraint {
-	return &ListConstraint{Constraint: c.Constraint.Clone(), EntryConstraint: c.EntryConstraint.Clone()}
+	nlc := &ListConstraint{}
+	if c.Constraint != nil {
+		nlc.Constraint = c.Constraint.Clone()
+	}
+	if c.EntryConstraint != nil {
+		nlc.EntryConstraint = c.EntryConstraint.Clone()
+	}
+	return nlc
 }
 
 func (c *ListConstraint) MarshalJSON() ([]byte, error) {
