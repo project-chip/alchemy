@@ -137,16 +137,29 @@ func traverseConstraintLimits(c Constraint, yield func(Constraint, Limit) bool) 
 		if cc.Tags != nil && !yieldConstraintLimits(c, cc.Tags, yield) {
 			return false
 		}
+	case *LogicalConstraint:
+		if !traverseConstraintLimits(cc.Left, yield) {
+			return false
+		}
+		for _, r := range cc.Right {
+			if !traverseConstraintLimits(r, yield) {
+				return false
+			}
+		}
+	case Set:
+		for _, c := range cc {
+			if !traverseConstraintLimits(c, yield) {
+				return false
+			}
+		}
 	}
 	return true
 }
 
 func TraverseConstraintLimits(c Constraint) iter.Seq2[Constraint, Limit] {
 	return func(yield func(Constraint, Limit) bool) {
-		for c := range Traverse(c) {
-			if !traverseConstraintLimits(c, yield) {
-				return
-			}
+		if !traverseConstraintLimits(c, yield) {
+			return
 		}
 	}
 }

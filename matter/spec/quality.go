@@ -23,3 +23,18 @@ func parseQuality(s string, entityType types.EntityType, doc *asciidoc.Document,
 	}
 	return q
 }
+
+func validateQuality(spec *Specification, q matter.Quality, entityType types.EntityType, source types.Entity) {
+	allowed, ok := matter.AllowedQualities[entityType]
+	if !ok {
+		return
+	}
+	if q&allowed != q {
+		disallowed := q ^ (q & allowed)
+		if disallowed != matter.QualityReportable { // This is still in use in a bunch of places to support Zigbee, so we'll ignore it for now
+
+			slog.Warn("Invalid quality on entity", slog.String("disallowed", disallowed.String()), slog.String("entityType", entityType.String()), log.Path("source", source))
+			spec.addError(&InvalidQualityError{Quality: q, EntityType: entityType, Source: source})
+		}
+	}
+}
