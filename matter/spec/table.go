@@ -209,7 +209,7 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnCondition
 	case "condition id":
 		return matter.TableColumnConditionID
-	case "namespace":
+	case "namespace", "namespace name":
 		return matter.TableColumnNamespace
 	case "namespace id":
 		return matter.TableColumnNamespaceID
@@ -223,6 +223,17 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnStatusCode
 	case "instruction dependency":
 		return matter.TableColumnInstructionDependency
+	case "category":
+		return matter.TableColumnCategory
+	case "certification state", "certifiable state":
+		return matter.TableColumnCertificationState
+	case "notes":
+		return matter.TableColumnNotes
+	case "base cluster":
+		return matter.TableColumnBaseCluster
+	case "classification":
+		return matter.TableColumnClassification
+
 	}
 	return matter.TableColumnUnknown
 }

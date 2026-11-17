@@ -59,6 +59,11 @@ const (
 	TableColumnLocation
 	TableColumnField
 	TableColumnInstructionDependency
+	TableColumnCategory
+	TableColumnCertificationState
+	TableColumnNotes
+	TableColumnBaseCluster
+	TableColumnClassification
 )
 
 var TableColumnNames = map[TableColumn]string{
@@ -111,6 +116,11 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnField:                 "Field",
 	TableColumnFieldID:               "Field ID",
 	TableColumnInstructionDependency: "Instruction Dependency",
+	TableColumnCategory:              "Category",
+	TableColumnCertificationState:    "Certification State",
+	TableColumnNotes:                 "Notes",
+	TableColumnBaseCluster:           "Base Cluster",
+	TableColumnClassification:        "Classification",
 }
 
 func (tc TableColumn) String() string {

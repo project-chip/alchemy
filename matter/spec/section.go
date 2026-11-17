@@ -112,7 +112,6 @@ func AssignSectionTypes(sectionInfoCache SectionInfoCache, docInfoCache Document
 					secType = matter.SectionDeviceType
 				case matter.DocTypeNamespace:
 					secType = matter.SectionNamespace
-
 				default:
 					secType = matter.SectionTop
 					if strings.HasSuffix(sectionInfoCache.SectionName(section), " Cluster") {
@@ -314,6 +313,9 @@ func deriveSectionType(sectionInfoCache SectionInfoCache, reader asciidoc.Reader
 
 	// Ugh, some heuristics now
 	name := strings.TrimSpace(sectionInfoCache.SectionName(section))
+	if text.HasCaseInsensitiveSuffix(name, " ID List") {
+		return matter.SectionMasterList
+	}
 	if text.HasCaseInsensitiveSuffix(name, "Bitmap Type") || text.HasCaseInsensitiveSuffix(name, "Bitmap") {
 		return matter.SectionDataTypeBitmap
 	}

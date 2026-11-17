@@ -263,14 +263,15 @@ func readClusterClassification(reader asciidoc.Reader, doc *asciidoc.Document, n
 		if err != nil {
 			return newGenericParseError(row, "error reading hierarchy column on cluster %s: %w", name, err)
 		}
-		classification.Role, err = ti.ReadString(reader, row, matter.TableColumnRole)
+		classification.Role, err = ti.ReadRole(reader, row, matter.TableColumnRole)
 		if err != nil {
 			return newGenericParseError(row, "error reading role column on cluster %s: %w", name, err)
 		}
-		classification.Scope, err = ti.ReadString(reader, row, matter.TableColumnScope, matter.TableColumnContext)
+		classification.Scope, err = ti.ReadScope(reader, row, matter.TableColumnScope, matter.TableColumnContext)
 		if err != nil {
 			newGenericParseError(row, "error reading scope column on cluster %s: %w", name, err)
 		}
+
 		if len(classification.PICS) == 0 {
 			classification.PICS, err = ti.ReadString(reader, row, matter.TableColumnPICS, matter.TableColumnPICSCode)
 			if err != nil {
@@ -285,16 +286,16 @@ func readClusterClassification(reader asciidoc.Reader, doc *asciidoc.Document, n
 		for _, ec := range ti.ExtraColumns {
 			switch ec.Name {
 			case "Context":
-				if len(classification.Scope) == 0 {
-					classification.Scope, err = RenderTableCell(reader, tableCells[ec.Offset])
+				if classification.Scope == matter.ScopeUnknown {
+					classification.Scope, err = ti.ReadScopeAtOffset(reader, row, ec.Offset)
 				}
 			case "Primary Transaction":
-				if len(classification.Scope) == 0 {
+				if classification.Scope == matter.ScopeUnknown {
 					var pt string
 					pt, err = RenderTableCell(reader, tableCells[ec.Offset])
 					if err == nil {
 						if strings.HasPrefix(pt, "Type 1") {
-							classification.Scope = "Endpoint"
+							classification.Scope = matter.ScopeEndpoint
 						}
 					}
 				}
