@@ -397,7 +397,14 @@ func (sp *Builder) noteDocRefs(doc *asciidoc.Document, entity types.Entity) {
 
 }
 
-func (sp *Builder) getTagNamespace(field *matter.Field) {
+func (sp *Builder) getTagNamespace(library *Library, field *matter.Field, finder entityFinder) {
+	if ref, ok := field.Type.Source.(*asciidoc.CrossReference); ok {
+		referenceID, label := referenceInfo(library, ref)
+		if ns, ok := finder.findEntityByReference(referenceID, label, ref).(*matter.Namespace); ok {
+			field.Type.Entity = ns
+			return
+		}
+	}
 	for _, ns := range sp.Spec.Namespaces {
 		if strings.EqualFold(ns.Name, field.Type.Name) {
 			field.Type.Entity = ns
