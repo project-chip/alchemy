@@ -198,3 +198,60 @@ errata:
 		t.Errorf("expected override-name to be 'OverlayExtraOverride', got '%s'", extraStruct.OverrideName)
 	}
 }
+
+func TestLoadErrataCopyTypesMerge(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	mainErrataContent := `
+errata:
+  app_clusters/Channel.adoc:
+    sdk:
+      copy-structs:
+        - AdditionalInfoStruct
+`
+	overlayErrataContent := `
+errata:
+  app_clusters/Channel.adoc:
+    sdk:
+      copy-structs:
+        - OtherStruct
+      copy-enums:
+        - CharacteristicEnum
+      copy-bitmaps:
+        - SomeBitmap
+`
+
+	mainPath := filepath.Join(tmpDir, "main_errata.yaml")
+	overlayPath := filepath.Join(tmpDir, "overlay_errata.yaml")
+	if err := os.WriteFile(mainPath, []byte(mainErrataContent), 0644); err != nil {
+		t.Fatalf("failed to write main errata: %v", err)
+	}
+	if err := os.WriteFile(overlayPath, []byte(overlayErrataContent), 0644); err != nil {
+		t.Fatalf("failed to write overlay errata: %v", err)
+	}
+
+	col, err := LoadErrata(&config.Config{}, mainPath, overlayPath)
+	if err != nil {
+		t.Fatalf("LoadErrata failed: %v", err)
+	}
+	sdk := col.Get("app_clusters/Channel.adoc").SDK
+
+	// Lists from the main file and the overlay are combined
+	for _, name := range []string{"AdditionalInfoStruct", "OtherStruct"} {
+		if _, ok := sdk.CopyStructs[name]; !ok {
+			t.Errorf("expected %s in copy-structs, got %v", name, sdk.CopyStructs)
+		}
+	}
+	if _, ok := sdk.CopyEnums["CharacteristicEnum"]; !ok {
+		t.Errorf("expected CharacteristicEnum in copy-enums, got %v", sdk.CopyEnums)
+	}
+	if _, ok := sdk.CopyBitmaps["SomeBitmap"]; !ok {
+		t.Errorf("expected SomeBitmap in copy-bitmaps, got %v", sdk.CopyBitmaps)
+	}
+	if !sdk.HasCopies() || !sdk.HasSdkPatch() {
+		t.Errorf("errata with copy lists should report HasCopies and HasSdkPatch")
+	}
+	if col.Get("app_clusters/Other.adoc").SDK.HasCopies() {
+		t.Errorf("document without errata should not report copies")
+	}
+}
