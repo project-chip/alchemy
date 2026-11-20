@@ -26,6 +26,12 @@ type SDK struct {
 	SharedEnums   UniqueStringList `yaml:"shared-enums,omitempty"`
 	SharedStructs UniqueStringList `yaml:"shared-structs,omitempty"`
 
+	// CopyBitmaps, CopyEnums and CopyStructs list data types that this document's clusters reference
+	// from another cluster, but which should be rendered as a separate copy owned by each referencing cluster
+	CopyBitmaps UniqueStringList `yaml:"copy-bitmaps,omitempty"`
+	CopyEnums   UniqueStringList `yaml:"copy-enums,omitempty"`
+	CopyStructs UniqueStringList `yaml:"copy-structs,omitempty"`
+
 	TemplatePath string `yaml:"template-path,omitempty"`
 
 	ClusterSplit map[string]string `yaml:"cluster-split,omitempty"`
@@ -72,7 +78,18 @@ func (sdk *SDK) HasSdkPatch() bool {
 	if len(sdk.SharedStructs) > 0 {
 		return true
 	}
+	if sdk.HasCopies() {
+		return true
+	}
 	return false
+}
+
+// HasCopies returns true if any of the copy-bitmaps, copy-enums or copy-structs lists are set
+func (sdk *SDK) HasCopies() bool {
+	if sdk == nil {
+		return false
+	}
+	return len(sdk.CopyBitmaps) > 0 || len(sdk.CopyEnums) > 0 || len(sdk.CopyStructs) > 0
 }
 
 type SDKTypes struct {

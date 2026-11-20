@@ -144,6 +144,10 @@ func (s *SDK) Merge(other *SDK) {
 	s.SharedEnums.Merge(other.SharedEnums)
 	s.SharedStructs.Merge(other.SharedStructs)
 
+	s.CopyBitmaps.Merge(other.CopyBitmaps)
+	s.CopyEnums.Merge(other.CopyEnums)
+	s.CopyStructs.Merge(other.CopyStructs)
+
 	if other.TemplatePath != "" {
 		s.TemplatePath = other.TemplatePath
 	}
