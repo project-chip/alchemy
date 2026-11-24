@@ -45,8 +45,9 @@ type ConditionRequirement struct {
 	DeviceTypeRef EntityReference `json:"deviceTypeRef,omitempty"`
 	ConditionRef  EntityReference `json:"conditionRef,omitempty"`
 
-	DeviceType *DeviceType                   `json:"deviceType,omitempty"`
-	Location   DeviceTypeRequirementLocation `json:"location,omitempty"`
+	DeviceType            *DeviceType                   `json:"deviceType,omitempty"`
+	DeviceTypeRequirement *DeviceTypeRequirement        `json:"-"`
+	Location              DeviceTypeRequirementLocation `json:"location,omitempty"`
 
 	Condition   *Condition      `json:"condition,omitempty"`
 	Conformance conformance.Set `json:"conformance,omitempty"`
