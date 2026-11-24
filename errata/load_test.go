@@ -199,26 +199,32 @@ errata:
 	}
 }
 
-func TestLoadErrataCopyTypesMerge(t *testing.T) {
+func TestLoadErrataForceLocalMerge(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	mainErrataContent := `
 errata:
   app_clusters/Channel.adoc:
     sdk:
-      copy-structs:
-        - AdditionalInfoStruct
+      types:
+        structs:
+          AdditionalInfoStruct:
+            fields:
+              - name: Name
+                constraint: all
 `
 	overlayErrataContent := `
 errata:
   app_clusters/Channel.adoc:
     sdk:
-      copy-structs:
-        - OtherStruct
-      copy-enums:
-        - CharacteristicEnum
-      copy-bitmaps:
-        - SomeBitmap
+      types:
+        structs:
+          AdditionalInfoStruct:
+            force-local: true
+            keep: true
+        enums:
+          SomeEnum:
+            force-global: true
 `
 
 	mainPath := filepath.Join(tmpDir, "main_errata.yaml")
@@ -234,24 +240,19 @@ errata:
 	if err != nil {
 		t.Fatalf("LoadErrata failed: %v", err)
 	}
-	sdk := col.Get("app_clusters/Channel.adoc").SDK
+	types := col.Get("app_clusters/Channel.adoc").SDK.Types
+	if types == nil {
+		t.Fatalf("expected types errata")
+	}
 
-	// Lists from the main file and the overlay are combined
-	for _, name := range []string{"AdditionalInfoStruct", "OtherStruct"} {
-		if _, ok := sdk.CopyStructs[name]; !ok {
-			t.Errorf("expected %s in copy-structs, got %v", name, sdk.CopyStructs)
-		}
+	st := types.Structs["AdditionalInfoStruct"]
+	if st == nil || !st.ForceLocal || !st.Keep {
+		t.Fatalf("expected overlay force-local and keep to be merged into the existing entry, got %+v", st)
 	}
-	if _, ok := sdk.CopyEnums["CharacteristicEnum"]; !ok {
-		t.Errorf("expected CharacteristicEnum in copy-enums, got %v", sdk.CopyEnums)
+	if len(st.Fields) != 1 || st.Fields[0].Constraint != "all" {
+		t.Errorf("expected the main file's field overrides to be kept, got %+v", st.Fields)
 	}
-	if _, ok := sdk.CopyBitmaps["SomeBitmap"]; !ok {
-		t.Errorf("expected SomeBitmap in copy-bitmaps, got %v", sdk.CopyBitmaps)
-	}
-	if !sdk.HasCopies() || !sdk.HasSdkPatch() {
-		t.Errorf("errata with copy lists should report HasCopies and HasSdkPatch")
-	}
-	if col.Get("app_clusters/Other.adoc").SDK.HasCopies() {
-		t.Errorf("document without errata should not report copies")
+	if en := types.Enums["SomeEnum"]; en == nil || !en.ForceGlobal {
+		t.Errorf("expected overlay force-global entry, got %+v", en)
 	}
 }

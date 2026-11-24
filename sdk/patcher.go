@@ -165,7 +165,7 @@ func (patcher *Patcher) BeforeDataModelResolution(spec *spec.Specification) (err
 
 func (p *Patcher) AfterDataModelResolution(s *spec.Specification) (err error) {
 	resolveAtomicOperations(s)
-	err = copyErrataTypes(s)
+	err = copyForceLocalTypes(s)
 	if err != nil {
 		return
 	}

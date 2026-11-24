@@ -71,6 +71,14 @@ func newCopyTestSpec() *copyTestSpec {
 	return ts
 }
 
+func forceLocal(names ...string) map[string]*errata.SDKType {
+	m := make(map[string]*errata.SDKType)
+	for _, n := range names {
+		m[n] = &errata.SDKType{ForceLocal: true}
+	}
+	return m
+}
+
 func fieldEntity(f *matter.Field) types.Entity {
 	if f.Type.IsArray() {
 		return f.Type.EntryType.Entity
@@ -89,8 +97,8 @@ func findField(fs matter.FieldSet, name string) *matter.Field {
 
 func TestCopyStructIntoReferencingCluster(t *testing.T) {
 	ts := newCopyTestSpec()
-	sdkErrata := &errata.SDK{CopyStructs: errata.UniqueStringList{"AdditionalInfoStruct": {}}}
-	copied := make(map[string]bool)
+	sdkErrata := &errata.SDK{Types: &errata.SDKTypes{Structs: forceLocal("AdditionalInfoStruct")}}
+	copied := make(map[types.Entity]bool)
 
 	if err := ts.p.copyTypesToCluster(ts.user, sdkErrata, copied); err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -109,7 +117,7 @@ func TestCopyStructIntoReferencingCluster(t *testing.T) {
 	if fieldEntity(ts.attribute) != clone || fieldEntity(ts.command.Fields[0]) != clone {
 		t.Fatalf("user cluster fields should both point to the single copy")
 	}
-	if !copied["AdditionalInfoStruct"] {
+	if !copied[clone] {
 		t.Fatalf("copy should be recorded for the uncopied-entry warning")
 	}
 	if ts.spec.DocRefs[clone] != ts.userDoc || ts.spec.DocRefs[clone.Fields[0]] != ts.userDoc {
@@ -130,12 +138,12 @@ func TestCopyStructIntoReferencingCluster(t *testing.T) {
 
 func TestCopyNestedTypesWithoutModifyingOriginal(t *testing.T) {
 	ts := newCopyTestSpec()
-	sdkErrata := &errata.SDK{
-		CopyStructs: errata.UniqueStringList{"AdditionalInfoStruct": {}},
-		CopyEnums:   errata.UniqueStringList{"MetricTypeEnum": {}},
-	}
+	sdkErrata := &errata.SDK{Types: &errata.SDKTypes{
+		Structs: forceLocal("AdditionalInfoStruct"),
+		Enums:   forceLocal("MetricTypeEnum"),
+	}}
 
-	if err := ts.p.copyTypesToCluster(ts.user, sdkErrata, make(map[string]bool)); err != nil {
+	if err := ts.p.copyTypesToCluster(ts.user, sdkErrata, make(map[types.Entity]bool)); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
@@ -156,14 +164,12 @@ func TestCopyNestedTypesWithoutModifyingOriginal(t *testing.T) {
 
 func TestCopyAppliesReferencingDocumentErrata(t *testing.T) {
 	ts := newCopyTestSpec()
-	sdkErrata := &errata.SDK{
-		CopyStructs: errata.UniqueStringList{"AdditionalInfoStruct": {}},
-		Types: &errata.SDKTypes{Structs: map[string]*errata.SDKType{
-			"AdditionalInfoStruct": {Fields: []*errata.SDKType{{Name: "Name", Constraint: "max 64"}}},
-		}},
-	}
+	// A single types entry both marks the struct force-local and overrides the copy's fields
+	sdkErrata := &errata.SDK{Types: &errata.SDKTypes{Structs: map[string]*errata.SDKType{
+		"AdditionalInfoStruct": {ForceLocal: true, Fields: []*errata.SDKType{{Name: "Name", Constraint: "max 64"}}},
+	}}}
 
-	if err := ts.p.copyTypesToCluster(ts.user, sdkErrata, make(map[string]bool)); err != nil {
+	if err := ts.p.copyTypesToCluster(ts.user, sdkErrata, make(map[types.Entity]bool)); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
@@ -178,8 +184,12 @@ func TestCopyAppliesReferencingDocumentErrata(t *testing.T) {
 func TestCopyIgnoresUnlistedAndLocalTypes(t *testing.T) {
 	ts := newCopyTestSpec()
 
-	// Nothing listed: references are left alone
-	if err := ts.p.copyTypesToCluster(ts.user, &errata.SDK{CopyStructs: errata.UniqueStringList{"OtherStruct": {}}}, make(map[string]bool)); err != nil {
+	// Not marked force-local (an override or keep entry alone doesn't copy): references are left alone
+	notForceLocal := &errata.SDK{Types: &errata.SDKTypes{Structs: map[string]*errata.SDKType{
+		"AdditionalInfoStruct": {Keep: true, Fields: []*errata.SDKType{{Name: "Name", Constraint: "max 64"}}},
+		"OtherStruct":          {ForceLocal: true},
+	}}}
+	if err := ts.p.copyTypesToCluster(ts.user, notForceLocal, make(map[types.Entity]bool)); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if fieldEntity(ts.attribute) != ts.shared || len(ts.user.Structs) != 0 {
@@ -187,11 +197,11 @@ func TestCopyIgnoresUnlistedAndLocalTypes(t *testing.T) {
 	}
 
 	// Listed, but owned by the cluster being processed: nothing to copy
-	copied := make(map[string]bool)
-	if err := ts.p.copyTypesToCluster(ts.owner, &errata.SDK{CopyEnums: errata.UniqueStringList{"MetricTypeEnum": {}}}, copied); err != nil {
+	copied := make(map[types.Entity]bool)
+	if err := ts.p.copyTypesToCluster(ts.owner, &errata.SDK{Types: &errata.SDKTypes{Enums: forceLocal("MetricTypeEnum")}}, copied); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if len(ts.owner.Enums) != 1 || copied["MetricTypeEnum"] {
+	if len(ts.owner.Enums) != 1 || len(copied) != 0 {
 		t.Fatalf("a cluster's own enum should not be copied")
 	}
 }

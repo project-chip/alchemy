@@ -2,6 +2,7 @@ package sdk
 
 import (
 	"log/slog"
+	"maps"
 	"slices"
 
 	"github.com/project-chip/alchemy/errata"
@@ -10,22 +11,24 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-// copyErrataTypes gives clusters their own copy of bitmaps, enums and structs that they reference from
-// another cluster, as listed in the copy-bitmaps, copy-enums and copy-structs errata of the referencing
-// cluster's document. It must run after data type resolution, so field types point to their entities,
-// and before renames, as the errata lists use spec names.
-func copyErrataTypes(s *spec.Specification) (err error) {
+// copyForceLocalTypes gives clusters their own copy of bitmaps, enums and structs that they reference from
+// another cluster, when the referencing cluster's document marks them with force-local in its types errata.
+// Global types marked with force-local are handled before data model resolution by applyErrataLocality.
+//
+// It must run after data type resolution, so field types point to their entities, and before renames, as
+// the errata use spec names. The referencing document's types errata is applied to each copy at that point,
+// so overrides that need resolving (e.g. an override-type naming a custom type) are not resolved on the copy;
+// simple overrides such as constraints work as expected.
+func copyForceLocalTypes(s *spec.Specification) (err error) {
 	if s.Errata == nil {
 		return
 	}
-	p := &patch{
-		spec:          s,
-		globalEnums:   make(map[string]*matter.Enum),
-		globalBitmaps: make(map[string]*matter.Bitmap),
-		globalStructs: make(map[string]*matter.Struct),
-	}
-	for path, e := range s.Errata.All() {
-		if !e.SDK.HasCopies() {
+	p := &patch{spec: s}
+	// Copies can chain (a copied struct may use a type its owner copied), so process documents in a fixed order
+	all := maps.Collect(s.Errata.All())
+	for _, path := range slices.Sorted(maps.Keys(all)) {
+		sdkErrata := &all[path].SDK
+		if !hasForceLocalTypes(sdkErrata.Types) {
 			continue
 		}
 		doc, ok := s.Docs[path]
@@ -33,34 +36,31 @@ func copyErrataTypes(s *spec.Specification) (err error) {
 			slog.Warn("Errata refers to unknown document", "path", path)
 			continue
 		}
-		copied := make(map[string]bool)
+		var clusters []*matter.Cluster
 		for _, entity := range s.EntitiesForDocument(doc) {
 			switch entity := entity.(type) {
 			case *matter.Cluster:
-				err = p.copyTypesToCluster(entity, &e.SDK, copied)
+				clusters = append(clusters, entity)
 			case *matter.ClusterGroup:
-				for _, c := range entity.Clusters {
-					err = p.copyTypesToCluster(c, &e.SDK, copied)
-					if err != nil {
-						return
-					}
-				}
+				clusters = append(clusters, entity.Clusters...)
 			}
+		}
+		copied := make(map[types.Entity]bool)
+		for _, cluster := range clusters {
+			err = p.copyTypesToCluster(cluster, sdkErrata, copied)
 			if err != nil {
 				return
 			}
 		}
-		warnUncopiedTypes(path, "copy-bitmaps", e.SDK.CopyBitmaps, copied)
-		warnUncopiedTypes(path, "copy-enums", e.SDK.CopyEnums, copied)
-		warnUncopiedTypes(path, "copy-structs", e.SDK.CopyStructs, copied)
+		warnUnmatchedForceLocalTypes(s, path, sdkErrata.Types, clusters, copied)
 	}
 	return
 }
 
-// copyTypesToCluster replaces references from fields owned by the cluster to listed data types owned by
-// another cluster with references to a copy owned by the cluster. Fields of other clusters' entities are
-// never modified. Copied structs are scanned too, so listed types nested inside them are also copied.
-func (p *patch) copyTypesToCluster(cluster *matter.Cluster, sdkErrata *errata.SDK, copied map[string]bool) error {
+// copyTypesToCluster replaces references from fields owned by the cluster to force-local data types owned
+// by another cluster with references to a copy owned by the cluster. Fields of other clusters' entities are
+// never modified. Copied structs are scanned too, so force-local types nested inside them are also copied.
+func (p *patch) copyTypesToCluster(cluster *matter.Cluster, sdkErrata *errata.SDK, copied map[types.Entity]bool) error {
 	copies := make(map[types.Entity]types.Entity)
 	for {
 		var added bool
@@ -69,15 +69,11 @@ func (p *patch) copyTypesToCluster(cluster *matter.Cluster, sdkErrata *errata.SD
 			if dataType != nil && dataType.IsArray() {
 				dataType = dataType.EntryType
 			}
-			if dataType == nil || dataType.Entity == nil || !isListedForCopy(sdkErrata, dataType.Entity) {
+			if dataType == nil || dataType.Entity == nil || !isForceLocal(sdkErrata.Types, dataType.Entity) {
 				continue
 			}
 			owner, ok := dataType.Entity.Parent().(*matter.Cluster)
-			if !ok {
-				slog.Warn("Errata: unable to copy data type not owned by a cluster", matter.LogEntity("entity", dataType.Entity), slog.String("clusterName", cluster.Name))
-				continue
-			}
-			if owner == cluster {
+			if !ok || owner == cluster {
 				continue
 			}
 			clone, ok := copies[dataType.Entity]
@@ -88,7 +84,7 @@ func (p *patch) copyTypesToCluster(cluster *matter.Cluster, sdkErrata *errata.SD
 					return err
 				}
 				copies[dataType.Entity] = clone
-				copied[matter.EntityName(dataType.Entity)] = true
+				copied[clone] = true
 				added = true
 			}
 			dataType.Entity = clone
@@ -165,26 +161,70 @@ func clusterOwnedFields(cluster *matter.Cluster) (fields []*matter.Field) {
 	return
 }
 
-func isListedForCopy(sdkErrata *errata.SDK, entity types.Entity) bool {
-	var list errata.UniqueStringList
+// forceLocalEntries returns the types errata entries for the given entity's kind
+func forceLocalEntries(typeOverrides *errata.SDKTypes, entity types.Entity) map[string]*errata.SDKType {
+	if typeOverrides == nil {
+		return nil
+	}
 	switch entity.(type) {
 	case *matter.Bitmap:
-		list = sdkErrata.CopyBitmaps
+		return typeOverrides.Bitmaps
 	case *matter.Enum:
-		list = sdkErrata.CopyEnums
+		return typeOverrides.Enums
 	case *matter.Struct:
-		list = sdkErrata.CopyStructs
-	default:
-		return false
+		return typeOverrides.Structs
 	}
-	_, ok := list[matter.EntityName(entity)]
-	return ok
+	return nil
 }
 
-func warnUncopiedTypes(path string, key string, list errata.UniqueStringList, copied map[string]bool) {
-	for name := range list {
-		if !copied[name] {
-			slog.Warn("Errata: data type listed for copying is not referenced from another cluster", slog.String("path", path), slog.String("errata", key), slog.String("name", name))
+func isForceLocal(typeOverrides *errata.SDKTypes, entity types.Entity) bool {
+	entry, ok := forceLocalEntries(typeOverrides, entity)[matter.EntityName(entity)]
+	return ok && entry != nil && entry.ForceLocal
+}
+
+func hasForceLocalTypes(typeOverrides *errata.SDKTypes) bool {
+	if typeOverrides == nil {
+		return false
+	}
+	for _, entries := range []map[string]*errata.SDKType{typeOverrides.Bitmaps, typeOverrides.Enums, typeOverrides.Structs} {
+		for _, entry := range entries {
+			if entry != nil && entry.ForceLocal {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// warnUnmatchedForceLocalTypes warns about force-local entries that match nothing: not copied from another
+// cluster, not a global type (handled by applyErrataLocality), and not already owned by the document's clusters
+func warnUnmatchedForceLocalTypes(s *spec.Specification, path string, typeOverrides *errata.SDKTypes, clusters []*matter.Cluster, copied map[types.Entity]bool) {
+	known := make(map[string]bool)
+	add := func(e types.Entity) {
+		known[matter.EntityName(e)] = true
+	}
+	for e := range copied {
+		add(e)
+	}
+	for e := range s.GlobalObjects {
+		add(e)
+	}
+	for _, c := range clusters {
+		for _, e := range c.Bitmaps {
+			add(e)
+		}
+		for _, e := range c.Enums {
+			add(e)
+		}
+		for _, e := range c.Structs {
+			add(e)
+		}
+	}
+	for _, entries := range []map[string]*errata.SDKType{typeOverrides.Bitmaps, typeOverrides.Enums, typeOverrides.Structs} {
+		for name, entry := range entries {
+			if entry != nil && entry.ForceLocal && !known[name] {
+				slog.Warn("Errata: force-local data type is not referenced from another cluster, global, or local", slog.String("path", path), slog.String("name", name))
+			}
 		}
 	}
 }
