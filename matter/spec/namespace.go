@@ -72,6 +72,7 @@ func (library *Library) toNamespace(reader asciidoc.Reader, d *asciidoc.Document
 		st.Description, _ = valuesTable.ReadString(reader, row, matter.TableColumnSummary)
 		ns.SemanticTags = append(ns.SemanticTags, st)
 	}
+	library.addEntity(s, ns)
 	return
 }
 
