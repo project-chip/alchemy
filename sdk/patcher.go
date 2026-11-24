@@ -165,6 +165,10 @@ func (patcher *Patcher) BeforeDataModelResolution(spec *spec.Specification) (err
 
 func (p *Patcher) AfterDataModelResolution(s *spec.Specification) (err error) {
 	resolveAtomicOperations(s)
+	err = copyForceLocalTypes(s)
+	if err != nil {
+		return
+	}
 	// We save renames for after data model resolution so that existing names are resolved correctly
 	spec.TraverseEntities(s, func(parentCluster *matter.Cluster, parent, entity types.Entity) parse.SearchShould {
 		doc, ok := s.DocRefs[entity]

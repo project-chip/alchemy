@@ -350,10 +350,23 @@ errata:
   src/app_clusters/media/Channel.adoc:
     zap:
       cluster-define-prefix: CHANNEL_
+      types:
+        structs:
+          AdditionalInfoStruct: # The SDK has a separate copy of this Content Launcher struct in Channel
+            force-local: true
+            fields:
+              - name: Name
+                constraint: all
+              - name: Value
+                constraint: all
   src/app_clusters/media/ContentLauncher.adoc:
     zap:
       cluster-define-prefix: CONTENT_LAUNCHER_
       template-path: content-launch-cluster
+      types:
+        enums:
+          CharacteristicEnum: # The SDK has a separate copy of this Media Playback enum in Content Launcher
+            force-local: true
   src/app_clusters/media/KeypadInput.adoc:
     zap:
       cluster-define-prefix: ILLUM_

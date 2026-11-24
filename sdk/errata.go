@@ -18,54 +18,6 @@ func patchMiscellaneousErrata(spec *spec.Specification) {
 	patchLevelControlCluster(spec)
 }
 
-func patchContentLaunchCluster(spec *spec.Specification) {
-	/*
-		Another hacky workaround: the spec defines CharacteristicEnum under Media Playback, and Content Launcher
-		just has a reference to it; by default, we would share the enums, but the hand-coded ZAP XML has its own copy of the
-		enum. This function makes a copy of the enum and updates references
-	*/
-	contentLaunchCluster, ok := spec.ClustersByName["Content Launcher"]
-	if !ok {
-		slog.Warn("Could not find Content Launch cluster for patching")
-		return
-	}
-	mediaPlaybackCluster, ok := spec.ClustersByName["Media Playback"]
-	if !ok {
-		slog.Warn("Could not find Media Playback cluster for patching")
-		return
-	}
-	for _, s := range mediaPlaybackCluster.Enums {
-		if s.Name != "CharacteristicEnum" {
-			continue
-		}
-		clone := s.CloneTo(contentLaunchCluster)
-		contentLaunchCluster.MoveEnum(clone)
-		spec.ClusterRefs.Add(contentLaunchCluster, clone)
-		// Update any references to the enum on the Content Launch cluster
-		contentLaunchCluster.TraverseDataTypes(func(parent, entity types.Entity) parse.SearchShould {
-			if entity == s {
-				switch parent := parent.(type) {
-				case *matter.Field:
-					fieldType := parent.Type
-					if fieldType == nil {
-						return parse.SearchShouldContinue
-					}
-					if fieldType.IsArray() {
-						fieldType = fieldType.EntryType
-					}
-					if fieldType == nil {
-						return parse.SearchShouldContinue
-					}
-					fieldType.Entity = clone
-				}
-			}
-			return parse.SearchShouldContinue
-		})
-		break
-
-	}
-}
-
 func patchLabelCluster(spec *spec.Specification) {
 	/*
 		Another hacky workaround: the spec defines LabelStruct under a base cluster called Label Cluster, but the

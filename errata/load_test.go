@@ -198,3 +198,61 @@ errata:
 		t.Errorf("expected override-name to be 'OverlayExtraOverride', got '%s'", extraStruct.OverrideName)
 	}
 }
+
+func TestLoadErrataForceLocalMerge(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	mainErrataContent := `
+errata:
+  app_clusters/Channel.adoc:
+    sdk:
+      types:
+        structs:
+          AdditionalInfoStruct:
+            fields:
+              - name: Name
+                constraint: all
+`
+	overlayErrataContent := `
+errata:
+  app_clusters/Channel.adoc:
+    sdk:
+      types:
+        structs:
+          AdditionalInfoStruct:
+            force-local: true
+            keep: true
+        enums:
+          SomeEnum:
+            force-global: true
+`
+
+	mainPath := filepath.Join(tmpDir, "main_errata.yaml")
+	overlayPath := filepath.Join(tmpDir, "overlay_errata.yaml")
+	if err := os.WriteFile(mainPath, []byte(mainErrataContent), 0644); err != nil {
+		t.Fatalf("failed to write main errata: %v", err)
+	}
+	if err := os.WriteFile(overlayPath, []byte(overlayErrataContent), 0644); err != nil {
+		t.Fatalf("failed to write overlay errata: %v", err)
+	}
+
+	col, err := LoadErrata(&config.Config{}, mainPath, overlayPath)
+	if err != nil {
+		t.Fatalf("LoadErrata failed: %v", err)
+	}
+	types := col.Get("app_clusters/Channel.adoc").SDK.Types
+	if types == nil {
+		t.Fatalf("expected types errata")
+	}
+
+	st := types.Structs["AdditionalInfoStruct"]
+	if st == nil || !st.ForceLocal || !st.Keep {
+		t.Fatalf("expected overlay force-local and keep to be merged into the existing entry, got %+v", st)
+	}
+	if len(st.Fields) != 1 || st.Fields[0].Constraint != "all" {
+		t.Errorf("expected the main file's field overrides to be kept, got %+v", st.Fields)
+	}
+	if en := types.Enums["SomeEnum"]; en == nil || !en.ForceGlobal {
+		t.Errorf("expected overlay force-global entry, got %+v", en)
+	}
+}

@@ -241,6 +241,18 @@ func (t *SDKType) Merge(other *SDKType) {
 	if other.List {
 		t.List = true
 	}
+	if other.OverrideProfileID != "" {
+		t.OverrideProfileID = other.OverrideProfileID
+	}
+	if other.Keep {
+		t.Keep = true
+	}
+	if other.ForceGlobal {
+		t.ForceGlobal = true
+	}
+	if other.ForceLocal {
+		t.ForceLocal = true
+	}
 	t.Fields = mergeSDKTypeList(t.Fields, other.Fields)
 	t.ExtraFields = mergeSDKTypeList(t.ExtraFields, other.ExtraFields)
 	if other.Domain != "" {
