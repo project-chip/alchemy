@@ -5,7 +5,6 @@ import (
 
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -60,10 +59,4 @@ func (bf *entityFinderCommon) findEntityByReference(reference string, label stri
 		return bf.inner.findEntityByReference(reference, label, source)
 	}
 	return nil
-}
-
-type referenceFailure struct {
-	source    types.Entity
-	reference constraint.Limit
-	finder    entityFinder
 }
