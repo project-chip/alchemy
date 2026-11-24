@@ -61,7 +61,7 @@ type DeviceTypeClusterRequirement struct {
 	DeviceTypeRef EntityReference `json:"deviceTypeRef,omitempty"`
 
 	ClusterRequirement *ClusterRequirement
-	Origin             RequirementOrigin
+	RequirementOrigin  RequirementOrigin
 
 	DeviceType            *DeviceType
 	DeviceTypeRequirement *DeviceTypeRequirement
@@ -71,11 +71,23 @@ func NewDeviceTypeClusterRequirement(parent types.Entity, clusterRequirement *Cl
 	return &DeviceTypeClusterRequirement{entity: entity{parent: parent, source: source}, ClusterRequirement: clusterRequirement}
 }
 
+func (dtcr *DeviceTypeClusterRequirement) EntityType() types.EntityType {
+	return types.EntityTypeDeviceTypeClusterRequirement
+}
+
+func (dtcr *DeviceTypeClusterRequirement) Equals(other types.Entity) bool {
+	odtcr, ok := other.(*DeviceTypeClusterRequirement)
+	if !ok {
+		return false
+	}
+	return dtcr.DeviceTypeRef.Equals(odtcr.DeviceTypeRef) && dtcr.ClusterRequirement.Equals(odtcr.ClusterRequirement)
+}
+
 func (dtcr *DeviceTypeClusterRequirement) Clone() *DeviceTypeClusterRequirement {
 	return &DeviceTypeClusterRequirement{
 		DeviceTypeRef:         dtcr.DeviceTypeRef,
 		ClusterRequirement:    dtcr.ClusterRequirement,
-		Origin:                dtcr.Origin,
+		RequirementOrigin:     dtcr.RequirementOrigin,
 		DeviceType:            dtcr.DeviceType,
 		DeviceTypeRequirement: dtcr.DeviceTypeRequirement,
 	}
@@ -86,7 +98,7 @@ type DeviceTypeElementRequirement struct {
 	DeviceTypeRef EntityReference `json:"deviceTypeRef,omitempty"`
 
 	ElementRequirement *ElementRequirement
-	Origin             RequirementOrigin
+	RequirementOrigin  RequirementOrigin
 
 	DeviceType            *DeviceType
 	DeviceTypeRequirement *DeviceTypeRequirement
@@ -96,11 +108,23 @@ func NewDeviceTypeElementRequirement(parent types.Entity, elementRequirement *El
 	return &DeviceTypeElementRequirement{entity: entity{parent: parent, source: source}, ElementRequirement: elementRequirement}
 }
 
+func (dter *DeviceTypeElementRequirement) EntityType() types.EntityType {
+	return types.EntityTypeDeviceTypeElementRequirement
+}
+
+func (dter *DeviceTypeElementRequirement) Equals(other types.Entity) bool {
+	odter, ok := other.(*DeviceTypeElementRequirement)
+	if !ok {
+		return false
+	}
+	return dter.DeviceTypeRef.Equals(odter.DeviceTypeRef) && dter.ElementRequirement.Equals(odter.ElementRequirement)
+}
+
 func (dter *DeviceTypeElementRequirement) Clone() *DeviceTypeElementRequirement {
 	return &DeviceTypeElementRequirement{
 		DeviceTypeRef:         dter.DeviceTypeRef,
 		ElementRequirement:    dter.ElementRequirement,
-		Origin:                dter.Origin,
+		RequirementOrigin:     dter.RequirementOrigin,
 		DeviceType:            dter.DeviceType,
 		DeviceTypeRequirement: dter.DeviceTypeRequirement,
 	}
@@ -150,12 +174,24 @@ type DeviceTypeTagRequirement struct {
 	DeviceTypeRequirement *DeviceTypeRequirement
 }
 
-func (dtcr *DeviceTypeTagRequirement) Clone() *DeviceTypeTagRequirement {
+func (dttr *DeviceTypeTagRequirement) EntityType() types.EntityType {
+	return types.EntityTypeDeviceTypeTagRequirement
+}
+
+func (dttr *DeviceTypeTagRequirement) Equals(other types.Entity) bool {
+	dttr2, ok := other.(*DeviceTypeTagRequirement)
+	if !ok {
+		return false
+	}
+	return dttr.TagRequirement.Equals(dttr2.TagRequirement) && dttr.DeviceTypeRef.Equals(dttr2.DeviceTypeRef)
+}
+
+func (dttr *DeviceTypeTagRequirement) Clone() *DeviceTypeTagRequirement {
 	return &DeviceTypeTagRequirement{
-		DeviceTypeRef:         dtcr.DeviceTypeRef,
-		DeviceType:            dtcr.DeviceType,
-		DeviceTypeRequirement: dtcr.DeviceTypeRequirement,
-		TagRequirement:        dtcr.TagRequirement,
+		DeviceTypeRef:         dttr.DeviceTypeRef,
+		DeviceType:            dttr.DeviceType,
+		DeviceTypeRequirement: dttr.DeviceTypeRequirement,
+		TagRequirement:        dttr.TagRequirement,
 	}
 }
 

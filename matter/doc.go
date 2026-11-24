@@ -22,6 +22,7 @@ const (
 	DocTypeServiceDeviceManagement
 	DocTypeSoftAP
 	DocTypeBaseDeviceType
+	DocTypeMasterList
 )
 
 var DocTypeNames = map[DocType]string{
@@ -44,6 +45,7 @@ var DocTypeNames = map[DocType]string{
 	DocTypeServiceDeviceManagement: "ServiceDeviceManagement",
 	DocTypeSoftAP:                  "SoftAP",
 	DocTypeBaseDeviceType:          "BaseDeviceType",
+	DocTypeMasterList:              "MasterList",
 }
 
 func (dt DocType) String() string {

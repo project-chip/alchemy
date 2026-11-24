@@ -82,7 +82,7 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 			break
 		}
 		slices.SortFunc(requirements, func(a *matter.DeviceTypeClusterRequirement, b *matter.DeviceTypeClusterRequirement) int {
-			return a.Origin.Compare(b.Origin)
+			return a.RequirementOrigin.Compare(b.RequirementOrigin)
 		})
 		var firstPassState conformance.ConformanceState
 		firstPassState, err = getConformanceState(firstContext, requirements, elementRequirements)
@@ -104,7 +104,7 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 			break
 		}
 		slices.SortFunc(requirements, func(a *matter.DeviceTypeClusterRequirement, b *matter.DeviceTypeClusterRequirement) int {
-			return a.Origin.Compare(b.Origin)
+			return a.RequirementOrigin.Compare(b.RequirementOrigin)
 		})
 		var firstPassState conformance.ConformanceState
 		firstPassState, err = getConformanceState(firstContext, requirements, elementRequirements)
@@ -159,7 +159,7 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 
 		for _, ers := range elements {
 			slices.SortFunc(ers, func(a *matter.DeviceTypeElementRequirement, b *matter.DeviceTypeElementRequirement) int {
-				return a.Origin.Compare(b.Origin)
+				return a.RequirementOrigin.Compare(b.RequirementOrigin)
 			})
 			req := ers[len(ers)-1].ElementRequirement
 			var conf conformance.ConformanceState
@@ -201,7 +201,7 @@ func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.
 
 	}
 
-	switch req.Origin {
+	switch req.RequirementOrigin {
 	case matter.RequirementOriginSubsetDeviceType:
 		// Normally, we do not include clusters from subset device types...
 
@@ -209,7 +209,7 @@ func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.
 		ers := elementRequirements[req.ClusterRequirement.Cluster]
 
 		for _, er := range ers {
-			switch er.Origin {
+			switch er.RequirementOrigin {
 			case matter.RequirementOriginBaseDeviceType, matter.RequirementOriginSubsetDeviceType:
 				continue
 			}

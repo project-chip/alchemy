@@ -49,7 +49,7 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 			rev.CreateAttr("summary", scrubDescription(r.Description))
 		}
 	}
-	if deviceType.Class != "" || deviceType.Scope != "" {
+	if deviceType.Class != "" || deviceType.Scope != matter.ScopeUnknown {
 		class := c.CreateElement("classification")
 		if deviceType.SupersetOf != "" {
 			class.CreateAttr("superset", deviceType.SupersetOf)
@@ -57,8 +57,8 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 		if deviceType.Class != "" {
 			class.CreateAttr("class", strings.ToLower(deviceType.Class))
 		}
-		if deviceType.Scope != "" {
-			class.CreateAttr("scope", strings.ToLower(deviceType.Scope))
+		if deviceType.Scope != matter.ScopeUnknown {
+			class.CreateAttr("scope", strings.ToLower(deviceType.Scope.String()))
 		}
 	}
 

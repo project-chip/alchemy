@@ -17,6 +17,16 @@ func getSpecPaths(specRoot string) (specPaths []string, err error) {
 		}
 		return nil
 	})
+	if err != nil {
+		return
+	}
+	masterListsRoot := filepath.Join(specRoot, "/master_lists/")
+	err = filepath.WalkDir(masterListsRoot, func(path string, d fs.DirEntry, err error) error {
+		if filepath.Ext(path) == ".adoc" && !strings.HasSuffix(path, "-draft.adoc") {
+			specPaths = append(specPaths, path)
+		}
+		return nil
+	})
 	specPaths = paths.FilterBanned(specPaths...)
 	return
 }
