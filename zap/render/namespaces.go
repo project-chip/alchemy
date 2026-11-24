@@ -11,6 +11,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/internal/vcs"
@@ -20,7 +21,7 @@ import (
 )
 
 // namespaceIDEnumName names the enum that lists every standard namespace ID.
-const namespaceIDEnumName = "SemanticTagNamespaceId"
+const namespaceIDEnumName = "SemanticTagNamespaceID"
 
 type NamespacePatcher struct {
 	sdkRoot     string
@@ -68,9 +69,8 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*
 		return
 	}
 
-	namespaces := slices.Clone(p.spec.Namespaces)
-	slices.SortStableFunc(namespaces, func(a, b *matter.Namespace) int {
-		return a.ID.Compare(b.ID)
+	namespaces := generatedNamespaces(p.spec.Namespaces, func(ns *matter.Namespace) *errata.Errata {
+		return namespaceErrata(p.spec, ns)
 	})
 
 	enumNames := make(map[string]*matter.Namespace, len(namespaces))
@@ -87,7 +87,7 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*
 		slog.Warn("removing enum that no spec namespace generates", slog.String("path", namespaceXMLPath), slog.String("enum", name))
 	}
 
-	// Each namespace ID is named after its tag enum, so kPosition pairs with PositionTag.
+	// Each namespace ID is named after its tag enum, so kCommonPosition pairs with CommonPositionTag.
 	idEnum := configurator.CreateElement("enum")
 	idEnum.CreateAttr("name", namespaceIDEnumName)
 	idEnum.CreateAttr("type", "enum8")
@@ -99,13 +99,15 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*
 
 	var docs []*asciidoc.Document
 	for _, ns := range namespaces {
+		enumName := matterNamespaceName(p.spec, ns)
+		nsErrata := namespaceErrata(p.spec, ns)
 		nse := configurator.CreateElement("enum")
-		nse.CreateAttr("name", matterNamespaceName(p.spec, ns))
+		nse.CreateAttr("name", enumName)
 		nse.CreateAttr("type", "enum8")
 		for _, val := range ns.SemanticTags {
 			ve := nse.CreateElement("item")
 			ve.CreateAttr("value", val.ID.ShortHexString())
-			ve.CreateAttr("name", val.Name)
+			ve.CreateAttr("name", semanticTagName(nsErrata, enumName, val))
 		}
 		if ref, ok := p.spec.DocRefs[ns]; ok && !slices.Contains(docs, ref) {
 			docs = append(docs, ref)
@@ -132,6 +134,18 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[*
 	return
 }
 
+// generatedNamespaces returns the namespaces to generate, in namespace ID order, leaving out those
+// whose document errata sets skip-file.
+func generatedNamespaces(namespaces []*matter.Namespace, errataFor func(*matter.Namespace) *errata.Errata) []*matter.Namespace {
+	generated := slices.DeleteFunc(slices.Clone(namespaces), func(ns *matter.Namespace) bool {
+		return errataFor(ns).SDK.SkipFile
+	})
+	slices.SortStableFunc(generated, func(a, b *matter.Namespace) int {
+		return a.ID.Compare(b.ID)
+	})
+	return generated
+}
+
 // removeEnums removes every enum from the configurator, and returns the names of the ones that
 // neither a spec namespace nor the namespace ID enum generates.
 func removeEnums(configurator *etree.Element, generated map[string]*matter.Namespace) (unknown []string) {
@@ -149,30 +163,38 @@ func namespaceBaseName(ns *matter.Namespace) string {
 	return strings.TrimSpace(text.TrimCaseInsensitiveSuffix(ns.Name, " Namespace"))
 }
 
-// matterNamespaceName names a namespace's tag enum. "Common " is dropped from the name unless
-// another namespace already uses the shorter name, as "Closure" does for "Common Closure".
+// matterNamespaceName names a namespace's tag enum after its spec name, so "Common Area Namespace"
+// is CommonAreaTag. An sdk type-names entry in the namespace document's errata overrides the name.
 func matterNamespaceName(specification *spec.Specification, ns *matter.Namespace) string {
-	baseName := namespaceBaseName(ns)
-	shortName := strings.TrimSpace(text.TrimCaseInsensitivePrefix(baseName, "Common "))
-	if shortName != baseName {
-		for _, other := range specification.Namespaces {
-			if other != ns && strings.EqualFold(namespaceBaseName(other), shortName) {
-				shortName = baseName
-				break
-			}
-		}
-	}
-	name := matter.Case(shortName)
-	if name == "Area" {
-		// Backwards compatibility for one namespace
-		name += "Type"
-	}
-	name = name + "Tag"
-	if doc, ok := specification.DocRefs[ns]; ok {
-		errata := specification.Errata.Get(doc.Path.Relative)
-		if override, ok := errata.SDK.TypeNames[name]; ok {
-			return override
-		}
+	name := matter.Case(namespaceBaseName(ns)) + "Tag"
+	if override, ok := namespaceErrata(specification, ns).SDK.TypeNames[name]; ok {
+		return override
 	}
 	return name
+}
+
+// namespaceErrata returns the errata of the document that defines the namespace.
+func namespaceErrata(specification *spec.Specification, ns *matter.Namespace) *errata.Errata {
+	if doc, ok := specification.DocRefs[ns]; ok {
+		return specification.Errata.Get(doc.Path.Relative)
+	}
+	return errata.DefaultErrata
+}
+
+// semanticTagName names a tag in the tag enum enumName. An errata field of that enum whose name is
+// the tag's spec name replaces it with its override-name, verbatim.
+func semanticTagName(nsErrata *errata.Errata, enumName string, tag *matter.SemanticTag) string {
+	if nsErrata.SDK.Types == nil {
+		return tag.Name
+	}
+	override, ok := nsErrata.SDK.Types.Enums[enumName]
+	if !ok || override == nil {
+		return tag.Name
+	}
+	for _, field := range override.Fields {
+		if field.Name == tag.Name && field.OverrideName != "" {
+			return field.OverrideName
+		}
+	}
+	return tag.Name
 }
