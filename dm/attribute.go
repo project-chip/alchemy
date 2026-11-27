@@ -22,7 +22,8 @@ func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
 	})
 	attributes := c.CreateElement("attributes")
 	for _, a := range as {
-		if conformance.IsZigbee(a.Conformance) {
+		attrConformance, _ := resolveConformance(a.Conformance, a, cluster)
+		if conformance.IsZigbee(attrConformance) {
 			continue
 		}
 		ax := attributes.CreateElement("attribute")
@@ -44,7 +45,7 @@ func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
 		}
 		renderAttributeAccess(ax, a.Access)
 		renderQuality(ax, a.Quality)
-		err = renderConformanceElement(a.Conformance, ax, nil)
+		err = renderConformanceElement(attrConformance, ax, nil)
 		if err != nil {
 			return
 		}

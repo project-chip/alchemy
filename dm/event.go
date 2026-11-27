@@ -15,7 +15,8 @@ func renderEvents(es matter.EventSet, c *etree.Element) (err error) {
 	}
 	evs := make([]*matter.Event, 0, len(es))
 	for _, e := range es {
-		if conformance.IsZigbee(e.Conformance) {
+		evConformance, _ := resolveConformance(e.Conformance, e, e)
+		if conformance.IsZigbee(evConformance) {
 			continue
 		}
 		evs = append(evs, e)
@@ -41,7 +42,8 @@ func renderEvents(es matter.EventSet, c *etree.Element) (err error) {
 				a.CreateAttr("fabricSensitive", "true")
 			}
 		}
-		err = renderConformanceElement(e.Conformance, cx, e)
+		evConformance, conformanceParent := resolveConformance(e.Conformance, e, e)
+		err = renderConformanceElement(evConformance, cx, conformanceParent)
 		if err != nil {
 			return
 		}

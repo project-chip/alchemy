@@ -72,6 +72,7 @@ func renderEnumValue(en *etree.Element, index int, v *matter.EnumValue, parentEn
 	if len(v.Summary) > 0 {
 		i.CreateAttr("summary", scrubDescription(v.Summary))
 	}
-	err = renderConformanceElement(v.Conformance, i, parentEntity)
+	valConformance, conformanceParent := resolveConformance(v.Conformance, v, parentEntity)
+	err = renderConformanceElement(valConformance, i, conformanceParent)
 	return
 }

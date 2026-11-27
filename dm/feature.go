@@ -26,7 +26,8 @@ func RenderFeatureElements(doc *asciidoc.Document, cluster *matter.Cluster, feat
 			err = fmt.Errorf("feature bits contains non-feature bit %s on cluster %s ", b.Name(), cluster.Name)
 			return
 		}
-		if excludeDisallowed && conformance.IsDisallowed(f.Conformance()) {
+		featConformance, _ := resolveConformance(f.Conformance(), f, cluster)
+		if excludeDisallowed && conformance.IsDisallowed(featConformance) {
 			continue
 		}
 		bit := matter.ParseNumber(f.Bit())
@@ -40,7 +41,7 @@ func RenderFeatureElements(doc *asciidoc.Document, cluster *matter.Cluster, feat
 		if len(f.Summary()) > 0 {
 			feature.CreateAttr("summary", scrubDescription(f.Summary()))
 		}
-		err = renderConformanceElement(f.Conformance(), feature, nil)
+		err = renderConformanceElement(featConformance, feature, nil)
 		if err != nil {
 			return
 		}
