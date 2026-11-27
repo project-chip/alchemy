@@ -56,7 +56,8 @@ func renderField(fs matter.FieldSet, f *matter.Field, parent *etree.Element, par
 	}
 	renderAttributeAccess(i, f.Access)
 	renderQuality(i, f.Quality)
-	err = renderConformanceElement(f.Conformance, i, parentEntity)
+	fieldConformance, conformanceParent := resolveConformance(f.Conformance, f, parentEntity)
+	err = renderConformanceElement(fieldConformance, i, conformanceParent)
 	if err != nil {
 		return
 	}

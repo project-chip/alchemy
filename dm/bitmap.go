@@ -54,6 +54,7 @@ func renderBit(en *etree.Element, v matter.Bit, size int, parentEntity types.Ent
 	if id := v.InstructionDependency(); id != "" {
 		i.CreateAttr("instructionDependency", id)
 	}
-	err = renderConformanceElement(v.Conformance(), i, parentEntity)
+	bitConformance, conformanceParent := resolveConformance(v.Conformance(), v, parentEntity)
+	err = renderConformanceElement(bitConformance, i, conformanceParent)
 	return
 }

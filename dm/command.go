@@ -19,7 +19,8 @@ func renderCommands(cs matter.CommandSet, c *etree.Element) (err error) {
 
 	cmds := make([]*matter.Command, 0, len(cs))
 	for _, c := range cs {
-		if conformance.IsZigbee(c.Conformance) {
+		cmdConformance, _ := resolveConformance(c.Conformance, c, c)
+		if conformance.IsZigbee(cmdConformance) {
 			continue
 		}
 		cmds = append(cmds, c)
@@ -84,7 +85,8 @@ func renderCommands(cs matter.CommandSet, c *etree.Element) (err error) {
 			}
 		}
 
-		err = renderConformanceElement(cmd.Conformance, cx, cmd)
+		cmdConformance, conformanceParent := resolveConformance(cmd.Conformance, cmd, cmd)
+		err = renderConformanceElement(cmdConformance, cx, conformanceParent)
 		if err != nil {
 			return
 		}
@@ -110,7 +112,8 @@ func renderCommands(cs matter.CommandSet, c *etree.Element) (err error) {
 				return
 			}
 			renderQuality(i, f.Quality)
-			err = renderConformanceElement(f.Conformance, i, cmd)
+			fieldConformance, fieldConformanceParent := resolveConformance(f.Conformance, f, cmd)
+			err = renderConformanceElement(fieldConformance, i, fieldConformanceParent)
 			if err != nil {
 				return
 			}
